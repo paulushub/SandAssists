@@ -1,0 +1,207 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{858C1934-EA90-46F2-84EC-8D64CCC6904F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandcastle.Builders</RootNamespace>
+    <AssemblyName>Sandcastle.Builders</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\Output\Sandcastle.Builder.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Analysis|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Analysis\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuildConfig.cs" />
+    <Compile Include="BuildConfigReader.cs" />
+    <Compile Include="BuildConfigWriter.cs" />
+    <Compile Include="BuildContext.cs" />
+    <Compile Include="BuildEngine.cs" />
+    <Compile Include="BuildLogger.cs" />
+    <Compile Include="BuildSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BuildTaskGroup.cs" />
+    <Compile Include="BuildTaskItem.cs" />
+    <Compile Include="BuildTaskResult.cs" />
+    <Compile Include="Conceptual\ConceptualCategory.cs" />
+    <Compile Include="Conceptual\ConceptualCategoryFilter.cs" />
+    <Compile Include="Conceptual\ConceptualConfig.cs" />
+    <Compile Include="Conceptual\ConceptualItemList.cs" />
+    <Compile Include="Conceptual\ConceptualItemType.cs" />
+    <Compile Include="Conceptual\ConceptualTopicIdFilter.cs" />
+    <Compile Include="Conceptual\ConceptualUtils.cs" />
+    <Compile Include="Conceptual\ConceptualFilter.cs" />
+    <Compile Include="BuildObject.cs" />
+    <Compile Include="Conceptual\ConceptualItemReader.cs" />
+    <Compile Include="Conceptual\ConceptualItemWriter.cs" />
+    <Compile Include="Contents\DdueXmlObject.cs" />
+    <Compile Include="Tasks\TaskHtmlHelpBuilder.cs" />
+    <Compile Include="Tasks\TaskConceptualAssembler.cs" />
+    <Compile Include="Tasks\TaskConceptualCleanUp.cs" />
+    <Compile Include="Tasks\TaskConceptualContents.cs" />
+    <Compile Include="Tasks\TaskConceptualXslManifest.cs" />
+    <Compile Include="Tasks\TaskConceptualXslToc.cs" />
+    <Compile Include="Tasks\TaskDirectoryCopy.cs" />
+    <Compile Include="Tasks\TaskDirectoryCreate.cs" />
+    <Compile Include="Tasks\TaskDirectoryDelete.cs" />
+    <Compile Include="Tasks\TaskDirectoryMove.cs" />
+    <Compile Include="Tasks\TaskException.cs" />
+    <Compile Include="Tasks\TaskHtmlHelpCompile.cs" />
+    <Compile Include="Tasks\TaskHtmlHelpDbcsFix.cs" />
+    <Compile Include="Tasks\TaskMailNotify.cs" />
+    <Compile Include="Tasks\TaskMergeToc.cs" />
+    <Compile Include="Tasks\TaskMsdnHelpXslHxC.cs" />
+    <Compile Include="Tasks\TaskMsdnHelpXslHxT.cs" />
+    <Compile Include="Tasks\TaskNone.cs" />
+    <Compile Include="Tasks\TaskReferenceContents.cs" />
+    <Compile Include="Conceptual\ConceptualRevisionFilter.cs" />
+    <Compile Include="BuildTask.cs" />
+    <Compile Include="Conceptual\ConceptualEngine.cs" />
+    <Compile Include="Contents\DdueXmlBuildManifest.cs" />
+    <Compile Include="Contents\DdueXmlMetadataContent.cs" />
+    <Compile Include="Conceptual\ConceptualItem.cs" />
+    <Compile Include="Contents\DdueXmlMetaItem.cs" />
+    <Compile Include="Conceptual\ConceptualContext.cs" />
+    <Compile Include="Conceptual\ConceptualObject.cs" />
+    <Compile Include="Contents\DdueXmlContent.cs" />
+    <Compile Include="Contents\DdueXmlSettingsLoc.cs" />
+    <Compile Include="Contents\DdueXmlTableOfContents.cs" />
+    <Compile Include="Contents\DdueXmlMetadata.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="References\ReferenceConfiguration.cs" />
+    <Compile Include="References\ReferenceContext.cs" />
+    <Compile Include="References\ReferenceEngine.cs" />
+    <Compile Include="References\ReferenceObject.cs" />
+    <Compile Include="Tasks\TaskRunProcess.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="Builders.cd" />
+    <None Include="Conceptual\ConceptualFilters.cd" />
+    <None Include="Contents\DdueXmlObjects.cd" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="References\References.cd" />
+    <None Include="Schemas\CodeSnippets.xsd">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="Schemas\CodeSnippets.xsx">
+      <DependentUpon>CodeSnippets.xsd</DependentUpon>
+    </None>
+    <None Include="Schemas\ConceptualContent.xsd">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="Schemas\ConceptualContent.xsx">
+      <DependentUpon>ConceptualContent.xsd</DependentUpon>
+    </None>
+    <None Include="Schemas\MediaArts.xsd">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="Schemas\MediaArts.xsx">
+      <DependentUpon>MediaArts.xsd</DependentUpon>
+    </None>
+    <None Include="Tasks\Tasks.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Schemas\CodeSnippetSample.xml" />
+    <Content Include="Schemas\ConceptualContentSample.xml" />
+    <Content Include="Schemas\ConceptualSchema.xml" />
+    <Content Include="Schemas\MediaArtsSample.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

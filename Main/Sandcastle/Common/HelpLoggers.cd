@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="Sandcastle.HelpFileLogger" Collapsed="true">
+    <Position X="4.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>HelpFileLogger.cs</FileName>
+      <HashCode>AAAAAAAAACgAAAAIAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.HelpLogger" Collapsed="true">
+    <Position X="2.5" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <FileName>HelpLogger.cs</FileName>
+      <HashCode>BAAAIAIAICBAAQAcQAkCAAAEgAmAAQAAAhAgACGAAAk=</HashCode>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Verbosity" />
+    </ShowAsAssociation>
+    <Members>
+      <Field Name="_baseWriter" Hidden="true" />
+      <Field Name="_encoding" Hidden="true" />
+      <Field Name="_isAppend" Hidden="true" />
+      <Field Name="_isInitialize" Hidden="true" />
+      <Field Name="_isLogging" Hidden="true" />
+      <Field Name="_keepLogFile" Hidden="true" />
+      <Field Name="_logEnded" Hidden="true" />
+      <Field Name="_logError" Hidden="true" />
+      <Field Name="_logFile" Hidden="true" />
+      <Field Name="_logInfo" Hidden="true" />
+      <Field Name="_logStarted" Hidden="true" />
+      <Field Name="_logWarn" Hidden="true" />
+      <Field Name="_verbosity" Hidden="true" />
+      <Method Name="~HelpLogger" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+      <Method Name="FormatText" Hidden="true" />
+      <Method Name="HelpLogger" Hidden="true" />
+      <Method Name="Log" Hidden="true" />
+      <Method Name="LogLine" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Verbosity" Type="Sandcastle.HelpLoggerVerbosity" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.438" Y="1.25" />
+        <Point X="3.438" Y="0.938" />
+        <Point X="2.25" Y="0.938" />
+      </Path>
+    </AssociationLine>
+    <Lollipop Position="1.117" />
+  </Class>
+  <Class Name="Sandcastle.HelpConsoleLogger" Collapsed="true">
+    <Position X="0.5" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>HelpConsoleLogger.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.HelpXmlLogger" Collapsed="true">
+    <Position X="2.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>HelpXmlLogger.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.HelpLoggerVerbosity">
+    <Position X="0.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>HelpLoggerVerbosity.cs</FileName>
+      <HashCode>AAAAAABAAAgQAAAAAAAAAAAAAAAIAAAEAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.HelpLoggerLevel">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>HelpLoggerLevel.cs</FileName>
+      <HashCode>AAAAAAABAAAAAQEAAAAAAAAAAAIAAAEAAAAAAEEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+</ClassDiagram>

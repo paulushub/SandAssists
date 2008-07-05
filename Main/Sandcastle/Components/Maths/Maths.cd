@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Comment CommentText="MathML outputs may be handled by first transforming them to LaTeX or directly with gNumerator library, which will require some modifications - still testing the possibilities.">
+    <Position X="2" Y="6.75" Height="0.75" Width="2.502" />
+  </Comment>
+  <Comment CommentText="This uses the MimeTeX to produce quick but less quality output - no installing is required.">
+    <Position X="3.77" Y="5.249" Height="0.583" Width="2.023" />
+  </Comment>
+  <Comment CommentText="This uses MikTeX to produce full quality LaTeX output -  requires a separate installation">
+    <Position X="0.75" Y="5.26" Height="0.542" Width="1.96" />
+  </Comment>
+  <Comment CommentText="The MathController currently only carries  some &quot;global&quot; settings.">
+    <Position X="0.5" Y="1.25" Height="0.615" Width="1.679" />
+  </Comment>
+  <Class Name="Sandcastle.Components.Maths.MathFormatter" Collapsed="true">
+    <Position X="2.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Maths\MathFormatter.cs</FileName>
+      <HashCode>gIQCAgYAMCCAAoCAQQYBDICAAAACQEAkAAFAEAQQIAA=</HashCode>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="NamingMethod" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Commands" />
+      <Property Name="Packages" />
+    </ShowAsCollectionAssociation>
+    <Members>
+      <Field Name="_componentType" Hidden="true" />
+      <Field Name="_displayedSize" Hidden="true" />
+      <Field Name="_displayedZoom" Hidden="true" />
+      <Field Name="_hasPath" Hidden="true" />
+      <Field Name="_inlineSize" Hidden="true" />
+      <Field Name="_inlineZoom" Hidden="true" />
+      <Field Name="_isConceptual" Hidden="true" />
+      <Field Name="_listCommands" Hidden="true" />
+      <Field Name="_listPackages" Hidden="true" />
+      <Field Name="_messageHandler" Hidden="true" />
+      <Field Name="_namingCount" Hidden="true" />
+      <Field Name="_namingMethod" Hidden="true" />
+      <Field Name="_namingPrefix" Hidden="true" />
+      <Field Name="_sizesLaTeX" Hidden="true" />
+      <Field Name="_workingDir" Hidden="true" />
+      <Method Name="~MathFormatter" Hidden="true" />
+      <Method Name="BeginUpdate" Hidden="true" />
+      <Method Name="Create" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+      <Method Name="EndUpdate" Hidden="true" />
+      <Method Name="GetSize" Hidden="true" />
+      <Method Name="MathFormatter" Hidden="true" />
+      <Method Name="NextName" Hidden="true" />
+      <Method Name="Update" Hidden="true" />
+      <Method Name="WriteMessage" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="NamingMethod" Type="Sandcastle.Components.Maths.MathNamingMethod" FixedFromPoint="true">
+      <Path>
+        <Point X="3.312" Y="2.25" />
+        <Point X="3.312" Y="1.602" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.161" Y="0.102" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Commands" Type="Sandcastle.Components.Maths.MathTeXCommand" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="2.562" />
+        <Point X="5.062" Y="2.562" />
+        <Point X="5.062" Y="3.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.1" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Packages" Type="Sandcastle.Components.Maths.MathTeXPackage" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="2.562" />
+        <Point X="1.562" Y="2.562" />
+        <Point X="1.562" Y="3.25" />
+      </Path>
+    </AssociationLine>
+    <Lollipop Position="1.033" />
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathMikTeXFormatter" Collapsed="true">
+    <Position X="0.75" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Maths\MathMikTeXFormatter.cs</FileName>
+      <HashCode>gARAAJoAICAAAQAgQABAAJAIEIAAAEAAAAAAQIAQAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathMimeTeXFormatter" Collapsed="true">
+    <Position X="3.75" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Maths\MathMimeTeXFormatter.cs</FileName>
+      <HashCode>gAAAAAgAACAAAAAAQAAAAIAIABABAEAAAAAAQAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathMLFormatter" Collapsed="true">
+    <Position X="2.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Maths\MathMLFormatter.cs</FileName>
+      <HashCode>gAAAAAgAACAAAAAAQAAAAIAIAAAAAEAAAAAAQAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathTeXCommand" Collapsed="true">
+    <Position X="4" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Maths\MathTeXCommand.cs</FileName>
+      <HashCode>AAAAIAAAAAAAAAAMAAgABAQAAAAAAAAAYAAAABAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="1.221" />
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathTeXPackage" Collapsed="true">
+    <Position X="0.75" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Maths\MathTeXPackage.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAMAAgACAAAAgAEAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="1.04" />
+  </Class>
+  <Class Name="Sandcastle.Components.Maths.MathController" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Maths\MathController.cs</FileName>
+      <HashCode>AAIAAAIAAAAIAACAAAAAQAAABAAgqEAAAACAAAAAQBA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Components.Maths.MathNamingMethod">
+    <Position X="2.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Maths\MathNamingMethod.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+</ClassDiagram>

@@ -1,0 +1,212 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandcastle</RootNamespace>
+    <AssemblyName>Sandcastle.Common</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\Output\Sandcastle.Configurations.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Analysis|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Analysis\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configurations\ConfigClone.cs" />
+    <Compile Include="Configurations\ConfigCopyFromFile.cs" />
+    <Compile Include="Configurations\ConfigCopyFromIndex.cs" />
+    <Compile Include="Configurations\ConfigDisplay.cs" />
+    <Compile Include="Configurations\ConfigExample.cs" />
+    <Compile Include="Configurations\ConfigException.cs" />
+    <Compile Include="Configurations\ConfigFactory.cs" />
+    <Compile Include="Configurations\ConfigForEach.cs" />
+    <Compile Include="Configurations\ConfigHxfGenerator.cs" />
+    <Compile Include="Configurations\ConfigIfThen.cs" />
+    <Compile Include="Configurations\ConfigIntellisense.cs" />
+    <Compile Include="Configurations\ConfigList.cs" />
+    <Compile Include="Configurations\ConfigLiveExample.cs" />
+    <Compile Include="Configurations\ConfigObject.cs" />
+    <Compile Include="Configurations\ConfigObjectType.cs" />
+    <Compile Include="Configurations\ConfigPlatforms.cs" />
+    <Compile Include="Configurations\ConfigPostTransform.cs" />
+    <Compile Include="Configurations\ConfigPreTransform.cs" />
+    <Compile Include="Configurations\ConfigResolveArtLinks.cs" />
+    <Compile Include="Configurations\ConfigResolveConceptualLinks.cs" />
+    <Compile Include="Configurations\ConfigResolveReferenceLinks.cs" />
+    <Compile Include="Configurations\ConfigSave.cs" />
+    <Compile Include="Outputs\OutputHtmAjax.cs" />
+    <Compile Include="Outputs\OutputAspx.cs" />
+    <Compile Include="Outputs\OutputAspxAjax.cs" />
+    <Compile Include="Outputs\OutputAspxExtJs.cs" />
+    <Compile Include="Outputs\OutputHtmDojo.cs" />
+    <Compile Include="Outputs\OutputHtm.cs" />
+    <Compile Include="Outputs\OutputHxs.cs" />
+    <Compile Include="Outputs\OutputJsp.cs" />
+    <Compile Include="Outputs\OutputPhp.cs" />
+    <Compile Include="Outputs\OutputAspxVwg.cs" />
+    <Compile Include="Outputs\OutputHtmYui.cs" />
+    <Compile Include="Utilities\DirectoryUtils.cs" />
+    <Compile Include="HelpCommand.cs" />
+    <Compile Include="HelpException.cs" />
+    <Compile Include="HelpFeedbackContent.cs" />
+    <Compile Include="HelpOutputType.cs" />
+    <Compile Include="HelpSharedContent.cs" />
+    <Compile Include="HelpSharedFormat.cs" />
+    <Compile Include="HelpSharedItem.cs" />
+    <Compile Include="HelpStyleType.cs" />
+    <Compile Include="HelpFramework.cs" />
+    <Compile Include="HelpSettings.cs" />
+    <Compile Include="Configurations\ConfigSharedContent.cs" />
+    <Compile Include="Configurations\ConfigSourceType.cs" />
+    <Compile Include="Configurations\ConfigSwitch.cs" />
+    <Compile Include="Configurations\ConfigSyntax.cs" />
+    <Compile Include="Configurations\ConfigTargetType.cs" />
+    <Compile Include="Configurations\ConfigTaskGrabber.cs" />
+    <Compile Include="Configurations\ConfigTransform.cs" />
+    <Compile Include="Configurations\ConfigValidate.cs" />
+    <Compile Include="Configurations\ConfigWdxResolveConceptualLinks.cs" />
+    <Compile Include="HelpObject.cs" />
+    <Compile Include="Utilities\DirectoryCopier.cs" />
+    <Compile Include="HelpStyle.cs" />
+    <Compile Include="HelpXmlLogger.cs" />
+    <Compile Include="Items\ItemAttribute.cs" />
+    <Compile Include="Items\ItemColor.cs" />
+    <Compile Include="Items\ItemColors.cs" />
+    <Compile Include="Items\ItemCopy.cs" />
+    <Compile Include="Items\ItemData.cs" />
+    <Compile Include="Items\ItemIndex.cs" />
+    <Compile Include="Items\ItemLang.cs" />
+    <Compile Include="Items\ItemLangs.cs" />
+    <Compile Include="Items\ItemList.cs" />
+    <Compile Include="Items\ItemListChangeType.cs" />
+    <Compile Include="Items\ItemListEventArgs.cs" />
+    <Compile Include="Items\ItemProperty.cs" />
+    <Compile Include="Items\ItemSave.cs" />
+    <Compile Include="HelpLogger.cs" />
+    <Compile Include="HelpConsoleLogger.cs" />
+    <Compile Include="HelpFileLogger.cs" />
+    <Compile Include="HelpLoggerLevel.cs" />
+    <Compile Include="HelpLoggerVerbosity.cs" />
+    <Compile Include="HelpOutput.cs" />
+    <Compile Include="Outputs\OutputChm.cs" />
+    <Compile Include="Utilities\ProcessEventArgs.cs" />
+    <Compile Include="Utilities\ProcessExitedEventArgs.cs" />
+    <Compile Include="Utilities\ProcessInfo.cs" />
+    <Compile Include="Utilities\ProcessRunner.cs" />
+    <Compile Include="Utilities\ProcessStartedEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\TemplateCodeEntity.cs" />
+    <Compile Include="Templates\TemplateConceptual.cs" />
+    <Compile Include="Templates\TemplateErrorMessages.cs" />
+    <Compile Include="Templates\TemplateGlossary.cs" />
+    <Compile Include="Templates\TemplateHowTo.cs" />
+    <Compile Include="Templates\TemplateObject.cs" />
+    <Compile Include="Templates\TemplateOrientation.cs" />
+    <Compile Include="Templates\TemplateReferenceWithoutSyntax.cs" />
+    <Compile Include="Templates\TemplateReferenceWithSyntax.cs" />
+    <Compile Include="Templates\TemplateSample.cs" />
+    <Compile Include="Templates\TemplateTroubleshooting.cs" />
+    <Compile Include="Templates\TemplateUIReference.cs" />
+    <Compile Include="Templates\TemplateWalkthrough.cs" />
+    <Compile Include="Templates\TemplateWhitePaper.cs" />
+    <Compile Include="Templates\TemplateXmlReference.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="Utilities\Utilities.cd" />
+    <None Include="HelpLoggers.cd" />
+    <None Include="HelpObjects.cd" />
+    <None Include="Configurations\ConfigObjects.cd" />
+    <None Include="Items\Items.cd" />
+    <None Include="Outputs\Outputs.cd" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Templates\Templates.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

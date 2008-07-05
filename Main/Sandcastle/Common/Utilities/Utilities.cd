@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="Sandcastle.Utilities.DirectoryCopier" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Utilities\DirectoryCopier.cs</FileName>
+      <HashCode>AAAAQAAAIAAAACCAAAAACAECIoAAAAAAAAAAkAACABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.HelpObject&lt;T&gt;" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>HelpObject.cs</FileName>
+      <HashCode>AAAAAAAAAAAAABAIAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="1.054" />
+  </Class>
+  <Class Name="Sandcastle.Utilities.ProcessInfo" Collapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Utilities\ProcessInfo.cs</FileName>
+      <HashCode>AIAAAAAjAgAACCQAAgAAAAgCAhAAAAAAbQsCgCRQIBA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Utilities.ProcessEventArgs" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Utilities\ProcessEventArgs.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Utilities.DirectoryUtils" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Utilities\DirectoryUtils.cs</FileName>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Utilities.ProcessRunner" Collapsed="true">
+    <Position X="2.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Utilities\ProcessRunner.cs</FileName>
+      <HashCode>BAIABAAAIiIAAAAAAAAAUAAAAIAAAgAAIAAAAEAIEAA=</HashCode>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Info" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.138" />
+  </Class>
+  <Class Name="Sandcastle.Utilities.ProcessExitedEventArgs" Collapsed="true">
+    <Position X="0.5" Y="5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Utilities\ProcessExitedEventArgs.cs</FileName>
+      <HashCode>IAICEAAIIAAAAAAAACIAAAAAMBAAAAAAQAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Utilities.ProcessStartedEventArgs" Collapsed="true">
+    <Position X="3.25" Y="5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Utilities\ProcessStartedEventArgs.cs</FileName>
+      <HashCode>AAIAAAAAIAAAAAAAAAAAAAAAIACAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+</ClassDiagram>

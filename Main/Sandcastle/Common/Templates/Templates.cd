@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="Sandcastle.Templates.TemplateObject" Collapsed="true">
+    <Position X="3" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateObject.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateCodeEntity" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateCodeEntity.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateConceptual" Collapsed="true">
+    <Position X="0.5" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateConceptual.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateErrorMessages" Collapsed="true">
+    <Position X="4.25" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateErrorMessages.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateGlossary" Collapsed="true">
+    <Position X="3" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateGlossary.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateHowTo" Collapsed="true">
+    <Position X="5.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateHowTo.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateOrientation" Collapsed="true">
+    <Position X="5.25" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateOrientation.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateReferenceWithoutSyntax" Collapsed="true">
+    <Position X="1.25" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateReferenceWithoutSyntax.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateReferenceWithSyntax" Collapsed="true">
+    <Position X="4" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateReferenceWithSyntax.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateSample" Collapsed="true">
+    <Position X="5.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateSample.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateTroubleshooting" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateTroubleshooting.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateUIReference" Collapsed="true">
+    <Position X="5" Y="4.25" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateUIReference.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateWalkthrough" Collapsed="true">
+    <Position X="2" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateWalkthrough.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+    <InheritanceLine Type="Sandcastle.Templates.TemplateObject" ManuallyRouted="true">
+      <Path>
+        <Point X="3.875" Y="3.63" />
+        <Point X="3.875" Y="5.25" />
+        <Point X="2.875" Y="5.25" />
+        <Point X="2.875" Y="6.5" />
+      </Path>
+    </InheritanceLine>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateWhitePaper" Collapsed="true">
+    <Position X="3" Y="5.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateWhitePaper.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Templates.TemplateXmlReference" Collapsed="true">
+    <Position X="1" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <FileName>Templates\TemplateXmlReference.cs</FileName>
+      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+</ClassDiagram>

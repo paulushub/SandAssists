@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Comment CommentText="The reader  fills a provider and/or return snippets on query.">
+    <Position X="0.604" Y="4.511" Height="0.615" Width="1.752" />
+  </Comment>
+  <Class Name="Sandcastle.Components.Snippets.Snippet" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\Snippet.cs</FileName>
+      <HashCode>AAAAAAAAGAgAAAAIgBgABAAEIAgAAAAAEAAACEwAABA=</HashCode>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Info" />
+      <Property Name="Item" />
+    </ShowAsAssociation>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetInfo" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetInfo.cs</FileName>
+      <HashCode>AAAAAAAAEAAAAAAMgBgAAAAAAAgAAIAAEAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetItem" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetItem.cs</FileName>
+      <HashCode>AAAAAAAACAgAAAAIgAgAAAAAAAAAAAAAAAAACAgAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetReader" Collapsed="true">
+    <Position X="3" Y="4.5" Width="1.25" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetReader.cs</FileName>
+      <HashCode>AAAAAAAAECCAAAABIQAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetDbReader" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetDbReader.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetTextReader" Collapsed="true">
+    <Position X="2.75" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetTextReader.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetXmlReader" Collapsed="true">
+    <Position X="5.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetXmlReader.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetProvider" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetProvider.cs</FileName>
+      <HashCode>AEAAAAAAECiAAAAACQAAAAQAAAABAAAAIAAAAAAAAgA=</HashCode>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Storage" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="this[Sandcastle.Components.Snippets.SnippetInfo]" />
+    </ShowAsCollectionAssociation>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetDbProvider" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetDbProvider.cs</FileName>
+      <HashCode>AEAAAAAAACgAAAAACAAAAAQAAAABAAAgIAAAAAAAAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetMemoryProvider" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetMemoryProvider.cs</FileName>
+      <HashCode>AEAAAAAAACgAAAAACAAgAAQAAAABAAAgIAAAAAAAAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Snippets.SnippetSqliteProvider" Collapsed="true">
+    <Position X="5.25" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetSqliteProvider.cs</FileName>
+      <HashCode>AEAAAIAAACgAAAAACBAgAAQAgAgBAQAwJCAAAAAAAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Components.Snippets.SnippetStorage">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Snippets\SnippetStorage.cs</FileName>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+</ClassDiagram>

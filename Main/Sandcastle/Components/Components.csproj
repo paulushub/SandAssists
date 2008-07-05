@@ -1,0 +1,173 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1F2EB9F1-1FE3-42F5-86BA-77EF369E11FE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandcastle.Components</RootNamespace>
+    <AssemblyName>Sandcastle.Components</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\Output\Sandcastle.Components.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Analysis|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Analysis\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BuildAssemblerLibrary, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Program Files\Sandcastle\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandcastle.Iris, Version=0.1.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.49.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Output\System.Data.SQLite.DLL</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuilderController.cs" />
+    <Compile Include="CodeComponent.cs" />
+    <Compile Include="Codes\CodeController.cs" />
+    <Compile Include="Codes\CodeHighlightInfo.cs" />
+    <Compile Include="Codes\CodeLanguage.cs" />
+    <Compile Include="ConceptualLinkComponent.cs" />
+    <Compile Include="ConceptualMediaComponent.cs" />
+    <Compile Include="ConceptualPreTransComponent.cs" />
+    <Compile Include="BuilderComponent.cs" />
+    <Compile Include="BuilderException.cs" />
+    <Compile Include="Codes\CodeFormatter.cs" />
+    <Compile Include="ConceptualCodeComponent.cs" />
+    <Compile Include="Codes\CodeHighlightMode.cs" />
+    <Compile Include="LinkComponent.cs" />
+    <Compile Include="MathComponent.cs" />
+    <Compile Include="Maths\MathFormatter.cs" />
+    <Compile Include="Maths\MathController.cs" />
+    <Compile Include="Maths\MathMikTeXFormatter.cs" />
+    <Compile Include="Maths\MathMimeTeXFormatter.cs" />
+    <Compile Include="ConceptualMathComponent.cs" />
+    <Compile Include="ConceptualPostTransComponent.cs" />
+    <Compile Include="Maths\MathMLFormatter.cs" />
+    <Compile Include="Maths\MathNamingMethod.cs" />
+    <Compile Include="Maths\MathTeXCommand.cs" />
+    <Compile Include="Maths\MathTeXPackage.cs" />
+    <Compile Include="MediaComponent.cs" />
+    <Compile Include="MediaLinks\MediaItem.cs" />
+    <Compile Include="PostTransComponent.cs" />
+    <Compile Include="PreTransComponent.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ReferenceCodeComponent.cs" />
+    <Compile Include="ReferenceLinkComponent.cs" />
+    <Compile Include="ReferenceMathComponent.cs" />
+    <Compile Include="ReferenceMediaComponent.cs" />
+    <Compile Include="ReferencePostTransComponent.cs" />
+    <Compile Include="ReferencePreTransComponent.cs" />
+    <Compile Include="Snippets\Snippet.cs" />
+    <Compile Include="Snippets\SnippetDbReader.cs" />
+    <Compile Include="Snippets\SnippetDbProvider.cs" />
+    <Compile Include="Snippets\SnippetInfo.cs" />
+    <Compile Include="Snippets\SnippetItem.cs" />
+    <Compile Include="Snippets\SnippetMemoryProvider.cs" />
+    <Compile Include="Snippets\SnippetProvider.cs" />
+    <Compile Include="Snippets\SnippetReader.cs" />
+    <Compile Include="Snippets\SnippetSqliteProvider.cs" />
+    <Compile Include="Snippets\SnippetStorage.cs" />
+    <Compile Include="Snippets\SnippetTextReader.cs" />
+    <Compile Include="Snippets\SnippetXmlReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="BuilderComponents.cd" />
+    <None Include="Codes\Codes.cd" />
+    <None Include="Maths\Maths.cd" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Snippets\Snippets.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

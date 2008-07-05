@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="Sandcastle.Builders.Conceptual.ConceptualFilter" Collapsed="true">
+    <Position X="2" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Conceptual\ConceptualFilter.cs</FileName>
+      <HashCode>AAAAIAAAAIAAAIAAAAoAAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Members>
+      <Field Name="_isEnabled" Hidden="true" />
+      <Field Name="_isInverse" Hidden="true" />
+      <Field Name="_name" Hidden="true" />
+      <Method Name="ConceptualFilter" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="Sandcastle.Builders.Conceptual.ConceptualObject&lt;T&gt;" Collapsed="true">
+    <Position X="2" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <FileName>Conceptual\ConceptualObject.cs</FileName>
+      <HashCode>AAAAAAAAAAAAABAIAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Builders.Conceptual.ConceptualCategoryFilter" Collapsed="true">
+    <Position X="0.5" Y="3" Width="2" />
+    <TypeIdentifier>
+      <FileName>Conceptual\ConceptualCategoryFilter.cs</FileName>
+      <HashCode>AAAAAAAAAAAABAAAAAgAAAACABAAAAAAAAAAgAAACBA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Conceptual.ConceptualRevisionFilter" Collapsed="true">
+    <Position X="2" Y="4" Width="2" />
+    <TypeIdentifier>
+      <FileName>Conceptual\ConceptualRevisionFilter.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAACABAAAAAAQAAAgAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Conceptual.ConceptualTopicIdFilter" Collapsed="true">
+    <Position X="3.5" Y="3" Width="2" />
+    <TypeIdentifier>
+      <FileName>Conceptual\ConceptualTopicIdFilter.cs</FileName>
+      <HashCode>AAIAAAAAAAAEAAAAAAkABAACABAAAAAAAAAAgABQABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+</ClassDiagram>
