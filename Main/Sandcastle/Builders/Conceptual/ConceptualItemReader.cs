@@ -50,27 +50,8 @@ namespace Sandcastle.Builders.Conceptual
         }
 
         public ConceptualItemReader(IList<ConceptualFilter> listFilters,
-            string itemsFile, string documentsDir)
+            string itemsFile, string documentsDir) : this(itemsFile, documentsDir)
         {
-            if (itemsFile == null)
-            {
-                throw new ArgumentNullException("itemsFile",
-                    "The items file path cannot be null (or Nothing).");
-            }
-            if (itemsFile.Length == 0)
-            {
-                throw new ArgumentException("The file path is not valid.",
-                    "itemsFile");
-            }
-            if (File.Exists(itemsFile) == false)
-            {
-                throw new ArgumentException("The file path must exists.",
-                    "itemsFile");
-            }
-
-            _itemsFile      = itemsFile;
-            _documentsDir   = documentsDir;
-            _documentExists = true;
             _listFilters    = listFilters;
         }
 
@@ -566,8 +547,9 @@ namespace Sandcastle.Builders.Conceptual
             ConceptualItemList listItems = new ConceptualItemList();
 
             XmlNodeType nodeType = XmlNodeType.None;
-            string nodeName = null;
-            string fileName = null;
+            string nodeName  = null;
+            string fileName  = null;
+            string fileTitle = null;
             while (xmlReader.Read())
             {
                 nodeType = xmlReader.NodeType;
@@ -577,10 +559,12 @@ namespace Sandcastle.Builders.Conceptual
                     if (String.Equals(nodeName, "file"))
                     {
                         fileName = xmlReader.GetAttribute("name");
-                        if (!String.IsNullOrEmpty(fileName))
+                        fileTitle = xmlReader.GetAttribute("title");
+                        if (!String.IsNullOrEmpty(fileName) &&
+                            !String.IsNullOrEmpty(fileTitle))
                         {
-                            ConceptualItem projItem = new ConceptualItem(fileName, 
-                                Path.Combine(_documentsDir, fileName));
+                            ConceptualItem projItem = new ConceptualItem(fileName,
+                                Path.Combine(_documentsDir, fileName), fileTitle);
 
                             listItems.Add(projItem);
                             if (!xmlReader.IsEmptyElement)
@@ -609,8 +593,9 @@ namespace Sandcastle.Builders.Conceptual
         private void ReadFile(ConceptualItem nodeItem, XmlReader xmlReader)
         {
             XmlNodeType nodeType = XmlNodeType.None;
-            string nodeName = null;
-            string fileName = null;
+            string nodeName  = null;
+            string fileName  = null;
+            string fileTitle = null;
             while (xmlReader.Read())
             {
                 nodeType = xmlReader.NodeType;
@@ -620,10 +605,12 @@ namespace Sandcastle.Builders.Conceptual
                     if (String.Equals(nodeName, "file"))
                     {
                         fileName = xmlReader.GetAttribute("name");
-                        if (!String.IsNullOrEmpty(fileName))
+                        fileTitle = xmlReader.GetAttribute("title");
+                        if (!String.IsNullOrEmpty(fileName) &&
+                            !String.IsNullOrEmpty(fileTitle))
                         {
-                            ConceptualItem projItem = new ConceptualItem(
-                                fileName, Path.Combine(_documentsDir, fileName));
+                            ConceptualItem projItem = new ConceptualItem(fileName,
+                                Path.Combine(_documentsDir, fileName), fileTitle);
 
                             nodeItem.Add(projItem);
                             if (!xmlReader.IsEmptyElement)

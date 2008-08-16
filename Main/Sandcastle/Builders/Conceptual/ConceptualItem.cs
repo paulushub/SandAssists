@@ -14,6 +14,7 @@ namespace Sandcastle.Builders.Conceptual
         private int    _revNumber;
         private bool   _isNew;
         private bool   _isVisible;
+        private bool   _includesTopic;
         private string _fileName;
         private string _filePath;
         private string _fileGuid;
@@ -46,12 +47,13 @@ namespace Sandcastle.Builders.Conceptual
             _fileDate        = DateTime.Now.ToUniversalTime().ToString("G");
         }
 
-        public ConceptualItem(string fileName, string filePath)
+        public ConceptualItem(string fileName, string filePath, string fileTitle)
         {
             _itemType        = ConceptualItemType.MamlDoc;
             _isVisible       = true;
             _fileName        = fileName;
             _filePath        = filePath;
+            _fileTitle       = fileTitle;
 
             _topicSchemaId   = "DevHowTo";
             _topicSchemaName = "HowTo";
@@ -340,8 +342,7 @@ namespace Sandcastle.Builders.Conceptual
 
         #region Public Methods
 
-        public bool CreateFiles(string dduexmlDir, string compDir, 
-            bool docIncludesTopic)
+        public bool CreateFiles(string dduexmlDir, string compDir)
         {
             _documentFile  = null;
             _companionFile = null;
@@ -376,7 +377,7 @@ namespace Sandcastle.Builders.Conceptual
             {
                 File.Delete(documentPath);
             }
-            if (docIncludesTopic)
+            if (_includesTopic)
             {
                 File.Copy(_filePath, documentPath, true);
             }
@@ -463,7 +464,7 @@ namespace Sandcastle.Builders.Conceptual
                 for (int i = 0; i < itemCount; i++)
                 {
                     ConceptualItem item = _listItems[i];
-                    item.CreateFiles(dduexmlDir, compDir, docIncludesTopic);
+                    item.CreateFiles(dduexmlDir, compDir);
                 }
             }
 
@@ -570,39 +571,38 @@ namespace Sandcastle.Builders.Conceptual
                     {
                         _revNumber = Convert.ToInt32(strTemp);
                     }
-                }
 
-                XmlNodeType nodeType = XmlNodeType.None;
-                string nodeName      = null;
-                while (reader.Read())
+                    _includesTopic = true;
+                }
+                else
                 {
-                    nodeType = reader.NodeType;
-                    if (nodeType == XmlNodeType.Element)
+                    XmlNodeType nodeType = XmlNodeType.None;
+                    string nodeName = null;
+                    while (reader.Read())
                     {
-                        nodeName = reader.Name;
-                        if (String.Equals(nodeName, "topic"))
+                        nodeType = reader.NodeType;
+                        if (nodeType == XmlNodeType.Element)
                         {
-                            _fileGuid = reader.GetAttribute("id");
-                            strTemp = reader.GetAttribute("revisionNumber");
-                            if (!String.IsNullOrEmpty(strTemp))
+                            nodeName = reader.Name;
+                            if (String.Equals(nodeName, "topic"))
                             {
-                                _revNumber = Convert.ToInt32(strTemp);
+                                _fileGuid = reader.GetAttribute("id");
+                                strTemp = reader.GetAttribute("revisionNumber");
+                                if (!String.IsNullOrEmpty(strTemp))
+                                {
+                                    _revNumber = Convert.ToInt32(strTemp);
+                                }
+
+                                _includesTopic = true;
                             }
                         }
-                        else if (String.Equals(nodeName, "title"))
+                        else if (nodeType == XmlNodeType.EndElement)
                         {
-                            _fileTitle = reader.ReadString();
-
-                            break; // we go with the first title...
-                        }
-                    }
-                    else if (nodeType == XmlNodeType.EndElement)
-                    {
-                        nodeName = reader.Name;
-                        if (String.Equals(nodeName, "topic") ||
-                            String.Equals(nodeName, "title"))
-                        {
-                            break;
+                            nodeName = reader.Name;
+                            if (String.Equals(nodeName, "topic"))
+                            {
+                                break;
+                            }
                         }
                     }
                 }

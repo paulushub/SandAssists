@@ -29,9 +29,10 @@ namespace Sandcastle.Components
         private bool         _mathNumIncludePage;     
         private string       _mathNumFormat;
 
-        private CustomContext   _codeContext;
         private XPathExpression _mathSelector;
         private XPathExpression _codeSelector;
+        private XPathExpression _codeHanaSelector;
+        private XPathExpression _codeProtoSelector;
         private XPathExpression _spanSelector;
 
         #endregion
@@ -66,22 +67,17 @@ namespace Sandcastle.Components
                 }
             }
 
-            CodeController codeController = CodeController.GetInstance(
-                "conceptual");
+            CodeController codeController = CodeController.GetInstance("conceptual");
             if (codeController != null)
             {
                 _codeApply    = true;
-                //_codeSelector = XPathExpression.Compile("//div[@class='code']/pre");
+
+                // This works for Vs2005...
                 _codeSelector = XPathExpression.Compile(
                   "//pre/span[@name='SandAssist' and @class='tgtSentence']");
 
-                _codeContext = new CustomContext();
-                _codeContext.AddNamespace(String.Empty,
-                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
-                _codeContext.AddNamespace("ddue",
-                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
-                _spanSelector = XPathExpression.Compile("span[@name='SandAssist' and @class='tgtSentence']");
-                //_codeSelector.SetContext(_codeContext);
+                _spanSelector = XPathExpression.Compile(
+                    "span[@name='SandAssist' and @class='tgtSentence']");
             }
         }
 
@@ -95,6 +91,8 @@ namespace Sandcastle.Components
 
             _pageCount++;
 
+            BuilderStyle style = this.Style;
+
             // 1. Apply the math...
             if (_mathApply)
             {
@@ -104,7 +102,30 @@ namespace Sandcastle.Components
             // 2. Apply the codes...
             if (_codeApply)
             {
-                ApplyCode(document);
+                if (style == BuilderStyle.Vs2005)
+                {
+                    ApplyCode(document);
+                }
+                else if (style == BuilderStyle.Hana)
+                {
+                    if (_codeHanaSelector == null)
+                    {   
+                        _codeHanaSelector = XPathExpression.Compile(
+                            "//div[@class='code']//*/pre");
+                    }
+
+                    ApplyCode(document, _codeHanaSelector);
+                }
+                else if (style == BuilderStyle.Prototype)
+                {
+                    if (_codeProtoSelector == null)
+                    {   
+                        _codeProtoSelector = XPathExpression.Compile(
+                            "//div[@class='code']//pre");
+                    }
+
+                    ApplyCode(document, _codeProtoSelector);
+                }
             }
         }
 
@@ -123,6 +144,8 @@ namespace Sandcastle.Components
             {
                 return;
             }
+
+            BuilderStyle builderStyle = this.Style;
 
             XPathNavigator navigator = null;
             XPathNavigator[] arrNavigator =
@@ -188,7 +211,7 @@ namespace Sandcastle.Components
                     XmlWriter xmlWriter = navigator.InsertAfter();
 
                     xmlWriter.WriteStartElement("div");
-                    xmlWriter.WriteAttributeString("class", "mathNone");
+                    xmlWriter.WriteAttributeString("class", MathController.MathNone);
                     xmlWriter.WriteStartElement("p");
 
                     xmlWriter.WriteStartElement("img");
@@ -225,18 +248,22 @@ namespace Sandcastle.Components
                     {   
                         xmlWriter.WriteStartElement("div");  // start - div
                         //xmlWriter.WriteAttributeString("align", "center");
-                        xmlWriter.WriteAttributeString("class", "mathDiv");
+                        xmlWriter.WriteAttributeString("class", 
+                            MathController.MathDiv);
                         //xmlWriter.WriteStartElement("p");  // start - p
 
                         if (_mathNumber && equationNum > 0)
                         {
                             xmlWriter.WriteStartElement("table");  // start - table
-                            xmlWriter.WriteAttributeString("class", "mathTable");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathTable);
                             xmlWriter.WriteStartElement("tr");     // start - tr
-                            xmlWriter.WriteAttributeString("class", "mathRow");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathRow);
 
                             xmlWriter.WriteStartElement("td");  // start - td
-                            xmlWriter.WriteAttributeString("class", "mathLeft");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathLeft);
                             
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", formatLines[1]);
@@ -247,7 +274,8 @@ namespace Sandcastle.Components
                             xmlWriter.WriteEndElement();        // end - tr
 
                             xmlWriter.WriteStartElement("td");  // start - td
-                            xmlWriter.WriteAttributeString("class", "mathRight");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathRight);
                             if (_mathNumIncludePage)
                             {
                                 xmlWriter.WriteString(String.Format(_mathNumFormat,
@@ -265,11 +293,22 @@ namespace Sandcastle.Components
                         }
                         else
                         {
+                            if (builderStyle == BuilderStyle.Hana)
+                            {
+                                xmlWriter.WriteStartElement("div");
+                                xmlWriter.WriteAttributeString("class", "mathHana");
+
+                            }
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", formatLines[1]);
                             xmlWriter.WriteAttributeString("src", mathFile);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
                             xmlWriter.WriteEndElement();
+
+                            if (builderStyle == BuilderStyle.Hana)
+                            {
+                                xmlWriter.WriteEndElement();
+                            }
                         }
 
                         //xmlWriter.WriteEndElement();   // end - p
@@ -295,7 +334,7 @@ namespace Sandcastle.Components
 
         #endregion
 
-        #region ApplyCode Method
+        #region ApplyCode Method - Vs 2005
 
         private void ApplyCode(XmlDocument document)
         {
@@ -310,11 +349,8 @@ namespace Sandcastle.Components
             XPathNodeIterator iterator = docNavigator.Select(_codeSelector);
             if (iterator == null || iterator.Count == 0)
             {
-                //base.WriteMessage(MessageLevel.Info, "Found no code.");
                 return;
             }
-            //base.WriteMessage(MessageLevel.Info, 
-            //    String.Format("Found {0} codes.", iterator.Count));
 
             XPathNavigator navigator = null;
             XPathNavigator[] arrNavigator =
@@ -331,22 +367,14 @@ namespace Sandcastle.Components
                 }
 
                 string codeLang = navigator.Value;
-                //if (String.Equals(navigator.Name, "pre"))
-                if (navigator.MoveToParent() &&
-                    String.Equals(navigator.Name, "pre"))
+                if (navigator.MoveToParent() && String.Equals(navigator.Name, "pre"))
                 {
-                    //base.WriteMessage(MessageLevel.Info, navigator.OuterXml);
-                    //string codeLang = null;
-                    //XPathNavigator placeHolder = navigator.SelectSingleNode(
-                    //    _spanSelector);
                     XPathNavigator placeHolder = navigator.SelectSingleNode(
                         "span[@name='SandAssist' and @class='tgtSentence']");
                     if (placeHolder != null)
                     {
-                        //codeLang = placeHolder.Value;
                         placeHolder.DeleteSelf();
                     }
-                    //base.WriteMessage(MessageLevel.Info, codeLang);
 
                     Highlighter highlighter = codeController.ApplyLanguage(
                         null, codeLang);
@@ -421,33 +449,35 @@ namespace Sandcastle.Components
 
         #endregion
 
-        #region ApplyCodeVs Method
+        #region ApplyCode Method - Others
 
-        private void ApplyCodeVs(XmlDocument document)
+        private void ApplyCode(XmlDocument document, XPathExpression codeSelector)
         {
             CodeController codeController = CodeController.GetInstance("conceptual");
-            if (codeController == null)
+            if (codeController == null ||
+                codeController.Mode != CodeHighlightMode.IndirectIris)
             {
                 return;
             }
 
             XPathNavigator docNavigator = document.CreateNavigator();
 
-            XPathNodeIterator iterator = docNavigator.Select(_codeSelector);
+            XPathNodeIterator iterator = docNavigator.Select(codeSelector);
             if (iterator == null || iterator.Count == 0)
             {
-                base.WriteMessage(MessageLevel.Info, "Found no code.");
                 return;
             }
-            base.WriteMessage(MessageLevel.Info, 
-                String.Format("Found {0} codes.", iterator.Count));
 
             XPathNavigator navigator = null;
             XPathNavigator[] arrNavigator =
                 BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
 
             int itemCount = arrNavigator.Length;
+            string spanNamespace =
+                "http://ddue.schemas.microsoft.com/authoring/2003/5";
 
+            string attrName  = String.Empty;
+            string attrClass = String.Empty;
             for (int i = 0; i < itemCount; i++)
             {
                 navigator = arrNavigator[i];
@@ -456,89 +486,107 @@ namespace Sandcastle.Components
                     continue;
                 }
 
-                //string codeLang = navigator.Value;
-                if (String.Equals(navigator.Name, "pre"))
-                //if (navigator.MoveToParent() &&
-                //    String.Equals(navigator.Name, "pre"))
+                string codeLang = null;
+                XPathNodeIterator nodeIterator = navigator.SelectChildren("span",
+                    spanNamespace);
+                XPathNavigator placeHolder = null;
+                if (nodeIterator == null || nodeIterator.Count == 0)
                 {
-                    base.WriteMessage(MessageLevel.Info, navigator.InnerXml);
-                    string codeLang = null;
-                    XPathNavigator placeHolder = navigator.SelectSingleNode(
-                        "span[@name='SandAssist' and @class='tgtSentence']");
-                    if (placeHolder != null)
+                    continue;
+                }
+                XPathNavigator[] arrSnipNavigator =
+                    BuildComponentUtilities.ConvertNodeIteratorToArray(nodeIterator);
+
+                int nodeCount = arrSnipNavigator.Length;
+
+                XPathNavigator tempHolder = arrSnipNavigator[0];
+                attrName = tempHolder.GetAttribute("name", String.Empty);
+                attrClass = tempHolder.GetAttribute("class", String.Empty);
+                if (String.Equals(attrName, "SandAssist") &&
+                    String.Equals(attrClass, "tgtSentence"))
+                {
+                    placeHolder = tempHolder;
+                }
+                if (placeHolder != null)
+                {
+                    codeLang = placeHolder.Value;
+                    placeHolder.DeleteSelf();
+                }
+                else
+                {
+                    base.WriteMessage(MessageLevel.Info, "No code language found.");
+                    continue;
+                }
+
+                Highlighter highlighter = codeController.ApplyLanguage(
+                    null, codeLang);
+
+                if (nodeCount == 1)
+                {
+                    string codeText = navigator.Value;
+                    if (String.IsNullOrEmpty(codeText) == false)
                     {
-                        codeLang = placeHolder.Value;
-                        placeHolder.DeleteSelf();
-                    }
-                    base.WriteMessage(MessageLevel.Info, codeLang);
-
-                    Highlighter highlighter = codeController.ApplyLanguage(
-                        null, codeLang);
-
-                    XPathNodeIterator snipIterator = navigator.Select(
-                        "span[@name='SandAssist' and @class='srcSentence']");
-
-                    XPathNavigator[] arrSnipNavigator =
-                        BuildComponentUtilities.ConvertNodeIteratorToArray(snipIterator);
-
-                    if (arrSnipNavigator == null || arrSnipNavigator.Length == 0)
-                    {
-                        string codeText = navigator.Value;
-                        if (String.IsNullOrEmpty(codeText) == false)
+                        if (highlighter != null)
                         {
-                            if (highlighter != null)
-                            {
-                                XmlWriter xmlWriter = navigator.InsertAfter();
-                                StringReader textReader = new StringReader(codeText);
-                                highlighter.Highlight(textReader, xmlWriter);
+                            XmlWriter xmlWriter = navigator.InsertAfter();
+                            StringReader textReader = new StringReader(codeText);
+                            highlighter.Highlight(textReader, xmlWriter);
 
-                                // For the two-part or indirect, we add extra line-break
-                                // since this process delete the last extra line.
-                                xmlWriter.WriteStartElement("br"); // start - br
-                                xmlWriter.WriteEndElement();       // end -  br
-                                
-                                xmlWriter.Close();
+                            // For the two-part or indirect, we add extra line-break
+                            // since this process delete the last extra line.
+                            xmlWriter.WriteStartElement("br"); // start - br
+                            xmlWriter.WriteEndElement();       // end -  br
+                            
+                            xmlWriter.Close();
 
-                                navigator.DeleteSelf();
-                            }
+                            navigator.DeleteSelf();
                         }
                     }
-                    else
+                }
+                else
+                {
+                    XPathNavigator snipNavigator = null;
+
+                    for (int j = 1; j < nodeCount; j++)
                     {
-                        XPathNavigator snipNavigator = null;
-                        int snipCount = arrSnipNavigator.Length;
-
-                        for (int j = 0; j < snipCount; j++)
+                        snipNavigator = arrSnipNavigator[j];
+                        if (snipNavigator == null)
                         {
-                            snipNavigator = arrSnipNavigator[j];
-                            if (snipNavigator == null)
+                            base.WriteMessage(MessageLevel.Warn, "Null navigator!");
+                            continue;
+                        }
+                        attrName  = snipNavigator.GetAttribute("name", String.Empty);
+                        attrClass = snipNavigator.GetAttribute("class", String.Empty);
+                        if (String.Equals(attrName, "SandAssist") == false ||
+                            String.Equals(attrClass, "srcSentence") == false)
+                        {
+                            base.WriteMessage(MessageLevel.Warn, attrName);
+                            base.WriteMessage(MessageLevel.Warn, attrClass);
+                            continue;
+                        }
+
+                        int snipIndex = snipNavigator.ValueAsInt;
+                        SnippetItem item = codeController[snipIndex];
+
+                        string codeText = item.Text;
+                        if (String.IsNullOrEmpty(codeText) == false)
+                        {
+                            XmlWriter xmlWriter = snipNavigator.InsertAfter();
+                            if (highlighter != null)
                             {
-                                continue;
+                                StringReader textReader = new StringReader(codeText);
+                                highlighter.Highlight(textReader, xmlWriter);
+                            }
+                            else
+                            {
+                                xmlWriter.WriteString(codeText);
                             }
 
-                            int snipIndex = snipNavigator.ValueAsInt;
-                            SnippetItem item = codeController[snipIndex];
+                            xmlWriter.Close();
 
-                            string codeText = item.Text;
-                            if (String.IsNullOrEmpty(codeText) == false)
-                            {
-                                XmlWriter xmlWriter = snipNavigator.InsertAfter();
-                                if (highlighter != null)
-                                {
-                                    StringReader textReader = new StringReader(codeText);
-                                    highlighter.Highlight(textReader, xmlWriter);
-                                }
-                                else
-                                {
-                                    xmlWriter.WriteString(codeText);
-                                }
-
-                                xmlWriter.Close();
-
-                                snipNavigator.DeleteSelf();
-                            }
-                        }  
-                    }
+                            snipNavigator.DeleteSelf();
+                        }
+                    }  
                 }
             }
         }

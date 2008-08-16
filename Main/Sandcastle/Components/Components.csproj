@@ -80,7 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuilderComponents.cs" />
     <Compile Include="BuilderController.cs" />
+    <Compile Include="BuilderStyle.cs" />
     <Compile Include="CodeComponent.cs" />
     <Compile Include="Codes\CodeController.cs" />
     <Compile Include="Codes\CodeHighlightInfo.cs" />
@@ -161,6 +163,16 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Docs\N.Sandcastle.Builders.xml" />
+    <Content Include="Docs\P.Sandcastle.Builders.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Codes\Docs\" />
+    <Folder Include="Maths\Docs\" />
+    <Folder Include="MediaLinks\Docs\" />
+    <Folder Include="Snippets\Docs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -152,8 +152,6 @@ namespace Sandcastle.Builders.Tasks
                 Directory.CreateDirectory(dduexmlDir);
                 Directory.CreateDirectory(compDir);
 
-                bool docIncludesTopic = _context.DocumentIncludesTopic;
-
                 int itemCount = listItems.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
@@ -164,7 +162,7 @@ namespace Sandcastle.Builders.Tasks
                         continue;
                     }
 
-                    projItem.CreateFiles(dduexmlDir, compDir, docIncludesTopic);
+                    projItem.CreateFiles(dduexmlDir, compDir);
                 }
 
                 // 1. Write the table of contents

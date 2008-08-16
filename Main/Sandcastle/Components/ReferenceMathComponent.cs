@@ -117,6 +117,7 @@ namespace Sandcastle.Components
                 {
                     XmlWriter xmlWriter = navigator.InsertAfter();
 
+                    // For the inline math...
                     if (_isInline)
                     {
                         xmlWriter.WriteStartElement("span");  // start - span
@@ -129,25 +130,33 @@ namespace Sandcastle.Components
                     }
                     else
                     {
+                        // For the displayed math...
                         xmlWriter.WriteStartElement("div");  // start - div
-                        xmlWriter.WriteAttributeString("class", _mathClass);
+                        xmlWriter.WriteAttributeString("class", 
+                            MathController.MathDiv);
 
                         if (_numberShow && _isNumbered)
                         {
                             xmlWriter.WriteStartElement("table");  // start - table
+                            xmlWriter.WriteAttributeString("class",
+                                MathController.MathTable);
                             if (hasTitle)
                             {
+                                xmlWriter.WriteStartElement("tr");     // start - tr
                                 xmlWriter.WriteStartElement("th");     // start - th
                                 xmlWriter.WriteAttributeString("colspan", "2");
                                 xmlWriter.WriteString(mathTitle);
 
                                 xmlWriter.WriteEndElement();        // end - th
+                                xmlWriter.WriteEndElement();        // end - tr
                             }
                             xmlWriter.WriteStartElement("tr");     // start - tr
-                            xmlWriter.WriteAttributeString("class", "mathRow");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathRow);
 
                             xmlWriter.WriteStartElement("td");  // start - td
-                            xmlWriter.WriteAttributeString("class", "mathLeft");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathLeft);
 
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", _mathClass);
@@ -158,7 +167,8 @@ namespace Sandcastle.Components
                             xmlWriter.WriteEndElement();        // end - tr
 
                             xmlWriter.WriteStartElement("td");  // start - td
-                            xmlWriter.WriteAttributeString("class", "mathRight");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathRight);
                             if (_numberIncludesPage)
                             {
                                 xmlWriter.WriteString(String.Format(_numberFormat,
@@ -179,19 +189,29 @@ namespace Sandcastle.Components
                             if (hasTitle)
                             {
                                 xmlWriter.WriteStartElement("table");  // start - table
+                                xmlWriter.WriteAttributeString("class",
+                                    MathController.MathTable);
                                 if (String.IsNullOrEmpty(mathTitle) == false)
                                 {
-                                    xmlWriter.WriteStartElement("th");     // start - th
+                                    xmlWriter.WriteStartElement("tr"); // start - tr
+                                    xmlWriter.WriteStartElement("th"); // start - th
                                     xmlWriter.WriteString(mathTitle);
 
-                                    xmlWriter.WriteEndElement();        // end - th
+                                    xmlWriter.WriteEndElement();       // end - th
+                                    xmlWriter.WriteEndElement();       // end - tr
                                 }
                                 xmlWriter.WriteStartElement("tr");     // start - tr
-                                xmlWriter.WriteStartElement("td");  // start - td
+                                xmlWriter.WriteStartElement("td");     // start - td
+                            }
+                            else
+                            {
+                                xmlWriter.WriteStartElement("div");  // start - div (mathHana)
+                                xmlWriter.WriteAttributeString("class", "mathHana");
                             }
 
                             xmlWriter.WriteStartElement("img");
-                            xmlWriter.WriteAttributeString("class", "math");
+                            xmlWriter.WriteAttributeString("class", 
+                                MathController.MathImage);
                             xmlWriter.WriteAttributeString("src", mediaFormat);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
                             xmlWriter.WriteEndElement();
@@ -202,6 +222,10 @@ namespace Sandcastle.Components
                                 xmlWriter.WriteEndElement();        // end - tr
                                 xmlWriter.WriteEndElement();        // end - table
                             }
+                            else
+                            {
+                                xmlWriter.WriteEndElement(); //end - div (mathHana)
+                            }   
                         }
 
                         xmlWriter.WriteEndElement();   // end - div
@@ -241,7 +265,7 @@ namespace Sandcastle.Components
 
         protected override string FormatEquation(string mathInfo, string mathText)
         {
-            _mathClass = "math";
+            _mathClass = MathController.MathImage;
             _isInline  = false;
 
             try

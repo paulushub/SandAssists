@@ -17,7 +17,6 @@ namespace Sandcastle.Builders.Conceptual
         private bool   _itemsLoads;
         private bool   _cleanUp;
         private bool   _siteMap;
-        private bool   _docIncludeTopic;
 
         private Guid   _docID;
         private Guid   _projectID;
@@ -56,7 +55,6 @@ namespace Sandcastle.Builders.Conceptual
             _docManager      = String.Empty;
 
             _cleanUp         = true;
-            _docIncludeTopic = false;
 
             _listItems       = new ConceptualItemList();
             _listFilters     = new ConceptualFilterList();
@@ -250,19 +248,6 @@ namespace Sandcastle.Builders.Conceptual
                 {
                     _documentsDir = value;
                 }
-            }
-        }
-
-        public bool DocumentIncludesTopic
-        {
-            get
-            {
-                return _docIncludeTopic;
-            }
-
-            set
-            {
-                _docIncludeTopic = value;
             }
         }
 

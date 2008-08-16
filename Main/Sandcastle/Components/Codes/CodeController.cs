@@ -294,7 +294,13 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _xmlHighlighter;
             }
             else
-            {   
+            {
+                if (String.Equals(codeLang, "vb-c#",
+                    StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _lastCodeId = "VisualBasicAndCSharp";
+                }
+
                 // try other languages...
             }
 

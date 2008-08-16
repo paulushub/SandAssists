@@ -43,7 +43,7 @@ namespace Sandcastle.Components.Maths
             _displayedSize = 10;
             _inlineZoom    = 2;
             _displayedZoom = 3;
-            _namingPrefix  = "Math";
+            _namingPrefix  = "math";
             _namingMethod  = MathNamingMethod.Sequential;
             _sizesLaTeX    = new string[] { "\\tiny", "\\small", "\\normalsize",
                 "\\large", "\\Large", "\\LARGE", "\\huge", "\\Huge"};

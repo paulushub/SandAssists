@@ -6,6 +6,23 @@ namespace Sandcastle.Components.Maths
 {
     public sealed class MathController : MarshalByRefObject
     {
+        #region Public Constant Fields
+
+        // Define the math environment styles/classes...
+        /// <summary>
+        /// De
+        /// </summary>
+        public const string MathNone   = "mathNone";
+        public const string MathDiv    = "mathDiv";
+        public const string MathInline = "mathInline";
+        public const string MathTable  = "mathTable";
+        public const string MathRow    = "mathRow";
+        public const string MathLeft   = "mathLeft";
+        public const string MathRight  = "mathRight";
+        public const string MathImage  = "mathImage";
+
+        #endregion
+
         #region Private Fields
 
         private bool   _numberShow;

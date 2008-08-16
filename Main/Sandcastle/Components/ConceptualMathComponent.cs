@@ -16,22 +16,7 @@ namespace Sandcastle.Components
     {
         #region Private Fields
 
-        //private int             _mathNumber;
-        //private bool            _isNumbered;
-
-        //private bool            _numberShow;
-        //private bool            _numberByPage;
-        //private bool            _numberIncludesPage;
-        //private string          _numberFormat;
-
-        //private string          _linkPath;
-        //private string          _inputPath;
-        //private string          _outputBasePath;
-        //private string          _outputPath;
-
         private CustomContext _xsltContext;
-        //private MathFormatter   _latexFormatter;
-        //private XPathExpression _xpathSelector;
 
         #endregion
 
@@ -202,7 +187,7 @@ namespace Sandcastle.Components
                     if (_latexFormatter != null && 
                         _latexFormatter.Create(mathText, false, false))
                     {
-                        string mathClass = "mathImage";
+                        string mathClass = MathController.MathImage;
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);
@@ -220,7 +205,7 @@ namespace Sandcastle.Components
                     if (_latexFormatter != null &&
                         _latexFormatter.Create(mathText, false, true))
                     {
-                        string mathClass = "mathImage";
+                        string mathClass = MathController.MathImage;
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);
@@ -238,7 +223,7 @@ namespace Sandcastle.Components
                     if (_latexFormatter != null && 
                         _latexFormatter.Create(mathText, true, false))
                     {
-                        string mathClass = "mathInline";
+                        string mathClass = MathController.MathInline;
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);

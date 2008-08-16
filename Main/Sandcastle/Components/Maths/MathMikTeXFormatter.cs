@@ -15,8 +15,6 @@ namespace Sandcastle.Components.Maths
     {
         #region Private Fields
 
-        //private string _logFile;
-        //private string _otherFile;
         private string _inputFile;
         private string _outpuFile;
         private string _texArguments;
@@ -86,10 +84,7 @@ namespace Sandcastle.Components.Maths
         {
             base.BeginUpdate(workingDirectory, isConceptual);
 
-            //_logFile   = Path.Combine(workingDirectory, "MikTeXFile.log");
-            //_otherFile = Path.Combine(workingDirectory, "MikTeXFile.aux");
             _inputFile = Path.Combine(workingDirectory, "MikTeXFile.tex");
-            //_outpuFile = Path.Combine(workingDirectory, "MikTeXFile.dvi");
 
             _inlineBuilder.AppendLine("\\documentclass[10pt]{article}");
             _inlineBuilder.AppendLine("\\usepackage{amsmath, amsfonts, amssymb, latexsym}");
@@ -106,7 +101,9 @@ namespace Sandcastle.Components.Maths
                 "-quiet -interaction=nonstopmode -enable-installer \"{0}\"",
                 _inputFile);
             _dvipngFormats =
-                "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o {0} {1}";
+                "-q* -T tight --gamma 2.5 -Q 6 -o {0} {1}";
+            //_dvipngFormats =
+            //    "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o {0} {1}";
             //_dvipngFormats =
             //    "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o \"{0}\" \"{1}\"";
         }
@@ -358,7 +355,7 @@ namespace Sandcastle.Components.Maths
             //_otherFile = "MikTeXFile.aux";
             _inputFile = "MikTeXFile.tex";
             _outpuFile = "MikTeXFile.dvi";
-            _imageExt  = ".gif";
+            _imageExt  = ".png";
 
             _inlineBuilder    = new StringBuilder();
             _displayedBuilder = new StringBuilder();

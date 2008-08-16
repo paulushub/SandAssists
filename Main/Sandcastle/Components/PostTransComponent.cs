@@ -15,10 +15,12 @@ namespace Sandcastle.Components
         #region Private Fields
 
         private bool              _isfirstUse;
-        private string            _outputPath;
+        private string            _outputPath; 
 
         private List<string>      _listStyles;
         private List<string>      _listScripts;
+
+        private BuilderStyle      _builderStyle;
 
         private XPathExpression   _headSelector;
         private XPathExpression   _islandSelector;
@@ -33,7 +35,8 @@ namespace Sandcastle.Components
         protected PostTransComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _isfirstUse = true;
+            _isfirstUse   = true;
+            _builderStyle = BuilderStyle.None;
 
             XPathNavigator navigator = configuration.SelectSingleNode("paths");
             if (navigator == null)
@@ -194,12 +197,25 @@ namespace Sandcastle.Components
             }
         }
 
+        public BuilderStyle Style
+        {
+            get
+            {
+                return _builderStyle;
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
         public override void Apply(XmlDocument document, string key)
         {
+            if (_builderStyle == BuilderStyle.None)
+            {
+                DetermineStyle(document);
+            }
+
             if (_isfirstUse)
             {
                 ApplyPaths();
@@ -231,6 +247,32 @@ namespace Sandcastle.Components
         #endregion
 
         #region Protected Methods
+
+        #region DetermineStyle Method
+
+        protected void DetermineStyle(XmlDocument document)
+        {
+            if (document == null)
+            {
+                return;
+            }
+            XmlNode div = document.SelectSingleNode("//div[@id='control']");
+            if (div != null)
+            {
+                _builderStyle = BuilderStyle.Prototype;
+
+                return;
+            }
+
+            div = document.SelectSingleNode("//table[@id='topTable']");
+            if (div != null)
+            {
+                _builderStyle = (div.ChildNodes.Count != 1) ?
+                    BuilderStyle.Hana : BuilderStyle.Vs2005;
+            }
+        }
+
+        #endregion
 
         #region ApplyPaths Method
 
