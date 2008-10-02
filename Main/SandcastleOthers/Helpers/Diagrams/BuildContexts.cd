@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildContext" Collapsed="true">
+    <Position X="2.75" Y="2.25" Width="1.5" />
+    <AssociationLine Name="BuildType" Type="Sandcastle.BuildType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.938" Y="2.88" />
+        <Point X="3.938" Y="3.625" />
+        <Point X="5" Y="3.625" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Logger" Type="Sandcastle.BuildLogger" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.75" Y="2.752" />
+        <Point X="1.312" Y="2.752" />
+        <Point X="1.312" Y="3.25" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="System" Type="Sandcastle.BuildSystem" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.75" Y="2.563" />
+        <Point X="1.312" Y="2.563" />
+        <Point X="1.312" Y="1.931" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Engine" Type="Sandcastle.BuildEngine" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="2.88" />
+        <Point X="3.5" Y="5.315" />
+        <Point X="2" Y="5.315" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABADIAAAKKABAIAAAAAABAAAIAAAAAEhgAALCAAABI=</HashCode>
+      <FileName>BuildContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="State" />
+      <Property Name="BuildType" />
+      <Property Name="Logger" />
+      <Property Name="Settings" />
+      <Property Name="System" />
+      <Property Name="Engine" />
+      <Property Name="BuildWait" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.033" />
+  </Class>
+  <Class Name="Sandcastle.BuildEngine" Collapsed="true">
+    <Position X="0.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAABAMAQAiIABQAAgCAAABAAIAAAgAAAgAEABAAAAAg=</HashCode>
+      <FileName>BuildEngine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.BuildLogger" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAIAICICBEQQAeQAlCAAAEoAmJAQJAAhAgACGQAgs=</HashCode>
+      <FileName>BuildLogger.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.169" />
+  </Class>
+  <Class Name="Sandcastle.BuildSettings" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAAAOQRgAoAREBEAeAAACoDAKIiDQgK4DYQAAqRYIlI=</HashCode>
+      <FileName>BuildSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Threading.WaitHandle" Collapsed="true">
+    <Position X="2.75" Y="1" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="Sandcastle.BuildState">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAQAAAAQAAAAAAAIAAAAIAAAAAAEAAAA=</HashCode>
+      <FileName>BuildState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildSystem">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAgAAAAAAAAAAAAAAAAAAAAEAAAACAAAAEAAAA=</HashCode>
+      <FileName>BuildSystem.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildType">
+    <Position X="5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACAAAAAEAAAA=</HashCode>
+      <FileName>BuildType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
