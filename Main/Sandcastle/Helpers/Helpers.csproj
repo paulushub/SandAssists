@@ -185,7 +185,6 @@
     <Compile Include="References\ReferenceNamer.cs" />
     <Compile Include="References\ReferenceOptions.cs" />
     <Compile Include="References\ReferenceTypeFilter.cs" />
-    <Compile Include="References\ReferenceAttributeFilter.cs" />
     <Compile Include="References\ReferenceContent.cs" />
     <Compile Include="Contents\ResourceContent.cs" />
     <Compile Include="Contents\SharedContent.cs" />
