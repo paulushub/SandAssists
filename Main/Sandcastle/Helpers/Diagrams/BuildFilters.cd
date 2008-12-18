@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Conceptual.ConceptualFilter" Collapsed="true">
+    <Position X="2.75" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIAAAIAAAAoAAAQAADAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Conceptual\ConceptualFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceFilter" Collapsed="true">
+    <Position X="2.75" Y="3" Width="2" />
+    <AssociationLine Name="FilterType" Type="Sandcastle.References.ReferenceFilterType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.75" Y="3.25" />
+        <Point X="1.75" Y="3.25" />
+        <Point X="1.75" Y="4" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAJAAAAAAAAAQAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>References\ReferenceFilter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="FilterType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceMemberFilter" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAABAAAAAAACAAAAABAAAAAAgAAAABA=</HashCode>
+      <FileName>References\ReferenceMemberFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualCategoryFilter" Collapsed="true">
+    <Position X="0.5" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAgAAAACABAAAAAAAAAAgAAACBA=</HashCode>
+      <FileName>Conceptual\ConceptualCategoryFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualRevisionFilter" Collapsed="true">
+    <Position X="2.75" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAACABAAAAAAQAAAgAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualRevisionFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualTopicIdFilter" Collapsed="true">
+    <Position X="5" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAEAAAAAAkABAACABAAAAAAAAAAgABQABA=</HashCode>
+      <FileName>Conceptual\ConceptualTopicIdFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceTypeFilter" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.75" />
+    <AssociationLine Name="Members" Type="Sandcastle.References.ReferenceMemberFilter" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="5" Y="2.062" />
+        <Point X="3.875" Y="2.062" />
+        <Point X="3.875" Y="2.062" />
+        <Point X="3.833" Y="2.062" Type="JumpStart" />
+        <Point X="3.667" Y="2.062" Type="JumpEnd" />
+        <Point X="2.75" Y="2.062" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAIAAAAAACAAAAIAAAAAAEggAAABA=</HashCode>
+      <FileName>References\ReferenceTypeFilter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Members" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceRootFilter" Collapsed="true">
+    <Position X="1.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIIAAAAAAAAEBAAACAAABAQCAAAAAAAAAAAAgABQABA=</HashCode>
+      <FileName>References\ReferenceRootFilter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="this[System.Int32]" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceNamespaceFilter" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAEBAAACAAABAQCAAAAAAAAEAAAgABQABA=</HashCode>
+      <FileName>References\ReferenceNamespaceFilter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="this[System.Int32]" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.BuildFilter&lt;T&gt;" Collapsed="true">
+    <Position X="3" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAIAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>BuildFilter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.929" />
+  </Class>
+  <Enum Name="Sandcastle.References.ReferenceFilterType">
+    <Position X="0.75" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAIIAAAAQAAAAEAAAA=</HashCode>
+      <FileName>References\ReferenceFilterType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

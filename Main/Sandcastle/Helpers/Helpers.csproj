@@ -1,0 +1,292 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{048F177F-802E-494D-89E0-CD4074F8A33C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandcastle</RootNamespace>
+    <AssemblyName>Sandcastle.Helpers</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\Output\Sandcastle.Helpers.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Analysis|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuildConfiguration.cs" />
+    <Compile Include="BuildConverter.cs" />
+    <Compile Include="BuildDocumenter.cs" />
+    <Compile Include="BuildErrorEventArgs.cs" />
+    <Compile Include="BuildEventArgs.cs" />
+    <Compile Include="BuildFeedback.cs" />
+    <Compile Include="BuildFeedbackType.cs" />
+    <Compile Include="BuildFinishedEventArgs.cs" />
+    <Compile Include="BuildKeyedList.cs" />
+    <Compile Include="BuildList.cs" />
+    <Compile Include="BuildListChangeType.cs" />
+    <Compile Include="BuildListEventArgs.cs" />
+    <Compile Include="BuildToc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Contents\BibliographyContent.cs" />
+    <Compile Include="Contents\BibliographyItem.cs" />
+    <Compile Include="Contents\DependencyContent.cs" />
+    <Compile Include="Contents\DependencyItem.cs" />
+    <Compile Include="Contents\RuleContent.cs" />
+    <Compile Include="Contents\RuleItem.cs" />
+    <Compile Include="Contents\OptionContent.cs" />
+    <Compile Include="Contents\OptionItem.cs" />
+    <Compile Include="BuildStage.cs" />
+    <Compile Include="BuildStartedEventArgs.cs" />
+    <Compile Include="BuildState.cs" />
+    <Compile Include="BuildSystem.cs" />
+    <Compile Include="BuildType.cs" />
+    <Compile Include="BuildVisitor.cs" />
+    <Compile Include="Conceptual\ConceptualTocFilter.cs" />
+    <Compile Include="Configurations\ConfigurationContent.cs" />
+    <Compile Include="Configurations\ConfigurationItem.cs" />
+    <Compile Include="Configurations\ConfigurationItemEvents.cs" />
+    <Compile Include="Configurations\AssemblerConfigurator.cs" />
+    <Compile Include="BuildConfigurator.cs" />
+    <Compile Include="BuildContent.cs" />
+    <Compile Include="BuildContext.cs" />
+    <Compile Include="BuildEngineType.cs" />
+    <Compile Include="BuildException.cs" />
+    <Compile Include="BuildFilter.cs" />
+    <Compile Include="BuildGroup.cs" />
+    <Compile Include="BuildGroupType.cs" />
+    <Compile Include="BuildItem.cs" />
+    <Compile Include="BuildLoggers.cs" />
+    <Compile Include="BuildMultiStep.cs" />
+    <Compile Include="BuildObject.cs" />
+    <Compile Include="BuildSettings.cs" />
+    <Compile Include="BuildStepType.cs" />
+    <Compile Include="Conceptual\ConceptualCategoryContent.cs" />
+    <Compile Include="Conceptual\ConceptualConfigurator.cs" />
+    <Compile Include="Conceptual\ConceptualGroup.cs" />
+    <Compile Include="Conceptual\ConceptualItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Conceptual\ConceptualItemType.cs" />
+    <Compile Include="Conceptual\ConceptualCategoryItem.cs" />
+    <Compile Include="Conceptual\ConceptualCategoryFilter.cs" />
+    <Compile Include="Conceptual\ConceptualContent.cs" />
+    <Compile Include="Conceptual\ConceptualFilter.cs" />
+    <Compile Include="Conceptual\ConceptualRevisionFilter.cs" />
+    <Compile Include="Conceptual\ConceptualSiteMap.cs" />
+    <Compile Include="Conceptual\ConceptualEngine.cs" />
+    <Compile Include="Conceptual\ConceptualBuildManifest.cs" />
+    <Compile Include="Conceptual\ConceptualMetadataContent.cs" />
+    <Compile Include="Conceptual\ConceptualMetadataItem.cs" />
+    <Compile Include="Configurations\ConfigurationKeywords.cs" />
+    <Compile Include="Configurations\GenericConfigurator.cs" />
+    <Compile Include="Configurations\IncludeConfigurator.cs" />
+    <Compile Include="Configurations\IncludeContent.cs" />
+    <Compile Include="Configurations\IncludeItem.cs" />
+    <Compile Include="Contents\TocContent.cs" />
+    <Compile Include="Contents\TocItem.cs" />
+    <Compile Include="IBuildListener.cs" />
+    <Compile Include="IBuildNamedItem.cs" />
+    <Compile Include="Loggers\HtmlLogger.cs" />
+    <Compile Include="Loggers\MailLogger.cs" />
+    <Compile Include="MSHelpCompiler\HxReg.cs" />
+    <Compile Include="Loggers\ConsoleLogger.cs" />
+    <Compile Include="Loggers\FileLogger.cs" />
+    <Compile Include="BuildLogger.cs" />
+    <Compile Include="BuildLoggerLevel.cs" />
+    <Compile Include="BuildLoggerVerbosity.cs" />
+    <Compile Include="Loggers\XmlLogger.cs" />
+    <Compile Include="Contents\LinkContent.cs" />
+    <Compile Include="Contents\LinkItem.cs" />
+    <Compile Include="Contents\MediaContent.cs" />
+    <Compile Include="Contents\MediaItem.cs" />
+    <Compile Include="Contents\MediaItemType.cs" />
+    <Compile Include="BuildLinkTargetType.cs" />
+    <Compile Include="BuildLinkType.cs" />
+    <Compile Include="Contents\MetadataContent.cs" />
+    <Compile Include="Contents\MetadataItem.cs" />
+    <Compile Include="Contents\MetadataType.cs" />
+    <Compile Include="MSHelpCompiler\HxComp.cs" />
+    <Compile Include="MSHelpCompiler\HxCompClass.cs" />
+    <Compile Include="MSHelpCompiler\HxCompError.cs" />
+    <Compile Include="MSHelpCompiler\HxCompErrorSeverity.cs" />
+    <Compile Include="MSHelpCompiler\HxCompStatus.cs" />
+    <Compile Include="MSHelpCompiler\IHxComp.cs" />
+    <Compile Include="MSHelpCompiler\IHxCompError.cs" />
+    <Compile Include="Formats\FormatAjaxAspx.cs" />
+    <Compile Include="Formats\FormatAjaxHtm.cs" />
+    <Compile Include="Formats\FormatAspx.cs" />
+    <Compile Include="BuildFramework.cs" />
+    <Compile Include="BuildStyle.cs" />
+    <Compile Include="BuildSyntaxType.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Contents\PropertyContent.cs" />
+    <Compile Include="Contents\PropertyItem.cs" />
+    <Compile Include="References\ReferenceFilterType.cs" />
+    <Compile Include="References\ReferenceMemberFilter.cs" />
+    <Compile Include="References\ReferenceRootFilter.cs" />
+    <Compile Include="References\ReferenceNamer.cs" />
+    <Compile Include="References\ReferenceOptions.cs" />
+    <Compile Include="References\ReferenceTypeFilter.cs" />
+    <Compile Include="References\ReferenceAttributeFilter.cs" />
+    <Compile Include="References\ReferenceContent.cs" />
+    <Compile Include="Contents\ResourceContent.cs" />
+    <Compile Include="Contents\SharedContent.cs" />
+    <Compile Include="Contents\SnippetContent.cs" />
+    <Compile Include="Contents\SnippetItem.cs" />
+    <Compile Include="References\ReferenceDocument.cs" />
+    <Compile Include="References\ReferenceExcludeTocVisitor.cs" />
+    <Compile Include="References\ReferenceLayoutTocVisitor.cs" />
+    <Compile Include="References\ReferenceTocVisitor.cs" />
+    <Compile Include="References\ReferenceNamespaceFilter.cs" />
+    <Compile Include="References\ReferenceVisitor.cs" />
+    <Compile Include="Steps\StepChmDbcsFix.cs" />
+    <Compile Include="Steps\StepCleanup.cs" />
+    <Compile Include="Steps\StepHtmBuilder.cs" />
+    <Compile Include="Steps\StepChmCompiler.cs" />
+    <Compile Include="Steps\StepHtmViewerStart.cs" />
+    <Compile Include="Steps\StepHxsBuilder.cs" />
+    <Compile Include="Steps\StepHxsCompiler.cs" />
+    <Compile Include="Steps\StepHxsViewerClose.cs" />
+    <Compile Include="Steps\StepHxsViewerStart.cs" />
+    <Compile Include="Steps\StepMrefBuilder.cs" />
+    <Compile Include="Steps\StepXslTransform.cs" />
+    <Compile Include="Contents\TokenContent.cs" />
+    <Compile Include="Contents\TokenItem.cs" />
+    <Compile Include="BuildDirCopier.cs" />
+    <Compile Include="Conceptual\ConceptualTopicIdFilter.cs" />
+    <Compile Include="Conceptual\ConceptualUtils.cs" />
+    <Compile Include="Configurations\SharedContentConfigurator.cs" />
+    <Compile Include="Contents\SharedItemFormat.cs" />
+    <Compile Include="Contents\SharedItem.cs" />
+    <Compile Include="BuildFormat.cs" />
+    <Compile Include="Formats\FormatChm.cs" />
+    <Compile Include="Formats\FormatHtm.cs" />
+    <Compile Include="Conceptual\ConceptualSettingsLoc.cs" />
+    <Compile Include="Conceptual\ConceptualTableOfContents.cs" />
+    <Compile Include="BuildStyleType.cs" />
+    <Compile Include="Formats\FormatHxs.cs" />
+    <Compile Include="BuildFormatType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BuildEngine.cs" />
+    <Compile Include="BuildStep.cs" />
+    <Compile Include="References\ReferenceConfigurator.cs" />
+    <Compile Include="References\ReferenceFilter.cs" />
+    <Compile Include="References\ReferenceGroup.cs" />
+    <Compile Include="References\ReferenceItem.cs" />
+    <Compile Include="References\ReferenceNamingMethod.cs" />
+    <Compile Include="Contents\ResourceItem.cs" />
+    <Compile Include="References\ReferenceFilterConfigurator.cs" />
+    <Compile Include="Steps\StepAssembler.cs" />
+    <Compile Include="Steps\StepChmBuilder.cs" />
+    <Compile Include="Steps\StepChmViewerClose.cs" />
+    <Compile Include="Steps\StepDirectoryCopy.cs" />
+    <Compile Include="Steps\StepDirectoryCreate.cs" />
+    <Compile Include="Steps\StepDirectoryDelete.cs" />
+    <Compile Include="Steps\StepDirectoryMove.cs" />
+    <Compile Include="BuildProject.cs" />
+    <Compile Include="Steps\StepChmViewerStart.cs" />
+    <Compile Include="Steps\StepNone.cs" />
+    <Compile Include="Steps\StepProcess.cs" />
+    <Compile Include="References\ReferenceEngine.cs" />
+    <Compile Include="Steps\StepTocMerge.cs" />
+    <Compile Include="BuildExceptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="Diagrams\BuildConfigurators.cd" />
+    <None Include="Diagrams\BuildContents.cd" />
+    <None Include="Diagrams\BuildContexts.cd" />
+    <None Include="Diagrams\BuildEngines.cd" />
+    <None Include="Diagrams\BuildFilters.cd" />
+    <None Include="Diagrams\BuildGroups.cd" />
+    <None Include="Diagrams\BuildItems.cd" />
+    <None Include="Diagrams\BuildObjects.cd" />
+    <None Include="Diagrams\BuildSteps.cd" />
+    <None Include="Diagrams\BuildFormats.cd" />
+    <None Include="Diagrams\BuildLoggers.cd" />
+    <None Include="Diagrams\BuildVisitors.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
+    <Folder Include="Documenters\" />
+    <Folder Include="MSBuilds\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

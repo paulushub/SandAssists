@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildEngine" Collapsed="true">
+    <Position X="3.25" Y="2" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="EngineType" Type="Sandcastle.BuildEngineType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="2.187" />
+        <Point X="6.938" Y="2.187" />
+        <Point X="6.938" Y="1.602" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Settings" Type="Sandcastle.BuildSettings" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="2.5" />
+        <Point X="5.188" Y="2.5" />
+        <Point X="5.188" Y="3" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Context" Type="Sandcastle.BuildContext" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="2.312" />
+        <Point X="7.125" Y="2.312" />
+        <Point X="7.125" Y="4.25" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Logger" Type="Sandcastle.BuildLoggers" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="2.312" />
+        <Point X="1.188" Y="2.312" />
+        <Point X="1.188" Y="4.25" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="this[System.Int32]" Type="Sandcastle.Configurations.ConfigurationItem" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="2.125" />
+        <Point X="1.312" Y="2.125" />
+        <Point X="1.312" Y="1.88" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Configuration" Type="Sandcastle.BuildConfiguration" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="2.5" />
+        <Point X="2.812" Y="2.5" />
+        <Point X="2.812" Y="3" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>RACAAAARAyIABQAAiCAAABAgIEAAgABAgAFABAAAIAg=</HashCode>
+      <FileName>BuildEngine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EngineType" />
+      <Property Name="Settings" />
+      <Property Name="Context" />
+      <Property Name="Logger" />
+      <Property Name="this[System.Int32]" />
+      <Property Name="Configuration" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.86" />
+  </Class>
+  <Class Name="Sandcastle.BuildGroup" Collapsed="true">
+    <Position X="3.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BARgkTARRFABEVAACMAAAAagAACAQAAYABAE44YSYCo=</HashCode>
+      <FileName>BuildGroup.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.992" />
+  </Class>
+  <Class Name="Sandcastle.BuildSettings" Collapsed="true">
+    <Position X="4.25" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BBIAKAQwAoAFEREEeAACDoBIqIiBQgKgD5SABqRYIlo=</HashCode>
+      <FileName>BuildSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceEngine" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAEABACAAAQAAAAAAAFBIAAAAoAAAAAAJAAAAAAg=</HashCode>
+      <FileName>References\ReferenceEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildStep" Collapsed="true">
+    <Position X="3.25" Y="7.75" Width="1.5" />
+    <AssociationLine Name="StepType" Type="Sandcastle.BuildStepType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.875" Y="8.38" />
+        <Point X="3.875" Y="8.75" />
+        <Point X="2.5" Y="8.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAMQBAQqAhFYQECCAECQShQACAQAAYUgAAIHQAIgg=</HashCode>
+      <FileName>BuildStep.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="StepType" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualEngine" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAEABACAAAQgAAAAAAFBIAAAAgAAAAAABAAAAAgg=</HashCode>
+      <FileName>Conceptual\ConceptualEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildProject" Collapsed="true">
+    <Position X="3.25" Y="4.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Logger" Type="Sandcastle.BuildLoggers" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="4.562" />
+        <Point X="2.958" Y="4.562" Type="JumpStart" />
+        <Point X="2.792" Y="4.562" Type="JumpEnd" />
+        <Point X="2" Y="4.562" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Context" Type="Sandcastle.BuildContext" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="4.562" />
+        <Point X="5.167" Y="4.562" Type="JumpStart" />
+        <Point X="5.333" Y="4.562" Type="JumpEnd" />
+        <Point X="6.25" Y="4.562" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Documenter" Type="Sandcastle.BuildDocumenter" FixedToPoint="true">
+      <Path>
+        <Point X="3.938" Y="4.88" />
+        <Point X="3.938" Y="5.5" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAoAAQAiIABQAAgAAAAAAEIAAAgAAAAAAAAAAAAAg=</HashCode>
+      <FileName>BuildProject.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Logger" />
+      <Property Name="Context" />
+      <Property Name="Documenter" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.252" />
+  </Class>
+  <Class Name="Sandcastle.BuildContext" Collapsed="true">
+    <Position X="6.25" Y="4.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AABADIAQAKKAEQAAiAAAABAAIAAAAAAEggEALCAAABo=</HashCode>
+      <FileName>BuildContext.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.002" />
+  </Class>
+  <Class Name="Sandcastle.BuildLoggers" Collapsed="true">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAJAAAAAQAICAAABAQAAAAAAAAAAAAAAAFAAAg=</HashCode>
+      <FileName>BuildLoggers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildConfiguration" Collapsed="true">
+    <Position X="1.75" Y="3" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ABIAAIAAAAQAAABACAQABAAAAAAAAAACACAAAQBQABA=</HashCode>
+      <FileName>BuildConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildDocumenter" Collapsed="true">
+    <Position X="3.25" Y="5.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Settings" Type="Sandcastle.BuildSettings" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="5.812" />
+        <Point X="5.25" Y="5.812" />
+        <Point X="5.25" Y="3.63" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Configuration" Type="Sandcastle.BuildConfiguration" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="5.815" />
+        <Point X="2.875" Y="5.815" />
+        <Point X="2.875" Y="3.63" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>FIIAgMAQACAARQAAiCQABEVEAAAIggAAgAEBAABQAAg=</HashCode>
+      <FileName>BuildDocumenter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Toc" />
+      <Property Name="Settings" />
+      <Property Name="Configuration" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Groups" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.805" />
+  </Class>
+  <Class Name="Sandcastle.Configurations.ConfigurationItem" Collapsed="true">
+    <Position X="0.5" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAIAAQAgAEAAAAAAAAAAYAAAAAAQAAAABA=</HashCode>
+      <FileName>Configurations\ConfigurationItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.BuildToc" Collapsed="true">
+    <Position X="6.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAJAAAAQAAAACQAADAAABEQAAAAAAQAAAAAABABQABg=</HashCode>
+      <FileName>BuildToc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.BuildEngineType">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>BuildEngineType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildStepType">
+    <Position X="0.5" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>kAAAghAgIAAAIAAQAAA0AEMACCFAAAAIgAIAAGHAADA=</HashCode>
+      <FileName>BuildStepType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildStage">
+    <Position X="6.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQgAAAAgAAAAAAAABAAAAAAAAAAAAAAACAAAAAEAAAA=</HashCode>
+      <FileName>BuildStage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

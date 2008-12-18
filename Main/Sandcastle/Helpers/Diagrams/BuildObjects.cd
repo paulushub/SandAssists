@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildObject&lt;T&gt;" Collapsed="true">
+    <Position X="2.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAABAIAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>BuildObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.044" />
+  </Class>
+  <Class Name="Sandcastle.BuildGroup" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BARgkTARRFABEVAACMAAAAagAACAQAAYABAE44YSYCo=</HashCode>
+      <FileName>BuildGroup.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.BuildSettings" Collapsed="true">
+    <Position X="4" Y="4.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="SyntaxType" Type="Sandcastle.BuildSyntaxType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.875" Y="5.13" />
+        <Point X="4.875" Y="6.437" />
+        <Point X="3.75" Y="6.437" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Style" Type="Sandcastle.BuildStyle" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="4.875" />
+        <Point X="6.188" Y="4.875" />
+        <Point X="6.188" Y="4.13" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Feedback" Type="Sandcastle.BuildFeedback" FixedFromPoint="true">
+      <Path>
+        <Point X="5.188" Y="4.5" />
+        <Point X="5.188" Y="1.13" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.079" Y="0.071" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Framework" Type="Sandcastle.BuildFramework" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="4.688" />
+        <Point X="3.5" Y="4.688" />
+        <Point X="3.5" Y="4.13" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BBIAKARwAoAFEREEeAACDoBIqIiBQgKgD5SABqRYIlo=</HashCode>
+      <FileName>BuildSettings.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SyntaxType" />
+      <Property Name="Style" />
+      <Property Name="Feedback" />
+      <Property Name="Framework" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Formats" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.BuildFormat" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>oQgAESgBkAEF1YCACAAEAEXAQACARACYAECCJoICAFg=</HashCode>
+      <FileName>BuildFormat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildStyle" Collapsed="true">
+    <Position X="5.5" Y="3.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ABIgAJAQBAAQAQBECARABAQAAACAAAgAAKCChEBQABg=</HashCode>
+      <FileName>BuildStyle.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="StyleType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.BuildDirCopier" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAIAAAACCAAAAACAEAIoAAAAAAAAAAEAACABA=</HashCode>
+      <FileName>BuildDirCopier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildFramework" Collapsed="true">
+    <Position X="2.5" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IRAAIAAAAAAAIAAAgAAAIQRAAAAAAIAAAQAAAAAABBA=</HashCode>
+      <FileName>BuildFramework.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildException" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BuildException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildExceptions" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQBAAAAAAAAAAAAAAAAAAAAAACAAABAAAAA=</HashCode>
+      <FileName>BuildExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildList&lt;T&gt;" Collapsed="true">
+    <Position X="3.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAABAAAAgJAAIBAAgAAAAQAgAAAAEAAAAAAAAABA=</HashCode>
+      <FileName>BuildList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.867" />
+  </Class>
+  <Class Name="System.Collections.ObjectModel.Collection&lt;T&gt;" Collapsed="true">
+    <Position X="2.25" Y="8" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Sandcastle.BuildKeyedList&lt;T&gt;" Collapsed="true">
+    <Position X="1" Y="9.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>IAIAAABAAAAgJAAIDAAgAAAAQAgABAAEAAAgAAAAABA=</HashCode>
+      <FileName>BuildKeyedList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.033" />
+  </Class>
+  <Class Name="Sandcastle.BuildListEventArgs&lt;T&gt;" Collapsed="true">
+    <Position X="5" Y="9.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgAIAAAAgAAAIAAAAEgAAQAgAAAEAAAAAEAAAAAAAA=</HashCode>
+      <FileName>BuildListEventArgs.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ChangeType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.BuildFeedback" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="1.75" />
+    <InheritanceLine Type="Sandcastle.BuildObject&lt;T&gt;" ManuallyRouted="true">
+      <Path>
+        <Point X="3.5" Y="2.25" />
+        <Point X="3.5" Y="1.499" />
+        <Point X="5.104" Y="1.499" Type="JumpStart" />
+        <Point X="5.271" Y="1.499" Type="JumpEnd" />
+        <Point X="5.375" Y="1.499" />
+        <Point X="5.375" Y="1.13" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="FeedbackType" Type="Sandcastle.BuildFeedbackType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="0.812" />
+        <Point X="6.688" Y="0.812" />
+        <Point X="6.688" Y="1.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.783" Y="0.745" Height="0.16" Width="1.118" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>CAACAAABAAQAAAgAAAIAAAEAAAAEABAAEAAAhoAAABA=</HashCode>
+      <FileName>BuildFeedback.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="FeedbackType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.BuildToc" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAJAAAAAAAAACIAADAAABEQAAAAAAAAAAAAAAABQABA=</HashCode>
+      <FileName>BuildToc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Sandcastle.IBuildNamedItem" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IBuildNamedItem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Sandcastle.IBuildListener" Collapsed="true">
+    <Position X="0.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IBuildListener.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Sandcastle.BuildStyleType">
+    <Position X="5.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAgAAABAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>BuildStyleType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildSyntaxType">
+    <Position X="2.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAACAAAAAAgAAAAAAAAAAABAMAAAAAABIAAEAEAAAA=</HashCode>
+      <FileName>BuildSyntaxType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildListChangeType">
+    <Position X="5.25" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAEAAgAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>BuildListChangeType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildFeedbackType">
+    <Position X="5.75" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAIQAAAEAAAAAAAEAAAA=</HashCode>
+      <FileName>BuildFeedbackType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

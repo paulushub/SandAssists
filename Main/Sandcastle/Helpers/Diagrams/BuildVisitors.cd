@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildVisitor&lt;T&gt;" Collapsed="true">
+    <Position X="2.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAIAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>BuildVisitor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.054" />
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualTocVisitor" Collapsed="true">
+    <Position X="4.25" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIAAAIAAAAAAAAQAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualTocFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceTocVisitor" Collapsed="true">
+    <Position X="2" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIAAAIAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>References\ReferenceTocVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceVisitor" Collapsed="true">
+    <Position X="2" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIAAAIQAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>References\ReferenceVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceExcludeTocVisitor" Collapsed="true">
+    <Position X="0.5" Y="4" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>References\ReferenceExcludeTocVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceLayoutTocVisitor" Collapsed="true">
+    <Position X="3.25" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>References\ReferenceLayoutTocVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

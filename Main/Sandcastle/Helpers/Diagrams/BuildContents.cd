@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildContent&lt;T, U&gt;" Collapsed="true">
+    <Position X="2.75" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAJAAAAAAAAACBAICAAABEQCAAEAAAAAAAAAgABQABI=</HashCode>
+      <FileName>BuildContent.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.127" />
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualContent" Collapsed="true">
+    <Position X="0.5" Y="8.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAQBAAQAAAAAgEAAAiEBAEAAAAAAAAgAAACBA=</HashCode>
+      <FileName>Conceptual\ConceptualContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceContent" Collapsed="true">
+    <Position X="4" Y="8.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>References\ReferenceContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualMetadataContent" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAABEAAAAAAAAEAAAACgAAAAAAABUAAgAEAABA=</HashCode>
+      <FileName>Conceptual\ConceptualMetadataContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualCategoryContent" Collapsed="true">
+    <Position X="1.75" Y="10.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualCategoryContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.TokenContent" Collapsed="true">
+    <Position X="0.75" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAACACAAAAAACAAEAAAAAAAAgkAAAABA=</HashCode>
+      <FileName>Contents\TokenContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.SnippetContent" Collapsed="true">
+    <Position X="4.25" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAACAAAAAAAACAAAAAAAAAAAAkAAAABA=</HashCode>
+      <FileName>Contents\SnippetContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.MediaContent" Collapsed="true">
+    <Position X="0.75" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ABBAAACBAAAQAACAAAAAAAACQACAAAAEAAAAmAAAAhg=</HashCode>
+      <FileName>Contents\MediaContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.LinkContent" Collapsed="true">
+    <Position X="4.25" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>Contents\LinkContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.SharedContent" Collapsed="true">
+    <Position X="0.5" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAACACAAAAAQCAAEAAAAAAAAkkAAAABA=</HashCode>
+      <FileName>Contents\SharedContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.ResourceContent" Collapsed="true">
+    <Position X="4" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <FileName>Contents\ResourceContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.PropertyContent" Collapsed="true">
+    <Position X="0.5" Y="9.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\PropertyContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.MetadataContent" Collapsed="true">
+    <Position X="4" Y="9.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAACAAAAAASAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\MetadataContent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MetadataType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Configurations.ConfigurationContent" Collapsed="true">
+    <Position X="5" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Configurations\ConfigurationContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Configurations.IncludeContent" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAQCAAEAAAAAAAAkgAAAABA=</HashCode>
+      <FileName>Configurations\IncludeContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.OptionContent" Collapsed="true">
+    <Position X="0.5" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABQAIABAAAAgAAAECAAAAAQCAAEAAAAAAAAggAgAABA=</HashCode>
+      <FileName>Contents\OptionContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.RuleContent" Collapsed="true">
+    <Position X="4.75" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\RuleContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.DependencyContent" Collapsed="true">
+    <Position X="4.75" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\DependencyContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.BibliographyContent" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\BibliographyContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.TocContent" Collapsed="true">
+    <Position X="0.5" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <FileName>Contents\TocContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Contents.MetadataType">
+    <Position X="2.75" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAQAAAAAAAAEAAAA=</HashCode>
+      <FileName>Contents\MetadataType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
