@@ -309,8 +309,8 @@
     <None Include="Properties\HtmlHelp.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Sandcastle.Utilities.snk">
-      <Link>Sandcastle.Utilities.snk</Link>
+    <None Include="..\Sandcastle.Viewers.snk">
+      <Link>Sandcastle.Viewers.snk</Link>
     </None>
     <None Include="Properties\MsdnHelp.bmp" />
   </ItemGroup>

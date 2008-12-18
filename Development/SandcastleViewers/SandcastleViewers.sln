@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Viewers", "Viewers\Viewers.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{249022F5-EA07-41DC-970B-920851AF817D}"
 	ProjectSection(SolutionItems) = preProject
-		Sandcastle.Utilities.snk = Sandcastle.Utilities.snk
+		Sandcastle.Viewers.snk = Sandcastle.Viewers.snk
 	EndProjectSection
 EndProject
 Global
@@ -13,10 +13,10 @@ Global
 		SccNumberOfProjects = 2
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Viewers\\Viewers.csproj
-		SccProjectName1 = Viewers
-		SccLocalPath1 = Viewers
+		SccProjectUniqueName0 = Viewers\\Viewers.csproj
+		SccProjectName0 = Viewers
+		SccLocalPath0 = Viewers
+		SccLocalPath1 = .
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
