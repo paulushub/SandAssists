@@ -87,7 +87,9 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            base.Apply(document, key);
+            XPathNavigator docNavigator = document.CreateNavigator();
+
+            base.Apply(document, docNavigator, key);
 
             _pageCount++;
 
@@ -96,7 +98,7 @@ namespace Sandcastle.Components
             // 1. Apply the math...
             if (_mathApply)
             {
-                ApplyMath(document);
+                ApplyMath(docNavigator);
             }
 
             // 2. Apply the codes...
@@ -104,7 +106,7 @@ namespace Sandcastle.Components
             {
                 if (style == BuilderStyle.Vs2005)
                 {
-                    ApplyCode(document);
+                    ApplyCode(docNavigator);
                 }
                 else if (style == BuilderStyle.Hana)
                 {
@@ -114,7 +116,7 @@ namespace Sandcastle.Components
                             "//div[@class='code']//*/pre");
                     }
 
-                    ApplyCode(document, _codeHanaSelector);
+                    ApplyCode(docNavigator, _codeHanaSelector);
                 }
                 else if (style == BuilderStyle.Prototype)
                 {
@@ -124,9 +126,12 @@ namespace Sandcastle.Components
                             "//div[@class='code']//pre");
                     }
 
-                    ApplyCode(document, _codeProtoSelector);
+                    ApplyCode(docNavigator, _codeProtoSelector);
                 }
             }
+
+            // 3. Apply the header for logo and others
+            ApplyHeader(docNavigator);
         }
 
         #endregion
@@ -135,10 +140,8 @@ namespace Sandcastle.Components
 
         #region ApplyMath Method
 
-        private void ApplyMath(XmlDocument document)
+        private void ApplyMath(XPathNavigator docNavigator)
         {
-            XPathNavigator docNavigator = document.CreateNavigator();
-
             XPathNodeIterator iterator = docNavigator.Select(_mathSelector);
             if (iterator == null || iterator.Count == 0)
             {
@@ -336,15 +339,13 @@ namespace Sandcastle.Components
 
         #region ApplyCode Method - Vs 2005
 
-        private void ApplyCode(XmlDocument document)
+        private void ApplyCode(XPathNavigator docNavigator)
         {
             CodeController codeController = CodeController.GetInstance("conceptual");
             if (codeController == null)
             {
                 return;
             }
-
-            XPathNavigator docNavigator = document.CreateNavigator();
 
             XPathNodeIterator iterator = docNavigator.Select(_codeSelector);
             if (iterator == null || iterator.Count == 0)
@@ -451,7 +452,8 @@ namespace Sandcastle.Components
 
         #region ApplyCode Method - Others
 
-        private void ApplyCode(XmlDocument document, XPathExpression codeSelector)
+        private void ApplyCode(XPathNavigator docNavigator, 
+            XPathExpression codeSelector)
         {
             CodeController codeController = CodeController.GetInstance("conceptual");
             if (codeController == null ||
@@ -459,8 +461,6 @@ namespace Sandcastle.Components
             {
                 return;
             }
-
-            XPathNavigator docNavigator = document.CreateNavigator();
 
             XPathNodeIterator iterator = docNavigator.Select(codeSelector);
             if (iterator == null || iterator.Count == 0)

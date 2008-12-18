@@ -134,9 +134,9 @@ namespace Sandcastle.Components
 
                         _codeRefSelector = XPathExpression.Compile("//codeReference");
                     }
-
-                    _codeSelector = XPathExpression.Compile("//code");
                 }
+
+                _codeSelector = XPathExpression.Compile("//code");
 
                 CodeController.Create("reference", this.Mode);
             }

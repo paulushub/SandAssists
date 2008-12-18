@@ -44,6 +44,158 @@ namespace Sandcastle.Components
             //    ex.GetType().FullName, message));
         }
 
+        protected bool SetXmlStringValue(XPathNavigator navigator,
+            string valueName, string newValue)
+        {
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return false;
+            }
+            try
+            {
+                XPathNavigator factory = navigator.Clone();
+                do
+                {
+                    factory.MoveToFirstAttribute();
+
+                    if (String.Compare(factory.Name, valueName) == 0)
+                    {
+                        factory.SetValue(newValue);
+                        return true;
+                    }
+                }
+                while (!factory.MoveToNextAttribute());
+
+                navigator.CreateAttribute(String.Empty, valueName,
+                    String.Empty, newValue);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+
+                return false;
+            }
+        }
+
+        protected string GetXmlStringValue(XPathNavigator navigator,
+            string valueName, string defaultValue)
+        {
+            string resultValue = defaultValue;
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return resultValue;
+            }
+            try
+            {
+                resultValue = navigator.GetAttribute(valueName, String.Empty);
+            }
+            catch (Exception ex)  // not likely!
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            return resultValue;
+        }
+
+        protected bool GetXmlBoolValue(XPathNavigator navigator,
+            string valueName, bool defaultValue)
+        {
+            bool resultValue = defaultValue;
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return resultValue;
+            }
+
+            try
+            {
+                string nodeValue = navigator.GetAttribute(valueName, String.Empty);
+                if (!String.IsNullOrEmpty(nodeValue))
+                {
+                    resultValue = Convert.ToBoolean(nodeValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            return resultValue;
+        }
+
+        protected int GetXmlIntValue(XPathNavigator navigator,
+            string valueName, int defaultValue)
+        {
+            int resultValue = defaultValue;
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return resultValue;
+            }
+            try
+            {
+                string nodeValue = navigator.GetAttribute(valueName, String.Empty);
+                if (!String.IsNullOrEmpty(nodeValue))
+                {
+                    resultValue = Convert.ToInt32(nodeValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            return resultValue;
+        }
+
+        protected float GetXmlSingleValue(XPathNavigator navigator,
+            string valueName, float defaultValue)
+        {
+            float resultValue = defaultValue;
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return resultValue;
+            }
+            try
+            {
+                string nodeValue = navigator.GetAttribute(valueName, String.Empty);
+                if (!String.IsNullOrEmpty(nodeValue))
+                {
+                    resultValue = Convert.ToSingle(nodeValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            return resultValue;
+        }
+
+        protected double GetXmlDoubleValue(XPathNavigator navigator,
+            string valueName, double defaultValue)
+        {
+            double resultValue = defaultValue;
+            if (navigator == null || String.IsNullOrEmpty(valueName))
+            {
+                return resultValue;
+            }
+            try
+            {
+                string nodeValue = navigator.GetAttribute(valueName, String.Empty);
+                if (!String.IsNullOrEmpty(nodeValue))
+                {
+                    resultValue = Convert.ToDouble(nodeValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            return resultValue;
+        }
+
         #endregion
 
         #region IDisposable Members

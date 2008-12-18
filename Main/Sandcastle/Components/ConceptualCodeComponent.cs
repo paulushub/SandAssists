@@ -126,13 +126,13 @@ namespace Sandcastle.Components
                         _codeRefSelector = XPathExpression.Compile("//ddue:codeReference");
                         _codeRefSelector.SetContext(_codeRefContext);
                     }
-
-                    _codeContext = new CustomContext();
-                    _codeContext.AddNamespace("ddue",
-                        "http://ddue.schemas.microsoft.com/authoring/2003/5");
-                    _codeSelector = XPathExpression.Compile("//ddue:code");
-                    _codeSelector.SetContext(_codeContext);
                 }
+
+                _codeContext = new CustomContext();
+                _codeContext.AddNamespace("ddue",
+                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
+                _codeSelector = XPathExpression.Compile("//ddue:code");
+                _codeSelector.SetContext(_codeContext);
 
                 CodeController.Create("conceptual", this.Mode);
             }

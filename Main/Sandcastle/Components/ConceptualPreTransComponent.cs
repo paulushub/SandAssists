@@ -13,6 +13,7 @@ namespace Sandcastle.Components
     {
         #region Private Fields
 
+        private int             _autoOutlineDepth;
         private bool            _autoOutline;
 
         private CustomContext   _xsltContext;
@@ -26,14 +27,20 @@ namespace Sandcastle.Components
             XPathNavigator configuration)
             : base(assembler, configuration)
         {
+            _autoOutlineDepth = 0;
             _autoOutline = false;
             XPathNavigator navigator = configuration.SelectSingleNode("autoOutline");
             if (navigator != null)
             {
-                string autoOutline = navigator.GetAttribute("value", String.Empty);
-                if (String.IsNullOrEmpty(autoOutline) == false)
+                string outlineText = navigator.GetAttribute("value", String.Empty);
+                if (String.IsNullOrEmpty(outlineText) == false)
                 {
-                    _autoOutline = Convert.ToBoolean(autoOutline);
+                    _autoOutline = Convert.ToBoolean(outlineText);
+                }
+                outlineText = navigator.GetAttribute("depth", String.Empty);
+                if (String.IsNullOrEmpty(outlineText) == false)
+                {
+                    _autoOutlineDepth = Convert.ToInt32(outlineText);
                 }
             }
 
@@ -89,7 +96,16 @@ namespace Sandcastle.Components
                 string nodeText = navigator.Value;
                 if (!String.IsNullOrEmpty(nodeText))
                 {
-                    navigator.ReplaceSelf("<autoOutline xmlns=\"\"/>");
+                    XmlWriter writer = navigator.InsertAfter();
+                    writer.WriteStartElement("autoOutline", "");
+                    //navigator.ReplaceSelf("<autoOutline xmlns=\"\"/>");
+                    if (_autoOutlineDepth > 0)
+                    {
+                        writer.WriteString(_autoOutlineDepth.ToString());
+                    }
+                    writer.WriteEndElement();
+                    writer.Close();
+                    navigator.DeleteSelf();
                 }
             }
         }

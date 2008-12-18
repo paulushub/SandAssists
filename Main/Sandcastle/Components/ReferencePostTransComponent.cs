@@ -46,13 +46,18 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            base.Apply(document, key);
+            XPathNavigator docNavigator = document.CreateNavigator();
+
+            base.Apply(document, docNavigator, key);
 
             // 1. Apply the codes...
             if (_codeApply)
             {
-                ApplyCode(document);
+                ApplyCode(docNavigator);
             }
+
+            // 2. Apply the header for logo and others
+            ApplyHeader(docNavigator);
         }
 
         #endregion
@@ -61,7 +66,7 @@ namespace Sandcastle.Components
 
         #region ApplyCode Method
 
-        private void ApplyCode(XmlDocument document)
+        private void ApplyCode(XPathNavigator docNavigator)
         {
             CodeController codeController = CodeController.GetInstance("reference");
             if (codeController == null || 
@@ -69,8 +74,6 @@ namespace Sandcastle.Components
             {
                 return;
             }
-
-            XPathNavigator docNavigator = document.CreateNavigator();
 
             XPathNodeIterator iterator = docNavigator.Select(_codeSelector);
             if (iterator == null || iterator.Count == 0)

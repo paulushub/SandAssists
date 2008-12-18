@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Drawing;
 using System.Collections.Generic;
 
 using System.Xml;
@@ -15,7 +16,7 @@ namespace Sandcastle.Components
         #region Private Fields
 
         private bool              _isfirstUse;
-        private string            _outputPath; 
+        private string            _outputPath;
 
         private List<string>      _listStyles;
         private List<string>      _listScripts;
@@ -28,6 +29,19 @@ namespace Sandcastle.Components
 
         private List<MsAttribute> _listAttributes;
 
+        // For the header and logo support...
+        private string _logoLink;
+        private string _logoImage;
+        private string _logoLinkTarget;
+        private string _logoAltText;
+        private string _logoCellCss;
+        private string _logoImageCss;
+        private string _logoLinkedCss;
+        private string _logoAlignText;
+        private LogoAlignment _logoAlign;
+        private LogoPlacement _logoPlacement;
+        private XPathExpression _headDivSelector;
+
         #endregion
 
         #region Constructors and Destructor
@@ -35,14 +49,23 @@ namespace Sandcastle.Components
         protected PostTransComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _isfirstUse   = true;
-            _builderStyle = BuilderStyle.None;
+            _isfirstUse     = true;
+            _builderStyle   = BuilderStyle.None;
+
+            _logoLink       = String.Empty; // "http://www.codeplex.com/";
+            _logoImage      = String.Empty; // "../images/AssistLogo.jpg";
+            _logoAltText    = String.Empty;
+            _logoCellCss    = String.Empty; // "width: 64px; height: 64px; padding: 3px";
+            _logoImageCss   = String.Empty;
+            _logoLinkedCss  = "border: none; text-decoration: none";
+            _logoAlign      = LogoAlignment.Center;
+            _logoPlacement  = LogoPlacement.Left;
+            _logoLinkTarget = "_blank";
 
             XPathNavigator navigator = configuration.SelectSingleNode("paths");
             if (navigator == null)
             {
-                throw new BuilderException(
-                    "The output paths tag, <path>, is required.");
+                throw new BuilderException("The output paths tag, <path>, is required.");
             }
             _outputPath = navigator.GetAttribute("outputPath", String.Empty);
 
@@ -129,6 +152,9 @@ namespace Sandcastle.Components
                     "Loaded {0} styles.", _listStyles.Count));
             }
 
+            // Handle the header...
+            this.ParseHeader(configuration);
+
             _includeSelector = XPathExpression.Compile(
                 "//span[@name='SandInclude' and @class='tgtSentence']");
 
@@ -207,45 +233,6 @@ namespace Sandcastle.Components
 
         #endregion
 
-        #region Public Methods
-
-        public override void Apply(XmlDocument document, string key)
-        {
-            if (_builderStyle == BuilderStyle.None)
-            {
-                DetermineStyle(document);
-            }
-
-            if (_isfirstUse)
-            {
-                ApplyPaths();
-                _isfirstUse = false;
-            }
-
-            // 1. Apply the include items...
-            ApplyInclude(document);
-
-            // 2. Apply the scripts...
-            if (_listScripts != null && _listScripts.Count > 0)
-            {
-                ApplyScripts(document);
-            }
-
-            // 3. Apply the styles...
-            if (_listStyles != null && _listStyles.Count > 0)
-            {
-                ApplyStyles(document);
-            }
-
-            // 4. Apply the Help 2 attributes...
-            if (_listAttributes != null && _listAttributes.Count > 0)
-            {
-                this.ApplyAttributes(document);
-            }
-        }
-
-        #endregion
-
         #region Protected Methods
 
         #region DetermineStyle Method
@@ -274,11 +261,55 @@ namespace Sandcastle.Components
 
         #endregion
 
+        #region Apply Method
+
+        protected virtual void Apply(XmlDocument document, 
+            XPathNavigator navigator, string key)
+        {
+            if (_builderStyle == BuilderStyle.None)
+            {
+                DetermineStyle(document);
+            }
+
+            if (navigator == null)
+            {
+                navigator = document.CreateNavigator();
+            }
+            if (_isfirstUse)
+            {
+                ApplyPaths();
+                _isfirstUse = false;
+            }
+
+            // 1. Apply the include items...
+            ApplyInclude(navigator);
+
+            // 2. Apply the scripts...
+            if (_listScripts != null && _listScripts.Count > 0)
+            {
+                ApplyScripts(navigator);
+            }
+
+            // 3. Apply the styles...
+            if (_listStyles != null && _listStyles.Count > 0)
+            {
+                ApplyStyles(navigator);
+            }
+
+            // 4. Apply the Help 2 attributes...
+            if (_listAttributes != null && _listAttributes.Count > 0)
+            {
+                this.ApplyAttributes(navigator);
+            }
+        }
+
+        #endregion
+
         #region ApplyPaths Method
 
         protected virtual void ApplyPaths()
         {   
-            // copy the scripts to the "scripts" folder, if not done
+            // 1. Copy the scripts to the "scripts" folder, if not done
             if (_listScripts != null && _listScripts.Count > 0)
             {
                 try
@@ -297,8 +328,7 @@ namespace Sandcastle.Components
                         if (File.Exists(destScriptFile) == false)
                         {
                             File.Copy(scriptFile, destScriptFile, true);
-                            File.SetAttributes(destScriptFile,
-                                FileAttributes.Normal);
+                            File.SetAttributes(destScriptFile, FileAttributes.Normal);
                         }
                     }
                 }
@@ -308,7 +338,7 @@ namespace Sandcastle.Components
                 }
             }
 
-            // copy the styles to the "styles" folder, if not done
+            // 2. Copy the styles to the "styles" folder, if not done
             if (_listStyles != null && _listStyles.Count > 0)
             {
                 try
@@ -327,8 +357,7 @@ namespace Sandcastle.Components
                         if (File.Exists(destStyleFile) == false)
                         {
                             File.Copy(styleFile, destStyleFile, true);
-                            File.SetAttributes(destStyleFile,
-                                FileAttributes.Normal);
+                            File.SetAttributes(destStyleFile, FileAttributes.Normal);
                         }
                     }
                 }
@@ -337,16 +366,41 @@ namespace Sandcastle.Components
                     this.WriteMessage(MessageLevel.Warn, ex);
                 }
             }
+
+            // 3. Copy the logo image, if available...
+            if (!String.IsNullOrEmpty(_logoImage) || File.Exists(_logoImage))
+            {
+                string imageFile = Path.GetFileName(_logoImage);
+                string imageDestPath = Path.Combine(_outputPath, "images");
+                string imageDestFile = Path.Combine(imageDestPath, imageFile);
+
+                if (Directory.Exists(imageDestPath) == false)
+                    Directory.CreateDirectory(imageDestPath);
+
+                if (File.Exists(imageDestFile) == false)
+                {
+                    File.Copy(_logoImage, imageDestFile, true);
+                    File.SetAttributes(imageDestFile, FileAttributes.Normal);
+                }
+
+                // Change the logo file to the output mode "../images/Logo.jpg"
+                _logoImage = "../images/" + imageFile;
+            }
         }
 
         #endregion
 
         #region ApplyInclude Method
 
-        protected virtual void ApplyInclude(XmlDocument document)
+        protected virtual void ApplyInclude(XPathNavigator docNavigator)
         {
-            XPathNavigator docNavigator = document.CreateNavigator();
-            XPathNodeIterator iterator  = docNavigator.Select(_includeSelector);
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+
+            XPathNodeIterator iterator = docNavigator.Select(_includeSelector);
             if (iterator == null || iterator.Count == 0)
             {
                 return;
@@ -386,14 +440,19 @@ namespace Sandcastle.Components
 
         #region ApplyScripts Method
 
-        protected virtual void ApplyScripts(XmlDocument document)
+        protected virtual void ApplyScripts(XPathNavigator docNavigator)
         {
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+
             if (_listScripts == null || _listScripts.Count == 0)
             {
                 return;
             }
 
-            XPathNavigator docNavigator = document.CreateNavigator();
             XPathNavigator navigator = docNavigator.SelectSingleNode(_headSelector);
             if (navigator == null)
             {
@@ -425,14 +484,19 @@ namespace Sandcastle.Components
 
         #region ApplyStyles Method
 
-        protected virtual void ApplyStyles(XmlDocument document)
+        protected virtual void ApplyStyles(XPathNavigator docNavigator)
         {
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+
             if (_listStyles == null || _listStyles.Count == 0)
             {
                 return;
             }
 
-            XPathNavigator docNavigator = document.CreateNavigator();
             XPathNavigator navigator = docNavigator.SelectSingleNode(_headSelector);
             if (navigator == null)
             {
@@ -463,14 +527,19 @@ namespace Sandcastle.Components
 
         #region ApplyAttributes Method
 
-        protected virtual void ApplyAttributes(XmlDocument document)
+        protected virtual void ApplyAttributes(XPathNavigator docNavigator)
         {
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+
             if (_listAttributes == null || _listAttributes.Count == 0)
             {
                 return;
             }
 
-            XPathNavigator docNavigator = document.CreateNavigator();
             XPathNavigator navigator = docNavigator.SelectSingleNode(_islandSelector);
             if (navigator == null)
             {
@@ -493,6 +562,547 @@ namespace Sandcastle.Components
             }
 
             xmlWriter.Close();
+        }
+
+        #endregion
+
+        #region ApplyHeader Method
+
+        protected virtual void ApplyHeader(XPathNavigator docNavigator)
+        {
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+            if (String.IsNullOrEmpty(_logoImage))
+            {
+                return;
+            }
+
+            if (_headDivSelector == null)
+            {
+                if (_builderStyle == BuilderStyle.Vs2005)
+                {
+                    _headDivSelector = XPathExpression.Compile("//div[@id='header']");
+                }
+            }
+            if (String.IsNullOrEmpty(_logoAlignText))
+            {
+                if (_logoAlign != LogoAlignment.None)
+                {
+                    _logoAlignText = GetLogoAlignment();
+                }
+            }
+
+            if (_builderStyle == BuilderStyle.Vs2005)
+            {
+                ApplyHeaderVS(docNavigator);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region ParseHeader Method
+
+        private void ParseHeader(XPathNavigator configuration)
+        {
+            //<header>
+            //    <logo width="0" height="0" padding="0">
+            //        <image path="" altText="" class=""/>
+            //        <link uri="" target="" class="" />
+            //        <position placement="" alignment=""/>
+            //    </logo>
+            //    <tables>
+            //        <table name="" operation="" />
+            //    </tables>
+            //</header>      
+            string tempText = String.Empty;
+            XPathNavigator navigator = configuration.SelectSingleNode("header");
+            if (navigator == null || navigator.HasChildren == false)
+            {
+                return;
+            }
+
+            XPathNavigator logoNode = navigator.SelectSingleNode("logo");
+            if (logoNode == null)
+            {
+                return;
+            }
+
+            int logoWidth = this.GetXmlIntValue(logoNode, "width", 0);
+            int logoHeight = this.GetXmlIntValue(logoNode, "height", 0);
+            int logoPadding = this.GetXmlIntValue(logoNode, "padding", 0);
+
+            // <image path="" altText="" class=""/>
+            XPathNavigator imageNode = logoNode.SelectSingleNode("image");
+            if (imageNode == null)
+            {
+                return;
+            }
+
+            tempText = imageNode.GetAttribute("path", String.Empty);
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                tempText = Environment.ExpandEnvironmentVariables(tempText);
+                if (File.Exists(tempText))
+                {
+                    _logoImage = tempText;
+                    tempText = imageNode.GetAttribute("altText", String.Empty);
+                    if (!String.IsNullOrEmpty(tempText))
+                    {
+                        _logoAltText = tempText;
+                    }
+                    tempText = imageNode.GetAttribute("class", String.Empty);
+                    if (!String.IsNullOrEmpty(tempText))
+                    {
+                        _logoImageCss = tempText;
+                    }
+                }
+                else
+                {
+                    this.WriteMessage(MessageLevel.Error,
+                        "The path for the logo image is required.");
+
+                    return;
+                }
+            }
+            else
+            {
+                this.WriteMessage(MessageLevel.Error,
+                    "The path for the logo image is required.");
+
+                return;
+            }
+
+            // <link uri="" target="" class="" />
+            XPathNavigator linkNode = logoNode.SelectSingleNode("link");
+            if (linkNode != null)
+            {
+                tempText = linkNode.GetAttribute("uri", String.Empty);
+                if (!String.IsNullOrEmpty(tempText))
+                {   
+                    try
+                    {
+                        Uri testResult = new Uri(tempText, UriKind.Absolute);
+
+                        _logoLink = testResult.AbsoluteUri;
+
+                        tempText = linkNode.GetAttribute("target", String.Empty);
+                        if (!String.IsNullOrEmpty(tempText)    &&
+                            (String.Equals(tempText, "_blank") ||
+                            String.Equals(tempText, "_parent") ||
+                            String.Equals(tempText, "_self")   ||
+                            String.Equals(tempText, "_top")))
+                        {
+                            _logoLinkTarget = tempText;
+                        }
+
+                        tempText = linkNode.GetAttribute("class", String.Empty);
+                        if (!String.IsNullOrEmpty(tempText))
+                        {
+                            _logoLinkedCss = tempText;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.WriteMessage(MessageLevel.Error, ex);        	
+                    }
+                }   
+            }
+
+            //<position placement="" alignment=""/>
+            XPathNavigator locNode = logoNode.SelectSingleNode("position");
+            if (locNode != null)
+            {
+                tempText = locNode.GetAttribute("placement", String.Empty);
+                if (!String.IsNullOrEmpty(tempText))
+                {   
+                    try
+                    {
+                        _logoPlacement = (LogoPlacement)Enum.Parse(
+                            typeof(LogoPlacement), tempText, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.WriteMessage(MessageLevel.Error, ex);        	
+                    }
+                }
+                tempText = locNode.GetAttribute("alignment", String.Empty);
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    try
+                    {
+                        _logoAlign = (LogoAlignment)Enum.Parse(
+                            typeof(LogoAlignment), tempText, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.WriteMessage(MessageLevel.Error, ex);
+                    }
+                }   
+            }
+
+            // For the logo cell style: "width: 64px; height: 64px; padding: 3px";
+            try
+            {
+                Bitmap bitmap = new Bitmap(_logoImage);
+
+                if (logoWidth <= 0)
+                {
+                    logoWidth = bitmap.Width;
+                }
+                if (logoHeight <= 0)
+                {
+                    logoHeight = bitmap.Height;
+                }
+                if (logoPadding < 0)
+                {
+                    logoPadding = 0;
+                }
+                bitmap.Dispose();
+
+                if (_logoPlacement == LogoPlacement.Left || 
+                    _logoPlacement == LogoPlacement.Right)
+                {
+                    _logoCellCss = String.Format(
+                        "width: {0}px; height: {1}px; padding: {2}px", 
+                        logoWidth, logoHeight, logoPadding);
+                }
+                else if (_logoPlacement == LogoPlacement.Top || 
+                    _logoPlacement == LogoPlacement.Bottom)
+                {    
+                    _logoCellCss = String.Format("height: {0}px; padding: {1}px", 
+                        logoHeight, logoPadding);
+                }
+            }
+            catch (Exception ex)
+            {
+                // This is mostly unknown image type...ignore the logo.
+                _logoImage = String.Empty;
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+        }
+
+        #endregion
+
+        #region GetLogoAlignment Method
+
+        private string GetLogoAlignment()
+        {
+            if (_logoAlign == LogoAlignment.None)
+            {
+                return String.Empty;
+            }
+            if (_logoPlacement == LogoPlacement.Left ||
+                _logoPlacement == LogoPlacement.Right)
+            {
+                if (_logoAlign == LogoAlignment.Near)
+                {
+                    return "top";
+                }
+                if (_logoAlign == LogoAlignment.Center)
+                {
+                    return "center";
+                }
+                if (_logoAlign == LogoAlignment.Far)
+                {
+                    return "bottom";
+                }
+            }
+            else if (_logoPlacement == LogoPlacement.Top ||
+                _logoPlacement == LogoPlacement.Bottom)
+            {
+                if (_logoAlign == LogoAlignment.Near)
+                {
+                    return "left";
+                }
+                if (_logoAlign == LogoAlignment.Center)
+                {
+                    return "center";
+                }
+                if (_logoAlign == LogoAlignment.Far)
+                {
+                    return "right";
+                }
+            }
+
+            return String.Empty;
+        }
+
+        #endregion
+
+        #region ApplyHeader Method - VS 2005/8
+
+        protected virtual void ApplyHeaderVS(XPathNavigator docNavigator)
+        {
+            if (docNavigator == null)
+            {
+                throw new ArgumentNullException("docNavigator",
+                    "The document navigator cannot be null (or Nothing).");
+            }
+
+            bool hasLogoLink = !String.IsNullOrEmpty(_logoLink);
+
+            XPathNavigator headerDiv = docNavigator.SelectSingleNode(_headDivSelector);
+            XPathNavigator topTable = headerDiv.SelectSingleNode(
+                "//table[@id='topTable']");
+            XPathNavigator bottomTable = headerDiv.SelectSingleNode(
+                "//table[@id='bottomTable']");
+            //XPathNavigator gradientTable = headerDiv.SelectSingleNode(
+            //    "//table[@id='gradientTable']");
+
+            XmlWriter writer = headerDiv.PrependChild();
+
+            writer.WriteStartElement("table");
+            writer.WriteAttributeString("id", "logoTable");
+
+            if (_logoPlacement == LogoPlacement.Right) // For the right placement
+            {
+                // <table>
+                // <tr> <td>Original</td> <td>Logo</td> </tr>
+                // </table>
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerTables");
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+                if (bottomTable != null)
+                {
+                    writer.WriteNode(bottomTable, true);
+                    bottomTable.DeleteSelf();
+                }
+                writer.WriteEndElement(); // td
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+                writer.WriteEndElement(); // td
+
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Left)
+            {
+                // <table>
+                // <tr> <td>Logo</td> <td>Original</td> </tr>
+                // </table>
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+                if (bottomTable != null)
+                {
+                    writer.WriteNode(bottomTable, true);
+                    bottomTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Top)
+            {
+                // <table>
+                // <tr> <td>Logo    </td> </tr>
+                // <tr> <td>Original</td> </tr>
+                // </table>
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+                if (bottomTable != null)
+                {
+                    writer.WriteNode(bottomTable, true);
+                    bottomTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Bottom)
+            {
+                // <table>
+                // <tr> <td>Original</td> </tr>
+                // <tr> <td>Logo    </td> </tr>
+                // </table>
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+                if (bottomTable != null)
+                {
+                    writer.WriteNode(bottomTable, true);
+                    bottomTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+            }
+
+            writer.WriteEndElement(); // table
+
+            writer.Close();
         }
 
         #endregion
@@ -540,6 +1150,22 @@ namespace Sandcastle.Components
             }
 
             #endregion
+        }
+
+        private enum LogoPlacement
+        {
+            Left = 0,
+            Top = 1,
+            Right = 2,
+            Bottom = 3
+        }
+
+        private enum LogoAlignment
+        {
+            None = 0,
+            Near = 1,
+            Center = 2,
+            Far = 3
         }
 
         #endregion
