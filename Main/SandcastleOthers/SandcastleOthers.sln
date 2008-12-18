@@ -8,23 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{048F177F-802E-494D-89E0-CD4074F8A33C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workshop", "Workshop\Workshop.csproj", "{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{048F177F-802E-494D-89E0-CD4074F8A33C} = {048F177F-802E-494D-89E0-CD4074F8A33C}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 2
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = Helpers\\Helpers.csproj
 		SccProjectName1 = Helpers
 		SccLocalPath1 = Helpers
-		SccProjectUniqueName2 = Workshop\\Workshop.csproj
-		SccProjectName2 = Workshop
-		SccLocalPath2 = Workshop
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -41,14 +33,6 @@ Global
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73C908D2-3F75-4D21-94F3-FFD772BAEAE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
