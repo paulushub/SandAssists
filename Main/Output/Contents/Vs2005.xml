@@ -1,0 +1,187 @@
+<content xml:space="preserve" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+
+	<item id="locale"><IncludeItem item="helpLocale"/></item>
+    
+    <item id="rootTopicTitle"><IncludeItem item="rootTopicTitle"/></item>
+    <item id="rootTopicTitleLocalized">Namespaces</item>
+    <item id="rootLink"><referenceLink target="R:Project"><IncludeItem item="rootTopicTitle"/></referenceLink></item>
+    <item id="productTitle"><IncludeItem item="feedbackProduct"/></item>
+    <item id="runningHeaderText"><IncludeItem item="runningHeaderText"/></item>
+
+    <!-- The header of the page -->
+    <item id="header">
+        <IncludeItem item="preliminaryStatement"/> 
+        <IncludeItem item="headerStatement"/>
+    </item>
+    
+    <item id="preliminaryText">
+        <p style="color: #808080"><span class="preliminaryText">[Note: This is preliminary documentation and is subject to change.]</span></p>
+    </item>
+    <item id="headerText">
+        <p style="color: #808080"><span class="headerText"> <IncludeItem item="headerText"/> </span></p>
+    </item>
+
+    <!-- *********************************************************************** -->
+    <!-- The following defines the feedback contents -->
+    <item id="fb_alias"><IncludeItem item="feedbackEmail"/></item>
+    <item id="fb_product"><IncludeItem item="feedbackProduct"/></item>
+    <item id="fb_deliverable"></item>
+
+    <item id="fb_subject">Customer%20Feedback</item>
+    <item id="fb_body">%0\dThank%20you%20for%20your%20feedback.%20The%20developer%20writing%20teams%20use%20your%20feedback%20to%20improve%20documentation.%20While%20we%20are%20reviewing%20your%20feedback,%20we%20may%20send%20you%20e-mail%20to%20ask%20for%20clarification%20or%20feedback%20on%20a%20solution.%20We%20do%20not%20use%20your%20e-mail%20address%20for%20any%20other%20purpose%20and%20we%20delete%20it%20after%20we%20finish%20our%20review.%0\A%0\d</item>
+
+    <item id="fb_headerFeedBack">Send Feedback</item>
+
+    <!-- feedback values for sandcastle scenario -->
+
+    <item id="feedback_alias"><IncludeItem item="feedbackEmail"/></item>
+    <item id="feedback_product"><IncludeItem item="feedbackProduct"/></item>
+    <item id="feedback_deliverable"></item>
+    <item id="feedback_fileVersion"></item>
+    <item id="feedback_topicVersion"></item>
+    <item id="feedback_subject">Customer%20Feedback</item>
+    <item id="feedback_body">%0\dThank%20you%20for%20your%20feedback.%20The%20developer%20writing%20teams%20use%20your%20feedback%20to%20improve%20documentation.%20While%20we%20are%20reviewing%20your%20feedback,%20we%20may%20send%20you%20e-mail%20to%20ask%20for%20clarification%20or%20feedback%20on%20a%20solution.%20We%20do%20not%20use%20your%20e-mail%20address%20for%20any%20other%20purpose%20and%20we%20delete%20it%20after%20we%20finish%20our%20review.%0\A%0\d</item>
+    <item id="feedback_ratings">true</item>
+
+    <item id="fb_Introduction">We value your feedback. To rate this topic and send feedback about this topic to the documentation team, click a rating, and then click <b>Send Feedback</b>. For assistance with support issues, refer to the technical support information included with the product.</item>
+
+    <item id="fb_Send">Send Feedback</item>
+    <item id="fb_Poor">Poor</item>
+    <item id="fb_Excellent">Outstanding</item>
+    <item id="fb_EnterFeedbackText">To e-mail your feedback, click here: </item>
+    <item id="fb_Title">Documentation Feedback</item>
+    <item id="fb_altIcon">Display feedback instructions at the bottom of the page.</item>
+
+    <!-- footer -->	
+    <ItemRule name ="Feedback">
+        <If value ="None">
+            <!-- Start: The no feedback content here -->
+            <item id="footer">
+                <!-- Include the footer text, if available... -->
+                <IncludeItem item="footerStatement"/>
+		        <p/>	
+                <!-- Include the copyright text, if available... -->
+                <IncludeItem item="copyrightStatement"/>
+	        </item>
+            <!-- End: The no feedback content here -->
+        </If>    
+        <ElseIf value ="Simple">        
+            <item id="footer">
+                <!-- Include the footer text, if available... -->
+                <IncludeItem item="footerStatement"/>
+		        <p>
+		            <span>
+			            Send
+		            <a><includeAttribute name="href" item="MailToLink"/>comments</a>
+			            about this topic to <IncludeItem item="feedbackCompany" />.
+		            </span>
+                </p>   
+                <!-- Include the copyright text, if available... -->
+                <IncludeItem item="copyrightStatement"/>
+	        </item>
+            <!-- In script_manifold: sendfeedback(subject,id,alias) -->
+	        <item id="MailToLink">javascript:sendfeedback('Documentation Feedback (<include item="fb_product" />): ', '', '<include item="fb_alias"/>');</item>
+        </ElseIf>
+        <ElseIf value ="Standard">        
+            <!-- Start: Standard feedback control in sandcastle scenario-->    
+            <item id="footer">
+                <!-- Include the footer text, if available... -->
+                <IncludeItem item="footerStatement"/>
+                <span id="feedbackarea">
+			            Send
+		            <a><includeAttribute name="href" item="MailToLink">
+                    <parameter>{2}</parameter>
+                    <parameter>{3}</parameter>
+                  </includeAttribute>
+                  feedback</a> on this topic to <IncludeItem item="feedbackCompany" />.
+		        </span>
+                <!-- Include the copyright text, if available... -->
+                <IncludeItem item="copyrightStatement"/>
+            </item>
+              
+            <item id="feedbackHeader">
+              <span id="headfeedbackarea" class="feedbackhead">
+                  <a>
+                    <includeAttribute name="href" item="MailToLink">
+                      <parameter>{0}</parameter>
+                      <parameter>{1}</parameter>
+                      </includeAttribute>
+                    <include item="fb_headerFeedBack" />
+                  </a>
+	            </span>
+            </item> 
+            <item id="MailToLink">javascript:SubmitFeedback('<include item="fb_alias" />','<include item="fb_product" />','<include item="fb_deliverable" />','{0}','{1}','<include item="fb_body" />','<include item="fb_subject" />');</item>  
+            <!-- End: Standard feedback control in sandcastle scenario-->    
+        </ElseIf>
+        <ElseIf value ="Rating">        
+            <!-- Start: 5 star rating feedback control in sandcastle scenario--> 
+
+            <item id="footer">
+                <!-- Include the footer text, if available... -->
+                <IncludeItem item="footerStatement"/>
+                  <a name="feedback"></a>
+                  <div id="fb" class="feedbackcss">
+                    <div id="feedbackarea">
+	                <form method="post" enctype="text/plain" name="formRating">
+	                  <h5><include item="fb_Title" /></h5>
+	                  <p><include item="fb_Introduction" /></p>
+                    <table>
+	                    <tr>
+	                      <td><include item="fb_Poor" /></td>
+	                      <td class="fbinputId" align="right">1<br/><input name="fbRating" type="radio" value="0"></input></td>
+	                      <td class="fbinputId" align="right">2<br/><input name="fbRating" type="radio" value="0"></input></td>
+                          <td class="fbinputId" align="right">3<br/><input name="fbRating" type="radio" value="0"></input></td>
+                          <td class="fbinputId" align="right">4<br/><input name="fbRating" type="radio" value="0"></input></td>
+                          <td class="fbinputId" align="right">5<br/><input name="fbRating" type="radio" value="0"></input></td>
+	                      <td><include item="fb_Excellent" /></td>
+	                    </tr>
+	                  </table>
+	                    <p>
+                            <include item="fb_EnterFeedbackText" /> 
+                            <input id="submitFeedback" type="button"><includeAttribute name="value" item="fb_Send"/><includeAttribute name="onclick" item="MailtoLink" /></input> 
+                        </p>
+	                </form>
+                    </div>
+                  </div>
+                <!-- Include the copyright text, if available... -->
+                <IncludeItem item="copyrightStatement"/>
+            </item>
+
+            <item id="feedbackHeader">
+              <span id="headfeedbackarea" class="feedbackhead">
+                  <a href="#feedback" id="IconFB" target="_self">
+                    <include item="fb_headerFeedBack" /></a>
+	            </span>
+            </item>
+
+            <item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />','<include item="feedback_subject" />');</item> 
+
+            <!-- End: 5 star rating feedback control in sandcastle scenario-->
+        </ElseIf>
+        <ElseIf value ="Custom">
+            <!-- Start: The custom/user feedback content here -->
+            <item id="footer">
+                <!-- Include the footer text, if available... -->
+                <IncludeItem item="footerStatement"/>
+		        <p/>	
+                <!-- Include the copyright text, if available... -->
+                <IncludeItem item="copyrightStatement"/>
+	        </item>
+            <!-- End: The custom/user feedback content here -->
+        </ElseIf>    
+        <Else>
+            <!-- Start: The custom/user feedback content here -->
+            
+            <!-- End: The custom/user feedback content here -->
+        </Else>    
+    </ItemRule>	    
+    
+    <item id="footerText">
+         <p> <span class="footerText"> <IncludeItem item="footerText"/> </span> </p> 
+    </item> 
+    
+    <item id="copyrightText">
+         <p> <span class="copyrightText"> <IncludeItem item="copyrightText"/> </span> </p> 
+    </item> 
+
+</content>

@@ -1,0 +1,66 @@
+Preamble
+
+Two main pieces make up Iris: 
+
+ 1) Original C# code, and 
+ 2) The syntax definition files that were all taken from the Vim text editor. 
+	The syntax files are all in the syntax\ subdirectory and have extension 
+   ".vim".
+
+The Vim Editor lives at :
+
+			http://www.vim.org and 
+
+It was created by Bram Moolenaar. A large number of contributors have created 
+the syntax files. The names of the maintainers and original authors are 
+preserved in the files. The files are shipped verbatim as they appear in the 
+Vim editor, except for very minor technical modifications due to limitations 
+in our Vim script parser.
+
+I. SYNTAX FILES
+
+THE COPYRIGHT FOR VIM AND ITS SYNTAX FILES IS IN FILE uganda.txt
+
+The two main points regarding the syntaxes are:
+
+1) If you modify them, you must be willing to share your modifications upon
+   request. Please read uganda.txt for details.
+2) You are encouraged to donate to children in Uganda, giving to a project
+   in which the Vim author has worked extensively. This is _not a generic
+   charity_, but rather a small charity personally involving the author.
+   Its website is:
+  
+			http://iccf-holland.org/   
+   
+We encourage you to contribute to Uganda if Iris is useful to you. It's 
+only possible due to Vim, after all. 
+
+II. IRIS
+
+			http://duartes.org/iris
+
+All of the remaning work in Iris has been done from the ground up and does
+not involve Vim source code nor is it derived from such. We do encourage you 
+to donate to ICCF Holland as well. Iris itself is under the license below:
+
+Iris, Copyright (c) 2007  Gustavo G. Duarte (http://duartes.org/gustavo)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of 
+this software and associated documentation files (the "Software"), to deal in 
+the Software without restriction, including without limitation the rights to 
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do 
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all 
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+SOFTWARE.
+
+

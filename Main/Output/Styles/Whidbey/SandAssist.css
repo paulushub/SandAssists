@@ -1,0 +1,84 @@
+div.mathDiv
+{
+	margin-left: auto;
+	margin-right: auto;
+	vertical-align:middle;
+	text-align:center;
+	width:96%;
+}
+
+div.mathDiv img.mathImage
+{
+	margin-left: auto;
+	margin-right: auto;
+	vertical-align:middle;
+	text-align:center;
+	/*width:96%; */
+}
+
+div.mathDiv table.mathTable 
+{
+	border: 0;
+	margin-left: 2%;
+	margin-right: 2%;
+	vertical-align:middle;
+	text-align:center;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+    border-width: 0px 0px 0px 0px;
+	width:96%;
+}
+
+div.mathDiv table.mathTable td 
+{
+	background-color: white;
+	border-bottom: 0;
+	border-left: 0;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+}
+
+div.mathNone
+{
+	margin-left: auto;
+	margin-right: auto;
+	width:98%;
+}
+
+div.mathNone img
+{
+    display:block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align:center;
+	vertical-align:middle;
+}
+
+div.mathDiv td.mathLeft
+{
+	font-family: "Times New Roman";
+	font-size: 100%;
+    text-align:center;
+	vertical-align:middle;
+    border-width: 0px 0px 0px 0px;
+	background-color: white;
+	border: 0;
+}
+
+div.mathDiv td.mathRight
+{
+	font-weight: bold;
+	color:#003399;
+	font-family: "Times New Roman";
+	font-size: 105%;
+    text-align:right;
+	vertical-align:middle;
+    width:60px;
+    border-width: 0px 0px 0px 0px;
+	background-color: white;
+	border: 0;
+}
