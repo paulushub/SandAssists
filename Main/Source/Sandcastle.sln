@@ -4,11 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1A235EF-7650-4D8E-83DE-607EE6386B23}"
 	ProjectSection(SolutionItems) = preProject
 		Sandcastle.Assist.snk = Sandcastle.Assist.snk
-		Output\Sandcastle.Iris.dll = Output\Sandcastle.Iris.dll
-		Output\Sandcastle.Iris.pdb = Output\Sandcastle.Iris.pdb
-		Output\Sandcastle.Iris.xml = Output\Sandcastle.Iris.xml
-		Output\System.Data.SQLite.DLL = Output\System.Data.SQLite.DLL
-		Output\System.Data.SQLite.xml = Output\System.Data.SQLite.xml
 	EndProjectSection
 	ProjectSection(FolderStartupServices) = postProject
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
