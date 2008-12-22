@@ -1,0 +1,530 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f112" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                In this topic, we will discuss how to run the HelpRegister 
+                Registration tool.
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+            <para>
+                After creating a configuration file, you can register and/or 
+                unregister a help file collection by running the 
+                <legacyBold>HelpRegister.exe</legacyBold> tool.
+            </para>
+            <para>
+                Use the following command-line options to run the HelpRegister.exe
+                tool and perform the required task. The syntax is:
+            </para>
+            <code>
+                HelpRegister Command [Option] Filename
+            </code>
+            <para>
+                In the above, <legacyBold>Filename</legacyBold> is the registration 
+                configuration file. The commands and options are explained below.
+            </para>
+            <table>
+                <title>HelpRegister.exe Commands</title>                    
+                <tableHeader>                        
+                    <row>
+                        <entry><para>Commands</para></entry>
+                        <entry><para>Description</para></entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry><para>/r</para></entry>
+                    <entry>
+                        <para>
+                            Register all items (the namespaces, plug-ins, 
+                            filters etc.) specified in the configuration file.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><para>/u</para></entry>
+                    <entry>
+                        <para>
+                            Unregister all items as specified in the 
+                            configuration file (namespaces, plug-ins, etc.).                  
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>+r</para>
+                    </entry>
+                    <entry>
+                        <para>Register only the namespaces.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><para>-r</para></entry>
+                    <entry>
+                        <para>Unregister the namespaces.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>+p</para>
+                    </entry>
+                    <entry>
+                        <para>Register only the plug-ins.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>-p</para>
+                    </entry>
+                    <entry>
+                        <para>Unregister only the plug-ins.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><para>/? or -?</para></entry>
+                    <entry>
+                        <para>
+                            Show a help page or message dialog.
+                        </para>
+                        <para>
+                            Alternatively, use <legacyBold>/help</legacyBold> or
+                            <legacyBold>-help</legacyBold> to display the help page.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/v or -v</para>
+                    </entry>
+                    <entry>
+                        <para>
+                            Open a registered help file, defined in the 
+                            configuration file for viewing.
+                        </para>
+                        <para>
+                            See also the <legacyBold>/view</legacyBold> option below.
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <table>
+                <title>HelpRegister.exe Options</title>                    
+                <tableHeader>                        
+                    <row>
+                        <entry><para>Options</para></entry>
+                        <entry><para>Description</para></entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry><para>/quiet</para></entry>
+                    <entry>
+                        <para>Suppress all messages.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/nologo</para>
+                    </entry>
+                    <entry>
+                        <para>Suppress the logo.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/useerrorcodes</para>
+                    </entry>
+                    <entry>
+                        <para>
+                            Return a detailed error code; otherwise,
+                            <legacyBold>-1</legacyBold> is returned for all errors.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/xpath:</para>
+                    </entry>
+                    <entry>
+                        <para>
+                            Specify an XPath expression for selective registration
+                            and/or unregistration of namespaces.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/gui</para>
+                    </entry>
+                    <entry>
+                        <para>Run in non-console mode.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>/view</para>
+                    </entry>
+                    <entry>
+                        <para>
+                            Open the successfully registered help file in the 
+                            Microsoft Document Explorer.
+                        </para>
+                        <para>
+                            This is only useful during the registration.
+                        </para>
+                    </entry>
+                </row>
+            </table>
+        </introduction>
+        
+        <!-- Examples -->
+        <section address="section1">
+            <title>Examples</title>
+            <content>
+                <para>
+                    Assuming we have a configuration file, 
+                    <legacyBold>register.xml</legacyBold>.
+                </para>
+                <list class="ordered">
+                    <listItem>                                
+                        <para>
+                            The following will register all the items; namespaces,
+                            filters, plugins etc., defined in the configuration file:
+                        </para>
+                        <code>
+                            HelpRegister.exe /r register.xml
+                        </code>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            The following will register only the namespace, 
+                            all the plugins are left out:
+                        </para>
+                        <code>
+                            HelpRegister.exe +r register.xml
+                        </code>
+                        <para>
+                            You can undo this (i.e. unregister the namespaces)
+                            with the <legacyBold>-r</legacyBold> option.
+                        </para>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            The following will register only the plugins,
+                            which are not defined under namespaces.
+                        </para>
+                        <code>
+                            HelpRegister.exe +p register.xml
+                        </code>
+                        <para>
+                            You can undo this (i.e. unregister the plugins)
+                            with the <legacyBold>-p</legacyBold> option.
+                        </para>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            The following will unregister all items (namespaces,
+                            filters, plugins etc) defined in configuration file:
+                        </para>
+                        <code>HelpRegister.exe /u register.xml</code>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            The following will open a registered help file, defined 
+                            in configuration file, for viewing in the Document Explorer:
+                        </para>
+                        <code>HelpRegister.exe /v register.xml</code>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            The following will register all the items; namespaces,
+                            filters, plugins etc., defined in the configuration file,
+                            and on successful registration, open the help file for viewing:
+                        </para>
+                        <code>
+                            HelpRegister.exe /r /view register.xml
+                        </code>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+        
+        <!-- Advanced Options -->
+        <section address="section2">
+            <title>Selective Register and Unregister</title>
+            <content>
+                <para>
+                    If your configuration file contains multiple namespaces
+                    and/or plugins, you can selectively register and/or
+                    unregister only some of them by selecting them using
+                    XPath syntax. In this case, the matched/selected namespaces
+                    and/or plugins are registered and/or unregistered depending
+                    on the options, all unmatched items are left out.
+                </para>
+                <para>
+                   Consider the following configuration file, which 
+                   contains multiple namespaces:
+                </para>
+                <code language="xml">
+                    <![CDATA[
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <register xmlns:help2="http://www.simmack.de/2006/help2">
+                        <namespace name="NamespaceName" description="Description" file="Collection.HxC">
+                            <file Id="HelpFile1" HxS="HelpFile.HxS" LangId="1033"/>
+                            <!-- ... //-->
+                        </namespace>
+                        <namespace name="NamespaceName" update="yes" noremove="yes">
+                            <!-- ... //-->
+                        </namespace>
+                    </register>                    
+                    ]]>
+                </code>
+                <para>
+                    Clearly, both namespaces have the same name, the difference
+                    is the second indicated updates and no namespace removal.
+                </para>
+                <para>
+                    If you execute the normal unregistration operation, the
+                    second namespace definition will not have any effect, since
+                    the registration tool will have unregistered and removed the
+                    namespace before the second definition is evaluated.
+                </para>
+                <para>
+                    To selectively run the second namespace node during the
+                    unregistration process, you have to use the XPath option.
+                </para>
+                <para>
+                    Now, lets examine the XPath query required:
+                </para>
+                <code>@name="NamespaceName" and @noremove="yes"</code>
+                <para>
+                    The following command will run the second namespace node
+                    (instead of the first namespace node):
+                </para>
+                <code>
+                    HelpRegister.exe -r register.xml /xpath:"[@name='NamespaceName' and @noremove='yes']"
+                </code>
+                <alert class="note">
+                    <list class="bullet">
+                        <listItem>                                     
+                            <para>
+                                Note that using the following code will not have any
+                                effect since both namespace have a <legacyBold>name</legacyBold>
+                                attribute with the value <legacyBold>NamespaceName</legacyBold>.
+                            </para>
+                            <para>@name="NamespaceName"</para>
+                        </listItem>
+                        <listItem>                                    
+                            <para>
+                                The double quotes used in the XPath query
+                            </para>
+                            <para>
+                                <legacyBold>"[@name='NamespaceName' and @noremove='yes']"</legacyBold>
+                            </para>
+                            <para>
+                                is necessary for the complete XPath text to be 
+                                correctly extracted from the command line.
+                            </para>
+                        </listItem>
+                    </list>
+                </alert>
+                <para>
+                    The registration tool searches for the matching 
+                    nodes and retrieves the appropriate action. In this
+                    case the contents of namespaces (possibly new compound 
+                    documents and filters) are unregistered, but the 
+                    namespace itself is not removed. 
+                </para>
+            </content>
+        </section>
+        
+        <!-- Error Codes -->
+        <section address="section3">
+            <title>Error Codes</title>
+            <content>
+                <para>
+                    When the HelpRegister.exe tool runs successfully, it
+                    returns 0; otherwise, it returns an error code. The
+                    possible error codes are documented below:
+                </para>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry><para>Value</para></entry>
+                            <entry><para>Description</para></entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry><para>-1</para></entry>
+                        <entry>
+                            <para>
+                                An error occurred during the registration.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>0</para></entry>
+                        <entry>
+                            <para>Successful or no errors.</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>1</para></entry>
+                        <entry>
+                            <para>
+                                Insufficient number of parameters, there
+                                must be at least two; the option and the
+                                configuration file.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>2</para></entry>
+                        <entry>
+                            <para>
+                                The MS Help 2.0 runtime is not installed and/or registered.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>3</para></entry>
+                        <entry>
+                            <para>
+                                The user does not have administrator privileges.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>4</para></entry>
+                        <entry>
+                            <para>
+                                A command option is not specified.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>5</para></entry>
+                        <entry>
+                            <para>
+                                The specified configuration file does not exist.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para>6</para></entry>
+                        <entry>
+                            <para>
+                                The specified configuration file is not valid.
+                            </para>
+                            <para>
+                                The registration process will validate the 
+                                configuration file using the provided XML schema.
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+                <alert class="important">
+                    <list class="bullet">
+                        <listItem>                                    
+                            <para>
+                                The default code returned on error is 
+                                <legacyBold>-1</legacyBold>.
+                            </para>
+                        </listItem>
+                        <listItem>
+                            <para>                                        
+                                The other error codes are only available when 
+                                the <legacyBold>/useerrorcodes</legacyBold> 
+                                option is used.
+                            </para>
+                        </listItem>
+                    </list>
+                </alert>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

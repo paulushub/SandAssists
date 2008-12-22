@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f550" revisionNumber="1">
+    <developerHowToDocument 
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>
+        </introduction>
+        
+        <procedure>
+            <!--The title of the procedure-->
+            <title>[TODO: The title of this procedure]</title>
+            <!--
+            The procedure steps: optional class = ordered|bullet
+            Tips:
+               1. The <steps> can have several <step> and/or a <procedure>
+               2. The <content> of each <step> can have a <procedure>
+            -->
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <!--
+                        The alert optional class = note|caution|important|
+                        tip|warning|security note|visual basic note|
+                        visual c# note|visual c++ note|visual j# note
+                        -->
+                        <alert class="tip">
+                            <para>
+                                [TODO: Paragraph 1]
+                            </para>
+                            <para>
+                                [TODO: Paragraph 2]
+                            </para>
+                        </alert>
+                        <para>
+                            Here is the source code...
+                        </para>
+                        <code language="c#">
+                            // TODO: The C# codes
+                        </code>
+                        <code language="vb">
+                            ' TODO: The VB.NET codes
+                        </code>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <para>
+                            [TODO: Paragraph 2]
+                        </para>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+                <content>
+                    <para>[TODO: Conclucsion of the procedure.]</para>
+                </content>                 
+            </conclusion>
+        </procedure>
+        
+        <!--
+        You can have one or more <section>, but not <sections>.
+        Each <section> can have <sections> to create sub-sections.
+        The top <section>s are collapsible, but the sub-sections are not.
+        Tips:
+          1. The <content> of each <section> can have a <procedure>.
+        -->
+        <section>
+            <title>Title - Section 1</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+                <procedure>
+                    <title>[Title of the procedure]</title>
+                    <steps class="bullet">
+                        <step>
+                            <content>
+                                <para>Step 1</para>
+                            </content>
+                        </step>
+                        <step>
+                            <content>
+                                <para>Step 2</para>
+                            </content>
+                        </step>
+                    </steps>
+                </procedure>
+            </content>
+            <sections>
+                <section>
+                    <title>Title - Sub-Section 1</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>Title - Sub-Section 2</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </section>
+        <section>
+            <title>Title - Section 2</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+                <procedure>
+                    <title>[Title of the procedure]</title>
+                    <steps class="bullet">
+                        <step>
+                            <content>
+                                <para>Step 1</para>
+                            </content>
+                        </step>
+                        <step>
+                            <content>
+                                <para>Step 2</para>
+                            </content>
+                        </step>
+                    </steps>
+                </procedure>
+            </content>
+        </section>
+
+        <codeExample>
+            <description>
+                <content>
+                    <para>[TODO: Provide a description of the ff. code]</para>
+                </content>
+            </description>
+            <code language="c#">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="vb">
+                Public Class Sample
+
+                End Class
+            </code>
+            <comments>
+                <content>
+                    <para>
+                        You can compile C# codes the using the...
+                    </para>
+                    <para>
+                        You can compile VB codes the using the...
+                    </para>
+                </content>
+            </comments>
+            <input>
+                <code>The input is...</code>
+            </input>
+            <output>
+                <code>The output is...</code>
+            </output>
+            <sampleOutput>
+                <code>The sample output is...</code>
+            </sampleOutput>
+        </codeExample>
+
+        <buildInstructions>
+            <content>
+                <para>
+                    [TODO: The following are the build instructions...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Instruction 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Instruction 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </buildInstructions>
+
+        <robustProgramming>
+            <content>
+                <para>
+                    [TODO: The following are the tips for robust programming...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Tip 1...do not code]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Tip 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </robustProgramming>
+
+        <security>
+            <content>
+                <para>
+                    [TODO: Note the following security instructions...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Security 1...do not code]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Security 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </security>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    </developerHowToDocument>
+</topic>

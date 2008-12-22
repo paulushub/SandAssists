@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f110" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!-- Provide the displayed title of this document -->
+        <!--<title>Help Files Registration</title>-->
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                In this topic, we will introduce a Help 2.0 registration tool, 
+                the <legacyBold>HelpRegister.exe</legacyBold>. 
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+            <para>
+                The Microsoft Help 2.0 files must be registered on the target computer 
+                before it can be viewed.
+                Basically, this registration is providing your help file with a
+                globally unique name, called the namespace, by which it can be referenced.
+                Any other help file can reference your help file by its namespace without
+                knowing the exactly location of your help file on disk.
+            </para>
+            <list class="ordered">
+                <listItem>
+                    <para>
+                        <legacyBold>Registering Using Merge Modules</legacyBold>
+                    </para>
+                    <para>
+                        Microsoft provides a means of registering help file using the
+                        Windows Installer, and provides a number of merge modules for
+                        this method.                        
+                    </para>
+                    <para>
+                        If wish to use this method, you can read more at the following
+                        links:
+                    </para>
+                    <list class="bullet">
+                        <listItem>
+                            <para>
+                                <externalLink>
+                                    <linkText>Deploying Your Help Collection</linkText>
+                                    <linkUri>http://msdn.microsoft.com/en-us/library/bb165765(VS.80).aspx</linkUri>
+                                </externalLink>
+                            </para>
+                        </listItem>
+                        <listItem>
+                            <para>
+                                <externalLink>
+                                    <linkText>Walkthrough: Registering and Integrating Help Using Windows Installer</linkText>
+                                    <linkUri>http://msdn.microsoft.com/en-us/library/bb164959(VS.80).aspx</linkUri>
+                                </externalLink>
+                            </para>
+                        </listItem>
+                    </list>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Registering Using HelpRegister</legacyBold>
+                    </para>
+                    <para>
+                        For a .NET developer, this is the easiest and the most convenient
+                        way to test and deploy your help files. The rest of this document
+                        will provide information on how to use this tool.
+                    </para>
+                </listItem>
+            </list>
+            <para>
+                This document is the user manual for the <legacyBold>HelpRegister</legacyBold> 
+                program, the free and open source Microsoft Help 2.0 registration tool, 
+                and it provides information on how to register and/or unregister namespaces, 
+                help files, filters and plug-ins so that it can be viewed in the 
+                Microsoft Document Explorer.
+            </para>
+            <para>
+                The <legacyBold>HelpRegister</legacyBold> is developed by
+                Mathias Simmack, and it is being provided by the Sandcastle Assist
+                Team to users, and will be supported in the Sandcastle Assist
+                build libraries.
+            </para>
+            <para>
+                The HelpRegister tool is also available as part of the SharpDevelop
+                program, where it is named Help2Register.
+            </para>
+            <alert class="note">
+                <list class="bullet">
+                    <listItem>                        
+                        <para>
+                            This document does not provide tutorials on how to generate
+                            the Help 2.0 Collection files, the structure or contents of
+                            those files.
+                        </para>
+                    </listItem>
+                    <listItem>                        
+                        <para>
+                            It assumes the Help 2.0 Collection files are created, or you
+                            know how to create them using the Sandcastle or other tools.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            There are few differences between the HelpRegister tool and
+                            the Help2Register tool (found in the SharpDevelop). Some of
+                            the known differences are summarized below:
+                        </para>
+                        <table>
+                            <title>Differences Between HelpRegister and Help2Register</title>
+                            <tableHeader>
+                                <row>
+                                    <entry>
+                                        <para></para>
+                                    </entry>
+                                    <entry>
+                                        <para>Help2Register</para>
+                                    </entry>
+                                    <entry>
+                                        <para>HelpRegister</para>
+                                    </entry>
+                                </row>
+                            </tableHeader>
+                            <row>
+                                <entry>
+                                    <para>
+                                        <legacyBold>Application Type</legacyBold>
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>
+                                        A console application.
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para> 
+                                        A Windows Forms application with console mode
+                                        as the default.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>
+                                        <legacyBold>Packaging</legacyBold>
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>                                        
+                                        Distributed with a MSHelpServices.dll,
+                                        which is the .NET wrapper for the COM 
+                                        Help 2.0 services.
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>
+                                        Distributed with an embedded MSHelpServices.dll.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>
+                                        <legacyBold>Validation</legacyBold>
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>
+                                        The validation of the configuration file 
+                                        (discussed below), requires the XML schema
+                                        to be placed in the same directory.
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para> 
+                                        The XML schema is embedded as resources, and
+                                        it is used if the external schema file is not
+                                        available.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>
+                                        <legacyBold>Error Codes</legacyBold>
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>
+                                        Shares error codes with the an earlier help 
+                                        registration tool written by the same author 
+                                        in Delphi.
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para> 
+                                        Uses an updated error codes.
+                                    </para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>
+                                        <legacyBold>Open Help Files</legacyBold>
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para>
+                                        Not supported.
+                                    </para>
+                                </entry>
+                                <entry>
+                                    <para> 
+                                        There is an option to open the successfully
+                                        registered help file in the Microsoft Document Explorer.
+                                    </para>
+                                </entry>
+                            </row>
+                        </table>
+                        <para>
+                            The basic structure of both tools remains the same, so this 
+                            documentation can be used for both.
+                        </para>
+                    </listItem>
+                </list>
+            </alert>
+        </introduction>
+
+        <!-- Requirements and Installation -->
+        <section address="section1">
+            <title>Requirements and Installation</title>
+            <content>
+                <para>
+                    The registration tool itself does not require any installation.
+                </para>
+                <para>
+                    The following are required for the tool to run successfully 
+                    (for Visual Studio 2005/8 users, these are already installed):
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>Microsoft Help 2.0 Runtime</para>
+                    </listItem>
+                    <listItem>
+                        <para>Microsoft .NET 2.0 or later</para>
+                    </listItem>
+                </list>
+                <alert class="important">
+                    <para>
+                        The user must have administrator level privileges to 
+                        successfully install the Help 2.0 files using this tool.
+                    </para>
+                </alert>
+            </content>
+        </section>
+
+        <!-- Help 2.0 Registration Overview -->
+        <section address="section2">
+            <title>Help Registration Overview</title>
+            <content>
+                <para>
+                    By the Microsoft help documentations, there are three basic
+                    scenarios of help registration as outlined below:
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>Single .HxS File</legacyBold>
+                        </para>
+                        <para>
+                            This is considered the simplest, requiring only the .HxS
+                            file itself (no collection-level file is required).
+                        </para>
+                        <para>
+                            The registered single .HxS file is associated with a namespace.
+                            A descriptive string and language identifier can also be
+                            specified.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Multiple .HxS Files</legacyBold>
+                        </para>
+                        <para>
+                            Registering more than one .HxS file requires the 
+                            registration of a collection definition (.HxC) file, 
+                            which forms the master file under which the .HxS files 
+                            are registered.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Plug-in Namespaces</legacyBold>
+                        </para>
+                        <para>
+                            The Help plug-in feature enables you to nest one or more
+                            child namespaces within another namespace, called the
+                            parent. Plug-in namespaces must be initially registered 
+                            with a master .HxC file.
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    All the above scenarios of help registration are supported by the
+                    HelpRegister tool.
+                </para>
+                <para>
+                    The following diagram summarizes the process of compiling and
+                    registering Help 2.0 files using the HelpRegister tool.
+                </para>
+                <mediaLink>
+                    <caption>The Help 2.0 Authoring and Integration Process Overview</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f821"/>
+                </mediaLink>
+                <list class="ordered">
+                    <listItem>
+                        <para>
+                            <legacyBold>Collection-Level Files</legacyBold>
+                        </para>
+                        <para>
+                            These are different files required so that help files are
+                            correctly displayed, when you need to plug one registered
+                            namespace into another:
+                        </para>
+                        <list class="bullet">
+                            <listItem>
+                                <para>
+                                    Collection definition (.HxC) file for the child namespace.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    Table of contents (.HxT) file for the child namespace.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    Keyword index (.HxK) file for each index in the child namespace.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    Attribute definition (.HxA) file for the child namespace.
+                                </para>
+                            </listItem>
+                        </list>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Configuration File</legacyBold>
+                        </para>
+                        <para>
+                            This is an XML configuration or settings file used by the
+                            HelpRegister tool to registered the help files.
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    We will discuss how to create the configuration file and how to 
+                    use the HelpRegister tool in subsequent topics.
+                </para>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+            
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+            
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f604" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 4 - Alerts</title>-->
+        
+        <summary>
+            <para>
+                This provides an illustration of the alert tag.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                The alert is an attention drawing environment...
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Various Alerts</title>
+            <content>
+                <!--
+                        The alert optional class = note|caution|important|
+                        tip|warning|security note|visual basic note|
+                        visual c# note|visual c++ note|visual j# note
+                        -->
+                <alert class="tip">
+                    <para>
+                        This is the tips alert environment...
+                    </para>
+                    <para>
+                        [TODO: Paragraph 2]
+                    </para>
+                </alert>
+                <alert class="note">
+                    <para>
+                        This is the notes alert environment...
+                    </para>
+                </alert>
+                <alert class="caution">
+                    <para>
+                        This is the caution alert environment...
+                    </para>
+                </alert>
+                <alert class="important">
+                    <para>
+                        This is the important alert environment...
+                    </para>
+                </alert>
+                <alert class="warning">
+                    <para>
+                        This is the warning alert environment...
+                    </para>
+                </alert>
+                <alert class="security note">
+                    <para>
+                        This is the security note alert environment...
+                    </para>
+                </alert>
+                <alert class="visual basic note">
+                    <para>
+                        This is the visual basic note alert environment...
+                    </para>
+                </alert>
+                <alert class="visual c# note">
+                    <para>
+                        This is the visual c# note alert environment...
+                    </para>
+                </alert>
+                <alert class="visual c++ note">
+                    <para>
+                        This is the visual c++ note alert environment...
+                    </para>
+                </alert>
+                <alert class="visual j# note">
+                    <para>
+                        This is the visual j# note alert environment...
+                    </para>
+                </alert>
+                <!--<alert>
+                    <para>
+                        This is the "none" alert environment...
+                    </para>
+                </alert>-->
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

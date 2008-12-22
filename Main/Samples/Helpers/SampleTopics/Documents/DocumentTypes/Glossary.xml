@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f555" revisionNumber="1">
+    <developerGlossaryDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <glossary>
+            <title>
+                [TODO: The title of the glossary]
+            </title>
+            <glossaryDiv>
+                <!--[TODO: The title of the glossary division title]-->
+                <title>
+                    C# Terminology
+                </title>
+                <glossaryEntry address="access.modifier">
+                    <terms>
+                        <term termClass="dev">access modifier</term>
+                    </terms>
+                    <definition>
+                        <para>
+                            A keyword, such as private...
+                        </para>
+                    </definition>
+                    <relatedEntry termId="accessible.member" relationType="none"/>
+                </glossaryEntry>
+                <glossaryEntry address="accessible.member">
+                    <terms>
+                        <term termClass="dev">accessible member</term>
+                    </terms>
+                    <definition>
+                        <para>
+                            A member that can be accessed by a given type...
+                        </para>
+                    </definition>
+                    <relatedEntry termId="access.modifier" relationType="none"/>
+                </glossaryEntry>
+            </glossaryDiv>
+            <glossaryDiv>
+                <!--[TODO: The title of the glossary division title]-->
+                <title>
+                    C++ Terminology
+                </title>
+                <glossaryEntry address="Declaration">
+                    <terms>
+                        <term termClass="dev">Declaration</term>
+                    </terms>
+                    <definition>
+                        <para>
+                            A declaration introduces names and...
+                        </para>
+                    </definition>
+                </glossaryEntry>
+                <glossaryEntry address="Definition">
+                    <terms>
+                        <term termClass="dev">Definition</term>
+                    </terms>
+                    <definition>
+                        <para>
+                            A definition provides information that...
+                        </para>
+                    </definition>
+                </glossaryEntry>
+            </glossaryDiv>
+        </glossary>
+
+    </developerGlossaryDocument>
+</topic>

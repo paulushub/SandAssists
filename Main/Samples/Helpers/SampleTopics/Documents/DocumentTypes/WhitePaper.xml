@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f557" revisionNumber="1">
+    <developerWhitePaperDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <summary>
+            <para>
+                [TODO: A summary of the content]
+            </para>
+        </summary>
+
+        <byline>
+            <para>
+                [TODO: A byline...]
+            </para>
+        </byline>
+
+        <date>
+            <para>
+                2007/12/7
+            </para>
+        </date>
+
+        <summarySection>
+            <content>
+                <para>
+                    [TODO: The following are the summary of the sections...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: In the first section...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: In the second section...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </summarySection>
+
+        <downloadCenterLink>
+            <content>
+                <para>
+                    [TODO: Information on download center link...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Download file 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Download file 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </downloadCenterLink>
+
+        <appliesTo>
+            <content>
+                <para>
+                    [TODO: The white paper applies...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Apply 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Apply 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </appliesTo>
+
+        <contents>
+            <content>
+                <para>
+                    [TODO: The contents of this white paper...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Contents 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <content>
+                        <para>
+                            [TODO: Contents 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </contents>
+
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>
+        </introduction>
+
+        <!--
+        You can have one or more <section>, but not <sections>.
+        Each <section> can have <sections> to create sub-sections.
+        The top <section>s are collapsible, but the sub-sections are not.
+        Tips:
+          1. The <content> of each <section> can have a <procedure>.
+        -->
+        <section>
+            <title>Title - Section 1</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>Title - Sub-Section 1</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>Title - Sub-Section 2</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </section>
+        <section>
+            <title>Title - Section 2</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+            </content>
+        </section>
+
+        <conclusion>
+            <content>
+                <para>TODO: Conclusion of the paper...</para>
+            </content>
+        </conclusion>
+
+    </developerWhitePaperDocument>
+</topic>

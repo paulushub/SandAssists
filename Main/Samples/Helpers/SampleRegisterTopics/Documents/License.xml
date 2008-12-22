@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f115" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This topic contains copyrights and license information for the
+                HelpRegister library, tool, documentation and sample.
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The main or actual document contents -->
+        <section address="section1">
+            <title>Copyright Notices</title>
+            <content>
+                <para>
+                    The Help 2.x registration tool and this documentation
+                    are copyrighted:
+                </para>
+                <quote>
+                    <legacyBold>Copyright © 2004 - 2008, Mathias Simmack, All Rights Reserved.</legacyBold>
+                </quote>
+                <list class="bullet">
+                    <listItem>                        
+                        <para>
+                            This documentation is a translation of the German language
+                            version with additional improvements and clarifications.
+                        </para>
+                    </listItem>
+                    <listItem>                        
+                        <para>
+                            No right is reserved for the modifications and improvements to the 
+                            library, tool and documentation by the Sandcastle Assist Team.
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <section address="section2">
+            <title>GNU Lesser General Public License (LGPL)</title>
+            <content>
+                <quote>
+                    Sandcastle HelpRegister, a Help 2.0 registration tool and library.
+                </quote>
+                <quote>
+                    <legacyBold>Copyright (C) 2004 - 2008, Mathias Simmack.</legacyBold>
+                </quote>
+                <quote>
+                    This library is free software; you can redistribute it and/or
+                    modify it under the terms of the GNU Lesser General Public
+                    License as published by the Free Software Foundation; either
+                    version 2.1 of the License, or (at your option) any later version.
+                </quote>
+                <quote>
+                    This library is distributed in the hope that it will be useful,
+                    but WITHOUT ANY WARRANTY; without even the implied warranty of
+                    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+                    Lesser General Public License for more details.
+                </quote>
+                <quote>
+                    You should have received a copy of the GNU Lesser General Public
+                    License along with this library; if not, write to the Free Software
+                    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
+                </quote>
+
+            </content>    
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

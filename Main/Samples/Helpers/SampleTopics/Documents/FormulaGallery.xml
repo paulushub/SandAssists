@@ -1,0 +1,518 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f103" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+        <para>
+            Introducing the Conceptual Help...
+        </para>
+    </introduction>
+    
+    <section>
+        <title>Building a LaTeX formula</title>
+        <content>
+            <para>
+                In this section we present the steps involved in building
+                the following formula:
+            </para>
+            <table>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Final Results</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <math address="MathTeX.-1">
+                                \sum_{i = 1}^{ \left[ \frac{n}{2} \right] }
+                                {x_{i,i + 1}^{i^{2}} \choose \left[ \frac{i + 3}{3} \right]}
+                                \frac{ \sqrt{ \mu(i)^{ \frac{3}{2}} (i^{2} - 1) } }
+                                { \sqrt[3]{\rho(i) - 2} + \sqrt[3]{\rho(i) - 1} }
+                            </math>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                These are steps presented in the <legacyItalic>Math Into LaTeX</legacyItalic>
+                book and available online as <legacyItalic>gallery.tex</legacyItalic>
+                LaTeX file.
+            </para>
+            <alert class="note">
+                <para>
+                    We have rewritten the original version to use only LaTeX 
+                    (or better still LaTeX 2.09) commands. The book version uses
+                    the AMS-LaTeX commands likes <legacyBold>\binom</legacyBold>,
+                    which is not supported by the <legacyItalic>MathTeX</legacyItalic>.
+                </para>
+            </alert>
+
+            <procedure>
+                <title>Building a formula step-by-step</title>
+                <steps class="ordered">
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 1:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.1">
+                                    \left[ \frac{n}{2} \right]
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 2:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.2">
+                                    \sum_{i = 1}^{ \left[ \frac{n}{2} \right] }
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 3:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.3">
+                                    x_{i, i + 1}^{i^{2}}
+                                </math>
+                                and
+                                <math address="MathTeX.14">
+                                    \left[ \frac{i + 3}{3} \right]
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 4:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.4">
+                                    {x_{i,i + 1}^{i^{2}} \choose \left[ \frac{i + 3}{3} \right]}
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 5:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.5">
+                                    \mu(i)^{ \frac{3}{2} } (i^{2} - 1)
+                                </math>
+                                and
+                                <math address="MathTeX.12">
+                                    \sqrt{ \mu(i)^{ \frac{3}{2} } (i^{2} - 1) }
+                                </math>
+                            </para>                            
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 6:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.6">
+                                    \sqrt[3]{ \rho(i) - 2 }
+                                </math> 
+                                and
+                                <math address="MathTeX.13">                                    
+                                    \sqrt[3]{ \rho(i) - 1 }
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 7:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.7">
+                                    \frac{ \sqrt{ \mu(i)^{ \frac{3}{2}} (i^{2} -1) } }
+                                    { \sqrt[3]{\rho(i) - 2} + \sqrt[3]{\rho(i) - 1} }
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                    <step>
+                        <content>
+                            <para>
+                                <legacyBold>Step 8:</legacyBold>
+                            </para>
+                            <para>
+                                <math address="MathTeX.8">
+                                    \sum_{i = 1}^{ \left[ \frac{n}{2} \right] }
+                                    {x_{i,i + 1}^{i^{2}} \choose \left[ \frac{i + 3}{3} \right]}
+                                    \frac{ \sqrt{ \mu(i)^{ \frac{3}{2}} (i^{2} - 1) } }
+                                    { \sqrt[3]{\rho(i) - 2} + \sqrt[3]{\rho(i) - 1} }
+                                </math>
+                            </para>
+                        </content>
+                    </step>
+                </steps>
+            </procedure>
+        </content>        
+    </section>
+
+    <section>
+        <title>Formula gallery</title>
+        <content>
+            <para>
+                This section is also taken from the 
+                <legacyItalic>Math Into LaTeX</legacyItalic> book, and is part
+                of the <legacyItalic>gallery.tex</legacyItalic> file.
+            </para>
+            <list class="ordered">
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 1</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.21">                            
+                            <![CDATA[
+   x \mapsto \{\, c \in C \mid c \leq x \,\} 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 2</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.22">
+                            <![CDATA[
+    \left| \bigcup (\, I_{j} \mid j \in J \,) \right| < \mathfrak{m}
+                           ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 3</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.23">
+                            <![CDATA[
+    A = \{\, x \in X \mid x \in X_{i}, 
+            \mbox{ for some $i \in I$} \,\} 
+                           ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 4</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.24">
+                            <![CDATA[
+   \langle a_{1},a_{2} \rangle \leq \langle a'_{1},a'_{2}\rangle
+    \qquad \mbox{if{f}} \qquad a_{1} < a'_{1} \quad  \mbox{or} 
+    \quad a_{1} = a'_{1} \mbox{ and } a_{2} \leq a'_{2} 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 5</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.25">
+                            <![CDATA[
+   \Gamma_{u'} = \{\, \gamma \mid \gamma < 2\chi, 
+    \ B_{\alpha} \nsubseteq u', \ B_{\gamma} \subseteq u' \,\} 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 6</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.26">
+                            <![CDATA[
+   A = B^{2} \times \mathbb{Z}
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 7</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.27">
+                            <![CDATA[
+   y^C \equiv z \vee \bigvee_{ i \in C } \left[ s_{i}^{C} \right]  
+    \pmod{ \Phi }
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 8</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.28">
+                            <![CDATA[
+   y \vee \bigvee (\, [B_{\gamma}] \mid \gamma \in \Gamma \,) 
+    \equiv z \vee \bigvee (\, [B_{\gamma}] 
+    \mid \gamma \in \Gamma \,) \pmod{ \Phi^{x} } 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 9</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.29">
+                            <![CDATA[
+     f(\mathbf{x}) = \bigvee\nolimits_{\!\mathfrak{m}} 
+     \left(\, 
+        \bigwedge\nolimits_{\mathfrak{m}}
+         (\, x_{j} \mid j \in I_{i} \,) \mid i < \aleph_{\alpha} 
+     \,\right)
+                           ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 10</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.30">
+                            <![CDATA[
+   \left. \widehat{F}(x) \right|_{a}^{b}
+    = \widehat{F}(b) - \widehat{F}(a)
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 11</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.31">
+                            <![CDATA[
+   u \underset{\alpha}{+} v \overset{1}{\thicksim} w 
+    \overset{2}{\thicksim} z 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 12</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.32">
+                            <![CDATA[
+   f(x) \overset{ \text{def} }{ = } x^{2} - 1
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 13</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.33">
+                            <![CDATA[
+   \overbrace{a + b + \cdots + z}^{n}
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 14</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.34">
+                            <![CDATA[
+   \begin{vmatrix} 
+      a + b + c & uv\\ 
+      a + b & c + d 
+   \end{vmatrix}
+   = 7
+                            ]]>
+                        </math>
+                    </para>
+                    <para>and</para>
+                    <para>
+                        <math address="MathTeX.341">
+                            <![CDATA[
+   \begin{Vmatrix} 
+      a + b + c & uv\\ 
+      a + b & c + d 
+   \end{Vmatrix} 
+   = 7
+                            ]]>
+                        </math>
+                    </para>
+                    <para>and</para>
+                    <para>
+                        <math address="MathTeX.342">
+                            <![CDATA[
+   \left\|\begin{array}{cc} 
+      a + b + c & uv\\ 
+      a + b & c + d 
+   \end{array}\right\|
+   = 7
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 15</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.35">
+                            <![CDATA[
+   \sum_{j \in \mathbf{N}} b_{ij} \hat{y}_{j}
+    = \sum_{j \in \mathbf{N}} b^{(\lambda)}_{ij} \hat{y}_{j}
+    + (b_{ii} - \lambda_{i}) \hat{y}_{i} \hat{y} 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 16</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.36">
+                            <![CDATA[
+    \left( \prod^n_{\, j = 1} \hat x_{j} \right) H_{c}
+    = \frac{1}{2} \hat k_{ij} \det \hat{ \mathbf{K} }(i|i)
+                           ]]>
+                        </math>
+                    </para>
+                    <para>and</para>
+                    <para>
+                        <math address="MathTeX.361">
+                            <![CDATA[
+   \biggl( \prod^n_{\, j = 1} \hat x_{j} \biggr) H_{c} 
+    = \frac{1}{2} \hat{k}_{ij} \det \widehat{ \mathbf{K} }(i|i) 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 17</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.37">
+                            <![CDATA[
+  \det \mathbf{K} (t = 1, t_{1}, \ldots, t_{n})
+    = \sum_{I \in \mathbf{n} }(-1)^{|I|} \prod_{i \in I} t_{i} 
+    \prod_{j \in I} (D_{j} + \lambda_{j} t_{j}) 
+    \det \mathbf{A}^{(\lambda)}(\,\overline{I} | \overline{I}\,)
+    = 0 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 18</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.38">
+                            <![CDATA[
+   \lim_{(v, v') \to (0, 0)} 
+    \frac{H(z + v) - H(z + v') - BH(z)(v - v')}
+         {\| v - v' \|} = 0 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 19</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.39">
+                            <![CDATA[
+   \int_{\mathcal{D}} | \overline{\partial u} |^{2} 
+    \Phi_{0}(z) e^{\alpha |z|^2} 
+    \geq c_{4} \alpha \int_{\mathcal{D}} |u|^{2} \Phi_{0} 
+    e^{\alpha |z|^{2}} 
+    + c_{5} \delta^{-2} \int_{A} |u|^{2}  
+    \Phi_{0} e^{\alpha |z|^{2}} 
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>Formula 20</legacyBold>
+                    </para>
+                    <para>
+                        <math address="MathTeX.40">
+                            <![CDATA[
+   \mathbf{A} = 
+   \begin{pmatrix}
+      \dfrac{\varphi \cdot X_{n, 1}}
+            {\varphi_{1} \times \varepsilon_{1}} 
+      & (x + \varepsilon_{2})^{2} & \cdots
+      & (x + \varepsilon_{n - 1})^{n - 1} 
+      & (x + \varepsilon_{n})^{n}\\[10pt]
+      \dfrac{\varphi \cdot X_{n, 1}}
+            {\varphi_{2} \times \varepsilon_{1}} 
+      & \dfrac{\varphi \cdot X_{n, 2}}
+              {\varphi_{2} \times \varepsilon_{2}} 
+      & \cdots & (x + \varepsilon_{n - 1})^{n - 1} 
+      & (x + \varepsilon_{n})^{n}\\
+      \hdotsfor{5}\\
+      \dfrac{\varphi \cdot X_{n, 1}}
+            {\varphi_{n} \times \varepsilon_{1}} 
+      & \dfrac{\varphi \cdot X_{n, 2}}
+              {\varphi_{n} \times \varepsilon_{2}} 
+      & \cdots & \dfrac{\varphi \cdot X_{n, n - 1}}
+                       {\varphi_{n} \times \varepsilon_{n - 1}} 
+      & \dfrac{\varphi\cdot X_{n, n}}
+              {\varphi_{n} \times \varepsilon_{n}}
+   \end{pmatrix} 
+    + \mathbf{I}_{n}
+                            ]]>
+                        </math>
+                    </para>
+                </listItem>
+            </list>
+        </content>
+    </section>
+
+    <relatedTopics>        
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>

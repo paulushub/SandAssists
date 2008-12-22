@@ -125,6 +125,8 @@ namespace Sandcastle.Configurations
                 if (String.IsNullOrEmpty(sandcastleAssist) == false ||
                     Directory.Exists(sandcastleAssist))
                 {
+                    // If the Sandcastle Assist component assembly is in the same 
+                    // directory as the Sandcastle Helpers...
                     string assistComponents = Path.Combine(sandcastleAssist,
                         "Sandcastle.Components.dll");
                     if (File.Exists(assistComponents))
@@ -133,6 +135,7 @@ namespace Sandcastle.Configurations
                     }
                     else
                     {
+                        // Otherwise, if in the "Components" sub-directory...
                         assistComponents = Path.Combine(sandcastleAssist,
                             @"Components\Sandcastle.Components.dll");
                         if (File.Exists(assistComponents))

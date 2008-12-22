@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f030" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                Values of this type are languages identifiers.
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Type contents -->
+        <section address="section1">
+            <title>Type</title>
+            <content>
+                <para>restriction of string</para>
+            </content>
+        </section>
+
+        <!-- The Facets contents -->
+        <section address="section2">
+            <title>Facets</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Value</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>pattern</para>
+                        </entry>
+                        <entry>
+                            <para>[0-9]{4}</para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section3">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:simpleType name="LangIdType">
+		<xs:annotation><xs:documentation>
+			Values of this type are languages identifiers.
+		</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f607" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 7 - Lists</title>-->
+        
+        <summary>
+            <para>
+                [TODO: Lists Contents]
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                [TODO: Both ordered and unordered (bullet) lists are supported.]
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Simple Lists</title>
+            <content>
+                <para>
+                    The following illustrates the ordered list...
+                </para>
+                <para>The .NET languages</para>
+                <!--
+                The list: optional class = ordered|bullet
+                NOTE: The schema list "nobullet" also as a class, but it is
+                      not supported.
+                Tips:
+                   1. The <list> can have several <listItem>
+                   2. The <listItem> can have a <para>, <list>, <code> 
+                      etc sub-elements
+                -->
+                <list class="ordered">
+                    <listItem>
+                        <para>Visual C#</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual Basic</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual J#</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual C++</para>
+                    </listItem>
+                    <listItem>
+                        <para>Iron Python</para>
+                    </listItem>
+                    <listItem>
+                        <para>Iron Ruby</para>
+                    </listItem>
+                    <listItem>
+                        <para>etc</para>
+                    </listItem>
+                </list>
+                <para>
+                    ...and the following illustrates the unordered list...
+                </para>
+                <para>The .NET languages</para>
+                <list class="bullet">
+                    <listItem>
+                        <para>Visual C#</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual Basic</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual J#</para>
+                    </listItem>
+                    <listItem>
+                        <para>Visual C++</para>
+                    </listItem>
+                    <listItem>
+                        <para>Iron Python</para>
+                    </listItem>
+                    <listItem>
+                        <para>Iron Ruby</para>
+                    </listItem>
+                    <listItem>
+                        <para>etc</para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+        
+        <section>
+            <title>Advanced Lists</title>
+            <content>
+                <para>
+                    The following illustrates the ordered list...
+                </para>
+                <para>The .NET languages</para>
+                <list class="ordered">
+                    <listItem>
+                        <para><legacyBold>Visual C#</legacyBold></para>
+                        <para>The following are C# books...</para>
+                        <alert class="warning">
+                            <para>
+                                No adverts here, please!
+                            </para>
+                        </alert>
+                        <para>                            
+                        </para>
+                        <list class="bullet">
+                            <listItem>
+                                <para>Programming C# in 1-day</para>
+                            </listItem>
+                            <listItem>
+                                <para>Programming C# in 2-days</para>
+                            </listItem>
+                            <listItem>
+                                <para>Programming C# in 3-days</para>
+                            </listItem>
+                        </list>
+                        <para>The following shows further information on the above books:</para>
+                        <table>
+                            <title>If these books are written...</title>
+                            <tableHeader>
+                                <row>
+                                    <entry>
+                                        <para>Title</para>
+                                    </entry>
+                                    <entry>
+                                        <para>Pages</para>
+                                    </entry>
+                                    <entry>
+                                        <para>Amazing.com Ranking</para>
+                                    </entry>
+                                </row>
+                            </tableHeader>
+                            <row>
+                                <entry>
+                                    <para>C# in 1-day</para>
+                                </entry>
+                                <entry>
+                                    <para>10</para>
+                                </entry>
+                                <entry>
+                                    <para>1</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>C# in 2-days</para>
+                                </entry>
+                                <entry>
+                                    <para>20</para>
+                                </entry> 
+                                <entry>
+                                    <para>2</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>C# in 3-days</para>
+                                </entry>
+                                <entry>
+                                    <para>30</para>
+                                </entry>
+                                <entry>
+                                    <para>3</para>
+                                </entry>
+                            </row>
+                        </table>
+                        <para>
+                            The following illustrates the "Hello, World" in C#.
+                        </para>
+                        <code language="c#">
+                        using System;
+
+                        class Sample
+                        {
+                            static void Main(string[] args)
+                            {
+                                Console.WriteLine("Hello, World!");
+                            }
+                        }
+                        </code>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>Visual Basic</legacyBold></para>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>Visual J#</legacyBold></para>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>Visual C++</legacyBold></para>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>Iron Python</legacyBold></para>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>Iron Ruby</legacyBold></para>
+                    </listItem>
+                    <listItem>
+                        <para><legacyBold>etc</legacyBold></para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

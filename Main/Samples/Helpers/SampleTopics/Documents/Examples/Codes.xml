@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f606" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 6 - Codes</title>-->
+        
+        <summary>
+            <para>
+                This provides an illustration of the source codes.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Source Code Environments</title>
+            <content>
+            </content>
+        </section>
+
+        <codeExample>
+            <description>[TODO: Provide a description of the ff. code]</description>
+            <!--
+            The language attribute can assume any of the following:
+            cpp, vb, vbs, js, c#, j#, jscript#, cpp#, vb#, xml, html, 
+            unstlib, minterastlib, mintraastlib, vb-c#, jscript, scr
+            -->
+            <code>
+                TODO: This uses no <legacyBold>language</legacyBold> attribute.
+            </code>
+            <code language="none">
+                TODO: language = none
+            </code>
+            <code language="cpp">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="vb">
+                Public Class Sample
+
+                End Class
+            </code>
+            <code language="vbs">
+                Sub ConvertTemp()
+                
+                    MsgBox "The temperature is 10 degrees C."
+
+                End Sub
+            </code>
+            <code language="js">
+                // TODO
+            </code>
+            <code language="c#">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="j#">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="jscript#">
+                // TODO
+            </code>
+            <code language="cpp#">
+                // TODO
+            </code>
+            <code language="vb#">
+                Public Class Sample
+
+                End Class
+            </code>
+            <code language="xml">
+                <![CDATA[
+                <?xml version="1.0" encoding="utf-8"?>
+                <books>
+                    <book>
+                        <author>A B</author>
+                        <title>Programming with J#...</title>
+                    </book>
+                    <book>
+                        <author>C D</author>
+                        <title>Programming with C#...</title>
+                    </book>
+                </books>
+                ]]>
+            </code>
+            <code language="html">
+                <![CDATA[
+                <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                <html xmlns="http://www.w3.org/1999/xhtml" >
+                    <head>
+                        <title>Conceptual Help</title>
+                    </head>
+                    <body>
+                        Learning Conceptual Help...
+                    </body>
+                </html>
+                ]]>
+            </code>
+            <code language="unstlib">
+                TODO - unstlib 
+            </code>
+            <code language="minterastlib">
+                TODO - minterastlib
+            </code>
+            <code language="mintraastlib">
+                TODO - mintraastlib
+            </code>
+            <code language="vb-c#">
+                public class Sample
+                {
+                }
+
+                Public Class Sample
+
+                End Class
+            </code>
+            <code language="jscript">
+                // TODO
+            </code>
+            <code language="scr">
+                TODO - scr
+            </code>
+            <comments>
+                <content>
+                    <para>
+                        You can compile C# codes the using the...
+                    </para>
+                    <para>
+                        You can compile VB codes the using the...
+                    </para>
+                </content>
+            </comments>
+            <input>
+                <code>The input is...</code>
+            </input>
+            <output>
+                <code>The output is...</code>
+            </output>
+            <sampleOutput>
+                <code>The sample output is...</code>
+            </sampleOutput>
+        </codeExample>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

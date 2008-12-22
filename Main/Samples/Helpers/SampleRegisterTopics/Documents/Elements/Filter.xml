@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f012" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This node is required to register a filter.
+            </para>
+            <para>
+                The content of this node is the filter query string. Please use a 
+                CDATA block. If there is no content, an empty filter will be created.
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Used By contents -->
+        <section address="section3">
+            <title>Used By</title>
+            <content>
+                <para>
+                    <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">...</link>
+                </para>
+            </content>
+        </section>
+
+        <!-- The Attributes contents -->
+        <section address="section5">
+            <title>Attributes</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>name</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute specifies the filter name, you will 
+                                see in the viewer's combobox. Use a descriptive 
+                                name here. The attribute is required.
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:element name="filter">
+		<xs:annotation><xs:documentation>
+			This node is required to register a filter.
+		</xs:documentation></xs:annotation>
+	  	<xs:complexType>
+	  		<xs:simpleContent>
+				<xs:annotation><xs:documentation>
+					The content of this node is the filter query string. Please use
+					a CDATA block. If there is no content, an empty filter will be
+					created.
+				</xs:documentation></xs:annotation>
+	  			<xs:extension base="xs:string">
+	  				<xs:attribute name="name" type="xs:string" use="required">
+	  					<xs:annotation><xs:documentation>
+	  						This attribute specifies the filter name, you will see
+	  						in the viewer's combobox. Use a descriptive name here.
+	  						The attribute is required.
+	  					</xs:documentation></xs:annotation>
+	  				</xs:attribute>
+	  			</xs:extension>
+	  		</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">...</link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

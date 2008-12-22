@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<files>
+    <!--
+    Currently, I do not know if these attributes are needed, 
+    if left out, it will be set to 
+    topicSchemaId="DevHowTo" topicSchemaName="HowTo"
+    
+    The format under consideration is:
+    <file name="File.xml" topicSchemaId="DevHowTo" topicSchemaName="HowTo"/>
+    
+    Until the issue on the relevance of topicSchemaId/topicSchemaName is
+    resolved, we will use the simple format:
+    <file name="File.xml" title="Title of the content"/>
+    -->
+    <file name="Document.xml" title="Quick Start"/>
+    <file name="MathDocument.xml" title="Math Document"/>
+    <file name="FormulaGallery.xml" title="Formula Gallery"/>
+    <file name="CodeTest.xml" title="Code Tests"/>
+    <file name="Testing.xml" title="Testing"/>
+    <file name="Tutorials\Tutorial.xml" title="Getting Started">
+        <file name="Tutorials\Introduction.xml" title="Introduction"/>
+        <file name="Tutorials\QuickStart.xml" title="Quick Start"/>
+        <file name="Tutorials\Issues.xml" title="Issues"/>
+        <file name="Tutorials\CodeTest.xml" title="Code Tests"/>
+    </file>    
+    <file name="DocumentTypes\Documents.xml" title="Document Types">
+        <file name="DocumentTypes\Conceptual.xml" title="The Conceptual Document"/>
+        <file name="DocumentTypes\HowTo.xml" title="The How to Document"/>
+        <file name="DocumentTypes\Orientations.xml" title="The Orientation Document"/>
+        <file name="DocumentTypes\Samples.xml" title="The Samples Document"/>
+        <file name="DocumentTypes\WhitePaper.xml" title="The WhitePaper Document"/>
+        <file name="DocumentTypes\Walkthrough.xml" title="The Walkthrough Document"/>
+        <file name="DocumentTypes\UIReference.xml" title="The UI Reference Document"/>
+        <file name="DocumentTypes\XmlReference.xml" title="The XML Reference Document"/>
+        <file name="DocumentTypes\ReferenceWithoutSyntax.xml" title="The Reference Without Syntax Document"/>
+        <file name="DocumentTypes\ReferenceWithSyntax.xml" title="The Reference With Syntax Document"/>
+        <file name="DocumentTypes\ErrorMessages.xml" title="The Error Messages Document"/>
+        <file name="DocumentTypes\Troubleshooting.xml" title="The Troubleshooting Document"/>
+        <file name="DocumentTypes\Glossary.xml" title="The Glossary Document"/>
+    </file>
+    <file name="Examples\Examples.xml" title="Illustrative Examples">
+        <file name="Examples\General.xml" title="Example 1 - General"/>
+        <file name="Examples\Tables.xml" title="Example 2 - Table"/>
+        <file name="Examples\DefinitionTables.xml" title="Example 3 - Definition Table"/>
+        <file name="Examples\Alerts.xml" title="Example 4 - Alerts"/>
+        <file name="Examples\Links.xml" title="Example 5 - Links"/>
+        <file name="Examples\Codes.xml" title="Example 6 - Codes"/>
+        <file name="Examples\Lists.xml" title="Example 7 - Lists"/>
+        <file name="Examples\Images.xml" title="Example 8 - Images"/>
+        <file name="Examples\Others.xml" title="Example 9 - Others"/>
+    </file>
+</files>

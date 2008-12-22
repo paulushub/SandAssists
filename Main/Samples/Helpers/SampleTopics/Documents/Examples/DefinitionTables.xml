@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f603" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 3 - Definition Table</title>-->
+        
+        <summary>
+            <para>
+                This provides an illustration of the definition table.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                This element is a two column table without a header or
+                footer. The first column contains the item being defined,
+                the second column contains the definition of the item.
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Creating Definition Table</title>
+            <content>
+                <definitionTable>
+                    <definedTerm>
+                        <newTerm>A</newTerm>
+                    </definedTerm>
+                    <description>
+                        <para>A is...</para>
+                    </description>
+                    <definedTerm>
+                        <newTerm>B</newTerm>
+                    </definedTerm>
+                    <description>
+                        <para>B is...</para>
+                    </description>
+                    <definedTerm>
+                        <newTerm>C</newTerm>
+                    </definedTerm>
+                    <description>
+                        <para>C is...</para>
+                    </description>
+                </definitionTable>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

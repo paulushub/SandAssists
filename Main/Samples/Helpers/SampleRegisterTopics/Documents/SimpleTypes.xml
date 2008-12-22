@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f004" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction/>
+
+        <!-- The main or actual document contents -->
+        <section address="section1">
+            <title>Simple Types</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Simple Type</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>
+                                <externalLink>
+                                    <linkText>LangIdType</linkText>
+                                    <linkUri>6aca5da4-6f94-43a0-9817-5f413d16f030.htm</linkUri>
+                                </externalLink>
+                            </para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Values of this type are languages identifiers.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>
+                                <externalLink>
+                                    <linkText>YesNoType</linkText>
+                                    <linkUri>6aca5da4-6f94-43a0-9817-5f413d16f031.htm</linkUri>
+                                </externalLink>
+                            </para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Values of this type will either be "yes" or "no".
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f015" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This node is required to register a Help 2.0 plug-in. A plug-in 
+                connects two different Help 2.0 namespaces together. But you can 
+                connect real collections (registered *.HxC files) only!
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Diagram contents -->
+        <section address="section1">
+            <title>Diagram</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <!-- The Children contents -->
+        <section address="section2">
+            <title>Children</title>
+            <content>
+                <para>
+                    <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f010">...</link>
+                </para>
+            </content>
+        </section>
+
+        <!-- The Used By contents -->
+        <section address="section3">
+            <title>Used By</title>
+            <content>
+                <para>
+                    <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f016">...</link>
+                </para>
+            </content>
+        </section>
+
+        <!-- The Attributes contents -->
+        <section address="section5">
+            <title>Attributes</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>child</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute specifies the child namespace. The 
+                                attribute is required. The namespace must exist, 
+                                of course.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>merge</para>
+                        </entry>
+                        <entry>
+                            <para>YesNoType</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>yes</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Set this attribute to "no" if you do not want to 
+                                merge the collection after registering it. The 
+                                default value is "yes". The attribute is optional.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>parent</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute specifies the parent namespace. 
+                                The attribute is required. The namespace must 
+                                exist, of course.
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:element name="plugin">
+		<xs:annotation><xs:documentation>
+			This node is required to register a Help 2.0 plug-in. A plug-in
+			connects two different Help 2.0 namespaces together. But you can
+			connect real collections (registered *.HxC files) only!
+		</xs:documentation></xs:annotation>
+	  	<xs:complexType>
+	  		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+	  			<xs:element ref="child"/>
+	  		</xs:sequence>
+			<xs:attribute name="parent" type="xs:string" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute specifies the parent namespace. The attribute
+	  				is required. The namespace must exist, of course.
+	  			</xs:documentation></xs:annotation>
+  			</xs:attribute>
+			<xs:attribute name="child" type="xs:string">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute specifies the child namespace. The attribute
+	  				is required. The namespace must exist, of course.
+	  			</xs:documentation></xs:annotation>
+  			</xs:attribute>
+	  		<xs:attribute name="merge" default="yes" type="YesNoType">
+	  			<xs:annotation><xs:documentation>
+	  				Set this attribute to "no" if you do not want to merge the collection
+	  				after registering it. The default value is "yes". The attribute is
+	  				optional.
+	  			</xs:documentation></xs:annotation>
+			</xs:attribute>
+	  	</xs:complexType>
+	</xs:element>
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f010">...</link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f016">...</link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

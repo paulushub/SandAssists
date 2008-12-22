@@ -1,0 +1,371 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f013" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This node is required to register Help 2.0 documents and filters.
+                The node can include a Help document registration, a filter
+                registration, or both. But it must not be empty.
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Diagram contents -->
+        <section address="section1">
+            <title>Diagram</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <!-- The Children contents -->
+        <section address="section2">
+            <title>Children</title>
+            <content>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f011">...</link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f012">...</link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f014">...</link>
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <!-- The Used By contents -->
+        <section address="section3">
+            <title>Used By</title>
+            <content>
+                <para>
+                    <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f016">...</link>
+                </para>
+            </content>
+        </section>
+
+        <!-- The Attributes contents -->
+        <section address="section5">
+            <title>Attributes</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>description</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The description of the Help 2.0 collection, you 
+                                want to register. This attribute is required.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>file</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The collection file (*.HxC/*.HxS) of the Help 2.0 
+                                collection, you want to register. This attribute 
+                                is required.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>merge</para>
+                        </entry>
+                        <entry>
+                            <para>YesNoType</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>yes</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Set this attribute to "no" if you do not want to 
+                                merge the collection after registering it. The 
+                                default value is "yes". The attribute is optional.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>name</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The internal Namespace name of the Help 2.0 
+                                collection. This attribute is required.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>noremove</para>
+                        </entry>
+                        <entry>
+                            <para>YesNoType</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>no</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Use this attribute if you want to remove files or 
+                                filters without removing the whole namespace. The 
+                                default value is "no". It means, if you are about 
+                                to unregister, it will remove all files and filters, 
+                                listed in your XML file, and then it will also 
+                                remove the namespace. The attribute is optional.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>update</para>
+                        </entry>
+                        <entry>
+                            <para>YesNoType</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>no</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Use this attribute if you want to add new files or 
+                                filters to an existing Help 2.0 namespace. The 
+                                default value is "no". It means, if the namespace 
+                                does exist, it will be removed first and then it 
+                                will be re-registered. If you do not want to 
+                                remove the namespace, set the attribute to "yes". 
+                                The attribute is optional.
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:element name="namespace">
+		<xs:annotation><xs:documentation>
+			This node is required to register Help 2.0 documents and filters. The
+			node can include a Help document registration, a filter registration,
+			or both. But it must not be empty.
+		</xs:documentation></xs:annotation>
+	  	<xs:complexType>
+			<xs:sequence minOccurs="1" maxOccurs="unbounded">
+				<xs:choice>
+					<xs:element ref="file"/>
+					<xs:element ref="filter"/>
+					<xs:element name="plugin">
+						<xs:annotation><xs:documentation>
+							This is a special node to register plug-ins. But it
+							just supports the child node (s. below).
+						</xs:documentation></xs:annotation>
+						<xs:complexType>
+							<xs:sequence minOccurs="1" maxOccurs="unbounded">
+								<xs:element ref="child"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+	  		<xs:attribute name="name" type="xs:string" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				The internal Namespace name of the Help 2.0 collection. This
+	  				attribute is required.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="description" type="xs:string" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				The description of the Help 2.0 collection, you want to register.
+	  				This attribute is required.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="file" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				The collection file (*.HxC/*.HxS) of the Help 2.0 collection,
+	  				you want to register. This attribute is required.
+	  			</xs:documentation></xs:annotation>
+	  			<xs:simpleType>
+	  				<xs:restriction base="xs:string">
+	  					<xs:pattern value=".+\.[Hh][Xx][CcSs]"/>
+	  				</xs:restriction>
+	  			</xs:simpleType>
+	  		</xs:attribute>
+	  		<xs:attribute name="merge" default="yes" type="YesNoType">
+	  			<xs:annotation><xs:documentation>
+	  				Set this attribute to "no" if you do not want to merge the collection
+	  				after registering it. The default value is "yes". The attribute is
+	  				optional.
+	  			</xs:documentation></xs:annotation>
+			</xs:attribute>
+	  		<xs:attribute name="update" default="no" type="YesNoType">
+	  			<xs:annotation><xs:documentation>
+	  				Use this attribute if you want to add new files or filters to an
+	  				existing Help 2.0 namespace. The default value is "no". It means,
+	  				if the namespace does exist, it will be removed first and then it
+	  				will be re-registered. If you do not want to remove the namespace,
+	  				set the attribute to "yes". The attribute is optional.
+	  			</xs:documentation></xs:annotation>
+			</xs:attribute>
+	  		<xs:attribute name="noremove" default="no" type="YesNoType">
+	  			<xs:annotation><xs:documentation>
+	  				Use this attribute if you want to remove files or filters without
+	  				removing the whole namespace. The default value is "no". It means,
+	  				if you are about to unregister, it will remove all files and filters,
+	  				listed in your XML file, and then it will also remove the namespace.
+	  				The attribute is optional.
+	  			</xs:documentation></xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>                    
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f011">...</link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f012">...</link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f014">...</link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

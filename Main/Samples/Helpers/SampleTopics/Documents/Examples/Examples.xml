@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f600" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Ilustrative Examples</title>-->
+        
+        <introduction>
+            <para>
+                In this document you will find the links to the various documents
+                where the illustrations, tips and problems of various tags are provided.
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Available Illustrative Examples</title>
+            <content>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f601">
+                                Example 1
+                            </link>
+                        </para>
+                        <para>
+                            Illustration of various basic tags supported the the 
+                            conceptual help.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f602">
+                                Example 2
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates how to create tables.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f603">
+                                Example 3
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates how to the specialized definition tables.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f604">
+                                Example 4
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates how to use the various "alert" classes.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f605">
+                                Example 5
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates the various ways to provide links in the
+                            conceptual helps.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f606">
+                                Example 6
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates how to include example source codes in
+                            the conceptual helps.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f607">
+                                Example 7
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates the various "list" classes.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f608">
+                                Example 8
+                            </link>
+                        </para>
+                        <para>
+                            Illustrates how to use images in the conceptual
+                            helps.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f609">
+                                Example 9
+                            </link>
+                        </para>
+                        <para>
+                            Just a play ground for tips, ideas and hacks...
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+    </developerConceptualDocument>
+</topic>

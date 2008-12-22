@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f000" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                TODO: Description - Element Template
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Diagram contents -->
+        <section address="section1">
+            <title>Diagram</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <!-- The Children contents -->
+        <section address="section2">
+            <title>Children</title>
+            <content>
+                <para>...</para>
+                <para>
+                    <link xlink:href="">...</link>
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="">...</link>
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <!-- The Used By contents -->
+        <section address="section3">
+            <title>Used By</title>
+            <content>
+                <para>...</para>
+                <para>
+                    <link xlink:href="">...</link>
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="">...</link>
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <!-- The Annotation contents -->
+        <section address="section4">
+            <title>Annotation</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <!-- The Attributes contents -->
+        <section address="section5">
+            <title>Attributes</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>TODO</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    ...
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f000">
+                References
+            </link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

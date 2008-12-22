@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f400" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <summary>
+            <para>
+                In summary, this page will provide links to the various documents
+                types supported by the Microsoft Conceptual Help compiler system named,
+                Sandcastle. 
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                The Conceptual Help introduced in the Sandcastle is based on the
+                Microsoft Assistance Markup Language (MAML), which is an XML-based
+                markup language developed by the Microsoft User Assistance Platform
+                team to provide online help for the Microsoft Windows Vista
+                operating system.
+            </para>
+            <para>
+                The MAML authoring structure is divided into segments related 
+                to a type of content: conceptual, glossary, procedure, 
+                reference, troubleshooting, etc.
+            </para>
+            <para>
+                The segments are referred to as document types in the "paper",
+                and you will find the links to the various document types
+                where the illustrations of the supported tags are provided.
+            </para>
+            <para>
+                This paper provides illustrations of <legacyBold>13</legacyBold>
+                document types. Others, which are mainly related to the Windows
+                SDK documentations, are not illustrated.
+            </para>
+            <alert class="note">
+                <para>
+                    This is based on the conceptual document type, and as you
+                    will see in the output, Sandcastle Help Compiler does not 
+                    distinguish between the "summary" tag and this 
+                    "introduction" tag!
+                </para>
+                <para>
+                    You got the message? This paper is to make it possible to
+                    see what works and what does not, and for you to experiment
+                    with the various documents and tags.
+                </para>
+            </alert>
+        </introduction>
+        
+        <section>
+            <title>The Document Types</title>
+            <content>
+                <para>
+                    The following are the list of the illustrated document types.
+                </para>
+                <alert class="important">
+                    <para>
+                        Not all the document types are well illustrated as this
+                        stage, and some are actually not well supported by the
+                        Sandcastle Help Compiler.
+                    </para>
+                </alert>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f550">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f552">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f553">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f557">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f558">
+                                Label - Not used!                             
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f559">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f560">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f561">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f562">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f554">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f556">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f555">
+                                Label - Not used!
+                            </link>
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the 
+            <link xlink:href="guidFileName"/>,
+            which is NOT recommended (may not be displayed in multiple links)
+            or
+            <link xlink:href="guidFileName">Label - label is not displayed</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f500">
+                Introduction
+            </link>
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f501">
+                A link to the conceptual document
+            </link>
+
+            <externalLink>
+                <linkText>Sandcastle Download</linkText>
+                <linkAlternateText>Sandcastle Download</linkAlternateText>
+                <linkUri>
+                    http://www.microsoft.com/downloads/details.aspx?FamilyId=E82EA71D-DA89-42EE-A715-696E3A4873B2
+                </linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>The Sandcastle Wiki</linkText>
+                <linkAlternateText>The Sandcastle Wiki</linkAlternateText>
+                <linkUri>http://www.sandcastledocs.com/Wiki%20Pages/Home.aspx</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>The Sandcastle Blog</linkText>
+                <linkAlternateText>The Sandcastle Blog</linkAlternateText>
+                <linkUri>http://blogs.msdn.com/sandcastle/default.aspx</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkText>
+                <linkAlternateText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkAlternateText>
+                <linkUri> 
+                    http://forums.microsoft.com/MSDN/ShowForum.aspx?ForumID=66&amp;SiteID=1
+                </linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>
+                    XML, MAML, and Adaptive Content - Assistance Platform Team Blog
+                </linkText>
+                <linkAlternateText>
+                    XML, MAML, and Adaptive Content
+                </linkAlternateText>
+                <linkUri>http://blogs.msdn.com/apblog/archive/2005/05/05/415127.aspx</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>MAML - Microsoft Assistance Markup Language</linkText>
+                <linkAlternateText>MAML - Microsoft Assistance Markup Language</linkAlternateText>
+                <linkUri>
+                    http://www.help-info.de/en/Help_Info_AP_Help/longhorn_maml_example.htm
+                </linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>Microsoft Assistance Markup Language - Wikipedia</linkText>
+                <linkAlternateText>
+                    Microsoft Assistance Markup Language - Wikipedia
+                </linkAlternateText>
+                <linkUri>
+                    http://en.wikipedia.org/wiki/Microsoft_Assistance_Markup_Language
+                </linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

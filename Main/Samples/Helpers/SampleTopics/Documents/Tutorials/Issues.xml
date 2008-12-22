@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f503" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Issues</title>-->
+        
+        <introduction>
+            <para>
+                This page will list some of the issues or problems I have
+                discovered with the October 2007 CTP of the Sandcastle.
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Conceptual Help Issues or Problems</title>
+            <content>
+                <alert class="important">
+                    <para>
+                        These issues are being listed to guide those creating
+                        help contents, and maybe the authors of the Sandcastle.
+                    </para>
+                    <para>
+                        These issues do not affect or impact the usefulness of
+                        this conceptual help support by the Sandcastle Help Compiler.
+                    </para>
+                </alert>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>The &lt;copyright&gt; Tag</legacyBold>
+                        </para>
+                        <para>
+                            The following illustrates its use, it produces
+                            <legacyBold>&amp;copyright;</legacyBold> instead of
+                            the HTML <legacyBold>&amp;copy;</legacyBold>                            
+                        </para>
+                        <quote>
+                            <copyright class="copyright">
+                                <trademark>SandAssist</trademark>
+                                <year>2008</year>
+                                <holder>Sandcastle Assist</holder>
+                            </copyright>
+                        </quote>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Document Type Topic</legacyBold>
+                        </para>
+                        <para>
+                            All the document types must be enclosed in the 
+                            &lt;topic&gt;, even though this tag is not defined in 
+                            the schema.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Document Type Titles</legacyBold>
+                        </para>
+                        <para>
+                            All the document types must be have the 
+                            &lt;title&gt;, even though non of the schamas
+                            defined it.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Document Type Summary/Introduction</legacyBold>
+                        </para>
+                        <para>
+                            Most document types support either &lt;summary&gt;
+                            and/or &lt;introduction&gt;. However, no special
+                            formatting is provided for these tags and using both
+                            is of no value!
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Invalid Conceptual Schema</legacyBold>
+                        </para>
+                        <para>
+                            The October 2007 Sandcastle Conceptual Help schema
+                            is not valid/incomplete, and cannot be used for
+                            document validation.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Glossary Document</legacyBold>
+                        </para>
+                        <para>
+                            This is provided in the page
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f555">Troubleshooting</link>
+                        </para>
+                        <para>
+                            The support is incomplete.
+                        </para>
+                        <list class="ordered">
+                            <listItem>
+                                <para>
+                                    The "title" of each &lt;glossaryDiv&gt; is
+                                    not rendered or formatted.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    The &lt;relatedEntry&gt; does not seems to work.
+                                </para>
+                            </listItem>                            
+                        </list>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Definition Table</legacyBold>
+                        </para>
+                        <para>
+                            The defined by the &lt;definitionTable&gt; tag,
+                            see <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f603">Definition Table</link>
+                        </para>
+                        <para>
+                            It does not appear as defined in the schema.
+                        </para>
+                        <alert class="note">
+                            <para>
+                                The Havana presentation style, however, supports some
+                                form of formatting for the &lt;newTerm&gt; tag.
+                        </para>
+                        </alert>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>FAQ Document Type</legacyBold>
+                        </para>
+                        <para>
+                            The FAQ content is said to be defined by the MAML.
+                            But this is not supported or defined by the version
+                            introduced in the current Sandcastle.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>"nobullet" class of &lt;list&gt; Tag</legacyBold>
+                        </para>
+                        <para>
+                            This is provided in the page
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f607">List</link>
+                        </para>
+                        <para>
+                            I do not know what really to expect, but just take
+                            note that this does not work, and will display
+                            <legacyBold>"Unknown List Class"</legacyBold> even
+                            though this is defined by the schema.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Troubleshooting Document Type</legacyBold>
+                        </para>
+                        <para>
+                            This is provided in the page
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f556">Troubleshooting</link>
+                        </para>
+                        <para>
+                            No specialized tag for troubleshooting-like environment
+                            is provided (like &lt;problem&gt;, &lt;symptom&gt;, 
+                            &lt;cause&gt;, &lt;solution&gt;). So currently, this
+                            document type is not different from the basic conceptual
+                            document type.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>&lt;link&gt; Label</legacyBold>
+                        </para>
+                        <para>
+                            This is provided in the page
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f605">Links</link>
+                        </para>
+                        <para>
+                            The link tag provides a label support, but this is
+                            not rendered.
+                        </para>
+                        <para>
+                            <legacyBold>Use:</legacyBold> &lt;link xlink:href=""&gt;The Link Label&lt;link&gt;
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>White Paper Document Type</legacyBold>
+                        </para>
+                        <para>
+                            This is provided in the page
+                            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f557">WhitePaper</link>
+                        </para>
+                        <para>
+                            There is no special formatting support for the
+                            various specialized tag such as the &lt;summarySection&gt;.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Table support in Havana Presentation</legacyBold>
+                        </para>
+                        <para>
+                            The table environment support in the Havana presentation
+                            style is very buggy!
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>...</legacyBold>
+                        </para>
+                        <para>...</para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <section>
+            <title>Pending Issues</title>
+            <content>
+                <para>
+                    These are issues I have not yet found any way of resolving, mostly
+                    because I do not know how!
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>Creating Keywords or Index</legacyBold>
+                        </para>
+                        <para>
+                            My only guess is that the <legacyBold>&lt;dynamicLink&gt;</legacyBold>
+                            tag may be used, but I do not know how this works.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            ...
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <section>
+            <title>Reported Issues</title>
+            <content>
+                <para>
+                    These are issues reported by others that I have not yet
+                    verified.
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>Feedback Control</legacyBold>
+                        </para>
+                        <para>
+                            It is reported that the Feedback control introduced
+                            in the October 2007 CTP is not supported in the
+                            conceptual help.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Help Presentations</legacyBold>
+                        </para>
+                        <alert class="note">
+                            <para>
+                                This is also included here because, all the issues
+                                related to other presentation styles are not well
+                                investigated.
+                            </para>
+                        </alert>
+                        <para>
+                            Besides the VS-2005 presentation style, the other document
+                            presentations styles, <legacyBold>Havana</legacyBold> and
+                            <legacyBold>Prototype</legacyBold>, are not well supported
+                            in the conceptual help.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Anand Raman</legacyBold>
+                        </para>
+                        <para>
+                            That he is the hard working brain behind the Sandcastle :)
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <relatedTopics>
+            
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

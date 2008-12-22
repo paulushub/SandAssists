@@ -1,0 +1,478 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f011" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This node is required to register a Help 2.0 document.
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Used By contents -->
+        <section address="section3">
+            <title>Used By</title>
+            <content>
+                <para>
+                    <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">...</link>
+                </para>
+            </content>
+        </section>
+
+        <!-- The Attributes contents -->
+        <section address="section5">
+            <title>Attributes</title>
+            <content>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>HxI</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute is optional. You need it if your 
+                                index is in a separate file (*.HxI).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxQ</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute is optional. You just need it if 
+                                you have a combined full-text search file (*.HxQ) 
+                                installed with your Help 2.0 collection.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxQMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Because the Help 2.0 API is not documented, there 
+                                is no real explanation of this attribute. Sorry. 
+                                My guess is that this attribute specifies the ID 
+                                of the disk medium (CD, Floppy, or whatever) if 
+                                the file is on a removable medium. So, if you try 
+                                to open the document, the viewer asks for the 
+                                valid medium and checks its ID with this given value.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxR</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute is optional. You just need it if you 
+                                have a combined attributes file (*.HxR) installed 
+                                with your Help 2.0 collection.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxRMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Because the Help 2.0 API is not documented, there 
+                                is no real explanation of this attribute. Sorry. 
+                                My guess is that this attribute specifies the ID 
+                                of the disk medium (CD, Floppy, or whatever) if 
+                                the file is on a removable medium. So, if you try 
+                                to open the document, the viewer asks for the 
+                                valid medium and checks its ID with this given value.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxS</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This attribute is required because it is the main 
+                                Help document (*.HxS). It's not possible to 
+                                register a Help document without this file.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxSMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Because the Help 2.0 API is not documented, there 
+                                is no real explanation of this attribute. Sorry. 
+                                My guess is that this attribute specifies the ID 
+                                of the disk medium (CD, Floppy, or whatever) if 
+                                the file is on a removable medium. So, if you try 
+                                to open the document, the viewer asks for the valid 
+                                medium and checks its ID with this given value.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>Id</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The Help 2.0 document's internal name. This name 
+                                is required to identify the document. You can use 
+                                the same name in different namespaces, but the name 
+                                has to be unique in a single namespace. The 
+                                attribute is required.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>LangId</para>
+                        </entry>
+                        <entry>
+                            <para>LangIdType</para>
+                        </entry>
+                        <entry>
+                            <para>required</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The document's language id. Typical values are 
+                                1033, 1031, ... The attribute is required.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>SampleMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>string</para>
+                        </entry>
+                        <entry>
+                            <para>optional</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Because the Help 2.0 API is not documented, there 
+                                is no real explanation of this attribute. Sorry. 
+                                My guess is that this attribute specifies the ID 
+                                of the disk medium (CD, Floppy, or whatever) if 
+                                the file is on a removable medium. So, if you try 
+                                to open the document, the viewer asks for the 
+                                valid medium and checks its ID with this given value.
+                            </para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:element name="file">
+		<xs:annotation><xs:documentation>
+			This node is required to register a Help 2.0 document.
+		</xs:documentation></xs:annotation>
+	  	<xs:complexType>
+	  		<xs:attribute name="Id" type="xs:string" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				The Help 2.0 document's internal name. This name is required to
+	  				identify the document. You can use the same name in different
+	  				namespaces, but the name has to be unique in a single namespace.
+	  				The attribute is required.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="LangId" type="LangIdType" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				The document's language id. Typical values are 1033, 1031, ...
+	  				The attribute is required.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxS" use="required">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute is required because it is the main Help document
+	  				(*.HxS). It's not possible to register a Help document without
+	  				this file.
+	  			</xs:documentation></xs:annotation>
+	  			<xs:simpleType>
+	  				<xs:restriction base="xs:string">
+	  					<xs:pattern value=".+\.[Hh][Xx][Ss]"/>
+	  				</xs:restriction>
+	  			</xs:simpleType>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxI">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute is optional. You need it if your index is in a
+	  				separate file (*.HxI).
+	  			</xs:documentation></xs:annotation>
+	  			<xs:simpleType>
+	  				<xs:restriction base="xs:string">
+	  					<xs:pattern value=".+\.[Hh][Xx][IiSs]"/>
+	  				</xs:restriction>
+	  			</xs:simpleType>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxQ">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute is optional. You just need it if you have a
+	  				combined full-text search file (*.HxQ) installed with your
+	  				Help 2.0 collection.
+	  			</xs:documentation></xs:annotation>
+	  			<xs:simpleType>
+	  				<xs:restriction base="xs:string">
+	  					<xs:pattern value=".+\.[Hh][Xx][Qq]"/>
+	  				</xs:restriction>
+	  			</xs:simpleType>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxR">
+	  			<xs:annotation><xs:documentation>
+	  				This attribute is optional. You just need it if you have a combined
+	  				attributes file (*.HxR) installed with your Help 2.0 collection.
+	  			</xs:documentation></xs:annotation>
+	  			<xs:simpleType>
+	  				<xs:restriction base="xs:string">
+	  					<xs:pattern value=".+\.[Hh][Xx][Rr]"/>
+	  				</xs:restriction>
+	  			</xs:simpleType>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxSMediaId" type="xs:string">
+	  			<xs:annotation><xs:documentation>
+	  				Because the Help 2.0 API is not documented, there is no real
+	  				explanation of this attribute. Sorry. My guess is that this
+	  				attribute specifies the ID of the disk medium (CD, Floppy, or
+	  				whatever) if the file is on a removable medium. So, if you try
+	  				to open the document, the viewer asks for the valid medium and
+	  				checks its ID with this given value.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxQMediaId" type="xs:string">
+	  			<xs:annotation><xs:documentation>
+	  				Because the Help 2.0 API is not documented, there is no real
+	  				explanation of this attribute. Sorry. My guess is that this
+	  				attribute specifies the ID of the disk medium (CD, Floppy, or
+	  				whatever) if the file is on a removable medium. So, if you try
+	  				to open the document, the viewer asks for the valid medium and
+	  				checks its ID with this given value.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="HxRMediaId" type="xs:string">
+	  			<xs:annotation><xs:documentation>
+	  				Because the Help 2.0 API is not documented, there is no real
+	  				explanation of this attribute. Sorry. My guess is that this
+	  				attribute specifies the ID of the disk medium (CD, Floppy, or
+	  				whatever) if the file is on a removable medium. So, if you try
+	  				to open the document, the viewer asks for the valid medium and
+	  				checks its ID with this given value.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+	  		<xs:attribute name="SampleMediaId" type="xs:string">
+	  			<xs:annotation><xs:documentation>
+	  				Because the Help 2.0 API is not documented, there is no real
+	  				explanation of this attribute. Sorry. My guess is that this
+	  				attribute specifies the ID of the disk medium (CD, Floppy, or
+	  				whatever) if the file is on a removable medium. So, if you try
+	  				to open the document, the viewer asks for the valid medium and
+	  				checks its ID with this given value.
+	  			</xs:documentation></xs:annotation>
+	  		</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">
+                namespace Element
+            </link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

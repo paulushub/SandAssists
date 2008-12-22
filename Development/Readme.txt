@@ -7,6 +7,6 @@ The current projects are
 1. Iris - Free Syntax Highlighter
    Url: http://duartes.org/iris/
    Used By: This is used by the code coloring Sandcastle Custom Components
-   Comment: We recompiled to add signature (signing).
+   Comment: We recompiled to add strong name (signing).
 
 2. ...

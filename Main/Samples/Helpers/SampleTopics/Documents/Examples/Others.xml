@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f609" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 9 - Others</title>-->
+        
+        <summary>
+            <para>
+                This provides an illustration for all the miscellaneous tags 
+                and provides some useful tricks.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                [TODO:...]
+            </para>
+        </introduction>
+        
+        <section>
+            <title>[TODO: Title...]</title>
+            <content>
+                <para>[TODO:...]</para>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

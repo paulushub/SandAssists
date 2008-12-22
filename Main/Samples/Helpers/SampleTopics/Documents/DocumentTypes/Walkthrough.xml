@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f558" revisionNumber="1">
+    <developerWalkthroughDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <summary>
+            <para>
+                [TODO: A summary of the walkthrough]
+            </para>
+        </summary>
+
+        <introduction>
+            <para>
+                [TODO: An introduction to this walkthrough]
+            </para>
+        </introduction>
+
+        <prerequisites>
+            <content>
+                <para>
+                    [TODO: The following are the prerequisites...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>[TODO: Title...]</title>
+                    <content>
+                        <para>
+                            [TODO: Prerequisite 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>[TODO: Title...]</title>
+                    <content>
+                        <para>
+                            [TODO: Prerequisite 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </prerequisites>
+
+        <procedure>
+            <!--The title of the procedure-->
+            <title>[TODO: The title of this procedure]</title>
+            <!--
+            The procedure steps: optional class = ordered|bullet
+            Tips:
+               1. The <steps> can have several <step> and/or a <procedure>
+               2. The <content> of each <step> can have a <procedure>
+            -->
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <!--
+                        The alert optional class = note|caution|important|
+                        tip|warning|security note|visual basic note|
+                        visual c# note|visual c++ note|visual j# note
+                        -->
+                        <alert class="tip">
+                            <para>
+                                [TODO: Paragraph 1]
+                            </para>
+                            <para>
+                                [TODO: Paragraph 2]
+                            </para>
+                        </alert>
+                        <para>
+                            Here is the source code...
+                        </para>
+                        <code language="c#">
+                            // TODO: The C# codes
+                        </code>
+                        <code language="vb">
+                            ' TODO: The VB.NET codes
+                        </code>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <para>
+                            [TODO: Paragraph 2]
+                        </para>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+                <content>
+                    <para>[TODO: Conclusion of the procedure.]</para>
+                </content>
+            </conclusion>
+        </procedure>
+
+        <nextSteps>
+            <content>
+                <para>
+                    [TODO: In the next section of this walkthrough...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>[TODO: Title]</title>
+                    <content>
+                        <para>
+                            [TODO: Next section information 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>[TODO: Title]</title>
+                    <content>
+                        <para>
+                            [TODO: Next section information 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </nextSteps>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    </developerWalkthroughDocument>
+</topic>

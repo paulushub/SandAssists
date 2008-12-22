@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "Helpers\ConsoleSample\ConsoleSample.csproj", "{9275708E-047E-42AB-A5E4-545DC80539ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibrary", "Helpers\SampleLibrary\SampleLibrary.csproj", "{0009470D-BB30-4147-B373-356A4EE11441}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleRegisterTopics", "Helpers\SampleRegisterTopics\SampleRegisterTopics.csproj", "{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTopics", "Helpers\SampleTopics\SampleTopics.csproj", "{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs06.codeplex.com/
+		SccProjectUniqueName0 = Helpers\\ConsoleSample\\ConsoleSample.csproj
+		SccProjectName0 = Helpers/ConsoleSample
+		SccLocalPath0 = Helpers\\ConsoleSample
+		SccProjectUniqueName1 = Helpers\\SampleLibrary\\SampleLibrary.csproj
+		SccProjectName1 = Helpers/SampleLibrary
+		SccLocalPath1 = Helpers\\SampleLibrary
+		SccProjectUniqueName2 = Helpers\\SampleRegisterTopics\\SampleRegisterTopics.csproj
+		SccProjectName2 = Helpers/SampleRegisterTopics
+		SccLocalPath2 = Helpers\\SampleRegisterTopics
+		SccProjectUniqueName3 = Helpers\\SampleTopics\\SampleTopics.csproj
+		SccProjectName3 = Helpers/SampleTopics
+		SccLocalPath3 = Helpers\\SampleTopics
+		SccLocalPath4 = .
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9275708E-047E-42AB-A5E4-545DC80539ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9275708E-047E-42AB-A5E4-545DC80539ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9275708E-047E-42AB-A5E4-545DC80539ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9275708E-047E-42AB-A5E4-545DC80539ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f551" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <summary>
+            <para>
+                [TODO: A summary of the content]
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>               
+        </introduction>
+        
+        <!--
+        You can have one or more <section>, but not <sections>.
+        Each <section> can have <sections> to create sub-sections.
+        The top <section>s are collapsible, but the sub-sections are not.
+        Tips:
+          1. The <content> of each <section> can have a <procedure>.
+        -->
+        <section>
+            <title>Title - Section 1</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+                <!--
+                This is the <list> tag example.
+                The required class = bullet|ordered
+                NOTE: "nobullet" class listed in the schema does not work!
+                -->
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            (bullet) List item 1...
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            (bullet) List item 2...
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+            <sections>
+                <section>
+                    <title>Title - Sub-Section 1</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>Title - Sub-Section 2</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                        <list class="ordered">
+                            <listItem>
+                                <para>
+                                    (ordered) List item 1...
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    (ordered) List item 2...
+                                </para>
+                            </listItem>
+                        </list>
+                    </content>
+                </section>
+            </sections>
+        </section>
+        <section>
+            <title>Title - Section 2</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+            </content>
+        </section>
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f550">The How To</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    </developerConceptualDocument>
+</topic>

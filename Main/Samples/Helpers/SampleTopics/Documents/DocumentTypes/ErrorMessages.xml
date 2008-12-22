@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f554" revisionNumber="1">
+    <developerErrorMessageDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <nonLocErrorTitle>The Error Messages Document - 1</nonLocErrorTitle>
+        <secondaryErrorTitle>The Error Messages Document - 2</secondaryErrorTitle>
+        
+        <summary>
+            <para>
+                [TODO: A summary of the content]
+            </para>
+        </summary>
+
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>
+        </introduction>
+        
+        <procedure>
+            <!--The title of the procedure-->
+            <title>[TODO: The title of this procedure]</title>
+            <!--
+            The procedure steps: optional class = ordered|bullet
+            Tips:
+               1. The <steps> can have several <step> and/or a <procedure>
+               2. The <content> of each <step> can have a <procedure>
+            -->
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <!--
+                        The alert optional class = note|caution|important|
+                        tip|warning|security note|visual basic note|
+                        visual c# note|visual c++ note|visual j# note
+                        -->
+                        <alert class="important">
+                            <para>
+                                [TODO: Paragraph 1]
+                            </para>
+                            <para>
+                                [TODO: Paragraph 2]
+                            </para>
+                        </alert>
+                        <para>
+                            Here is the source code...
+                        </para>
+                        <code language="c#">
+                            // TODO: The C# codes
+                        </code>
+                        <code language="vb">
+                            ' TODO: The VB.NET codes
+                        </code>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            [TODO: Paragraph 1]
+                        </para>
+                        <para>
+                            [TODO: Paragraph 2]
+                        </para>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+                <content>
+                    <para>
+                        [TODO: Conclusions of the procedure.]
+                    </para>
+                </content>
+            </conclusion>
+        </procedure>
+
+        <codeExample>
+            <description>
+                <content>
+                    <para>[TODO: Provide a description of the ff. code]</para>
+                </content>
+            </description>
+            <code language="c#">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="vb">
+                Public Class Sample
+                
+                End Class
+            </code>
+            <comments>
+                <content>
+                    <para>
+                        You can compile C# codes the using the...
+                    </para>
+                    <para>
+                        You can compile VB codes the using the...
+                    </para>
+                </content>
+            </comments>
+            <input>
+                <code>The input is...</code>
+            </input>
+            <output>
+                <code>The output is...</code>
+            </output>
+            <sampleOutput>
+                <code>The sample output is...</code>
+            </sampleOutput>
+        </codeExample>
+        
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    
+    </developerErrorMessageDocument>
+</topic>

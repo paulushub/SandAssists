@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f016" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This is the main node. You have to use this node! The node can 
+                include a namespace registration, a plug-in registration, or both. 
+                But it must not be empty.
+            </para>
+            <table>
+                <title/>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <externalLink>
+                                <linkText>http://www.simmack.de/2006/help2</linkText>
+                                <linkUri>http://www.simmack.de/2006/help2</linkUri>
+                            </externalLink>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The Diagram contents -->
+        <section address="section1">
+            <title>Diagram</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <!-- The Children contents -->
+        <section address="section2">
+            <title>Children</title>
+            <content>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">...</link>
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f015">...</link>
+                        </para>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+
+        <!-- The Source contents -->
+        <section address="section6">
+            <title>Source</title>
+            <content>
+                <code language="xml">
+                    <![CDATA[
+	<xs:element name="register">
+		<xs:annotation><xs:documentation>
+			This is the main node. You have to use this node! The node can include
+			a namespace registration, a plug-in registration, or both. But it must
+			not be empty.
+		</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="1" maxOccurs="unbounded">
+				<xs:choice>
+					<xs:element ref="namespace"/>
+					<xs:element ref="plugin"/>
+				</xs:choice>
+			</xs:sequence>
+  		</xs:complexType>
+	</xs:element>
+                    ]]>
+                </code>
+            </content>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f013">...</link>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f015">...</link>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

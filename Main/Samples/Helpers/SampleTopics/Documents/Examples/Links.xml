@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f605" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 5 - Links</title>-->
+        
+        <summary>
+            <para>
+                This provides an illustration of Lists.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                Demonstrating links supported by the Conceptual Help.
+            </para>
+        </introduction>
+
+        <section>
+            <title>Links Illustrations</title>
+            <content>
+                <para>[TODO:...]</para>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the 
+            <link xlink:href="guidFileName"/>,
+            which is NOT recommended (may not be displayed in multiple links)
+            or
+            <link xlink:href="guidFileName">Label - label is not displayed</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f550">A link to the How To document</link>
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">A link to the conceptual document</link>
+
+            <externalLink>
+                <linkText>Microsoft Logo</linkText>
+                <linkAlternateText>Microsoft Logo</linkAlternateText>
+                <linkUri>http://msdn2.microsoft.com/Platform/Controls/Footer/resources/msdn.blkmslogo.gif</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>Image File</linkText>
+                <linkAlternateText>Image File</linkAlternateText>
+                <linkUri>media/NativityBanner.jpg</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>The Conceptual Document</linkText>
+                <linkAlternateText>Image File</linkAlternateText>
+                <linkUri>2aca5da4-6f94-43a0-9817-5f413d16f551.htm</linkUri>
+            </externalLink>
+            <!--
+            NOTE: The external links fails if the href contains "&", it is XML!. 
+            A work-around is using "<![CDATA[...]]>" or "&amp;"
+            -->
+            <externalLink> 
+                <linkText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkText>
+                <linkAlternateText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://forums.microsoft.com/MSDN/ShowForum.aspx?ForumID=66&SiteID=1
+                    ]]>
+                </linkUri>
+            </externalLink>
+            <externalLink> 
+                <linkText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkText>
+                <linkAlternateText>
+                    Microsoft Developer Documentation and Help System Forum
+                </linkAlternateText>
+                <linkUri>
+                    http://forums.microsoft.com/MSDN/ShowForum.aspx?ForumID=66&amp;SiteID=1
+                </linkUri>
+            </externalLink>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+            <codeEntityReference autoUpgrade="true">T:System.Exception</codeEntityReference>
+            <sampleRef>
+                Links Sample
+            </sampleRef>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

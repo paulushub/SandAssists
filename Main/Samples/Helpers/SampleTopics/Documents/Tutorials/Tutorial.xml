@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f502" revisionNumber="1">
+    <developerHowToDocument 
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Gettting Started</title>-->
+        
+        <introduction>
+            <para>
+                [TODO: Coming soon...]
+            </para>
+        </introduction>
+
+        <section address="section1">
+            <title>Section - Lesson 1</title>
+            <content>
+                <procedure address="procedure1">
+                    <title>What we will do...</title>
+                    <steps address="steps1" class="bullet">
+                        <step>
+                            <content/>
+                        </step>    
+                    </steps>
+                </procedure>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f501">Quick Start</link>
+        </relatedTopics>
+    </developerHowToDocument>
+</topic>

@@ -1,0 +1,1201 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f111" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                In this topic, we will discuss the help registration configuration
+                file, which is required by the HelpRegister tool.
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+            <para>
+                The HelpRegister tool uses XML-based configuration files for
+                the registration process, and in this section we will discuss 
+                the composition of the configuration file.
+            </para>
+            <para>
+                To register and/or unregister Help 2.0 file using this tool,
+                you will need to create a configuration file with the 
+                following basic structure:
+            </para>
+            <code language="xml">
+                <![CDATA[
+                <?xml version="1.0" encoding="UTF-8"?>
+                <register xmlns:help2="http://www.simmack.de/2006/help2">
+                    <!--- registration options here... -->
+                </register>
+                ]]>
+            </code>
+            <alert class="note">
+                <list class="bullet">
+                    <listItem>                        
+                        <para>
+                            The UTF-8 encoding is recommended but not required, any 
+                            other text encoding can be used.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            The prefix <legacyBold>help2</legacyBold> is required,
+                            and must be used.
+                        </para>
+                    </listItem>
+                    <listItem>                            
+                        <para> 
+                            The XML namespace, 
+                            <legacyItalic>http://www.simmack.de/2006/help2</legacyItalic>
+                            must be specified.
+                        </para>
+                    </listItem>
+                    <listItem>                            
+                        <para>
+                            If you are using an XML text editor that supports the
+                            XSD schema as in the Visual Studio and SharpDevelop, 
+                            then a copy of the configuration file schema is provided 
+                            and named, <legacyBold>register.xsd</legacyBold>.
+                        </para>
+                        <para>
+                            In such environments, you can use this schema file to 
+                            obtain full Intellisense or Auto-Completion support.
+                        </para>
+                    </listItem>
+                </list>
+            </alert>
+            <para>
+                The various registration options are discussed in the sections below.
+            </para>
+        </introduction>
+
+        <!-- Registering the Help Collection Namespace -->
+        <section address="section1">
+            <title>Registering Help Collection Namespace</title>
+            <content>                        
+                <para>
+                    You can create a namespace for registration by adding a
+                    <legacyBold>&lt;namespace&gt;</legacyBold> tag below the 
+                    <legacyBold>&lt;register&gt;</legacyBold> tag, and providing its
+                    <legacyBold>name attribute</legacyBold> the internal name of 
+                    your namespace. 
+                </para>
+                <para>
+                    Please refer to the configuration schema reference 
+                    documentations for detailed description of this tag.
+                </para>
+                <para>
+                    The following table provides brief information on the
+                    namespace tag:
+                </para>
+                <table>
+                    <title>&lt;namespace&gt; Attributes</title>
+                    <tableHeader>
+                        <row>
+                            <entry><para>Attribute</para></entry>
+                            <entry><para>Description</para></entry>
+                            <entry><para>Default</para></entry>
+                        </row>                        
+                    </tableHeader>                    
+                    <row>
+                        <entry>
+                            <para>name</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                A globally unique name by which you want to 
+                                register your help collection.
+                            </para>
+                        </entry>
+                        <entry>
+                            <para> </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>description</para>
+                        </entry>
+                        <entry>
+                            <para>A detailed description for your namespace.</para>
+                        </entry>
+                        <entry>
+                            <para> </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>file</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The help collection file (*.HxC), or the compiled 
+                                Help file (*.HXS), which is used to register 
+                                the namespace.
+                            </para>
+                        </entry>
+                        <entry>
+                            <para> </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>merge (yes|no)</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Specifies whether to merge the collection after the 
+                                registration.
+                            </para>
+                        </entry>
+                        <entry>
+                            <para>yes</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>update (yes|no)</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Specifies whether to register the help file with an
+                                existing Help 2.0 collection.
+                            </para>
+                            <para>
+                                If set to "yes", only help files, filters, etc. 
+                                are registered, the specified namespace is not
+                                registered.
+                            </para>
+                        </entry>
+                        <entry>
+                            <para>no</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>noremove (yes|no)</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Specifies whether to remove only the filters registered
+                                in the namespace, without removing the namespace in
+                                an unregistration operation.
+                            </para>
+                        </entry>
+                        <entry>
+                            <para>no</para>
+                        </entry>
+                    </row>
+                </table>
+                <alert class="important">
+                    <list class="bullet">
+                        <listItem>                            
+                            <para>
+                                The <legacyBold>name</legacyBold> of the namespace 
+                                cannot contain special characters or spaces.
+                            </para>
+                        </listItem>
+                        <listItem>                            
+                            <para>
+                                The <legacyBold>name</legacyBold> must be globally 
+                                unique. The recommended form is: 
+                            </para>
+                            <para>
+                                <legacyBold>&lt;company prefix&gt;.&lt;collection&gt;.&lt;language ID&gt;</legacyBold>
+                            </para>
+                            <para>
+                                The language identifier may be omitted if you are not
+                                integrating multiple language help files.
+                            </para>
+                        </listItem>
+                    </list>
+                </alert>
+                <list class="ordered">
+                    <listItem>                        
+                        <para>
+                            With the <legacyBold>description attribute</legacyBold>, provide 
+                            the description you want for the namespace. 
+                        </para>
+                    </listItem>
+                    <listItem>                        
+                        <para>
+                            With the <legacyBold>file attribute</legacyBold>, provide the path
+                            to the help collection file for the namespace.
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <namespace 
+                                name="Win32API.Delphi.20"
+                                description="Win32-API-Tutorials for Delphi"
+                                file="start.HxC"
+                                merge="yes">    
+                            </namespace>                        
+                            ]]>
+                        </code>
+                    </listItem>
+                    <listItem>                        
+                        <para>
+                            With the <legacyBold>merge attribute</legacyBold>, you control
+                            whether to merge the newly registered collection TOC/index 
+                            with the existing TOC/indexes.
+                        </para>
+                        <list class="bullet">
+                            <listItem>
+                                <para>
+                                    If the <legacyBold>merge attribute</legacyBold> is set
+                                    to "yes" or not set at all (default), the help collection is 
+                                    merged as part of the registration process.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>                            
+                                    If the <legacyBold>merge attribute</legacyBold> is set 
+                                    to "no", the merging is done when the Microsoft Document
+                                    Explorer 2.0 starts.
+                                </para>
+                                <para>
+                                    In this case, the Document Explorer displays a wait 
+                                    dialog shown below, depending on your installed version.
+                                </para>
+                                <mediaLink>
+                                    <caption>From Document Explorer 2003</caption>
+                                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f813"/>
+                                </mediaLink>
+                                <mediaLink>
+                                    <caption>From Document Explorer 2005/2008</caption>
+                                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f814"/>
+                                </mediaLink>
+                            </listItem>
+                        </list>
+                        <alert class="tip">
+                            <list class="ordered">
+                                <listItem>                                    
+                                    <para>
+                                        Most users do not like the delaying process of updating when
+                                        the Help 2.0 Document Explorer starts. It is, therefore, recommended
+                                        that if you are using this in an installation program, 
+                                        you update during the help registration.
+                                    </para>
+                                </listItem>
+                                <listItem>
+                                    <para>
+                                        The above recommendation is <legacyBold>strictly</legacyBold> 
+                                        for your own help collections.
+                                    </para>
+                                </listItem>
+                                <listItem>
+                                    <para>
+                                        If you are plugging (<link xlink:href="#section4">see below</link>) 
+                                        your help into another help collection, then remember 
+                                        the larger the parent help collection, the higher 
+                                        the time required for the merging process.
+                                    </para>
+                                </listItem>
+                                <listItem>
+                                    <para>
+                                        If you are plugging your help collection into
+                                        very large collections such as the VS.NET 2005/8,
+                                        it is recommended not to merge with the parent 
+                                        collection during the registration, especially if
+                                        you are running the registration as part of an
+                                        installation program.
+                                    </para>
+                                </listItem>
+                            </list>
+                        </alert>
+                    </listItem>
+                    <listItem>                        
+                        <para>
+                            Finally, with the <legacyBold>update attribute</legacyBold>,
+                            you can update existing namespace, without registering the
+                            namespace again.
+                        </para>
+                        <para>
+                            This <legacyBold>update attribute</legacyBold> feature is
+                            particularly useful when installing an upgrade or a patch to 
+                            your program, in which case a namespace is already registered
+                            and only the new or updated help files are registered.
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <namespace name="Win32API.Delphi.20" update="yes">
+                                <!-- ... -->
+                            </namespace>                    
+                            ]]>
+                        </code>
+                        <list class="bullet">
+                            <listItem>
+                                <para>
+                                    If the <legacyBold>update attribute</legacyBold> is set
+                                    to <legacyBold>no</legacyBold> or not set at all (default),
+                                    the specified namespace is registered.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    If the <legacyBold>update attribute</legacyBold> is set
+                                    to <legacyBold>yes</legacyBold>, only the help files,
+                                    filters, plugins are registered.
+                                </para>
+                            </listItem>
+                        </list>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            With the <legacyBold>noremove attribute</legacyBold>,
+                            you can control whether the namespace is removed/unregistered
+                            during the unregistration/uninstallation process.
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <namespace name="Win32API.Delphi.20" noremove="yes">
+                                <!-- ... -->
+                            </namespace>                    
+                            ]]>
+                        </code>
+                        <para>
+                            This is useful for installing and uninstalling add-ons
+                            and add-ins of a program. If the add-on component only
+                            installed an additional help file into the existing
+                            namespace of the application/library, this additional
+                            help file can be removed without unregistering the
+                            application/library namespace.
+                        </para>
+                        <list class="bullet">
+                            <listItem>
+                                <para>
+                                    If the <legacyBold>noremove attribute</legacyBold>
+                                    is set to <legacyBold>no</legacyBold> or the not set
+                                    at all (default), the namespace is removed or unregistered.
+                                </para>
+                            </listItem>
+                            <listItem>                                
+                                <para>
+                                    If the <legacyBold>noremove attribute</legacyBold>
+                                    is set to <legacyBold>yes</legacyBold>, the
+                                    namespace is <legacyBold>not</legacyBold> removed or unregistered.
+                                </para>
+                            </listItem>
+                        </list>
+                    </listItem>
+                </list>
+            </content>
+        </section>
+        
+        <!-- Registering the Help Files -->
+        <section address="section2">
+            <title>Registering Help Files</title>
+            <content>                        
+                <para>
+                    To register a help file, you create the a 
+                    <legacyBold>&lt;file&gt;</legacyBold> node under the
+                    <legacyBold>&lt;namespace&gt;</legacyBold> node. 
+                </para>
+                <para>
+                    The attributes of the file node are shown in the 
+                    below.
+                </para>
+                <table>
+                    <title>&lt;file&gt; Attributes</title>
+                    <tableHeader>
+                        <row>
+                            <entry><para>Attribute</para></entry>
+                            <entry><para>Description</para></entry>
+                            <entry><para>Requirements</para></entry>
+                       </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>Id</para>
+                        </entry>
+                        <entry>
+                            <para>Internal identifier for the Help File</para>
+                        </entry>
+                        <entry><para>required</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxS</para>
+                        </entry>
+                        <entry>
+                            <para>Name of the compiled help file, HxS</para>
+                        </entry>
+                        <entry><para>required</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxI</para>
+                        </entry>
+                        <entry>
+                            <para>Name of the compiled index file, HxI</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                optional, depending on the content of HxS.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxQ</para>
+                        </entry>
+                        <entry>
+                            <para>Name of the merged query file, for combined full-text search</para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxR</para>
+                        </entry>
+                        <entry>
+                            <para>Name the combined attribute index file</para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>LangId</para>
+                        </entry>
+                        <entry>
+                            <para>Language ID (default setting is the system used)</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                optional, the default is 1033 (English).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxSMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This is undocumented Help 2.0 feature, and there
+                                is no information available on its use.
+                            </para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxQMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This is undocumented Help 2.0 feature, and there
+                                is no information available on its use.
+                            </para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>HxRMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This is undocumented Help 2.0 feature, and there
+                                is no information available on its use.
+                            </para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>SampleMediaId</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                This is undocumented Help 2.0 feature, and there
+                                is no information available on its use.
+                            </para>
+                        </entry>
+                        <entry><para>optional</para></entry>
+                    </row>
+                </table>
+                <list class="ordered">
+                    <listItem>                                
+                        <para>
+                            With the <legacyBold>Id attribute</legacyBold>, 
+                            which is the most important attribute, you provide the 
+                            internal identifier for the help file.
+                        </para>
+                        <alert class="important">
+                            <list class="bullet">
+                                <listItem>                                            
+                                    <para>
+                                        This attribute must be globally unique.
+                                    </para>
+                                </listItem>
+                                <listItem>                                            
+                                    <para>
+                                        It cannot contain special characters or spaces.
+                                    </para>
+                                </listItem>
+                            </list>
+                        </alert>
+                    </listItem>
+                    <listItem>                                
+                        <para>                            
+                            With the <legacyBold>HxS attribute</legacyBold>
+                            and <legacyBold>HxI attribute</legacyBold>, 
+                            you specify the help file and the separated 
+                            index file where available. 
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>                                    
+                            With the <legacyBold>LangId attribute</legacyBold>, 
+                            you specify the language or culture identifier of
+                            the help file. This is 1033 for English, 1031 for German, etc.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            All other attributes are optional.
+                        </para>
+                    </listItem>
+                </list>
+                <code language="xml">
+                    <![CDATA[
+                    <file Id="base" HxS="base.HxS" HxI="base.HxI" HxQ="" HxR="" LangId="1031"/>                    
+                    ]]>
+                </code>
+                <para>
+                    The HxQ and HxR files are created using the help tool 
+                    <legacyBold>hxmerge.exe</legacyBold>, which is available 
+                    in the VSHIK (Visual Studio Help Integration Kit) and 
+                    Visual Studio 2005/2008 SDK from Microsoft.
+                </para>
+            </content>
+        </section>
+        
+        <!-- Registering the Help Filters -->
+        <section address="section3">
+            <title>Registering Help Filters</title>
+            <content>
+                <para>
+                    The Help 2.0 system makes use of attributes, <legacyBold>MSHelp:Attr</legacyBold>,
+                    to classify topics into categories, and a topic can have zero or
+                    more attributes.
+                </para>
+                <para>
+                    Attributes are name/value pair added to the 
+                    <legacyBold>&lt;head&gt;</legacyBold> section of the HTML topic
+                    file and enclosed in <legacyBold>&lt;xml&gt;</legacyBold> tag,
+                    an XML Data Island. An example is shown below:
+                </para>
+                <code language="html">
+                    <![CDATA[
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>Your Topic Title</title>
+        <xml>
+           <MSHelp:Attr Name="DocSet" Value="YourDocSet" />
+           <MSHelp:Attr Name="TopicType" Value="kbOrient" />
+           <MSHelp:Attr Name="Locale" Value="kbEnglish" />
+        </xml>
+    </head>
+    <body>
+        <!--Topic Content-->
+    </body>
+</html>
+                    ]]>
+                </code>
+                <para>
+                    The attributes are used to filter topics so that only the filtered
+                    topics are available in the Contents, Index, Search, and Dynamic 
+                    Help Windows.
+                </para>
+                <para>
+                    Help 2.0 supports two different types of filters:
+                </para>
+                <list class="ordered">
+                    <listItem>
+                        <para>
+                            <legacyBold>Index and Table of Contents Filters</legacyBold>
+                        </para>
+                        <list class="bullet">
+                            <listItem>
+                                <para>
+                                    These are available in all versions of the Document
+                                    Explorer.
+                                </para>
+                                <mediaLink>
+                                    <caption>Index Filter</caption>
+                                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f817"/>
+                                </mediaLink>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    The index and table of contents filters are compiled
+                                    along with the documentation.
+                                </para>
+                            </listItem>
+                        </list>
+                        <para>                            
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Search Filters</legacyBold>
+                        </para>
+                        <list class="bullet">
+                            <listItem>                                
+                                <para>
+                                    These are available only with VS.NET 2005 or later Document
+                                    Explorer (Dexplore 8 or later). 
+                                </para>
+                                <mediaLink>
+                                    <caption>Search Filter</caption>
+                                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f818"/>
+                                </mediaLink>
+                            </listItem>
+                            <listItem>                                
+                                <para>
+                                    Search filters are not part of the documentations, and are
+                                    defined using a separate XML file.
+                                </para>
+                                <para>
+                                    An example of a filter XML file is shown below, created
+                                    by Microsoft for the C# language.
+                                </para>
+                                <code language="xml">
+                                    &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+                                    &lt;SearchFilter xmlns=&quot;http://schemas.microsoft.com/VisualStudio/2004/08/Help/SearchFilter&quot; 
+                                         Version=&quot;0.1.0.0&quot;&gt;
+                                        &lt;FilterAttribute&gt;
+                                            &lt;Id&gt;Language&lt;/Id&gt;
+                                            &lt;Name _locID=&quot;name.1&quot;&gt;Language&lt;/Name&gt;
+                                            &lt;FilterValue&gt;
+                                                &lt;Id&gt;C#&lt;/Id&gt;
+                                                &lt;Name _locID=&quot;name.2&quot;&gt;C#&lt;/Name&gt;
+                                                &lt;Meaning&gt;
+                                                    &lt;LocalFilterString&gt;
+                                                        (&quot;DocSet&quot;=&quot;C#&quot; OR &quot;DocSet&quot;=&quot;C# Lang&quot;)
+                                                    &lt;/LocalFilterString&gt;
+                                                    &lt;TocInclude&gt;&lt;/TocInclude&gt;
+                                                    &lt;OnlineFilterString&gt; 
+                                                     &lt;![CDATA[ 
+                                                         &lt;StringTest Name=&quot;ExtendedProperty&quot; Operator=&quot;Equals&quot; 
+                                                           Value=&quot;ms01C17C&quot; ExtendedProperty=&quot;MSCategory&quot;/&gt;
+                                                     ]]&gt; 
+                                                    &lt;/OnlineFilterString&gt;	
+                                                &lt;/Meaning&gt;
+                                            &lt;/FilterValue&gt;
+                                        &lt;/FilterAttribute&gt;
+                                    &lt;/SearchFilter&gt;    
+                                </code>
+                            </listItem>
+                        </list>
+                    </listItem>
+                </list>
+                <alert class="note">
+                    <para>
+                        The HelpRegister tool provides support for the registration of
+                        the Index and Table of Contents Filters.
+                    </para>
+                    <para>
+                        The registration of the Search Filters is not supported in this
+                        version of the HelpRegister.
+                    </para>
+                </alert>
+                <para>
+                    Now, to register index and table of contents filters, add a 
+                    <legacyBold>&lt;filter&gt;</legacyBold> node, it has an attribute 
+                    and a text content, as explained below:
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            The <legacyBold>name attribute</legacyBold>
+                            is the name of the filter as it will appear in the
+                            Index or Contents UI.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            The text content specifies the filter string, and is
+                            typically enclosed in the CDATA so that it will be
+                            copied to the Document Explorer filter XML unchanged.
+                        </para>
+                        <para>
+                            For an empty filter, leave out the text content.
+                        </para>
+                    </listItem>
+                </list>
+                <code language="xml">
+                    &lt;filter name="(no Filter)"/&gt;
+                    &lt;filter name="Window and Controls">&lt;![CDATA["DocSet"="WindowsUI"]]&gt;&lt;/filter&gt;                
+                </code>
+                <table>
+                    <title>&lt;filter&gt; Attributes</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Attribute</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>name</para>
+                        </entry>
+                        <entry>
+                            <para>Name of the filter</para>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+        
+        <!-- Registering the Help Plugins -->
+        <section address="section4">
+            <title>Registering Help Plugins</title>
+            <content>
+                <para>
+                    Basically, a plugin is a linkage of your Help 2.0 
+                    documentation with other Help 2.0 documentation. This feature
+                    enables you to nest one or more child namespaces within another
+                    namespaces, called the parent.
+                    The plugin feature allows the child documentation to be viewed as 
+                    if it is part of the parent documentation, resulting in a highly
+                    modular and flexible help system.
+                </para>
+                <mediaLink>
+                    <caption>HelpRegister Help: Table of Contents without plugin</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f815"/>
+                </mediaLink>
+                <mediaLink>
+                    <caption>HelpRegister Help: Table of Contents with child plugin</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f816"/>
+                </mediaLink>
+                <alert class="important">
+                    <para>
+                        Any child namespace that is to be plugged into another 
+                        namespace must first be registered as a multiple .HxS 
+                        collection using a master collection definition (.HxC) file. 
+                        This is required even if you only have a single .HxS file.
+                    </para>
+                </alert>
+                <para>
+                    Illustrating the above statement, here is a partial view of
+                    registered namespaces of the Document Explorer versions:
+                </para>
+                <mediaLink>
+                    <caption>Registered Document Explorer 2003, 2005 and 2008 Namespaces</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f822"/>
+                </mediaLink>
+                <list class="ordered">
+                    <listItem>
+                        <para>
+                            The <legacyBold>MS.Dexplore</legacyBold> namespace is registered
+                            for single .HxS file by the VS.NET 2003.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            The <legacyBold>MS.Dexplore.v80.en</legacyBold> and 
+                            <legacyBold>MS.Dexplore.v90.en</legacyBold> are registered
+                            for multiple .HxS file by the VS.NET 2005 and VS.NET 2008 
+                            respectively, and have collection-level files.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>   
+                            Any attempt to plug the <legacyBold>MS.Dexplore</legacyBold>
+                            namespace into another namespace will fail, since it is not
+                            a multiple .HxS collection.
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    Consider the plugging of the HelpRegister help with the child 
+                    plugin into the Visual Studio 2005 and 2008 help collections:
+                </para>
+                <mediaLink>
+                    <caption>HelpRegister Help with child plugged into VS.NET 2005 Help Collection</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f819"/>
+                </mediaLink>
+                <mediaLink>
+                    <caption>HelpRegister Help with child plugged into VS.NET 2008 Help Collection</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f820"/>
+                </mediaLink>
+                <para>
+                    You will notice the following differences:
+                </para>
+                <list class="ordered">
+                    <listItem>
+                        <para>
+                            For the VS.NET 2005, the "Help on Help" child plugged into
+                            the HelpRegister Help is <legacyBold>not</legacyBold> displayed.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            For the VS.NET 2008, the "Help on Help" child plugged into
+                            the HelpRegister Help is displayed.
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    The differences are due to the fact that the "Help on Help" for 
+                    each Document Explorer are different, and have different namespaces. 
+                    The "Help on Help" plugged into the HelpRegister is MS.Dexplore.v80.en 
+                    from the VS.NET 2005 help collection, and it is not part of (or 
+                    not yet plugged into) the VS.NET 2008 help collection.
+                </para>
+                <para>
+                    It is, therefore, recommended that you plan your plugin support more
+                    carefully to avoid the above situation.
+                </para>
+                <alert class="note">
+                    <list class="ordered">
+                        <listItem>                            
+                            <para>
+                                Support for conditions, such as the if-else programming 
+                                construct, is planned for the next version of the HelpRegister.                        
+                            </para>
+                            <para>
+                                Suggestions for improvements are welcomed. 
+                            </para>
+                        </listItem>                        
+                        <listItem>
+                            <para>
+                                You can also consider using the library, Sandcastle.HelpRegister.dll, 
+                                instead of the application, HelpRegister.exe, for more 
+                                complex help registrations not currently possible with
+                                the HelpRegister.
+                            </para>
+                        </listItem>                        
+                    </list>
+                </alert>
+                <para>
+                    Now, to create or register a plugin, you will need a new node
+                    of the type <legacyBold>&lt;plugin&gt;</legacyBold>, with
+                    the relevant attributes as documented below:
+                </para>
+                <table>
+                    <title/>
+                    <tableHeader>
+                        <row>
+                            <entry><para>Attribute</para></entry>
+                            <entry><para>Description</para></entry>
+                            <entry><para>Default</para></entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>parent</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The parent collection namespace into which 
+                                your collection namespace (child) is to be plugged.
+                            </para>
+                        </entry>
+                        <entry><para> </para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>child</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                The child/your collection namespace to be
+                                plugged into the specified parent namespace.
+                            </para>
+                        </entry>
+                        <entry><para> </para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para>merge (yes|no)</para>
+                        </entry>
+                        <entry>
+                            <para>
+                                Indicates whether the resulting collection 
+                                should be merged after the registration.
+                            </para>
+                        </entry>
+                        <entry><para>yes</para></entry>
+                    </row>
+                </table>
+                <para>
+                    The HelpRegister tool supports two types or forms of plugins:
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>Case 1: Plugging Other Help Collection Into Your Collection</legacyBold> 
+                        </para>
+                        <para>
+                            A typical use of this case is plugging the 
+                            <legacyBold>Help on Help</legacyBold> 
+                            (Microsoft Document Explorer Help) into your own
+                            help collection, so that users can directly access 
+                            how to use the Document Explorer while viewing your
+                            documentations.
+                        </para>
+                        <para>
+                            This is naturally done after registering your help
+                            collection as outline in the previous steps, and the
+                            recommended way is to create the 
+                            <legacyBold>&lt;plugin&gt;</legacyBold> node directly 
+                            within your namespace as shown in the codes below:
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <namespace name="Win32API.Delphi.20" ...>
+                                <!-- ... -->
+
+                                <plugin>
+                                  <child name="MS.PSDK.1033"/>
+                                  <child name="MS.DExplore"/>
+                                </plugin>
+                            </namespace>                    
+                            ]]>
+                        </code>
+                        <alert class="note">
+                            <para>
+                                In this case the <legacyBold>&lt;plugin&gt;</legacyBold>
+                                does not have any attributes, but can have any 
+                                number of <legacyBold>&lt;child&gt;</legacyBold> nodes.
+                            </para>
+                        </alert>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Case 2: Plugging Your Help Collection Into Other Collection</legacyBold>
+                        </para>
+                        <para>
+                            A typical use of this case is plugging your 
+                            help collection into the relevant Visual Studio documentations.
+                        </para>
+                        <para>
+                            In this case, the <legacyBold>&lt;plugin&gt;</legacyBold>
+                            node is created under the main node.
+                        </para>
+                        <para>
+                            There are two syntaxes for this, the first is 
+                            shown below:
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <plugin parent="MS.PSDK.1033" child="Win32API.Delphi.20" merge="yes"/>                    
+                            ]]>
+                        </code>
+                        <para>
+                            For multiple plugins, we have the following:
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <plugin parent="MS.PSDK.1033" child="Win32API.Delphi.20" merge="yes"/>                    
+                            <plugin parent="MS.NETFrameworkSDKv1.1.DE" child="Win32API.Delphi.20" merge="yes"/>                    
+                            ]]>
+                        </code>
+                        <para>
+                            The problem with this syntax is, when running 
+                            the multiple plugins, each will run and be merged
+                            separately and completely before the next, consuming
+                            more processing time.
+                        </para>
+                        <para>
+                            For multiple Help 2.0 collection plugins with the
+                            <legacyBold>same</legacyBold> parent, the second syntax 
+                            shown below is recommended:
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+                            <plugin parent="Fidalgo">
+                                <child name="MS.NETFrameworkSDKv1.1.DE"/>
+                                <child name="MS.PSDK.1033"/>
+                                <child name="Win32API.Delphi.20"/>
+                            </plugin>
+                            ]]>
+                        </code>
+                        <para>
+                            Expectedly, the advantage here is that the 
+                            required plugins are created in a single pass, 
+                            and that there is only one merging process - 
+                            saving time.
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    The plugin name can also include wild cards, and these
+                    will be matched accordingly. A good example is the
+                    namespace names of the Visual Studio .NET versions:
+                </para>
+                <list class="ordered">
+                    <listItem>                                
+                        <para>
+                            For Visual Studio 2002, we have MS.VSCC
+                        </para>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            For Visual Studio 2003, we have MS.VSCC.2003
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    In this case, you can use the wild card to include both
+                    versions as shown in the syntax below:
+                </para>
+                <code language="xml">
+                    <![CDATA[
+                    <plugin parent="MS.VSCC.*" child="Win32API.Delphi.20"/>                    
+                    ]]>
+                </code>
+                <para>
+                    Another example is the .NET Framework 1.1 SDK documentations,
+                    in which case we have the following:
+                </para>
+                <list class="ordered">
+                    <listItem>                                
+                        <para>
+                            For English language version, MS.NETFrameworkSDKv1.1
+                        </para>
+                    </listItem>
+                    <listItem>                                
+                        <para>
+                            For German language version, MS.NETFrameworkSDKv1.1.DE
+                        </para>
+                    </listItem>
+                </list>
+                <para>
+                    If you want to register your Help 2.0 documentation that
+                    will integrate with the documentation of the .NET Framework 1.1 SDK
+                    in any language installed by the user, you can provide:
+                </para>
+                <code language="xml">
+                    <![CDATA[
+                    <plugin parent="Fidalgo">
+                        <child="MS.NETFrameworkSDKv1.1*"/>
+                    </plugin>                    
+                    ]]>
+                </code>
+                <alert class="note">
+                    <para>
+                        When the wild card is used, and a matching namespace is
+                        found, the configuration file is updated to reflect the
+                        registered namespace.
+                    </para>
+                    <para>
+                        This is good for the unregistration process, and it is
+                        recommended that you use the same file for both registration
+                        and unregistration.
+                    </para>
+                </alert>
+                <para>
+                    Combining all the above, here is a sample configuration file:
+                </para>
+                <code language="xml">
+                    <![CDATA[
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <register xmlns:help2="http://www.simmack.de/2006/help2">
+                        <namespace name="Corsavy" description="SharpDevelop Help Collection" file="..\fidalgo.HxC">
+                            <file Id="SharpMain" HxS="..\SharpDevelop.HxS" HxI="..\SharpDevelop.HxI" LangId="1033"/>
+                            <file Id="SharpZipLib" HxS="..\SharpZipLib.HxS" HxI="..\SharpZipLib.HxI" LangId="1033"/>
+                            <filter name="(no filter)"/>
+                            <plugin>
+                                <child name="MS.NETFramework.v20*"/>
+                            </plugin>
+                        </namespace>
+                        <plugin parent="MS.VSCC" child="Corsavy" merge="yes"/>
+                        <plugin parent="MS.VSCC.2003" child="Corsavy" merge="yes"/>
+                    </register>                            
+                    ]]>
+                </code>
+            </content>
+        </section>               
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

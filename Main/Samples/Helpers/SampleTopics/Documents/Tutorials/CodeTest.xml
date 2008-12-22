@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f504" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--<title>Quick Start</title>-->
+
+    <introduction>
+        <para>
+            Introducing the Conceptual Help...
+        </para>
+    </introduction>
+
+    <section address="section1">
+        <title>Section - Quick Start</title>
+        <content>
+            <para>
+                Hello, Conceptual Help!
+            </para>
+            <code language="c#">
+                <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace TestingIris
+{
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}                ]]>
+            </code>
+        </content>
+    </section>
+
+    <section address="section2">
+        <title>Section - Quick Start 2</title>
+        <content>
+            <para>
+                <legacyBold>The single-part code snippet</legacyBold>
+            </para>            
+            <codeReference>exampleId3#snippetId3</codeReference>
+            <para>
+                <legacyBold>The multi-part code snippet</legacyBold>
+            </para>            
+            <codeReference>exampleId1#snippetId1,snippetId2</codeReference>
+        </content>
+    </section>
+
+    <relatedTopics>
+
+    </relatedTopics>
+    </developerConceptualDocument>
+</topic>

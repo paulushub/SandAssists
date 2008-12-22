@@ -7,7 +7,8 @@ using System.Security.AccessControl;
 namespace Sandcastle
 {
     /// <summary>
-    /// Copies a file or a directory and its contents to a new location. 
+    /// Copies a file or a directory and its contents to a new location, removing the
+    /// read-only flag, if any, to make it possible to delete the file.
     /// </summary>
     [Serializable]
     public sealed class BuildDirCopier : BuildObject<BuildDirCopier>
@@ -297,6 +298,12 @@ namespace Sandcastle
 
                 fi.CopyTo(filePath, _isOverwrite);
 
+                // For most of the build files, we will copy and delete, so we must
+                // remove any readonly flag...
+                if ((fileAttr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    fileAttr -= FileAttributes.ReadOnly;
+                }
                 File.SetAttributes(filePath, fileAttr);
                 // if required to set the security or access control
                 if (_includeSecurity)

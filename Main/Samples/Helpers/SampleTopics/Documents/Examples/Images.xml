@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f608" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 8 - Images</title>-->
+        
+        <summary>
+            <para>
+                This provides information on using media file, images in
+                particular, in the help file.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                [TODO:...]
+            </para>
+        </introduction>
+
+        <section>
+            <title>Image media Illustrations</title>
+            <content>
+                <para>
+                    [TODO: Embedding images or other media into the help]
+                </para>
+                <para>
+                    First a small image in line
+                    <mediaLinkInline>
+                        <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f803"/>
+                    </mediaLinkInline>
+                    for "Properties".
+                </para>
+                <mediaLink>
+                    <caption>A caption of the image.</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+                </mediaLink>
+            </content>
+        </section>
+
+        <section>
+            <title>Creating "Alert" Environment with Tables</title>
+            <content>
+                <table>
+                    <title>A Simple Table</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>
+                                    <mediaLinkInline>
+                                        <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f805"/>
+                                    </mediaLinkInline>
+                                    <legacyBold> Warning:</legacyBold>
+                                </para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>A warning...</para>
+                        </entry>
+                    </row>
+                </table>
+                <table>
+                    <title>A Nested Table</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>
+                                    <legacyBold>Warning:</legacyBold>
+                                </para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <table>
+                                <row>
+                                    <entry>
+                                        <mediaLink>
+                                            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f804"/>
+                                        </mediaLink>
+                                    </entry>
+                                    <entry>
+                                        <para>Another warning...</para>
+                                        <para>
+                                        The table support in the Conceptual
+                                        help is simple and flexible, allowing you to
+                                        implement this behaviour for free!
+                                        </para>
+                                    </entry>
+                                </row>
+                            </table>
+                        </entry>
+                    </row>
+                </table>
+                <table>
+                    <title>A Nested Table</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>
+                                    <legacyBold>Information:</legacyBold>
+                                </para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <table>
+                                <row>
+                                    <entry>
+                                        <mediaLink>
+                                            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f806"/>
+                                        </mediaLink>
+                                    </entry>
+                                    <entry>
+                                        <para>An Information...</para>
+                                        <para>
+                                        The table support in the Conceptual
+                                        help is simple and flexible, allowing you to
+                                        implement this behaviour for free!
+                                        </para>
+                                    </entry>
+                                </row>
+                            </table>
+                        </entry>
+                    </row>
+                </table>
+                <table>
+                    <title>A Nested Table</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>
+                                    <legacyBold>Question:</legacyBold>
+                                </para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <table>
+                                <row>
+                                    <entry>
+                                        <mediaLink>
+                                            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f807"/>
+                                        </mediaLink>
+                                    </entry>
+                                    <entry>
+                                        <para>A Question...</para>
+                                        <para>
+                                        The table support in the Conceptual
+                                        help is simple and flexible, allowing you to
+                                        implement this behaviour for free!
+                                        </para>
+                                        <para>
+                                        Now, what is the question?
+                                        </para>
+                                    </entry>
+                                </row>
+                            </table>
+                        </entry>
+                    </row>
+                </table>
+                <table>
+                    <title>A Nested Table</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>
+                                    <legacyBold>Error:</legacyBold>
+                                </para>
+                            </entry>
+                        </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <table>
+                                <row>
+                                    <entry>
+                                        <mediaLink>
+                                            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f808"/>
+                                        </mediaLink>
+                                    </entry>
+                                    <entry>
+                                        <para>An Error...</para>
+                                        <para>
+                                        The table support in the Conceptual
+                                        help is simple and flexible, allowing you to
+                                        implement this behaviour for free!
+                                        </para>
+                                        <para>
+                                        Now, stop here!
+                                        </para>
+                                    </entry>
+                                </row>
+                            </table>
+                        </entry>
+                    </row>
+                </table>
+            </content>
+        </section>
+
+        <section>
+            <title>Image Linking</title>
+            <content>
+                <para>
+                    You can link to local images using mapping them in the media
+                    file, if you put them in the "Images" folder.
+                </para>
+                <externalLink>
+                    <linkText>Nativity: Herrod And Son</linkText>
+                    <linkAlternateText>Nativity-Herrod And Son</linkAlternateText>
+                    <linkUri>Images/NativityHerrodAndSon.jpg</linkUri>
+                </externalLink>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

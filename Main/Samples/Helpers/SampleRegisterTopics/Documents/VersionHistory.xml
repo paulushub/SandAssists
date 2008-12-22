@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f114" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                This topic contains information on the release version history of the
+                HelpRegister library, tool, documentation and sample.
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+        </introduction>
+
+        <!-- The main or actual document contents -->
+        <section address="section1">
+            <title>Version 1.0.0.0</title>
+            <content>
+                <para>
+                    <legacyBold>Release Date</legacyBold>: 24/10/2008
+                </para>
+            </content>
+            <sections address="section10">
+                <section address="section11">
+                    <title>Bug Fixes</title>
+                    <content>
+                        <para>
+                            All known pre-release bugs are fixed.
+                        </para>
+                    </content>
+                </section>
+                <section address="section12">
+                    <title>New Features</title>
+                    <content>
+                        <para>
+                            Initial release.
+                        </para>
+                    </content>
+                </section>
+                <section address="section13">
+                    <title>Breaking Changes</title>
+                    <content>
+                        <para>
+                            Initial release.
+                        </para>
+                    </content>
+                </section>
+                <section address="section14">
+                    <title>Known Issues</title>
+                    <content>
+                        <para>
+                            None.
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

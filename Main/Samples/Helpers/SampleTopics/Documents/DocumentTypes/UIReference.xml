@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f559" revisionNumber="1">
+    <developerUIReferenceDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>The UI Reference Document</title>-->
+
+        <summary>
+            <para>
+                [TODO: A summary of the walkthrough]
+            </para>
+        </summary>
+
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>
+        </introduction>
+
+        <taskList>
+            <content>
+                <para>[TODO: We present the following tasks...]</para>                
+            </content>
+            <sections>
+                <section>
+                    <title>Title - Task 1</title>
+                    <content>
+                        <para>
+                            [Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>Title - Task 2</title>
+                    <content>
+                        <para>
+                            [Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </taskList>
+
+        <!--
+        You can have one or more <section>, but not <sections>.
+        Each <section> can have <sections> to create sub-sections.
+        The top <section>s are collapsible, but the sub-sections are not.
+        Tips:
+          1. The <content> of each <section> can have a <procedure>.
+        -->
+        <section>
+            <title>Title - Section 1</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>Title - Sub-Section 1</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>Title - Sub-Section 2</title>
+                    <content>
+                        <para>
+                            [Sub Paragraph 1]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </section>
+        <section>
+            <title>Title - Section 2</title>
+            <content>
+                <para>
+                    [Paragraph 1]
+                </para>
+                <para>
+                    [Paragraph 2]
+                </para>
+            </content>
+        </section>
+
+        <uiElementList>
+            <content>
+                <para>
+                    [TODO: The following are the <ui>Control</ui> classes...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>TODO: Title...</title>
+                    <content>
+                        <para>
+                            [TODO: Control class 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>TODO: Title...</title>
+                    <content>
+                        <para>
+                            [TODO: Control class 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </uiElementList>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    </developerUIReferenceDocument>
+</topic>

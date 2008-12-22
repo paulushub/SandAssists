@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f501" revisionNumber="1">
+    <developerHowToDocument 
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Quick Start</title>-->
+        
+        <introduction>
+            <para>
+                This document presents simple steps to help you start using the
+                provided build library.
+            </para>
+            <para>
+                We will create a simple help file that will display the conceptual
+                help equivalent of "Hello, World".
+            </para>
+            <para/>
+            <mediaLink>
+                <caption>Quick Start Help Output</caption>
+                <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f810"/>
+            </mediaLink>
+            <para/>
+            <alert class="note">
+                <para>
+                    The library is for .NET 2.x or later, and using it requires 
+                    VS.NET 2005.
+                </para>
+                <para>
+                    The VS.NET is being used so that you can easily edit your
+                    XML files required by the conceptual help compiler.
+                </para>
+            </alert>
+        </introduction>
+        
+        <procedure>
+            <!--The title of the procedure-->
+            <title>Creating the Help Project</title>
+            <!--
+            The procedure steps: optional class = ordered|bullet
+            Tips:
+               1. The <steps> can have several <step> and/or a <procedure>
+               2. The <content> of each <step> can have a <procedure>
+            -->
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            Start your VS.NET 2005 (or later) and create a new
+                            <legacyBold>Console Application</legacyBold> in C# or
+                            VB.NET.
+                        </para>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            We need to add a reference to the builder library to simplify
+                            the build process.                            
+                        </para>
+                        <para>
+                            Locate where you downloaded and unzipped this sources
+                            accompanying this article.
+                        </para>
+                        <para>
+                            The conceptual help builder to simplify the build process
+                            is located in the <legacyBold>Builder</legacyBold> folder.
+                        </para>
+                        <para>
+                            In the <legacyBold>Builder</legacyBold> folder this is a
+                            an <legacyBold>Output</legacyBold> sub-directory that
+                            contains the builder library named,
+                            <legacyBold>Conceptual.Builder.dll</legacyBold>.
+                        </para>
+                        <para>
+                            Add a reference to this library in your newly created
+                            console project.
+                        </para>
+                    </content>
+                </step>
+                <!--The step 3-->
+                <step>
+                    <content>
+                        <para>
+                            Also in the <legacyBold>Builder</legacyBold> folder, copy
+                            the configuration file, <legacyBold>Project.config</legacyBold>,
+                            and the batch file <legacyBold>Project.bat</legacyBold> to
+                            your project directory and add them to your project.
+                        </para>
+                        <alert class="note">
+                            <para>
+                                The content of the <legacyBold>Project.config</legacyBold>
+                                and the <legacyBold>Project.bat</legacyBold> files can
+                                be automatically generated and will be done in later
+                                articles.
+                            </para>
+                            <para>
+                                However, in this article it is made available so that
+                                you can modify them and control the build process.
+                            </para>
+                        </alert>
+                    </content>
+                </step>
+                <!--The step 4-->
+                <step>
+                    <content>
+                        <para>
+                            Now, right click the project in the IDE and add two folders,
+                            naming them <legacyBold>Documents</legacyBold> and
+                            <legacyBold>Media</legacyBold>.
+                        </para>
+                        <alert class="note">
+                            <para>
+                                The Media folder and its content (to be added later),
+                                is not required by this tutorial, but the "fixed"
+                                configuration file requires it.
+                            </para>
+                        </alert>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+                We have now prepared the project and ready to add the contents 
+                required to define our document structure.                
+            </conclusion>
+        </procedure>
+        
+        <procedure>
+            <title>Creating the Contents</title>
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            We need to add a conceptual document file.
+                        </para>
+                        <para>
+                            Right click on the "Documents" folder, select
+                            <legacyBold>Add</legacyBold> and then
+                            <legacyBold>New Item...</legacyBold>
+                        </para>
+                        <para>
+                            From the displayed dialog, select the <legacyBold>XML File
+                            </legacyBold> and give it the name <legacyBold>Document.xml</legacyBold>
+                            (for this tutorial, but it can be anything).
+                        </para>
+                        <para>
+                            Change the content of this file to look it this...
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f100" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <title>Quick Start</title>
+        <summary>
+            <para>
+                A quick start tutorial for the Sandcastle Conceptual Help 
+                Compiler System.
+            </para>
+        </summary>
+        
+        <introduction>
+            <para>
+                Introducing the Conceptual Help...
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Section - Quick Start</title>
+            <content>
+                <para>
+                    Hello, Conceptual Help!
+                </para>
+            </content>
+        </section>
+    </developerConceptualDocument>
+</topic>                            
+                            ]]>
+                        </code>
+                        <para>
+                            The "id" attribute of the &lt;topic&lt; tag must be a GUID,
+                            you can create a new one or just use the provided for the demo.
+                        </para>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            Similarly, add <legacyBold>MediaContent.xml</legacyBold> 
+                            to the <legacyBold>Media</legacyBold> folder, and modify 
+                            the content to the following...
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<stockSharedContentDefinitions fileAssetGuid="" assetTypeId="">
+</stockSharedContentDefinitions>
+                            ]]>
+                        </code>
+                    </content>
+                </step>
+                <!--The step 3-->
+                <step>
+                    <content>
+                        <para>
+                            Finally, let build a table of content. Add <legacyBold>Project.xml</legacyBold> 
+                            file to the project and change the content to the following...
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<files>
+    <file name="Document.xml"/>
+</files>
+                            ]]>
+                        </code>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+                We have now defined the document structure and ready to configure the
+                build process, this is where the Builder library comes in.                
+            </conclusion>
+        </procedure>
+
+        <procedure>
+            <!--The title of the procedure-->
+            <title>Using the Builder Library</title>
+            <steps class="ordered">
+                <!--The step 1-->
+                <step>
+                    <content>
+                        <para>
+                            The builder library added to this article will be used to
+                            compile the help file, and we need to configure it.
+                        </para>
+                        <para>
+                            Open your <legacyBold>Program.cs</legacyBold> for a C#
+                            project or the <legacyBold>Module1.vb</legacyBold> for a
+                            VB.NET project.
+                        </para>
+                    </content>
+                </step>
+                <!--The step 2-->
+                <step>
+                    <content>
+                        <para>
+                            Imports the <legacyBold>Conceptual.Builder</legacyBold>
+                            namespace, change the content of the Program.cs file to
+                            that shown in the Example Section below.
+                        </para>
+                    </content>
+                </step>
+            </steps>
+            <!--The procedure conclusion...-->
+            <conclusion>
+
+            </conclusion>
+        </procedure>
+
+        <codeExample>
+            <description>
+                The following C# and VB.NET codes illustrated how to create, 
+                initialize and compile the help file using the Builder Library.
+            </description>
+            <code language="c#">
+                <![CDATA[
+using System;
+using System.IO;
+
+using Conceptual.Builder;
+
+namespace QuickStartCS
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 1. Set the working directory, which is the same as 
+            //    your project directory
+            string workingDir = @"..\..\";
+
+            // 2. Prepare the documents and project file paths 
+            string projectFile = Path.Combine(workingDir, "Project.xml");
+            string documentsDir = Path.Combine(workingDir, "Documents");
+
+            // 3. Create a new instance of the conceptual project
+            Project project = new Project();
+
+            // 4. Lets begin the build process...
+            try
+            {
+                // First signal a beginning of a build process
+                project.BeginInitialize(documentsDir, projectFile);
+
+                // Second, initialize the working (or your project directory)
+                // and build...
+                if (project.Initialize(workingDir))
+                {
+                    // Third, build, only the batch build is implemented.
+                    project.CompileBatch("Project.bat");
+                }
+
+                // Last, clean up...setting the parameter to "true" will delete
+                // all the directories and files created for the build process.
+                // NOTE: The HTML help files are not deleted.
+                project.EndInitialize(true);
+                project = null;
+            }
+            catch (Exception ex)
+            {
+                if (project != null)
+                {
+                    project.EndInitialize(false);
+                    project = null;
+                }
+
+                Console.WriteLine(ex.ToString());
+            }
+        }
+    }
+}                
+                ]]>
+            </code>
+            <code language="vb">
+                <![CDATA[
+Imports System.IO
+Imports Conceptual.Builder
+
+Module ModuleMain
+
+    Sub Main()
+        ' 1. Set the working directory, which is the same as 
+        '    your project directory
+        Dim workingDir As String = "..\..\"
+
+        ' 2. Prepare the documents and project file paths 
+        Dim projectFile As String = Path.Combine(workingDir, "Project.xml")
+        Dim documentsDir As String = Path.Combine(workingDir, "Documents")
+
+        ' 3. Create a new instance of the conceptual project
+        Dim project As Project = New Project()
+
+        ' 4. Lets begin the build process...
+        Try
+            ' First signal a beginning of a build process
+            project.BeginInitialize(documentsDir, projectFile)
+
+            ' Second, initialize the working (or your project directory)
+            ' and build...
+            If project.Initialize(workingDir) Then
+
+                ' Third, build, only the batch build is implemented.
+                project.CompileBatch("Project.bat")
+            End If
+
+            ' Last, clean up...setting the parameter to "true" will delete
+            ' all the directories and files created for the build process.
+            ' NOTE: The HTML help files are not deleted.
+            project.EndInitialize(True)
+            project = Nothing
+        Catch ex As Exception
+            If project IsNot Nothing Then
+                project.EndInitialize(False)
+                project = Nothing
+                Console.WriteLine(ex.ToString())
+            End If
+        End Try
+
+    End Sub
+
+End Module
+                ]]>
+            </code>
+            <comments>
+                <content>
+                    <para>
+                        Both the C# and the VB.NET codes are taken from a working
+                        examples.
+                    </para>
+                    <para>
+                        The codes and all the steps outlined in this document are
+                        provided in the <legacyBold>QuickStartCS</legacyBold> and
+                        <legacyBold>QuickStartVB</legacyBold> samples.
+                    </para>
+                </content>
+            </comments>
+        </codeExample>
+
+        <buildInstructions>
+            <content>
+                <para>
+                    No special build or compilation instruction is required, just
+                    compile the Builder library (if necessary) and your project.
+                </para>
+                <para>
+                    Then run the project, if everything went successfully, the compiled
+                    help file will be automatically displayed.
+                </para>
+                <alert class="note">
+                    <para>
+                        The output is located in the <legacyBold>Help</legacyBold>
+                        sub-folder.
+                    </para>
+                </alert>
+            </content>
+        </buildInstructions>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f502">
+                Getting Started
+            </link>
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f503">
+                Issues
+            </link>
+        </relatedTopics>
+    </developerHowToDocument>
+</topic>

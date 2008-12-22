@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f601" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Example 1 - General</title>-->
+
+        <introduction>
+            <para>
+                We will be providing all the basics parts of the conceptual help in
+                this document.
+            </para>
+        </introduction>
+        
+        <section>
+            <title>Handling Paragraph</title>
+            <content>
+                <para>
+                    As you might have observed already, most conceptual tag supports
+                    the <legacyBold>&lt;para&gt;...&lt;/para&gt;</legacyBold> tag, 
+                    which is used to create a paragraph in a help file.
+                </para>
+                <alert class="tip">
+                    <para>
+                        You can create a new line or line break using
+                        <legacyBold>&lt;para/&gt;</legacyBold>.
+                    </para>
+                </alert>
+            </content>
+        </section>
+        
+        <section>
+            <title>Handling Text Styling</title>
+            <content>
+                <para>
+                    As expected, there is support for basic text styling:
+                </para>
+                <list class="bullet">
+                <listItem>
+                    <para>
+                        Produce simple text styling of <legacyBold>Bold</legacyBold>,
+                        using the <legacyBold>&lt;legacyBold&gt;</legacyBold> tag.
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        Produce simple text styling of <legacyItalic>Italic</legacyItalic>,
+                        using the <legacyBold>&lt;legacyItalic&gt;</legacyBold> tag.
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        Produce simple text styling of <legacyUnderline>Underline</legacyUnderline>,
+                        using the <legacyBold>&lt;legacyUnderline&gt;</legacyBold> tag.
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        Produce simple text styling of Base<superscript>Superscript</superscript>,
+                        using the <legacyBold>&lt;superscript&gt;</legacyBold> tag.
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        Produce simple text styling of Base<subscript>Subscript</subscript>,
+                        using the <legacyBold>&lt;subscript&gt;</legacyBold> tag.
+                    </para>
+                </listItem>
+                </list>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

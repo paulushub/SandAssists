@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f500" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!--<title>Introduction</title>-->
+        <introduction>
+            <para>
+                In this article we will present the conceptual help introduced in the
+                October 2007 CTP release of the Sandcastle Help Compiler System.
+            </para>
+            <para>
+                Previous release of the Sandcastle provided support for building API
+                references for source codes based on the .NET XML-Doc format. While
+                this may be useful in most cases, a complete software documentation
+                will include two parts; the API reference documentation and the
+                "User Manual".
+            </para>
+            <para>
+                While some software provide the manual in the Microsoft Word or Adobe
+                PDF formats, most of us prefer the HTML format. In the HTML format,
+                we prefer a look and feel similar to the API reference documentation.
+            </para>
+            <para>
+                Many companies are now providing only the online help systems; not only
+                is this convenience, more useful and cost saving, but it also makes our
+                Al Gore happy!
+            </para>
+            <alert class="note">
+                <para>
+                    <legacyBold>Al Gore</legacyBold> might refuse to be renamed 
+                    <legacyBold>Al Green</legacyBold>, because writing that
+                    might take more paper space, more energy to spell out, and more
+                    ink and coal to print!
+                </para>
+            </alert>
+            <para>
+                Now, with the release of the October 2007 CTP, even the poorest ISV
+                can produce a professional documentations at a price he/she can 
+                afford - free.
+            </para>
+            <para>
+                Well, "free" itself is a price and in this case very expensive one. 
+                The conceptual help support in the Sandcastle came without a 
+                documentation (the documenter is not documented), making it difficult
+                for the current Sandcastle GUI providers to integrate it into their
+                tools.
+            </para>
+            <para>
+                This article, therefore, aims to provide the following: 
+            </para>
+            <list class="ordered">
+                <listItem>
+                    <para>
+                        <legacyBold>For the Help Author</legacyBold>
+                    </para>
+                    <para>
+                        Reduce the "free" cost of learning to use the conceptual help
+                        so that many can explore the potentials of this useful tool.
+                    </para>
+                </listItem>
+                <listItem>
+                    <para>
+                        <legacyBold>For the (GUI) Tool Author</legacyBold>
+                    </para>
+                    <para>
+                        Provide information to help integrating the conceptual help
+                        support in new and existing tools.
+                    </para>
+                </listItem>                 
+            </list>
+            <para>
+                Basically, I am trying to share with you all I have, currently, in my
+                attempt to learn and master the conceptual help support in Sandcastle.
+                I will be releasing a series of articles on this, but have provided
+                all the tools and facilities in the accompanying download files, so
+                that you will not have to work at my pace.
+            </para>
+            <para>
+                In this article, I will present the <legacyBold>Quick Start</legacyBold>
+                to both introduce you and get you started. It will also help me gather
+                information for the next article.
+            </para>
+            <para>
+                Now, for those new to Sandcastle's conceptual help, let me give
+                a "free" screen-shot of a typically output, which is actually part of
+                the download files.
+            </para>
+            <para/>
+            <mediaLink>
+                <caption>Conceptual Help Output In New VS 2005 Style</caption>
+                <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f811"/>
+            </mediaLink>
+            <para/>
+        </introduction>
+        
+        <section>
+            <title>What is Conceptual Help?</title>
+            <content>
+                <para>
+                    Conceptual means pertaining to concepts or to the forming of 
+                    concepts, so a conceptual help is a documentation of the concepts
+                    or how your software program will help to realize some concepts or
+                    ideas. Well, that is me trying to be technical, and believe me it
+                    is not accurate. The accurate version follows...
+                </para>
+                <para>
+                    The conceptual help is based on the Microsoft Assistance Markup 
+                    Language or MAML, an XML-based markup language developed by the 
+                    Microsoft User Assistance Platform team to provide user 
+                    assistance for the Windows Vista. The ideal behind the MAML is
+                    similar to DocBook (I do not know which is better).
+                </para>
+                <para>
+                    The MAML consists of several distinct content types, each one 
+                    specific to a type of document. The MAML content types include: 
+                    conceptual, glossary, procedural or how-to, reference, 
+                    troubleshooting, etc.
+                </para>
+                <para>
+                    The term "conceptual help" is actually a out of place since the
+                    "conceptual content" is a just one of the content types defined
+                    by the MAML.
+                </para>
+                <para>
+                    The MAML specification is currently not available, but the Sandcastle
+                    Team provided the schema of a derived version for developers. The
+                    schema is currently incomplete, which is adding to the "free" cost
+                    I mentioned earlier.
+                </para>
+                <para>
+                    The schema for the conceptual content type, which is the most
+                    generic of all the content types, is shown below:
+                </para>
+                <para/>
+                <mediaLink>
+                    <caption>Conceptual Content Type Schema</caption>
+                    <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f812"/>
+                </mediaLink>
+                <para>
+                    Here is an example of the conceptual help structure (the reality is
+                    different from the schema, an indication of an incomplete schema):
+                </para>
+                <code language="xml">
+                    <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="GUID" revisionNumber="">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <title>...</title>
+        <summary>
+            <para>...</para>
+        </summary>
+        
+        <introduction>
+            <para>...</para>
+        </introduction>
+
+        <section>
+            <title>...</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+
+        <section>
+            <title>...</title>
+            <content>
+                <para>...</para>
+            </content>
+        </section>
+        <relatedTopics>
+        </relatedTopics>
+    </developerConceptualDocument>
+</topic>                
+                    ]]>
+                </code>
+                    
+                <alert class="important">
+                    <para>
+                        The following must be noted about this and other content structures:
+                    </para>
+                    <list class="bullet">
+                        <listItem>
+                            <para>                                
+                            The <legacyBold>&lt;title&gt;</legacyBold> tag is actually required
+                            for a successful compilation of the help, even thought not
+                            included in the schema.
+                            </para>
+                        </listItem>
+                        <listItem>
+                            <para>                                
+                            The <legacyBold>&lt;topic&gt;</legacyBold>'s id must be a GUID,
+                            uniquely identifying each document in the help system.
+                            </para>
+                        </listItem>
+                        <listItem>
+                            <para>                                
+                            The file containing each document must be named with the
+                            <legacyBold>&lt;topic&gt;</legacyBold>'s id value.
+                            </para>
+                        </listItem>
+                    </list>
+                </alert>
+                <para/>
+                <para>
+                    Finally the good news: the Sandcastle Team provided the tool to
+                    transform, with varying degree of completion and accuracy, the
+                    various content types to both HtmlHelp 1.x and 2.x for the 
+                    presentation styles supported. A typical output using the VS-2005
+                    presentation style, which is the best supported style, is shown
+                    above.
+                </para>
+            </content>
+        </section>
+        
+        <section>
+            <title>What is included in Download?</title>
+            <content>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>Help Builder Library</legacyBold>
+                        </para>
+                        <para>
+                            This is an easy to use library that will help you concentrate
+                            on the content types instead of how to build your help files.
+                        </para>
+                        <list class="ordered">
+                            <listItem>
+                                <para>
+                                    It will create the copies of your files with the
+                                    the GUID names extracted from the topic id in the
+                                    directory required by the Sandcastle configuration 
+                                    file.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    It will create various files including the table
+                                    of content.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    It will help you compile your file and log the
+                                    output.
+                                </para>
+                            </listItem>
+                        </list>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Schema Documentations</legacyBold>
+                        </para>
+                        <para>
+                            Even the MAML is well documentated, the version included
+                            in the October 2007 CTP version of the Sandcastle is not
+                            complete, making it difficult to extract the documentation.
+                        </para>
+                        <para>
+                            I have managed to extract a documentation of the provided
+                            schema, not very nice but useful.
+                        </para>
+                        <para>
+                            It is named <legacyBold>Maml.chm</legacyBold> and located 
+                            in the <legacyBold>Builder</legacyBold> folder.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>Quick Start Samples</legacyBold>
+                        </para>
+                        <para>
+                            The sample sources, in C# and VB.NET, of the tutorial
+                            presented below.
+                        </para>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>(The) Sample</legacyBold>
+                        </para>
+                        <list class="ordered">
+                            <listItem>
+                                <para>
+                                    This is not just another example, but the main thing,
+                                    and what I really want you to have.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    It is an illustrative example that shows you what
+                                    you can do with the Sandcastle, and if you take a
+                                    look at the source to see how it was done.
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    It aims to be a guide, a tutorial and a cookbook!
+                                </para>
+                            </listItem>
+                            <listItem>
+                                <para>
+                                    A copy of the output named <legacyBold>Manual.chm</legacyBold>
+                                    is located in the Builder folder, the same thing you
+                                    will get if you compile and run this sample. The
+                                    screen-shot of the output is shown above.
+                                </para>
+                            </listItem>
+                        </list>
+                    </listItem>
+                </list>
+                <para/>
+                <para/>
+                <para>
+                    Now, lets move to the tutorial or quick start section to begin some
+                    real work.
+                </para>
+            </content>
+        </section>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f501">
+                Quick Start
+            </link>
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f503">
+                Issues
+            </link>
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

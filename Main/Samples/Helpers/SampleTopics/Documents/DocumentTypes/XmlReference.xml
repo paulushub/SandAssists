@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f560" revisionNumber="1">
+    <developerXmlReference
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <summary>
+            <para>
+                [TODO(optional): A summary of the XML Reference]
+            </para>               
+        </summary>
+
+        <introduction>
+            <para>
+                [TODO: An introduction to this topic]
+            </para>            
+        </introduction>
+
+        <schemaHierarchy>
+            <!--<link xlink:href="Link1">Link 1</link>
+            <link xlink:href="Link2">Link 2</link>
+            <link xlink:href="Link3">Link 3</link>
+            <link xlink:href="Link4">Link 4</link>-->
+        </schemaHierarchy>
+
+        <syntaxSection>
+            <sections>                
+                <section>
+                    <title>Title - Section 1</title>
+                    <content>
+                        <para>
+                            [Paragraph 1]
+                        </para>
+                        <para>
+                            [Paragraph 2]
+                        </para>
+                    </content>
+                    <sections>
+                        <section>
+                            <title>Title - Sub-Section 1</title>
+                            <content>
+                                <para>
+                                    [Sub Paragraph 1]
+                                </para>
+                            </content>
+                        </section>
+                        <section>
+                            <title>Title - Sub-Section 2</title>
+                            <content>
+                                <para>
+                                    [Sub Paragraph 1]
+                                </para>
+                            </content>
+                        </section>
+                    </sections>
+                </section>
+                <section>
+                    <title>Title - Section 2</title>
+                    <content>
+                        <para>
+                            [Paragraph 1]
+                        </para>
+                        <para>
+                            [Paragraph 2]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+            <legacySyntax language="xml">
+                <![CDATA[...]]>
+            </legacySyntax>
+        </syntaxSection>
+
+        <type>
+            <para>
+                [TODO: type 1]
+            </para>
+        </type>
+
+        <attributesandElements>
+            <para>
+                [TODO: About attributes and elements]
+            </para>
+            <attributes>
+                <para>
+                    [TODO: About the attributes]
+                </para>                
+            </attributes>
+            <attribute>
+                <title>
+                    [TODO: Title of attribute]
+                </title>
+                <table>
+                    <title>Table Title</title>
+                    <tableHeader>
+                        <row>
+                            <entry>
+                                <para>Name</para>
+                            </entry>
+                            <entry>
+                                <para>Type</para>
+                            </entry>
+                            <entry>
+                                <para>Use</para>
+                            </entry>
+                            <entry>
+                                <para>Default</para>
+                            </entry>
+                            <entry>
+                                <para>Fixed</para>
+                            </entry>
+                            <entry>
+                                <para>Description</para>
+                            </entry>
+                       </row>
+                    </tableHeader>
+                    <row>
+                        <entry>
+                            <para>TODO</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                        <entry>
+                            <para>...</para>
+                        </entry>
+                    </row>
+                </table>
+            </attribute>
+            <childElement>
+                <para>
+                    [TODO: About the child element]
+                </para>
+            </childElement>
+            <parentElement>
+                <para>
+                    [TODO: About the parent element]
+                </para>
+            </parentElement>
+        </attributesandElements>
+
+        <textValue>
+            <content>
+                <para>
+                    [TODO: The following are the text value...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>TODO: title...</title>
+                    <content>
+                        <para>
+                            [TODO: text value 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>TODO: title...</title>
+                    <content>
+                        <para>
+                            [TODO: text value 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </textValue>
+
+        <remarks>
+            <content>
+                <para>
+                    [TODO: The following are the remarks...]
+                </para>
+            </content>
+            <sections>
+                <section>
+                    <title>TODO: title...</title>
+                    <content>
+                        <para>
+                            [TODO: remarks 1...]
+                        </para>
+                    </content>
+                </section>
+                <section>
+                    <title>TODO: title...</title>
+                    <content>
+                        <para>
+                            [TODO: remarks 2...]
+                        </para>
+                    </content>
+                </section>
+            </sections>
+        </remarks>
+
+        <codeExample>
+            <description>
+                <content>
+                    <para>[TODO: Provide a description of the ff. code]</para>
+                </content>
+            </description>
+            <code language="c#">
+                public class Sample
+                {
+                }
+            </code>
+            <code language="vb">
+                Public Class Sample
+
+                End Class
+            </code>
+            <comments>
+                <content>
+                    <para>
+                        You can compile C# codes the using the...
+                    </para>
+                    <para>
+                        You can compile VB codes the using the...
+                    </para>
+                </content>
+            </comments>
+            <input>
+                <code>The input is...</code>
+            </input>
+            <output>
+                <code>The output is...</code>
+            </output>
+            <sampleOutput>
+                <code>The sample output is...</code>
+            </sampleOutput>
+        </codeExample>
+
+        <elementInformation>
+            <table>
+                <title>Table Title</title>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Name</para>
+                        </entry>
+                        <entry>
+                            <para>Type</para>
+                        </entry>
+                        <entry>
+                            <para>Use</para>
+                        </entry>
+                        <entry>
+                            <para>Default</para>
+                        </entry>
+                        <entry>
+                            <para>Fixed</para>
+                        </entry>
+                        <entry>
+                            <para>Description</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>TODO</para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+            </table>
+        </elementInformation>
+
+        <relatedTopics>
+            <!--
+            The Concepts Links using the <link xlink:href="guidFileName">Label</link>
+            -->
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f551">The Conceptual</link>
+            <!--
+            The Reference Links using the <codeEntityReference autoUpgrade="true">T:Namespaces:ClassName</codeEntityReference>
+            -->
+            <codeEntityReference autoUpgrade="true">T:System.Uri</codeEntityReference>
+        </relatedTopics>
+    </developerXmlReference>
+</topic>

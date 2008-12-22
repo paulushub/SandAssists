@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<topic id="6aca5da4-6f94-43a0-9817-5f413d16f113" revisionNumber="1">
+    <developerConceptualDocument
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        <!-- An introduction to the content of this document -->
+        <introduction>
+            <para>
+                In this topic, we will present the contents of the sample help 
+                collection provided with the <legacyBold>HelpRegister.exe</legacyBold>.
+            </para>
+            <para>
+                <token>autoOutline</token>
+            </para>
+            <para>
+                The main compiled sample help file is the HelpRegister user manual
+                and schema references in the Help 2.0 format.
+            </para>
+        </introduction>
+
+        <!-- The main or actual document contents -->
+        <section address="section1">
+            <title>Configuration File</title>
+            <content>
+                <para>
+                    The following is the content of the sample configuration file:
+                </para>
+                <code language="xml">
+                    <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<register xmlns:help2="http://www.simmack.de/2006/help2">
+    <!-- 1. Register Sandcastle.HelpRegister as our namespace -->
+    <namespace name="Sandcastle.HelpRegister" 
+        description="Sandcastle HelpRegister Collection" 
+        file="CollHelpRegister.HxC">
+        <!-- 2. Register the HelpRegister.HxS help file -->
+        <file Id="HelpRegister" HxS="HelpRegister.HxS" LangId="1033" />
+        <!-- 3. We are no using a custom filter... -->
+        <filter name="(no filter)" />
+        <plugin>
+            <!-- 
+            4. Plug the "Help on Help" into our collection.
+               The first matched MS.Dexplore.v80.en or MS.Dexplore.v90.en will be used. 
+            -->
+            <child name="MS.Dexplore.*" />
+        </plugin>
+    </namespace>
+    <!--
+    5. Plug into existing namespaces, in this case, 
+        the VS.NET 2002, 2003, 2005 and VS.NET 2008.
+    -->
+    <plugin parent="MS.VSCC" child="Sandcastle.HelpRegister" merge="yes"/>
+    <plugin parent="MS.VSCC.2003" child="Sandcastle.HelpRegister" merge="no"/>
+    <plugin parent="MS.VSCC.v80" child="Sandcastle.HelpRegister" merge="no"/>
+    <plugin parent="MS.VSCC.v90" child="Sandcastle.HelpRegister" merge="no"/>
+</register>                    
+                    ]]>
+                </code>
+            </content>    
+        </section>
+
+        <!-- The main or actual document contents -->
+        <section address="section2">
+            <title>Collection-Level Files</title>
+            <content>
+                <para>
+                    According to the Microsoft documentations, if the collection-level 
+                    .HxT file is omitted the plug-in will fail. If the .HxK files are 
+                    omitted, the corresponding index will not appear in the parent 
+                    collection.
+                </para>
+                <para>
+                    The following are the collection-level files used by the sample:
+                </para>
+            </content>
+            <sections address="section20">
+                
+                <section address="section21">
+                    <title>Collection-level .HxC File</title>
+                    <content>
+                        <para>
+                            From the Microsoft documentations, the collection-level 
+                            .HxC file contains one reference for each of the other 
+                            collection-level files. For example, the &lt;TOCDef&gt; 
+                            element refers to the collection-level .HxT, the 
+                            &lt;KeywordIndexDef&gt; element refers to the 
+                            collection-level .HxK, and so forth. 
+                        </para>
+                        <para>                            
+                            The &lt;ItemMoniker&gt; tags are also required, and can be 
+                            taken from the .HxC file that was used to compile the .HxS file.
+                        </para>
+                        <para>The content of this file is:</para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HelpCollection >
+<HelpCollection DTDVersion="1.0" Id="CollHelpRegister" 
+    FileVersion="1.0.0.0" LangId="1033" Title="Sandcastle HelpRegister" 
+    Copyright="">
+	<TOCDef File="CollHelpRegister.HxT" />
+	<KeywordIndexDef File="CollHelpRegister_A.HxK" />
+	<KeywordIndexDef File="CollHelpRegister_B.HxK" />
+	<KeywordIndexDef File="CollHelpRegister_F.HxK" />
+	<KeywordIndexDef File="CollHelpRegister_K.HxK" />
+	<KeywordIndexDef File="CollHelpRegister_S.HxK" />
+	<KeywordIndexDef File="CollHelpRegister_N.HxK" />
+	<ItemMoniker Name="!DefaultToc" ProgId="HxDs.HxHierarchy" InitData="" />
+	<ItemMoniker Name="!DefaultFullTextSearch" ProgId="HxDs.HxFullTextSearch" InitData="" />
+	<ItemMoniker Name="!DefaultAssociativeIndex" ProgId="HxDs.HxIndex" InitData="A" />
+	<ItemMoniker Name="!DefaultKeywordIndex" ProgId="HxDs.HxIndex" InitData="K" />
+	<ItemMoniker Name="!DefaultContextWindowIndex" ProgId="HxDs.HxIndex" InitData="F" />
+	<ItemMoniker Name="!DefaultNamedUrlIndex" ProgId="HxDs.HxIndex" InitData="NamedUrl" />
+	<ItemMoniker Name="!DefaultSearchWindowIndex" ProgId="HxDs.HxIndex" InitData="S" />
+	<ItemMoniker Name="!DefaultDynamicLinkIndex" ProgId="HxDs.HxIndex" InitData="B" />
+</HelpCollection>
+                            ]]>
+                        </code>
+                    </content>
+                </section>
+                
+                <section address="section22">
+                    <title>Collection-level .HxT File</title>
+                    <content>
+                        <para>
+                            The collection-level .HxT file contains a reference to the 
+                            title ID that each .HxS file in the child namespace was 
+                            registered with. At run time, the registration services 
+                            use this information to pull the correct .HxT file from 
+                            each .HxS file.
+                        </para>
+                        <para>The content of this file is:</para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HelpTOC >
+<HelpTOC DTDVersion="1.0" Id="CollHelpRegisterTOC" 
+         PluginStyle="Hierarchical" PluginTitle="Sandcastle HelpRegister" 
+         FileVersion="1.0.0.0" LangId="1033">
+	<HelpTOCNode NodeType="TOC" Url="HelpRegister" />
+</HelpTOC>
+                            ]]>
+                        </code>
+                    </content>
+                </section>
+                
+                <section address="section23">
+                    <title>Collection-level .HxK File</title>
+                    <content>
+                        <para>
+                            The collection-level .HxK file contains a reference for an 
+                            index for an .HxS file belonging to the child namespace. 
+                            Each index should have its own corresponding collection-level 
+                            .HxK file. For example, if an .HxS file had an .HxK file 
+                            defined for its keyword index and one for an associative 
+                            index, it would need two collection-level .HxK files. 
+                        </para>
+                        <para>
+                            The following example shows a collection-level .HxK file 
+                            for a keyword index.
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HelpIndex >
+<HelpIndex
+	Name="K"
+	DTDVersion="1.0"
+	FileVersion="1.0.0.0"
+	Id="CollHelpRegister_K"
+	AutoInclude="Yes"
+	Merge="Yes"
+	Sort="Yes"
+	Title="Keyword Index"
+	Visible="Yes"
+	LangId="1033">
+</HelpIndex>
+                            ]]>
+                        </code>
+                        <para>
+                            The following example shows a collection-level .HxK file
+                            for a Named URL.
+                        </para>
+                        <code language="xml">
+                            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HelpIndex >
+<HelpIndex
+	Name="NamedUrl"
+	DTDVersion="1.0"
+	Id="CollHelpRegister_N"
+	AutoInclude="Yes"
+	Merge="Yes"
+	Sort="Yes"
+	Title="Named Url Index"
+	Visible="No"
+	LangId="1033">
+</HelpIndex>                            
+                            ]]>
+                        </code>
+                    </content>
+                </section>
+                
+                <section address="section24">
+                    <title>Collection-level .HxA File</title>                    
+                    <content>
+                        <para>
+                            The collection-level .HxA file only needs to contain 
+                            attributes and values that will be exposed to the user, 
+                            such as through a filter editing tool.
+                        </para>
+                        <para>
+                            You can take the data for this file from the .HxA file that 
+                            was used to compile the .HxS file.
+                        </para>
+                        <alert class="note">
+                            <para>
+                                This file is <legacyBold>not</legacyBold> used in this
+                                sample, but may be provided in updated sample.
+                            </para>
+                        </alert>
+                    </content>
+                </section>
+            </sections>
+        </section>
+
+        <!-- The main or actual document contents -->
+        <section address="section3">
+            <title>Windows Batch Files</title>
+            <content>
+                <para>
+                    We have also provided the following batch file to run the 
+                    command-line tool.
+                </para>
+                <list class="bullet">
+                    <listItem>
+                        <para>
+                            <legacyBold>register.bat</legacyBold>
+                        </para>
+                        <code>
+                            @"HelpRegister.exe" /r /view register.xml
+                        </code>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>unregister.bat</legacyBold>
+                        </para>
+                        <code>
+                            @"HelpRegister.exe" /u register.xml
+                        </code>
+                    </listItem>
+                    <listItem>
+                        <para>
+                            <legacyBold>viewhelp.bat</legacyBold>
+                        </para>
+                        <code>
+                            @"HelpRegister.exe" /v register.xml
+                        </code>
+                    </listItem>
+                </list>
+            </content>    
+        </section>
+
+        <!-- Related topic links and external resources -->
+        <relatedTopics>
+            <!--
+            <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f100">
+                Introduction
+            </link>
+
+            <externalLink>
+                <linkText>...</linkText>
+                <linkAlternateText>...</linkAlternateText>
+                <linkUri>...</linkUri>
+            </externalLink>
+            -->
+
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f001">
+                References
+            </link>
+
+            <externalLink>
+                <linkText>Microsoft Namespace# 2.0</linkText>
+                <linkAlternateText>Microsoft Namespace# 2.0</linkAlternateText>
+                <linkUri>http://code.msdn.microsoft.com/NamespaceSharp</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+                <linkAlternateText>Visual Studio .NET Help Integration Kit 2003</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2005 SDK Version 4.0</linkText>
+                <linkAlternateText>Visual Studio 2005 SDK Version 4.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Visual Studio 2008 SDK Version 1.0</linkText>
+                <linkAlternateText>Visual Studio 2008 SDK Version 1.0</linkAlternateText>
+                <linkUri>
+                    <![CDATA[
+                    http://www.microsoft.com/downloads/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&displaylang=en
+                    ]]>
+                </linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Useful Help Resources: The Helpware Group</linkText>
+                <linkAlternateText>Useful Help Resources: The Helpware Group</linkAlternateText>
+                <linkUri>http://helpware.net/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>SharpDevelop</linkText>
+                <linkAlternateText>SharpDevelop</linkAlternateText>
+                <linkUri>http://www.icsharpcode.net/OpenSource/SD/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Mathias Simmack: HTML Help Collections (German)</linkText>
+                <linkUri>http://www.simmack.de/tutorials/html-help-collections/</linkUri>
+            </externalLink>
+
+            <externalLink>
+                <linkText>Sandcastle Assist Website</linkText>
+                <linkUri>http://www.codeplex.com/sandassist</linkUri>
+            </externalLink>
+
+        </relatedTopics>
+
+    </developerConceptualDocument>
+</topic>

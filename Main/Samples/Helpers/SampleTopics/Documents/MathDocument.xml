@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f102" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--<title>Quick Start</title>
+    <summary>
+        <para>
+            A quick start tutorial for the Sandcastle Conceptual Help 
+            Compiler System.
+        </para>        
+    </summary>
+    -->
+    <introduction>
+        <para>
+            Introducing the Mathematics into the Conceptual Help...
+        </para>
+        <!--<para>
+            <token>autoOutline</token>
+        </para>-->
+    </introduction>
+
+    <section address="section1">
+        <title>Math Equations</title>
+        <content>
+            <para>
+                The following are examples of equations in the conceptual help:
+            </para>
+            <para>  
+                We will start with a simple example and add more complex equations.
+                <math address="MathTeX.1">
+                    x^2 + y^2 = z^2
+                </math>
+                And we all know the solutions to a quadratic equation       
+                <math address="MathTeXInline.-1">
+                    ax^2 + bx + c = 0
+                </math>
+                is
+                <math address="MathTeX.2">
+                    x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+                </math>
+                Now, it is time to get complex, here we go...
+                <math address="MathTeX.3">
+                    e^x=\sum_{n=0}^\infty\frac{x^n}{n!}
+                </math>
+            </para>
+            <para>            
+                <math address="MathTeX.4">
+                    f(x)={\Large\frac{1}{\sigma\sqrt{2\pi}}} \int_{\small-\infty}^xe^{-\small\frac{(t-\mu)^2}{2\sigma^2}}dt
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.5">
+                    f^\prime(x)\ = \lim_{\Delta x\to0}\frac{f(x+\Delta x)-f(x)}{\Delta x}
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.6">
+                    <![CDATA[
+                    A\ =\ \left(\begin{array}{cccc} a_{11}&a_{12}&\cdots&a_{1n}\\         
+                    a_{21}&a_{22}&\cdots&a_{2n}\\         
+                    \vdots&\vdots&\ddots&\vdots\\         
+                    a_{n1}&a_{n2}&\cdots&a_{nn}
+                    \end{array}\right)                    
+                     ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.7">
+                    e^x=\lim_{n\to\infty} \left(1+\frac{x}{n}\right)^n
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.8">
+                    f=b_o+\frac{a_1}{b_1+\frac{a_2}      {b_2+\frac{a_3}{b_3+a_4}}}
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.9"> 
+                    <![CDATA[
+                    \mathscr{J}^{ij}= \frac{1}{2}\varepsilon_{ijk}  \left[\begin{array}{cc}\sigma_k&0\\0&\sigma_k\end{array}\right]
+                    ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.10">
+                    <![CDATA[
+\tilde{y} = \left\{ \begin{array}{l}
+ \ddot x,               \text{   if x odd} \\ 
+ \widehat{\bar{x} + 1}, \text{   if x even} \\ 
+ \end{array} \right.
+                ]]>
+                </math>
+                <!--<math address="MathTeX.-10">
+                    <![CDATA[
+                \tilde{y}=
+	                \begin{cases}
+		                \ddot{x},     &\text{if  $\vec{x}$ odd}\\
+		                \widehat{\bar{x} + 1}, &\text{if even}
+	                \end{cases}
+                ]]>
+                </math>-->
+            </para>
+            <para>
+                <math address="MathTeX.11">
+                    <![CDATA[
+                \varepsilon=\sum_{i=1}^{n-1}    
+                \frac1{\Delta x}\int_{x_i}^{x_{i+1}}\left\{\frac1{\Delta x}
+                \big[(x_{i+1}-x)y_i^\ast+(x-x_i)y_{i+1}^\ast\big]-f(x)\right\}^2dx
+                ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeXUser.12">
+                    <![CDATA[
+                \begin{eqnarray*}    
+                    x+y+z&=&3\\
+                    2y&=&x+z\\
+                    2x+y&=&z
+                \end{eqnarray*}
+                ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeXUser.13">
+                    <![CDATA[
+\begin{eqnarray*}    
+\left| \frac{1}{\zeta - z - h} - \frac{1}{\zeta - z} \right|
+& = & \left|
+\frac{(\zeta - z) - (\zeta - z - h)}{(\zeta - z - h)(\zeta - z)}
+\right| \\  & = &
+\left| \frac{h}{(\zeta - z - h)(\zeta - z)} \right| \\
+  & \leq & \frac{2 |h|}{|\zeta - z|^2}.
+\end{eqnarray*}
+           ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.-1">
+                    <![CDATA[
+            x+y+z&=&3\\
+            2y&=&x+z\\
+            2x+y&=&z
+                ]]>
+                </math>
+            </para>
+            <para>
+                <math address="MathTeX.-2">
+                    <![CDATA[
+\left| \frac{1}{\zeta - z - h} - \frac{1}{\zeta - z} \right|
+& = & \left|
+\frac{(\zeta - z) - (\zeta - z - h)}{(\zeta - z - h)(\zeta - z)}
+\right| \\  & = &
+\left| \frac{h}{(\zeta - z - h)(\zeta - z)} \right| \\
+  & \leq & \frac{2 |h|}{|\zeta - z|^2}.
+           ]]>
+                </math>
+            </para>
+
+        </content>        
+    </section>         
+
+    <relatedTopics>
+        
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>

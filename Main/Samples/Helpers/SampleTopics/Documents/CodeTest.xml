@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f104" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--<title>Quick Start</title>-->
+    
+    <introduction>
+        <para>
+            The Sandcastle Assist Project introduces a number of custom build
+            components to improve the build output of the Sandcastle references
+            and conceptual builds.
+        </para>
+        <para>
+            We provides samples codes here to illustrate the support of syntax
+            highlighting with the Code Component.
+        </para>
+        <para>
+            <token>autoOutline</token>
+        </para>
+    </introduction>
+    
+    <section address="section1">
+        <title>Using Direct Code Samples</title>
+        <content>
+            <para>
+                In this section, we provides samples to illustrate the code syntax
+                highlighting support using the <legacyBold>&lt;code&gt;</legacyBold> tag.
+            </para>
+            <code language="c#">
+                <![CDATA[
+using System;
+using System.Windows.Forms;
+using System.Collections.Generic;
+
+namespace Sample
+{
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}                ]]>
+            </code>
+            <code language="vb">
+                <![CDATA[
+Imports System
+Imports System.Windows.Forms
+Imports System.Collections.Generic
+
+Friend Class Program
+
+    <STAThread()> _
+    Public Sub Main()
+        Application.EnableVisualStyles()
+        Application.SetCompatibleTextRenderingDefault(False)
+        Application.Run(New MainForm())
+    End Sub
+
+End Class
+                ]]>
+            </code>
+            
+            <code language="cpp">
+                <![CDATA[
+#include "stdafx.h"
+#include "MainForm.h"
+
+using namespace Sample;
+
+[STAThreadAttribute]
+int main(array<System::String ^> ^args)
+{
+	// Enabling Windows XP visual effects before any controls are created
+	Application::EnableVisualStyles();
+	Application::SetCompatibleTextRenderingDefault(false); 
+
+	// Create the main window and run it
+	Application::Run(gcnew Form1());
+	return 0;
+}
+                ]]>
+            </code>
+            <code language="j#"> 
+                package WindowsSample;
+
+                import System.Collections.Generic.*;
+                import System.Windows.Forms.*;
+
+                /**
+                 * Summary description for Program
+                 */
+                public class Program
+                {
+                    /**
+                     * The main entry point for the application.
+                     */
+                    /** @attribute System.STAThread() */
+                    public static void main(String[] args)
+                    {
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Application.Run(new Form1());
+                    }
+                }                
+            </code>
+            
+            <code language="html">
+                <![CDATA[
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+    <title>Create a link to the</title>
+    </head>
+
+    <body>
+    <!-- Creating a link to the bookmark -->
+    <p>
+        Create a link to the (<a href="#HelloMark1">Hello</a>) is easy and simple.
+    </p>
+
+    <h1>What is Hello?</h1>
+    <p>
+        <!-- Creating a bookmark in the paragraph -->
+        A <a name="HelloMark1">Hello</a> is  simply a greeting with mostly no feeling attached.
+    </p>
+    <p>
+        <!-- Creating a link to an external resource -->
+        You can find the <a href="http://en.wikipedia.org/wiki/Hello">actual meaning</a> here.
+    </p>
+
+    <!-- Creating a link and anchor/bookmark in the topic header -->
+    <!-- This is only for illustration - no real world example --> 
+    <h1><a name="HiMark" href="http://www.Hello.com">What is Hi?</a></h1>
+    <p>A Hi is yet another greeting with completely no feeling.</p>
+
+    </body>
+</html>        
+               ]]>
+            </code>
+            <code language="xml">
+                <![CDATA[
+<xsl:template match="ddue:legacyLink">
+<xsl:choose>
+  <xsl:when test="starts-with(@xlink:href,'#')">
+    <!-- in-page link -->
+    <a href="{@xlink:href}">
+      <xsl:apply-templates />
+    </a>
+  </xsl:when>
+<!-- in-page link bookmark -->
+  <xsl:when test="@address"> <!-- Update Starts: in-page link bookmark --> 
+    <a id="{@address}">
+      <xsl:if test="@xlink:href">
+          <xsl:attribute name="href">
+              <xsl:value-of select="@xlink:href" />
+          </xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates />
+    </a>
+  </xsl:when>                <!-- Update Ends: in-page link bookmark --> 
+  <xsl:otherwise>
+    <!-- unverified, external link -->
+    <mshelp:link keywords="{@xlink:href}" tabindex="0">
+      <xsl:apply-templates />
+    </mshelp:link>
+  </xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+                ]]>
+            </code>
+
+        </content>
+    </section>
+    
+    <section address="section2">
+        <title>Using Sandcastle Code Snippets</title>
+        <content>
+            <para>
+                In this section, we provides samples to illustrate the code syntax
+                highlighting support using the <legacyBold>&lt;codeReference&gt;</legacyBold> tag.
+            </para>
+            <para>
+                In this section we illustrate the support of the Sandcastle XML code
+                snippets format with sample codes.
+            </para>
+        </content>
+        <sections>
+            <section address="section21">
+                <title>The single-part code snippet</title>
+                <content>
+                    <para>
+                        <legacyBold>Example 1:</legacyBold> An example of two language code samples..
+                    </para>
+                    <codeReference>exampleId3#snippetId3</codeReference>
+                    <para>
+                        <legacyBold>Example 2:</legacyBold> An example of three language code samples...
+                    </para>
+                    <codeReference>exampleId1#snippetId1</codeReference>
+                </content>
+            </section>
+            <section address="section22">
+                <title>The multi-part code snippet</title>
+                <content>
+                    <para>
+                        <legacyBold>Example 1</legacyBold>: An example of two language code samples..
+                    </para>
+                    <codeReference>exampleId2#snippetId1,snippetId2</codeReference>
+                    <para>
+                        <legacyBold>Example 2</legacyBold>: An example of three language code samples...
+                    </para>
+                    <codeReference>exampleId4#snippetId1,snippetId2,snippetId3</codeReference>
+                </content>
+            </section>
+        </sections>
+    </section>
+
+    <relatedTopics>
+        
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>

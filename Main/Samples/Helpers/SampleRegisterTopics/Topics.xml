@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<files>
+    <!--
+    Currently, I do not know if these attributes are needed, 
+    if left out, it will be set to 
+    topicSchemaId="DevHowTo" topicSchemaName="HowTo"
+    
+    The format under consideration is:
+    <file name="File.xml" topicSchemaId="DevHowTo" topicSchemaName="HowTo"/>
+    
+    Until the issue on the relevance of topicSchemaId/topicSchemaName is
+    resolved, we will use the simple format:
+    <file name="File.xml" title="Title of the content"/>
+    -->
+    <file name="HelpRegister.xml" title="Help Files Registration">
+        <file name="ConfigurationFile.xml" title="Registration Configuration File"/>
+        <file name="Running.xml" title="Running Registration Tool"/>
+        <file name="HelpSample.xml" title="Help Registration Sample"/>
+        <file name="License.xml" title="License Agreement"/>
+        <file name="VersionHistory.xml" title="Version History"/>
+    </file>    
+    <file name="References.xml" title="Xml Schema References">
+        <file name="Elements.xml" title="Elements">
+            <file name="Elements\Child.xml" title="child Element"/>
+            <file name="Elements\File.xml" title="file Element"/>
+            <file name="Elements\Filter.xml" title="filter Element"/>
+            <file name="Elements\Namespace.xml" title="namespace Element"/>
+            <file name="Elements\Namespace.Plugin.xml" title="namespace/plugin Element"/>
+            <file name="Elements\Plugin.xml" title="plugin Element"/>
+            <file name="Elements\Register.xml" title="register Element"/>
+        </file>
+        <file name="ComplexTypes.xml" title="Complex Types">
+        </file>
+        <file name="SimpleTypes.xml" title="Simple Types">
+            <file name="SimpleTypes\LangIdType.xml" title="LangIdType Simple Type"/>
+            <file name="SimpleTypes\YesNoType.xml" title="YesNoType Simple Type"/>
+        </file>
+        <file name="ElementGroups.xml" title="Element Groups">
+        </file>
+        <file name="AttributeGroups.xml" title="Attribute Groups">
+        </file>
+    </file>
+</files>
