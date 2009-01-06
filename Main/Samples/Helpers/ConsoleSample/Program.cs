@@ -26,7 +26,7 @@ namespace Sandcastle.Helpers.Sample
 
             BuildConfiguration configuration = documenter.Configuration;
 
-            BuildStyleType styleType = BuildStyleType.Vs2005;
+            BuildStyleType styleType = BuildStyleType.Prototype;
 
             BuildSettings settings = documenter.Settings;
             settings.WorkingDirectory = workingDir;
