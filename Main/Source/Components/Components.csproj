@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="BuilderComponents.cs" />
     <Compile Include="BuilderController.cs" />
+    <Compile Include="BuilderExceptions.cs" />
     <Compile Include="BuilderStyle.cs" />
     <Compile Include="CodeComponent.cs" />
     <Compile Include="Codes\CodeController.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Maths\MathTeXPackage.cs" />
     <Compile Include="MediaComponent.cs" />
     <Compile Include="MediaLinks\MediaItem.cs" />
+    <Compile Include="Others\VersionInfo.cs" />
     <Compile Include="PostTransComponent.cs" />
     <Compile Include="PreTransComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

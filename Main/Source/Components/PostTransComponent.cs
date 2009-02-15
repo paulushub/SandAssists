@@ -266,40 +266,47 @@ namespace Sandcastle.Components
         protected virtual void Apply(XmlDocument document, 
             XPathNavigator navigator, string key)
         {
-            if (_builderStyle == BuilderStyle.None)
+            try
             {
-                DetermineStyle(document);
-            }
+                if (_builderStyle == BuilderStyle.None)
+                {
+                    DetermineStyle(document);
+                }
 
-            if (navigator == null)
-            {
-                navigator = document.CreateNavigator();
-            }
-            if (_isfirstUse)
-            {
-                ApplyPaths();
-                _isfirstUse = false;
-            }
+                if (navigator == null)
+                {
+                    navigator = document.CreateNavigator();
+                }
+                if (_isfirstUse)
+                {
+                    ApplyPaths();
+                    _isfirstUse = false;
+                }
 
-            // 1. Apply the include items...
-            ApplyInclude(navigator);
+                // 1. Apply the include items...
+                ApplyInclude(navigator);
 
-            // 2. Apply the scripts...
-            if (_listScripts != null && _listScripts.Count > 0)
-            {
-                ApplyScripts(navigator);
+                // 2. Apply the scripts...
+                if (_listScripts != null && _listScripts.Count > 0)
+                {
+                    ApplyScripts(navigator);
+                }
+
+                // 3. Apply the styles...
+                if (_listStyles != null && _listStyles.Count > 0)
+                {
+                    ApplyStyles(navigator);
+                }
+
+                // 4. Apply the Help 2 attributes...
+                if (_listAttributes != null && _listAttributes.Count > 0)
+                {
+                    this.ApplyAttributes(navigator);
+                }
             }
-
-            // 3. Apply the styles...
-            if (_listStyles != null && _listStyles.Count > 0)
+            catch (Exception ex)
             {
-                ApplyStyles(navigator);
-            }
-
-            // 4. Apply the Help 2 attributes...
-            if (_listAttributes != null && _listAttributes.Count > 0)
-            {
-                this.ApplyAttributes(navigator);
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
@@ -582,7 +589,7 @@ namespace Sandcastle.Components
 
             if (_headDivSelector == null)
             {
-                if (_builderStyle == BuilderStyle.Vs2005)
+                if (_builderStyle != BuilderStyle.Prototype)
                 {
                     _headDivSelector = XPathExpression.Compile("//div[@id='header']");
                 }
@@ -598,6 +605,14 @@ namespace Sandcastle.Components
             if (_builderStyle == BuilderStyle.Vs2005)
             {
                 ApplyHeaderVS(docNavigator);
+            }
+            else if (_builderStyle == BuilderStyle.Prototype)
+            {
+                ApplyHeaderPrototype(docNavigator);
+            }
+            else if (_builderStyle == BuilderStyle.Hana)
+            {
+                ApplyHeaderHana(docNavigator);
             }
         }
 
@@ -836,16 +851,10 @@ namespace Sandcastle.Components
 
         #endregion
 
-        #region ApplyHeader Method - VS 2005/8
+        #region ApplyHeader Method - VS 2005/8 (Whidbey)
 
-        protected virtual void ApplyHeaderVS(XPathNavigator docNavigator)
+        private void ApplyHeaderVS(XPathNavigator docNavigator)
         {
-            if (docNavigator == null)
-            {
-                throw new ArgumentNullException("docNavigator",
-                    "The document navigator cannot be null (or Nothing).");
-            }
-
             bool hasLogoLink = !String.IsNullOrEmpty(_logoLink);
 
             XPathNavigator headerDiv = docNavigator.SelectSingleNode(_headDivSelector);
@@ -895,7 +904,7 @@ namespace Sandcastle.Components
                     writer.WriteAttributeString("href", _logoLink);
                     writer.WriteAttributeString("target", _logoLinkTarget);
                 }
-                writer.WriteStartElement("img");
+                writer.WriteStartElement("img"); //start - img
                 writer.WriteAttributeString("id", "logoImage");
                 if (!String.IsNullOrEmpty(_logoImageCss))
                 {
@@ -910,6 +919,7 @@ namespace Sandcastle.Components
                 }
                 writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
                     writer.WriteEndElement(); // end - a
@@ -938,7 +948,7 @@ namespace Sandcastle.Components
                     writer.WriteAttributeString("href", _logoLink);
                     writer.WriteAttributeString("target", _logoLinkTarget);
                 }
-                writer.WriteStartElement("img");
+                writer.WriteStartElement("img");   // start - img
                 writer.WriteAttributeString("id", "logoImage");
                 if (!String.IsNullOrEmpty(_logoImageCss))
                 {
@@ -953,6 +963,7 @@ namespace Sandcastle.Components
                 }
                 writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
                     writer.WriteEndElement(); // end - a
@@ -997,7 +1008,7 @@ namespace Sandcastle.Components
                     writer.WriteAttributeString("href", _logoLink);
                     writer.WriteAttributeString("target", _logoLinkTarget);
                 }
-                writer.WriteStartElement("img");
+                writer.WriteStartElement("img");   // start - img
                 writer.WriteAttributeString("id", "logoImage");
                 if (!String.IsNullOrEmpty(_logoImageCss))
                 {
@@ -1012,6 +1023,7 @@ namespace Sandcastle.Components
                 }
                 writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
                     writer.WriteEndElement(); // end - a
@@ -1076,6 +1088,129 @@ namespace Sandcastle.Components
                     writer.WriteAttributeString("href", _logoLink);
                     writer.WriteAttributeString("target", _logoLinkTarget);
                 }
+                writer.WriteStartElement("img");   // start - img
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+            }
+
+            writer.WriteEndElement(); // table
+
+            writer.Close();
+        }
+
+        #endregion
+
+        #region ApplyHeader Method - Prototype
+
+        private void ApplyHeaderPrototype(XPathNavigator docNavigator)
+        {
+            bool hasLogoLink = !String.IsNullOrEmpty(_logoLink);
+
+            XPathNavigator controlDiv = docNavigator.SelectSingleNode(
+                "//body/div[@id='control']");
+            if (controlDiv == null)
+            {
+                return;
+            }
+
+            XmlWriter writer = controlDiv.InsertBefore();
+
+            writer.WriteStartElement("div");
+            writer.WriteAttributeString("id", "control");
+            writer.WriteStartElement("table");
+            writer.WriteAttributeString("id", "logoTable");
+            writer.WriteAttributeString("width", "100%");
+
+            if (_logoPlacement == LogoPlacement.Right) // For the right placement
+            {
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerTables");
+
+                controlDiv.MoveToFirstChild();
+                do
+                {
+                    writer.WriteNode(controlDiv, true);
+                } while (controlDiv.MoveToNext());
+                controlDiv.MoveToParent();
+
+                writer.WriteEndElement(); // td
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+                writer.WriteEndElement(); // img
+                writer.WriteEndElement(); // td
+
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Left)
+            {
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
                 writer.WriteStartElement("img");
                 writer.WriteAttributeString("id", "logoImage");
                 if (!String.IsNullOrEmpty(_logoImageCss))
@@ -1096,8 +1231,408 @@ namespace Sandcastle.Components
                     writer.WriteEndElement(); // end - a
                 }
 
+                writer.WriteEndElement(); // img
+                writer.WriteEndElement(); // td 1
+
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                controlDiv.MoveToFirstChild();
+                do
+                {
+                    writer.WriteNode(controlDiv, true);
+                } while (controlDiv.MoveToNext());
+                controlDiv.MoveToParent();
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Top)
+            {
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
                 writer.WriteEndElement(); // td 1
                 writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                controlDiv.MoveToFirstChild();
+                do
+                {
+                    writer.WriteNode(controlDiv, true);
+                } while (controlDiv.MoveToNext());
+                controlDiv.MoveToParent();
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+            }
+            else if (_logoPlacement == LogoPlacement.Bottom)
+            {
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                controlDiv.MoveToFirstChild();
+                do
+                {
+                    writer.WriteNode(controlDiv, true);
+                } while (controlDiv.MoveToNext());
+                controlDiv.MoveToParent();
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+            }
+
+            writer.WriteEndElement(); // table
+            writer.WriteEndElement(); // div
+
+            writer.Close();
+            controlDiv.DeleteSelf();
+        }
+
+        #endregion
+
+        #region ApplyHeader Method - Hana
+
+        private void ApplyHeaderHana(XPathNavigator docNavigator)
+        {
+            bool hasLogoLink = !String.IsNullOrEmpty(_logoLink);
+
+            XPathNavigator headerDiv = docNavigator.SelectSingleNode(_headDivSelector);
+            XPathNavigator topTable = headerDiv.SelectSingleNode(
+                "//table[@id='topTable']");
+            if (topTable == null)
+            {
+                return;
+            }
+            // Delete the separator...
+            XPathNavigator dividerRow = topTable.SelectSingleNode(
+                "//tr/td[@class='nsrBottom']");
+            if (dividerRow != null)
+            {
+                dividerRow.DeleteSelf();
+            }
+
+            XmlWriter writer = headerDiv.PrependChild();
+
+            writer.WriteStartElement("table");
+            writer.WriteAttributeString("id", "logoTable");
+
+            if (_logoPlacement == LogoPlacement.Right) // For the right placement
+            {
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerTables");
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+                writer.WriteEndElement(); // td
+
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");   // start - img
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+                writer.WriteEndElement(); // td
+
+                writer.WriteEndElement(); // tr
+
+                // Write back the separator....
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("colspan", "2");
+                writer.WriteAttributeString("class", "nsrBottom");
+                writer.WriteAttributeString("background", "../icons/NSRbottomgrad.gif");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+            }
+            else if (_logoPlacement == LogoPlacement.Left)
+            {
+                writer.WriteStartElement("tr");
+
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("valign", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");   // start - img
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+
+                // Write back the separator....
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("colspan", "2");
+                writer.WriteAttributeString("class", "nsrBottom");
+                writer.WriteAttributeString("background", "../icons/NSRbottomgrad.gif");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+            }
+            else if (_logoPlacement == LogoPlacement.Top)
+            {
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");   // start - img
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+
+                // Write back the separator....
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("class", "nsrBottom");
+                writer.WriteAttributeString("background", "../icons/NSRbottomgrad.gif");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+            }
+            else if (_logoPlacement == LogoPlacement.Bottom)
+            {
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");  // td 2
+                writer.WriteAttributeString("id", "headerTables");
+
+                if (topTable != null)
+                {
+                    writer.WriteNode(topTable, true);
+                    topTable.DeleteSelf();
+                }
+
+                writer.WriteEndElement(); // td 2
+                writer.WriteEndElement(); // tr
+
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td"); // td 1
+                writer.WriteAttributeString("id", "headerLogo");
+                if (!String.IsNullOrEmpty(_logoAlignText))
+                {
+                    writer.WriteAttributeString("align", _logoAlignText);
+                }
+                writer.WriteAttributeString("style", _logoCellCss);
+                if (hasLogoLink)
+                {
+                    writer.WriteStartElement("a"); // start - a
+                    writer.WriteAttributeString("href", _logoLink);
+                    writer.WriteAttributeString("target", _logoLinkTarget);
+                }
+                writer.WriteStartElement("img");   // start - img
+                writer.WriteAttributeString("id", "logoImage");
+                if (!String.IsNullOrEmpty(_logoImageCss))
+                {
+                    writer.WriteAttributeString("class", _logoImageCss);
+                }
+                else
+                {
+                    if (hasLogoLink)
+                    {
+                        writer.WriteAttributeString("style", _logoLinkedCss);
+                    }
+                }
+                writer.WriteAttributeString("src", _logoImage);
+                writer.WriteAttributeString("alt", _logoAltText);
+                writer.WriteEndElement(); // end - img
+                if (hasLogoLink)
+                {
+                    writer.WriteEndElement(); // end - a
+                }
+
+                writer.WriteEndElement(); // td 1
+                writer.WriteEndElement(); // tr
+
+                // Write back the separator....
+                writer.WriteStartElement("tr");
+                writer.WriteStartElement("td");
+                writer.WriteAttributeString("class", "nsrBottom");
+                writer.WriteAttributeString("background", "../icons/NSRbottomgrad.gif");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
             }
 
             writer.WriteEndElement(); // table
