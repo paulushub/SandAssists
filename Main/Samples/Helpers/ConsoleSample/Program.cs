@@ -54,7 +54,7 @@ namespace Sandcastle.Helpers.Sample
                 settings.Style.Directory = stylesDir;
             }
 
-            settings.Formats[0].Enabled = false;
+            settings.Formats[0].Enabled = true;
             FormatChm chmFormat = settings.Formats[0] as FormatChm;
             if (chmFormat != null)
             {
@@ -68,12 +68,12 @@ namespace Sandcastle.Helpers.Sample
                 //hxsFormat.SeparateIndexFile = true;
                 hxsFormat.Indent = true;
             }
-            FormatWeb webFormat = settings.Formats[2] as FormatWeb;
-            if (webFormat != null)
-            {
-                webFormat.Enabled = true;
-                webFormat.Indent = true;
-            }
+            //FormatWeb webFormat = settings.Formats[2] as FormatWeb;
+            //if (webFormat != null)
+            //{
+            //    webFormat.Enabled = true;
+            //    webFormat.Indent = true;
+            //}
 
             UserOptions options = new UserOptions(settings);
 
