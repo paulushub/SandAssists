@@ -42,6 +42,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CodeSnippetSample.xml" />
+    <Content Include="Images\Nativity3WiseMen.png" />
+    <Content Include="Images\NativityHerrodAndSon.jpg" />
+    <Content Include="Images\NativityScene.jpg" />
+    <Content Include="Media\ArrowDisabled.png" />
+    <Content Include="Media\ArrowHovered.png" />
+    <Content Include="Media\ArrowNormal.png" />
+    <Content Include="Media\ChevronLess.png" />
+    <Content Include="Media\ChevronLessHovered.png" />
+    <Content Include="Media\ChevronLessPressed.png" />
+    <Content Include="Media\ChevronMore.png" />
+    <Content Include="Media\ChevronMoreHovered.png" />
+    <Content Include="Media\ChevronMorePressed.png" />
+    <Content Include="Media\ConceptsStruct.png" />
+    <Content Include="Media\Contents1.jpg" />
+    <Content Include="Media\Contents2.jpg" />
+    <Content Include="Media\Contents2a.jpg" />
+    <Content Include="Media\Contents3.jpg" />
+    <Content Include="Media\Contents4.jpg" />
+    <Content Include="Media\Error.png" />
+    <Content Include="Media\HelpUpdate.jpg" />
+    <Content Include="Media\HelpUpdate9.jpg" />
+    <Content Include="Media\IndexFilter.jpg" />
+    <Content Include="Media\Information.png" />
+    <Content Include="Media\Introduction.png" />
+    <Content Include="Media\MediaContent.xml" />
+    <Content Include="Media\MSDExplore.jpg" />
+    <Content Include="Media\NativityBanner.jpg" />
+    <Content Include="Media\pubproperty.gif" />
+    <Content Include="Media\Question.png" />
+    <Content Include="Media\QuickStart.png" />
+    <Content Include="Media\RegisterFlow.jpg" />
+    <Content Include="Media\SearchFilter.jpg" />
+    <Content Include="Media\Security.png" />
+    <Content Include="Media\SecurityError.png" />
+    <Content Include="Media\SecurityQuestion.png" />
+    <Content Include="Media\SecuritySuccess.png" />
+    <Content Include="Media\SecurityWarning.png" />
+    <Content Include="Media\SmallError.png" />
+    <Content Include="Media\SmallInformation.png" />
+    <Content Include="Media\SmallQuestion.png" />
+    <Content Include="Media\SmallSecurity.png" />
+    <Content Include="Media\SmallSecurityError.png" />
+    <Content Include="Media\SmallSecurityQuestion.png" />
+    <Content Include="Media\SmallSecuritySucess.png" />
+    <Content Include="Media\SmallSecurityWarning.png" />
+    <Content Include="Media\SmallWarning.png" />
+    <Content Include="Media\Warning.png" />
     <Content Include="Topics.xml" />
     <Content Include="Documents\CodeTest.xml" />
     <Content Include="Documents\Document.xml" />
@@ -77,10 +125,12 @@
     <Content Include="Documents\Tutorials\Issues.xml" />
     <Content Include="Documents\Tutorials\QuickStart.xml" />
     <Content Include="Documents\Tutorials\Tutorial.xml" />
-    <Content Include="Media\MediaContent.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeSnippets.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

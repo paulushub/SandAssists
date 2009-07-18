@@ -26,7 +26,7 @@ namespace Sandcastle.Helpers.Sample
 
             BuildConfiguration configuration = documenter.Configuration;
 
-            BuildStyleType styleType = BuildStyleType.Prototype;
+            BuildStyleType styleType = BuildStyleType.Vs2005;
 
             BuildSettings settings = documenter.Settings;
             settings.WorkingDirectory = workingDir;
@@ -54,11 +54,11 @@ namespace Sandcastle.Helpers.Sample
                 settings.Style.Directory = stylesDir;
             }
 
-            settings.Formats[0].Enabled = true;
+            settings.Formats[0].Enabled = false;
             FormatChm chmFormat = settings.Formats[0] as FormatChm;
             if (chmFormat != null)
             {
-            //    chmFormat.UseBinaryToc = false;
+                chmFormat.UseBinaryToc = false;
                 chmFormat.Indent = true;
             }
             settings.Formats[1].Enabled = false;
@@ -68,7 +68,12 @@ namespace Sandcastle.Helpers.Sample
                 //hxsFormat.SeparateIndexFile = true;
                 hxsFormat.Indent = true;
             }
-            //settings.Formats[2].Enabled = true;
+            FormatWeb webFormat = settings.Formats[2] as FormatWeb;
+            if (webFormat != null)
+            {
+                webFormat.Enabled = true;
+                webFormat.Indent = true;
+            }
 
             UserOptions options = new UserOptions(settings);
 
