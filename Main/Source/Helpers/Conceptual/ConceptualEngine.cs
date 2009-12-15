@@ -169,7 +169,7 @@ namespace Sandcastle.Conceptual
                 group["$ProjSettingsLoc"] =
                     String.Format("ProjectSettings{0}.loc.xml", indexText);
 
-                if (!group.Initialize(settings))
+                if (!group.Initialize(this.Context))
                 {
                     this.IsInitialized = false;
 
@@ -216,6 +216,7 @@ namespace Sandcastle.Conceptual
 
             BuildLogger logger     = this.Logger;
             BuildSettings settings = this.Settings;
+            BuildContext context   = this.Context;
 
             try
             {
@@ -229,7 +230,7 @@ namespace Sandcastle.Conceptual
                         continue;
                     }
 
-                    if (group.Initialize(settings))
+                    if (group.Initialize(context))
                     {
                         _curGroup = group;
 
@@ -289,22 +290,22 @@ namespace Sandcastle.Conceptual
                 return;
             }
 
-            bool cleanIntermediate = settings.CleanIntermediate;
-            if (cleanIntermediate)
-            {
-                try
-                {
-                    CleanUpIntermediate();
-                }
-                catch (Exception ex)
-                {
-                    BuildLogger outputLogger = this.Logger;
-                    if (outputLogger != null)
-                    {
-                        outputLogger.WriteLine(ex);
-                    }
-                }    
-            }
+            //bool cleanIntermediate = settings.CleanIntermediate;
+            //if (cleanIntermediate)
+            //{
+            //    try
+            //    {
+            //        CleanUpIntermediate();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BuildLogger outputLogger = this.Logger;
+            //        if (outputLogger != null)
+            //        {
+            //            outputLogger.WriteLine(ex);
+            //        }
+            //    }    
+            //}
 
             if (_listGroups != null)
             {
@@ -381,7 +382,7 @@ namespace Sandcastle.Conceptual
             int folderCount = listFolders.Count;
 
             BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
             string tempText = null;
 
@@ -440,7 +441,8 @@ namespace Sandcastle.Conceptual
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\dsmanifesttomanifest.xsl" 
             //        buildmanifest.proj.xml /out:manifest.xml
-            string application = "XslTransform.exe";
+            string application = Path.Combine(context.SandcastleToolsDirectory, 
+                "XslTransform.exe");
             tempText = Path.Combine(sandcastleDir,
                 @"ProductionTransforms\dsmanifesttomanifest.xsl");
             string arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}", 
@@ -467,14 +469,15 @@ namespace Sandcastle.Conceptual
 
             // 6. Assemble the help files using the BuildAssembler
             // BuildAssembler.exe /config:Project.config manifest.xml
-            application = "BuildAssembler.exe";
+            application = Path.Combine(context.SandcastleToolsDirectory, 
+                "BuildAssembler.exe");
             //arguments = "/config:Conceptual.config Manifest.xml";
             arguments = String.Format(" /config:{0} {1}",
                 configFile, manifestFile);
             StepAssembler buildAssProcess = new StepAssembler(workingDir,
                 application, arguments);
             buildAssProcess.Group   = group;
-            buildAssProcess.Message = "BuildAssembler Tool";
+            buildAssProcess.Message = "BuildAssembler Tool - Conceptual Topics: " + group.Name;
             buildAssProcess.CopyrightNotice = 2;
             _listSteps.Add(buildAssProcess);
 
@@ -507,13 +510,13 @@ namespace Sandcastle.Conceptual
 
         private void CleanUpIntermediate()
         {
-            BuildSettings settings = this.Settings;
-            if (settings == null)
+            BuildContext context = this.Context;
+            if (context == null)
             {
                 return;
             }
 
-            string workingDir = settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
             string dduexmlDir   = Path.Combine(workingDir, "DdueXml");
             string compDir      = Path.Combine(workingDir, "XmlComp");
@@ -521,15 +524,15 @@ namespace Sandcastle.Conceptual
 
             if (Directory.Exists(dduexmlDir))
             {
-                Directory.Delete(dduexmlDir, true);
+                BuildDirHandler.DeleteDirectory(dduexmlDir, true);
             }
             if (Directory.Exists(compDir))
             {
-                Directory.Delete(compDir, true);
+                BuildDirHandler.DeleteDirectory(compDir, true);
             }
             if (Directory.Exists(extractedDir))
             {
-                Directory.Delete(extractedDir, true);
+                BuildDirHandler.DeleteDirectory(extractedDir, true);
             }
 
             int groupCount = (_listGroups == null) ? 0 : _listGroups.Count;
@@ -538,6 +541,7 @@ namespace Sandcastle.Conceptual
                 string manifestFile = _listGroups[i].ManifestFile;
                 if (!String.IsNullOrEmpty(manifestFile) && File.Exists(manifestFile))
                 {
+                    File.SetAttributes(manifestFile, FileAttributes.Normal);
                     File.Delete(manifestFile);
                 }
             }
@@ -545,36 +549,43 @@ namespace Sandcastle.Conceptual
             string tempFile = Path.Combine(workingDir, "Manifest.xml");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, "ApiManifest.xml");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, "reflection.org");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, "reflection.xml");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, "TopicsToc.xml");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, "ApiToc.xml");
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
             tempFile = Path.Combine(workingDir, BuildToc.HelpToc);
             if (File.Exists(tempFile))
             {
+                File.SetAttributes(tempFile, FileAttributes.Normal);
                 File.Delete(tempFile);
             }
         }

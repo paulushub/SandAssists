@@ -14,7 +14,7 @@ namespace Sandcastle
         #region Private Fields
 
         private bool            _isInitialized;
-        private string          _logFile;
+        //private string          _logFile;
         private BuildLoggers    _logger;
         private BuildContext    _context;
         private BuildSettings   _settings;
@@ -100,22 +100,6 @@ namespace Sandcastle
 
             _settings = _documenter.Settings;
 
-            // 1. If there is no logger, we try creating a default logger...
-            if (_logger.Count == 0)
-            {
-                BuildLogger logger = _context.CreateLogger(_settings);
-                if (logger != null)
-                {
-                    _logger.Add(logger);
-                }
-            }
-
-            // 2. If the logger is not initialized, we initialize it now...
-            if (!_logger.IsInitialize)
-            {
-                _logger.Initialize(_settings);
-            }
-
             try
             {
                 if (!_documenter.Initialize(_context, _logger))
@@ -188,37 +172,37 @@ namespace Sandcastle
             }
 
             // Move the log file to the output directory...
-            if (!String.IsNullOrEmpty(_logFile) && File.Exists(_logFile))
-            {
-                try
-                {
-                    if (_settings.KeepLogFile)
-                    {
-                        string outputDir = _settings.OutputDirectory;
-                        if (String.IsNullOrEmpty(outputDir) == false)
-                        {
-                            outputDir = Environment.ExpandEnvironmentVariables(
-                                outputDir);
-                            outputDir = Path.GetFullPath(outputDir);
-                            string logFile = Path.Combine(outputDir,
-                                _settings.LogFile);
+            //if (!String.IsNullOrEmpty(_logFile) && File.Exists(_logFile))
+            //{
+            //    try
+            //    {
+            //        if (_settings.KeepLogFile)
+            //        {
+            //            string outputDir = _context.OutputDirectory;
+            //            if (String.IsNullOrEmpty(outputDir) == false)
+            //            {
+            //                outputDir = Environment.ExpandEnvironmentVariables(
+            //                    outputDir);
+            //                outputDir = Path.GetFullPath(outputDir);
+            //                string logFile = Path.Combine(outputDir,
+            //                    _settings.LogFile);
 
-                            File.SetAttributes(_logFile, FileAttributes.Normal);
-                            File.Move(_logFile, logFile);
-                        }
-                    }
-                    else
-                    {
-                        File.SetAttributes(_logFile, FileAttributes.Normal);
-                        File.Delete(_logFile);
-                    }
-                }
-                catch
-                {
-                }
-            }
+            //                File.SetAttributes(_logFile, FileAttributes.Normal);
+            //                File.Move(_logFile, logFile);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            File.SetAttributes(_logFile, FileAttributes.Normal);
+            //            File.Delete(_logFile);
+            //        }
+            //    }
+            //    catch
+            //    {
+            //    }
+            //}
 
-            _logFile = null;
+            //_logFile = null;
         }
 
         #endregion

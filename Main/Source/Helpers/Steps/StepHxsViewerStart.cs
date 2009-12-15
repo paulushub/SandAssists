@@ -125,11 +125,6 @@ namespace Sandcastle.Steps
             BuildLogger logger = context.Logger;
             BuildSettings settings = context.Settings;
 
-            //if (logger != null)
-            //{
-            //    logger.WriteLine("Opening compiled HtmlHelp file...",
-            //        BuildLoggerLevel.Started);
-            //}
             if (String.IsNullOrEmpty(_registrar) || 
                 File.Exists(_registrar) == false)
             {
@@ -411,12 +406,6 @@ namespace Sandcastle.Steps
                     logger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
             }
-
-            //if (logger != null)
-            //{
-            //    logger.WriteLine("Opening compiled HtmlHelp file.",
-            //        BuildLoggerLevel.Ended);
-            //}
 
             return isStarted;
         }

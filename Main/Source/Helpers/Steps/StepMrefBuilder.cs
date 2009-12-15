@@ -73,8 +73,8 @@ namespace Sandcastle.Steps
             BuildLogger logger     = context.Logger;
             BuildSettings settings = context.Settings;
             BuildStyle outputStyle = settings.Style;
-
-            string workingDir = settings.WorkingDirectory;
+                                           
+            string workingDir = context.WorkingDirectory;
             string configDir  = settings.ConfigurationDirectory;
 
             if (String.IsNullOrEmpty(workingDir))

@@ -22,20 +22,28 @@ namespace Sandcastle
         /// </summary>
         Ended     = 2,
         /// <summary>
+        /// Indicates the total time taken to complete the process.
+        /// </summary>
+        Duration  = 3,
+        /// <summary>
+        /// Indicates the version information of the tool, where applicable.
+        /// </summary>
+        Version   = 4,
+        /// <summary>
         /// Indicates the content of the message is copyright notice.
         /// </summary>
-        Copyright = 3,
+        Copyright = 5,
         /// <summary>
         /// Indicates an information message content or level.
         /// </summary>
-        Info      = 4,
+        Info      = 6,
         /// <summary>
         /// Indicates a warning message content or level.
         /// </summary>
-        Warn      = 5,
+        Warn      = 7,
         /// <summary>
         /// Indicates an error message content or level. 
         /// </summary>
-        Error     = 6,
+        Error     = 8,
     }
 }

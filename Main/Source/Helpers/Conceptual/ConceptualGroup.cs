@@ -403,15 +403,15 @@ namespace Sandcastle.Conceptual
 
         #region Initialize Method
 
-        public override bool Initialize(BuildSettings settings)
+        public override bool Initialize(BuildContext context)
         {
-            base.Initialize(settings);
-
+            base.Initialize(context);
+            BuildSettings settings = context.Settings;
             string workingDir = this.WorkingDirectory;
 
             if (String.IsNullOrEmpty(workingDir))
             {
-                workingDir = settings.WorkingDirectory;
+                workingDir = context.WorkingDirectory;
                 this.WorkingDirectory = workingDir;
             }
 

@@ -1,0 +1,443 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{9196DD8A-B4D4-4780-8742-C5762E547FC2}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.CodeEditor</RootNamespace>
+    <AssemblyName>ICSharpCode.CodeEditor</AssemblyName>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SearchAndReplace\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\..\Output\AddIns\CodeEditor\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\..\Output\AddIns\CodeEditor\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dialogs\GotoDialog.resx">
+      <DependentUpon>GotoDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SortOptionsDialog.resx">
+      <DependentUpon>SortOptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\HighlightingColorDialog.resx">
+      <DependentUpon>HighlightingColorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\HighlightingDialog.resx">
+      <DependentUpon>HighlightingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\HighlightingPanel.resx">
+      <DependentUpon>HighlightingPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\DigitsOptionPanel.resx">
+      <DependentUpon>DigitsOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\EnvironmentOptionPanel.resx">
+      <DependentUpon>EnvironmentOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\KeywordListOptionPanel.resx">
+      <DependentUpon>KeywordListOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\KeywordListsOptionPanel.resx">
+      <DependentUpon>KeywordListsOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\MarkerOptionPanel.resx">
+      <DependentUpon>MarkerOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\MarkersOptionPanel.resx">
+      <DependentUpon>MarkersOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\NodeOptionPanel.resx">
+      <DependentUpon>NodeOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\PropertiesOptionPanel.resx">
+      <DependentUpon>PropertiesOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\RuleSetOptionPanel.resx">
+      <DependentUpon>RuleSetOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\RuleSetsOptionPanel.resx">
+      <DependentUpon>RuleSetsOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\SchemeOptionPanel.resx">
+      <DependentUpon>SchemeOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\SpanOptionPanel.resx">
+      <DependentUpon>SpanOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Highlighting\Panels\SpansOptionPanel.resx">
+      <DependentUpon>SpansOptionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\BehaviorTextEditorPanel.resx">
+      <DependentUpon>BehaviorTextEditorPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\CodeCompletionPanel.resx">
+      <DependentUpon>CodeCompletionPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\FontsColorsPanel.resx">
+      <DependentUpon>FontsColorsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\GeneralTextEditorPanel.resx">
+      <DependentUpon>GeneralTextEditorPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\MarkersTextEditorPanel.resx">
+      <DependentUpon>MarkersTextEditorPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\FindPanel.resx">
+      <DependentUpon>FindPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>ICSharpCode.CodeEditor.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\ReplacePanel.resx">
+      <DependentUpon>ReplacePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\SearchDialog.resx">
+      <DependentUpon>SearchDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\SearchPanel.resx">
+      <DependentUpon>SearchPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="ICSharpCode.CodeEditor.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Actions.cs" />
+    <Compile Include="Commands\CommentRegionCommand.cs" />
+    <Compile Include="Commands\FoldingCommands.cs" />
+    <Compile Include="Commands\FormatCommands.cs" />
+    <Compile Include="Commands\BookmarkCommands.cs" />
+    <Compile Include="Commands\NavigationCommands.cs" />
+    <Compile Include="Conditions\TextContentCondition.cs" />
+    <Compile Include="Dialogs\GotoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\GotoDialog.Designer.cs">
+      <DependentUpon>GotoDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SortOptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SortOptionsDialog.Designer.cs">
+      <DependentUpon>SortOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditActionDoozer.cs" />
+    <Compile Include="Highlighting\ColorButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Highlighting\ColorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Highlighting\EditorHighlightColor.cs" />
+    <Compile Include="Highlighting\HighlightingColorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Highlighting\HighlightingColorDialog.Designer.cs">
+      <DependentUpon>HighlightingColorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\HighlightingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Highlighting\HighlightingDialog.Designer.cs">
+      <DependentUpon>HighlightingDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\HighlightingPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\HighlightingPanel.Designer.cs">
+      <DependentUpon>HighlightingPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\AbstractNode.cs" />
+    <Compile Include="Highlighting\Nodes\DigitsNode.cs" />
+    <Compile Include="Highlighting\Panels\DigitsOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\DigitsOptionPanel.Designer.cs">
+      <DependentUpon>DigitsOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\EnvironmentNode.cs" />
+    <Compile Include="Highlighting\Panels\EnvironmentOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\EnvironmentOptionPanel.Designer.cs">
+      <DependentUpon>EnvironmentOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\KeywordListNode.cs" />
+    <Compile Include="Highlighting\Panels\KeywordListOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\KeywordListOptionPanel.Designer.cs">
+      <DependentUpon>KeywordListOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\KeywordListsNode.cs" />
+    <Compile Include="Highlighting\Panels\KeywordListsOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\KeywordListsOptionPanel.Designer.cs">
+      <DependentUpon>KeywordListsOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\MarkerNode.cs" />
+    <Compile Include="Highlighting\Panels\MarkerOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\MarkerOptionPanel.Designer.cs">
+      <DependentUpon>MarkerOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\MarkersNode.cs" />
+    <Compile Include="Highlighting\Panels\MarkersOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\MarkersOptionPanel.Designer.cs">
+      <DependentUpon>MarkersOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Panels\NodeOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\NodeOptionPanel.Designer.cs">
+      <DependentUpon>NodeOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\PropertiesNode.cs" />
+    <Compile Include="Highlighting\Panels\PropertiesOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\PropertiesOptionPanel.Designer.cs">
+      <DependentUpon>PropertiesOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\RuleSetNode.cs" />
+    <Compile Include="Highlighting\Panels\RuleSetOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\RuleSetOptionPanel.Designer.cs">
+      <DependentUpon>RuleSetOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\RuleSetsNode.cs" />
+    <Compile Include="Highlighting\Panels\RuleSetsOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\RuleSetsOptionPanel.Designer.cs">
+      <DependentUpon>RuleSetsOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\SchemeNode.cs" />
+    <Compile Include="Highlighting\Panels\SchemeOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\SchemeOptionPanel.Designer.cs">
+      <DependentUpon>SchemeOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\SpanNode.cs" />
+    <Compile Include="Highlighting\Panels\SpanOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\SpanOptionPanel.Designer.cs">
+      <DependentUpon>SpanOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Highlighting\Nodes\SpansNode.cs" />
+    <Compile Include="Highlighting\Panels\SpansOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Highlighting\Panels\SpansOptionPanel.Designer.cs">
+      <DependentUpon>SpansOptionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\BehaviorTextEditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPanels\BehaviorTextEditorPanel.Designer.cs">
+      <DependentUpon>BehaviorTextEditorPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\CodeCompletionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPanels\CodeCompletionPanel.Designer.cs">
+      <DependentUpon>CodeCompletionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\FontsColorsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPanels\FontsColorsPanel.Designer.cs">
+      <DependentUpon>FontsColorsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\GeneralTextEditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPanels\GeneralTextEditorPanel.Designer.cs">
+      <DependentUpon>GeneralTextEditorPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\MarkersTextEditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPanels\MarkersTextEditorPanel.Designer.cs">
+      <DependentUpon>MarkersTextEditorPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Searching\Commands\SearchMainMenuCommands.cs" />
+    <Compile Include="Searching\Commands\SearchToolbarCommands.cs" />
+    <Compile Include="Searching\Gui\FindPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\FindPanel.Designer.cs">
+      <DependentUpon>FindPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\AllOpenDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\CurrentDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\DirectoryDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\IDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\WholeProjectDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\DocumentIterator\WholeSolutionDocumentIterator.cs" />
+    <Compile Include="Searching\Engine\ITextIteratorBuilder.cs" />
+    <Compile Include="Searching\Engine\Search.cs" />
+    <Compile Include="Searching\Engine\SearchReplaceInFilesManager.cs" />
+    <Compile Include="Searching\Engine\SearchReplaceManager.cs" />
+    <Compile Include="Searching\Engine\SearchReplaceUtilities.cs" />
+    <Compile Include="Searching\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
+    <Compile Include="Searching\Engine\SearchStrategy\BruteForceSearchStrategy.cs" />
+    <Compile Include="Searching\Engine\SearchStrategy\ISearchStrategy.cs" />
+    <Compile Include="Searching\Engine\SearchStrategy\RegExSearchStrategy.cs" />
+    <Compile Include="Searching\Engine\SearchStrategy\WildcardSearchStrategy.cs" />
+    <Compile Include="Searching\Engine\TextIterator\ForwardTextIterator.cs" />
+    <Compile Include="Searching\Engine\TextIterator\ForwardTextIteratorBuilder.cs" />
+    <Compile Include="Searching\Engine\TextIterator\ITextIterator.cs" />
+    <Compile Include="Searching\Engine\SearchSelection.cs" />
+    <Compile Include="Searching\Gui\SearchDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\SearchDialog.Designer.cs">
+      <DependentUpon>SearchDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <CustomToolNamespace>SearchAndReplace.Resources</CustomToolNamespace>
+    </Compile>
+    <Compile Include="Searching\Gui\ReplacePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\ReplacePanel.Designer.cs">
+      <DependentUpon>ReplacePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Searching\Commands\SearchCommands.cs" />
+    <Compile Include="Searching\IncrementalSearch.cs" />
+    <Compile Include="Searching\SearchEnums.cs" />
+    <Compile Include="Searching\SearchOptions.cs" />
+    <Compile Include="Searching\Gui\SearchPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\SearchPanel.Designer.cs">
+      <DependentUpon>SearchPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Searching\SearchScope.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Arrow.gif" />
+    <Content Include="Resources\DownArrow.gif" />
+    <None Include="Resources\ReverseIncrementalSearch.cur" />
+    <None Include="Resources\IncrementalSearch.cur" />
+  </ItemGroup>
+</Project>

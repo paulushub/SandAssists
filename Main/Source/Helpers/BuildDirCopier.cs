@@ -20,6 +20,7 @@ namespace Sandcastle
         private bool _isRecursive;
         private bool _includeHidden;
         private bool _includeSecurity;
+        private bool _minimizeMemory;
 
         #endregion
 
@@ -33,8 +34,9 @@ namespace Sandcastle
         /// </summary>
         public BuildDirCopier()
         {
-            _isOverwrite = true;
-            _isRecursive = true;
+            _isOverwrite    = true;
+            _isRecursive    = true;
+            _minimizeMemory = true;
         }
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace Sandcastle
             _isRecursive     = source._isRecursive;
             _includeHidden   = source._includeHidden;
             _includeSecurity = source._includeSecurity;
+            _minimizeMemory  = source._minimizeMemory;
         }
 
         #endregion
@@ -124,6 +127,40 @@ namespace Sandcastle
             set
             {
                 _includeHidden = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to minimize the use of memory in
+        /// the copying operation. It is useful for copying large directory.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> for minimized memory use in the copying
+        /// operation; otherwise, it is <see langword="false"/>. The default is
+        /// <see langword="true"/>.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// By default, the copy operation uses the <see cref="Directory.GetFiles"/>
+        /// method to search and copy the files. Since this method copies all the files
+        /// a directory to an array, its use of memory is not optimized, and may not be
+        /// useful for handling a large directory.
+        /// </para>
+        /// <para>
+        /// If this property is set to <see langword="true"/>, a method using the a
+        /// wrapper of the Windows API, <c>FindFirstFile</c>, is used to iterate the
+        /// directory files, and minimize the use of memory.
+        /// </para>
+        /// </remarks>
+        public bool MinimizeMemory
+        {
+            get 
+            { 
+                return _minimizeMemory; 
+            }
+            set 
+            { 
+                _minimizeMemory = value; 
             }
         }
 
@@ -218,7 +255,14 @@ namespace Sandcastle
         private void Copy(DirectoryInfo source, DirectoryInfo target, 
             BuildLogger logger)
         {
-            CopyFiles(source, target, logger);
+            if (_minimizeMemory)
+            {
+                CopyFilesEx(source, target, logger);
+            }
+            else
+            {
+                CopyFiles(source, target, logger);
+            }
 
             if (!_isRecursive)
             {
@@ -309,6 +353,59 @@ namespace Sandcastle
                 if (_includeSecurity)
                 {
                     File.SetAccessControl(filePath, fi.GetAccessControl());
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="logger"></param>
+        private void CopyFilesEx(DirectoryInfo source, DirectoryInfo target, 
+            BuildLogger logger)
+        {
+            string targetDirName = target.ToString();
+            string filePath;
+            
+            // Handle the copy of each file into it's new directory.
+            foreach (string file in BuildDirHandler.FindFiles(
+                source, "*.*", SearchOption.TopDirectoryOnly))
+            {
+                FileAttributes fileAttr = File.GetAttributes(file);
+                if (!_includeHidden)
+                {
+                    if ((fileAttr & FileAttributes.Hidden) == FileAttributes.Hidden)
+                    {
+                        continue;
+                    }
+                }
+
+                _copiedCount++;
+
+                string fileName = Path.GetFileName(file);
+                filePath = Path.Combine(targetDirName, fileName);
+
+                if (logger != null)
+                {
+                    logger.WriteLine(String.Format(@"Copying {0}\{1}", 
+                        target.FullName, fileName), BuildLoggerLevel.Info);
+                }
+
+                File.Copy(file, filePath, _isOverwrite);
+
+                // For most of the build files, we will copy and delete, so we must
+                // remove any readonly flag...
+                if ((fileAttr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    fileAttr -= FileAttributes.ReadOnly;
+                }
+                File.SetAttributes(filePath, fileAttr);
+                // if required to set the security or access control
+                if (_includeSecurity)
+                {
+                    File.SetAccessControl(filePath, File.GetAccessControl(file));
                 }
             }
         }

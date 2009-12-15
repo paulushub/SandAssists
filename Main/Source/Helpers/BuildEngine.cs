@@ -209,6 +209,11 @@ namespace Sandcastle
 
         public virtual bool Initialize(BuildSettings settings)
         {
+            if (settings == null)
+            {
+                settings = _settings;
+            }
+
             BuildExceptions.NotNull(settings, "settings");
 
             _isInitialized = false;
@@ -224,31 +229,26 @@ namespace Sandcastle
                 _logger.Initialize(settings);
             }
 
-            if (settings == null)
-            {
-                settings = _settings;
-            }
-
             _settings         = settings;
-            string workingDir = _settings.WorkingDirectory;
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = Environment.CurrentDirectory;
-            }
-            else
-            {
-                workingDir = Environment.ExpandEnvironmentVariables(workingDir);
-                workingDir = Path.GetFullPath(workingDir);
-            }
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                return _isInitialized;
-            }
-            if (!Directory.Exists(workingDir))
-            {
-                Directory.CreateDirectory(workingDir);
-            }
-            _settings.WorkingDirectory = workingDir;
+            //string workingDir = _settings.WorkingDirectory;
+            //if (String.IsNullOrEmpty(workingDir))
+            //{
+            //    workingDir = Environment.CurrentDirectory;
+            //}
+            //else
+            //{
+            //    workingDir = Environment.ExpandEnvironmentVariables(workingDir);
+            //    workingDir = Path.GetFullPath(workingDir);
+            //}
+            //if (String.IsNullOrEmpty(workingDir))
+            //{
+            //    return _isInitialized;
+            //}
+            //if (!Directory.Exists(workingDir))
+            //{
+            //    Directory.CreateDirectory(workingDir);
+            //}
+            //_settings.WorkingDirectory = workingDir;
 
             _isInitialized = true;
 
@@ -348,7 +348,7 @@ namespace Sandcastle
 
             try
             {
-                Environment.CurrentDirectory = _settings.WorkingDirectory;
+                Environment.CurrentDirectory = _context.WorkingDirectory;
 
                 buildResult = true;
 
@@ -433,31 +433,6 @@ namespace Sandcastle
             }
 
             return buildResult;
-        }
-
-        #endregion
-
-        #region ExpandPath Method
-
-        protected string ExpandPath(string inputFile)
-        {
-            if (_settings == null)
-            {
-                return String.Empty;
-            }
-
-            string outputFile = Environment.ExpandEnvironmentVariables(inputFile);
-            if (!Path.IsPathRooted(outputFile))
-            {
-                string workingDir = _settings.WorkingDirectory;
-                if (!String.IsNullOrEmpty(workingDir))
-                {
-                    outputFile = Path.Combine(workingDir, outputFile);
-                }
-            }
-            outputFile = Path.GetFullPath(outputFile);
-
-            return outputFile;
         }
 
         #endregion

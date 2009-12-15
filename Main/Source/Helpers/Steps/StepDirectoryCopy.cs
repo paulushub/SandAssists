@@ -129,12 +129,6 @@ namespace Sandcastle.Steps
                 int itemCount = _listSourceDir.Count;
                 int dirCopied  = 0;
 
-                //if (logger != null)
-                //{
-                //    logger.WriteLine("Copying directories.", 
-                //        BuildLoggerLevel.Started);
-                //}
-
                 for (int i = 0; i < itemCount; i++)
                 {
                     string dirSource = _listSourceDir[i];
@@ -164,12 +158,6 @@ namespace Sandcastle.Steps
 
                     dirCopied++;
                 }
-
-                //if (logger != null)
-                //{
-                //    logger.WriteLine("Copying directories.", 
-                //        BuildLoggerLevel.Ended);
-                //}
 
                 return (dirCopied > 0);
             }

@@ -103,7 +103,7 @@ namespace Sandcastle
         /// This is <see langword="true"/> if this format is compiled; otherwise, it is
         /// <see langword="false"/>.
         /// </value>
-        public abstract bool IsCompiled
+        public abstract bool IsCompilable
         {
             get;
         }

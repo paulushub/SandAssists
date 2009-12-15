@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.#Develop.MenuCommand.Name}"
+		icon        = "C#.File.FullFile"
+		category    = "C#"
+		subcategory = "Extensibility"
+		defaultname = "MenuCommand${Number}.cs"
+		language    = "C#"/>
+	 
+	<Description>${res:Templates.File.#Develop.MenuCommand.Description}</Description>
+
+    <References>
+        <Reference include="System.Windows.Forms" />
+        <Reference include="ICSharpCode.Core" hintPath="${AppBinPath}\ICSharpCode.Core.dll" copyLocal="false" />
+        <Reference include="ICSharpCode.Core.WinForms" hintPath="${AppBinPath}\ICSharpCode.Core.WinForms.dll" copyLocal="false" />
+        <Reference include="ICSharpCode.SharpDevelop" hintPath="${AppBinPath}\ICSharpCode.SharpDevelop.dll" copyLocal="false" />
+    </References>
+
+    <!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#">
+            <![CDATA[
+${StandardHeader.C#}
+using System;
+using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${FileNameWithoutExtension}
+	/// </summary>
+	public sealed class ${FileNameWithoutExtension} : AbstractMenuCommand
+	{
+		/// <summary>
+		/// Starts the command
+		/// </summary>
+		public override void Run()
+		{
+			// TODO: Add your code here !!!
+		}
+	}
+}
+            ]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

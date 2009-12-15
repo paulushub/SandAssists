@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template author="Sandcastle Assist Team" version="1.0">
+    <Config
+		name        = "Glossary Topic"
+		icon        = "Sandcastle.32x32.Topics"
+		category    = "Sandcastle"
+        subcategory = "AML Conceptual Topics"
+		defaultname = "Topic${Number}.aml"
+		language    = "XML"/>
+
+    <Description>A template used for glossary documentation topics.</Description>
+
+    <Properties>
+        <Property
+			name          = "TopicGuid"
+			localizedName = "Topic ID"
+			type          = "System.Guid"
+			defaultValue  = "${Guid}"
+			category      = "Metadata"
+			description   = "Topic ID"/>
+        <Property
+			name          = "TopicTitle"
+			localizedName = "Topic Title"
+			type          = "System.String"
+			defaultValue  = "Glossary Topic${Number}"
+			category      = "Metadata"
+			description   = "The topic title"/>
+        <Property
+			name          = "TocTopicTitle"
+			localizedName = "TOC Topic Title"
+			type          = "System.String"
+			defaultValue  = "Glossary Topic${Number}"
+			category      = "Metadata"
+			description   = "The table of contents (TOC) topic title"/>
+        <Property
+			name          = "TopicAuthor"
+			localizedName = "Topic Author"
+			type          = "System.String"
+			defaultValue  = "${User}"
+			category      = "Authoring"
+			description   = "The author or editor of topic"/>
+        <Property
+			name          = "TopicCulture"
+			localizedName = "Topic Language"
+			type          = "System.Globalization.CultureInfo"
+			defaultValue  = ""
+			category      = "Authoring"
+			description   = "The language of this topic. For spell-checking and language specific operations."/>
+        <Property
+			name          = "TopicCreationDate"
+			localizedName = "Topic Creation Date"
+			type          = "System.DateTime"
+            readonly      = "true"
+			defaultValue  = "${Date:G}"
+			category      = "Authoring"
+			description   = "The date and time the topic is created."/>
+    </Properties>
+
+    <Files>
+        <File name="${FullName}" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="${Properties.TopicGuid}" revisionNumber="1">
+    <developerGlossaryDocument 
+        xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <glossary address="glossary">
+            <!-- Required:  The overall title of this glossary, it can be empty: <title/> -->
+            <title>{TODO: The glossary title}</title>  
+            
+            <!-- Required: This is a describes a titled division within a glossary. 
+                 Typically, the A, B, C etc are used for the titles. -->
+            <glossaryDiv address="division1">
+                <!--Required: The title of the glossary division.
+                    If not available or for single division, see it empty <title/>
+                -->
+                <title>{TODO: Glossary division title}</title>
+                <!-- Required: Provide as many entry as available under this division. -->
+                <glossaryEntry address="glossary11">
+                    <!-- Required: The glossary term(s) -->
+                    <terms>
+                        <term termClass="unused">{TODO: A glossary term}</term>
+                        <term termClass="unused">{TODO: Other glossary term (if any)}</term>
+                    </terms>
+                    <!-- Required: The glossary definition -->
+                    <definition address="definition11">
+                        <para>{TODO: The glossary term definition}</para>
+                    </definition>
+                </glossaryEntry>
+
+                <glossaryEntry address="glossary12">
+                    <terms>
+                        <term termClass="unused">{TODO: A glossary term}</term>
+                    </terms>
+                    <definition address="definition12">
+                        <para>{TODO: The glossary term definition}</para>
+                    </definition>
+                </glossaryEntry>
+            </glossaryDiv>
+
+            <glossaryDiv address="division2">
+                <title>{TODO: Glossary division title}</title>
+                <glossaryEntry address="glossary21">
+                    <terms>
+                        <term termClass="unused">{TODO: A glossary term}</term>
+                    </terms>
+                    <definition address="definition21">
+                        <para>{TODO: The glossary term definition}</para>
+                    </definition>
+                </glossaryEntry>
+
+                <glossaryEntry address="glossary22">
+                    <terms>
+                        <term termClass="unused">{TODO: A glossary term}</term>
+                    </terms>
+                    <definition address="definition22">
+                        <para>{TODO: The glossary term definition}</para>
+                    </definition>
+                </glossaryEntry>
+            </glossaryDiv>           
+        </glossary>              
+    </developerGlossaryDocument>
+</topic>            
+            ]]>
+        </File>
+        <File name="${Path}/${FileNameWithoutExtension}.cmp" DependentUpon="${FileNameWithoutExtension}.aml" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<metadata fileAssetGuid="${Properties.TopicGuid}" assetTypeId="CompanionFile">
+    <topic id="${Properties.TopicGuid}">
+        <title>${Properties.TopicTitle}</title>
+        <tableOfContentsTitle>${Properties.TocTopicTitle}</tableOfContentsTitle>
+    </topic>
+    <authoring>
+        <author>${Properties.TopicAuthor}</author>
+        <revision>1</revision>
+        <culture>${Properties.TopicCulture}</culture>
+        <dateCreated>${Properties.TopicCreationDate}</dateCreated>
+        <dateModified>${Properties.TopicCreationDate}</dateModified>
+    </authoring>
+    <attributes/>
+    <keywords/>
+    <tasks/>
+    <memo/>
+</metadata>            
+            ]]>
+        </File>
+    </Files>
+</Template>

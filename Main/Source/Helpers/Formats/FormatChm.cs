@@ -16,6 +16,7 @@ namespace Sandcastle.Formats
     {
         #region Private Fields
 
+        private bool _keepSources;
         private bool _useAutoIndex;
         private bool _useBinaryToc;
         private bool _useBinaryIndex;
@@ -114,7 +115,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override bool IsCompiled
+        public override bool IsCompilable
         {
             get
             {
@@ -147,15 +148,40 @@ namespace Sandcastle.Formats
             }
         }
 
-        public bool UseAutoIndex
+        /// <summary>
+        /// Gets or sets a value indicating whether to keep the source files used
+        /// to compile the help.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if the help file sources are
+        /// to be kept after the compilation; otherwise, it is <see langword="false"/>. 
+        /// <para>
+        /// The default value is <see langword="false"/>, and the help file sources 
+        /// will be deleted after the compilation if the 
+        /// <see cref="BuildSettings.CleanIntermediate"/> property is <see langword="true"/>.
+        /// </para>
+        /// </value>
+        public bool KeepSources
         {
             get 
-            { 
-                return _useAutoIndex; 
+            {                 
+                return _keepSources; 
             }
             set 
-            { 
-                _useAutoIndex = value; 
+            {
+                _keepSources = value; 
+            }
+        }
+
+        public bool UseAutoIndex
+        {
+            get
+            {
+                return _useAutoIndex;
+            }
+            set
+            {
+                _useAutoIndex = value;
             }
         }
 
@@ -420,9 +446,10 @@ namespace Sandcastle.Formats
 
             BuildSettings settings = context.Settings;
 
+            string helpDirectory = context.OutputDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
-                workingDir = settings.WorkingDirectory;
+                workingDir = context.WorkingDirectory;
             }
 
             string helpName = settings.HelpName;
@@ -436,14 +463,14 @@ namespace Sandcastle.Formats
                 helpTitle = helpName;
             }
             string helpFolder = this.OutputFolder;
-            string helpPath = Path.Combine(workingDir,
+            string helpPath = Path.Combine(helpDirectory,
                 String.Format(@"{0}\{1}.chm", helpFolder, helpName));
 
             // Case 1: Closing the HtmlHelp 1.x viewer...
             if (stage == BuildStage.CloseViewer)
             {
                 StepChmViewerClose chmClose = new StepChmViewerClose(
-                    workingDir, helpPath, helpTitle);
+                    helpDirectory, helpPath, helpTitle);
 
                 return chmClose;
             }
@@ -452,7 +479,7 @@ namespace Sandcastle.Formats
             if (stage == BuildStage.StartViewer)
             {
                 StepChmViewerStart chmStart = new StepChmViewerStart(
-                    workingDir, helpPath);
+                    helpDirectory, helpPath);
 
                 return chmStart;
             }
@@ -461,7 +488,7 @@ namespace Sandcastle.Formats
             if (stage == BuildStage.Compilation)
             {
                 string sandassistDir = settings.SandAssistDirectory;
-                CultureInfo culture = settings.CultureInfo;
+                CultureInfo culture  = settings.CultureInfo;
                 int lcid = 1033;
                 if (culture != null)
                 {
@@ -482,30 +509,48 @@ namespace Sandcastle.Formats
                 // ChmBuilder.exe 
                 // /project:Manual /html:Output\html 
                 //   /lcid:1041 /toc:Toc.xml /out:Help
-                string tocTopics = context["$HelpTocFile"];
-                string application = "ChmBuilder.exe";
+                string tocTopics   = context["$HelpTocFile"];
+                string application = Path.Combine(context.SandcastleToolsDirectory, 
+                    "ChmBuilder.exe");
                 string arguments = String.Format(
                     "/project:{0} /html:Output\\html /lcid:{1} /toc:{2} /out:{3} /config:ChmBuilder.config",
                     helpName, lcid, tocTopics, helpFolder);
                 StepChmBuilder chmProcess = new StepChmBuilder(workingDir,
                     application, arguments);
-                chmProcess.Message = "ChmBuilder Tool";
+                chmProcess.Message = "CHM Format - Creating Project and HTML files for the Help 1.x compiler";
                 chmProcess.CopyrightNotice = 2;
-                chmProcess.HelpName = helpName;
+                chmProcess.HelpName      = helpName;
+                chmProcess.HelpFolder    = helpFolder;
+                chmProcess.HelpDirectory = helpDirectory;
                 listSteps.Add(chmProcess);
 
+                // TODO: Testing...
+                FormatChmOptions options = new FormatChmOptions();
+                options.ConfigFile = Path.Combine(workingDir, "ChmBuilder.config");
+                options.HtmlDirectory = Path.Combine(workingDir, @"Output\html");
+                options.LangID = lcid;
+                options.Metadata = false;
+                options.WorkingDirectory = workingDir;
+                options.OutputDirectory = Path.Combine(workingDir, helpFolder);
+                options.ProjectName = helpName;
+                options.TocFile = Path.Combine(workingDir, tocTopics);
+                chmProcess.Options = options;
+
                 // 2. Fix the file encoding: DBCSFix.exe /d:Help /l:1033  
-                application = "DBCSFix.exe";
-                arguments = String.Format("/d:{0} /l:{1}", helpFolder, lcid);
-                StepProcess dbcsFixProcess = new StepProcess(workingDir,
+                application = Path.Combine(context.SandcastleToolsDirectory, 
+                    "DBCSFix.exe");
+                arguments = String.Format("/d:{0} /l:{1}", helpFolder + @"\html", lcid);
+                StepChmDbcsFix dbcsFixProcess = new StepChmDbcsFix(workingDir,
                     application, arguments);
-                dbcsFixProcess.Message = "DBCSFix Tool";
+                dbcsFixProcess.Message         = "CHM Converter - Fixing the DBCS for the non-Unicode Help 1.x compiler";
                 dbcsFixProcess.CopyrightNotice = 2;
                 listSteps.Add(dbcsFixProcess);
 
+                dbcsFixProcess.Options = options;
+
                 // 3. Compile the Html help files: hhc Help\Manual.hhp
                 application = this.Compiler;
-                arguments = String.Format(@"{0}\{1}.hhp", helpFolder, helpName);
+                arguments   = String.Format(@"{0}\{1}.hhp", helpFolder, helpName);
                 if (String.IsNullOrEmpty(appLocale) == false && 
                     File.Exists(appLocale))
                 {
@@ -515,8 +560,12 @@ namespace Sandcastle.Formats
                 }
                 StepChmCompiler hhcProcess = new StepChmCompiler(workingDir,
                     application, arguments);
-                hhcProcess.Message = "HHC Tool";
+                hhcProcess.Message         = "HHC Tool - Compiling the Help 1.x output";
                 hhcProcess.CopyrightNotice = 2;
+                hhcProcess.KeepSources     = _keepSources;
+                hhcProcess.HelpName        = helpName;
+                hhcProcess.HelpFolder      = helpFolder;
+                hhcProcess.HelpDirectory   = helpDirectory;
                 listSteps.Add(hhcProcess);
 
                 return listSteps;
@@ -535,8 +584,8 @@ namespace Sandcastle.Formats
         {
             base.Reset();
 
-            this.FormatFolder  = "html";
-            this.OutputFolder  = "HtmlHelp";
+            this.FormatFolder     = "html";
+            this.OutputFolder     = "HtmlHelp";
             this.ExternalLinkType = BuildLinkType.Msdn;
         }
 

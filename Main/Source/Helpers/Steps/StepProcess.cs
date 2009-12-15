@@ -12,11 +12,11 @@ namespace Sandcastle.Steps
 
         private int _processExitCode;
         private int _expectedExitCode;
-        private int _copyright;
-        private int    _messageCount;
+        internal int _copyright;
+        internal int _messageCount;
         private bool   _shellExecute;
         private bool   _ignoreExitCode;
-        private bool   _ignoreWhitespace;
+        internal bool _ignoreWhitespace;
         private bool   _redirectOutput;
         private bool   _redirectError;
         private string _application;
@@ -24,7 +24,7 @@ namespace Sandcastle.Steps
         private Encoding _encoding;
 
         [NonSerialized]
-        private BuildLogger _logger;
+        internal BuildLogger _logger;
 
         #endregion
 
@@ -229,9 +229,11 @@ namespace Sandcastle.Steps
 
             _logger = logger;
 
+            Process process = null;
+
             try
             {
-                Process process = new Process();
+                process = new Process();
 
                 ProcessStartInfo startInfo = process.StartInfo;
 
@@ -283,6 +285,9 @@ namespace Sandcastle.Steps
                 _processExitCode = process.ExitCode;
 
                 process.Close();
+                process.Dispose();
+
+                process = null;
 
                 if (_ignoreExitCode)
                 {
@@ -295,6 +300,19 @@ namespace Sandcastle.Steps
             }
             catch (Exception ex)
             {
+                if (process != null)
+                {   
+                    if (!process.HasExited)
+                    {
+                        process.WaitForExit();
+                    }
+
+                    process.Close();
+                    process.Dispose();
+
+                    process = null;
+                }
+
                 if (logger != null)
                 {
                     logger.WriteLine(ex);

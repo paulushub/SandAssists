@@ -454,9 +454,9 @@ namespace Sandcastle
 
         #region Initialization Methods
 
-        public virtual bool Initialize(BuildSettings settings)
+        public virtual bool Initialize(BuildContext context)
         {
-            BuildExceptions.NotNull(settings, "settings");
+            BuildExceptions.NotNull(context, "context");
 
             return true;
         }

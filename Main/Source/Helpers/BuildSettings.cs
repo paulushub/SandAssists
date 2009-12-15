@@ -157,7 +157,7 @@ namespace Sandcastle
             FormatHxs hxsFormat = new FormatHxs();
             hxsFormat.Reset();
             _listFormats.Add(hxsFormat);
-            FormatHtm htmFormat = new FormatHtm();
+            FormatWeb htmFormat = new FormatWeb();
             htmFormat.Reset();
             _listFormats.Add(htmFormat);
 

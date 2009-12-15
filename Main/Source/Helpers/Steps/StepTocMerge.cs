@@ -208,6 +208,7 @@ namespace Sandcastle.Steps
             {
                 if (File.Exists(mergedToc))
                 {
+                    File.SetAttributes(mergedToc, FileAttributes.Normal);
                     File.Delete(mergedToc);
                 }
                 string singleToc = _listToc[0];
@@ -218,6 +219,7 @@ namespace Sandcastle.Steps
                     return false;
                 }
 
+                File.SetAttributes(singleToc, FileAttributes.Normal);
                 File.Move(singleToc, mergedToc);
 
                 return true;
@@ -240,6 +242,7 @@ namespace Sandcastle.Steps
             {
                 if (File.Exists(mergedToc))
                 {
+                    File.SetAttributes(mergedToc, FileAttributes.Normal);
                     File.Delete(mergedToc);
                 }
 

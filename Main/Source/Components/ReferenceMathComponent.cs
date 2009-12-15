@@ -59,11 +59,6 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            if (_latexFormatter == null)
-            {
-                return;
-            }
-
             _pageCount++;
 
             if (_numberByPage)

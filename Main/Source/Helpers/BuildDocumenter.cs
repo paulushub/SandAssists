@@ -31,6 +31,7 @@ namespace Sandcastle
         private int                        _conceptuals;
 
         private bool                       _isInitialized;
+        private bool                       _isBuildSuccess;
         private BuildToc                   _helpToc;
         private BuildLoggers               _helpLogger;
         private BuildContext               _context;
@@ -177,6 +178,11 @@ namespace Sandcastle
             }
         }
 
+        public bool Success
+        {
+            get { return _isBuildSuccess; }
+        }
+
         #endregion
 
         #region Public Methods
@@ -204,12 +210,28 @@ namespace Sandcastle
 
             _isInitialized = false;
 
-            _helpLogger  = logger;
-            _context = context;
-
             if (_listGroups == null || _listGroups.Count == 0)
             {
                 return false;
+            }
+
+            _isBuildSuccess   = false;
+
+            _helpLogger    = logger;
+            _context       = context;
+
+            _settings.Initialize();
+
+            _context.Initialize(_settings, _helpLogger, _configuration);
+
+            // 1. If there is no logger, we try creating a default logger...
+            if (_helpLogger.Count == 0)
+            {
+                BuildLogger defLogger = _context.CreateLogger(_settings);
+                if (defLogger != null)
+                {
+                    _helpLogger.Add(defLogger);
+                }
             }
 
             // 2. If the logger is not initialized, we initialize it now...
@@ -238,15 +260,12 @@ namespace Sandcastle
                 return false;
             }
 
-            _settings.Initialize();
-
-            _context.Initialize(_settings, _helpLogger, _configuration);
-
             _referenceEngine  = new ReferenceEngine(_settings, _helpLogger,
                 _context, _configuration);
             _conceptualEngine = new ConceptualEngine(_settings, _helpLogger,
                 _context, _configuration);
 
+            int namingApi      = 0;
             int includedApi    = 0;
             int includedTopics = 0;
             BuildGroup group   = null;
@@ -264,7 +283,12 @@ namespace Sandcastle
                 if (groupType == BuildGroupType.Reference)
                 {
                     includedApi++;
-                    _referenceEngine.Add((ReferenceGroup)group);
+
+                    ReferenceGroup refGroup = (ReferenceGroup)group;
+
+                    namingApi = Math.Max((int)refGroup.Options.Naming, namingApi);
+
+                    _referenceEngine.Add(refGroup);
                 }
                 else if (groupType == BuildGroupType.Conceptual)
                 {
@@ -272,6 +296,8 @@ namespace Sandcastle
                     _conceptualEngine.Add((ConceptualGroup)group);
                 }
             }
+
+            context.ApiNamingMethod = namingApi;
 
             bool buildApi    = (includedApi != 0 && _references > 0 && 
                 _settings.BuildReferences);
@@ -350,7 +376,12 @@ namespace Sandcastle
 
         public virtual bool Build()
         {
-            bool buildResult = false;
+            _isBuildSuccess = false;
+
+            if (_context != null)
+            {
+                _context.BuildResult = _isBuildSuccess;
+            }
 
             if (_isInitialized == false)
             {
@@ -361,7 +392,7 @@ namespace Sandcastle
                         BuildLoggerLevel.Error);
                 }
 
-                return buildResult;
+                return _isBuildSuccess;
             }
 
             if (!_helpLogger.IsInitialize)
@@ -369,12 +400,12 @@ namespace Sandcastle
                 _helpLogger.Initialize(_settings);
             }
 
-            buildResult = true;
-
             if (!CreatePreBuildSteps())
             {
-                return false;
+                return _isBuildSuccess;
             }
+
+            _isBuildSuccess = true;
 
             if (_settings.BuildReferences &&
                 (_referenceEngine != null && _referenceEngine.IsInitialized))
@@ -404,15 +435,15 @@ namespace Sandcastle
                 }
                 catch (Exception ex)
                 {
-                    buildResult = false;
+                    _isBuildSuccess = false;
 
                     _helpLogger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
             }
 
-            if (buildResult == false)
+            if (_isBuildSuccess == false)
             {
-                return buildResult;
+                return _isBuildSuccess;
             }
 
             if (_settings.BuildConceptual && 
@@ -443,15 +474,15 @@ namespace Sandcastle
                 }
                 catch (Exception ex)
                 {
-                    buildResult = false;
+                    _isBuildSuccess = false;
 
                     _helpLogger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
             }
 
-            if (buildResult == false)
+            if (_isBuildSuccess == false)
             {
-                return buildResult;
+                return _isBuildSuccess;
             }
 
             if (!CreatePostBuildSteps())
@@ -461,16 +492,21 @@ namespace Sandcastle
 
             try
             {
-                buildResult = this.RunSteps(_listSteps);
+                _isBuildSuccess = this.RunSteps(_listSteps);
             }
             catch (Exception ex)
             {
-                buildResult = false;
+                _isBuildSuccess = false;
 
                 _helpLogger.WriteLine(ex, BuildLoggerLevel.Error);
             }
 
-            return buildResult;
+            if (_context != null)
+            {
+                _context.BuildResult = _isBuildSuccess;
+            }
+
+            return _isBuildSuccess;
         }
 
         #endregion
@@ -479,15 +515,6 @@ namespace Sandcastle
 
         public virtual void Uninitialize()
         {
-            if (_settings != null)
-            {
-                _settings.Uninitialize();
-            }
-            if (_context != null)
-            {
-                _context.Uninitialize();
-            }
-
             try
             {
                 if (_referenceEngine != null)
@@ -527,6 +554,15 @@ namespace Sandcastle
             {
                 _conceptualEngine.Dispose();
                 _conceptualEngine = null;
+            }
+
+            if (_settings != null)
+            {
+                _settings.Uninitialize();
+            }
+            if (_context != null)
+            {
+                _context.Uninitialize();
             }
 
             _isInitialized = false;
@@ -685,12 +721,15 @@ namespace Sandcastle
             IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
             int folderCount = listFolders.Count;
 
-            string workingDir = _settings.WorkingDirectory;
+            string baseDir = _context.BaseDirectory;
+            string workingDir = _context.WorkingDirectory;
 
             string tempText = null;
 
             // In the beginning... 
             // Close any current viewer of the compiled helps...
+            // 1. Clean up the current build output directories
+            StepDirectoryDelete deleteDirs = new StepDirectoryDelete(baseDir);
             for (int i = 0; i < formatCount; i++)
             {
                 BuildFormat format = _listFormats[i];
@@ -701,11 +740,13 @@ namespace Sandcastle
                 {
                     _listSteps.Add(closeViewer);
                 }
+                string formatFolder = format.OutputFolder;
+                if (!String.IsNullOrEmpty(formatFolder))
+                {
+                    deleteDirs.Add(formatFolder);
+                }
             }
 
-            // 1. Clean up the current build output directories
-            StepDirectoryDelete deleteDirs = new StepDirectoryDelete(workingDir);
-            deleteDirs.Add("Output");
             deleteDirs.Add("Intellisense");
             _listSteps.Add(deleteDirs);
 
@@ -716,14 +757,14 @@ namespace Sandcastle
             {
                 createDir.Add(@"Output\" + listFolders[i]);
             }
-            for (int i = 0; i < formatCount; i++)
-            {
-                BuildFormat format = _listFormats[i];
-                createDir.Add(Path.Combine("Output", format.FormatFolder));
-                createDir.Add(format.OutputFolder);
-                // We have to delete the any existing output folder...
-                deleteDirs.Add(format.OutputFolder);
-            }
+            //for (int i = 0; i < formatCount; i++)
+            //{
+            //    BuildFormat format = _listFormats[i];
+            //    createDir.Add(Path.Combine("Output", format.FormatFolder));
+            //    createDir.Add(format.OutputFolder);
+            //    // We have to delete the any existing output folder...
+            //    deleteDirs.Add(format.OutputFolder);
+            //}
             _listSteps.Add(createDir);
 
             // 3. Copy the resources files: icons, styles and scripts...
@@ -767,7 +808,7 @@ namespace Sandcastle
                 return false;
             }
 
-            string workingDir = _settings.WorkingDirectory;
+            string workingDir = _context.WorkingDirectory;
 
             // Merge the table of contents...
             StepTocMerge tocMerge = null;
@@ -848,19 +889,6 @@ namespace Sandcastle
                 }
             }
 
-            // 12. Finally, delete the intermediate "Output" directory...
-            if (_settings.CleanIntermediate)
-            {
-                StepDirectoryDelete outputDir = new StepDirectoryDelete(workingDir);
-                outputDir.Add("Output");
-                if (_settings.BuildReferences)
-                {
-                    outputDir.Add("Comments");
-                    outputDir.Add("Assemblies");
-                }
-                _listSteps.Add(outputDir);
-            }
-
             // In the end...
             for (int i = 0; i < formatCount; i++)
             {
@@ -877,6 +905,20 @@ namespace Sandcastle
                     }
                 }
             }
+
+            //// 12. Finally, delete the intermediate "Output" directory...
+            //if (_settings.CleanIntermediate)
+            //{
+            //    StepDirectoryDelete outputDir = new StepDirectoryDelete();
+            //    outputDir.Add(workingDir);
+            //    //outputDir.Add("Output");
+            //    //if (_settings.BuildReferences)
+            //    //{
+            //    //    outputDir.Add("Comments");
+            //    //    outputDir.Add("Assemblies");
+            //    //}
+            //    _listSteps.Add(outputDir);
+            //}
 
             return true;
         }
@@ -910,7 +952,7 @@ namespace Sandcastle
 
             try
             {
-                Environment.CurrentDirectory = _settings.WorkingDirectory;
+                Environment.CurrentDirectory = _context.WorkingDirectory;
 
                 buildResult = true;
 
@@ -995,36 +1037,6 @@ namespace Sandcastle
             }
 
             return buildResult;
-        }
-
-        #endregion
-
-        #region ExpandPath Method
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inputFile"></param>
-        /// <returns></returns>
-        protected string ExpandPath(string inputFile)
-        {
-            if (_settings == null)
-            {
-                return String.Empty;
-            }
-
-            string outputFile = Environment.ExpandEnvironmentVariables(inputFile);
-            if (!Path.IsPathRooted(outputFile))
-            {
-                string workingDir = _settings.WorkingDirectory;
-                if (!String.IsNullOrEmpty(workingDir))
-                {
-                    outputFile = Path.Combine(workingDir, outputFile);
-                }
-            }
-            outputFile = Path.GetFullPath(outputFile);
-
-            return outputFile;
         }
 
         #endregion

@@ -33,6 +33,7 @@ namespace Sandcastle.Formats
     {
         #region Private Fields
 
+        private bool   _keepSources;
         private bool   _separateIndex;
         private bool   _includeStopWords;
         private string _compilerFile;
@@ -123,7 +124,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override bool IsCompiled
+        public override bool IsCompilable
         {
             get
             {
@@ -154,6 +155,31 @@ namespace Sandcastle.Formats
             set
             {
                 _compilerFile = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to keep the source files used
+        /// to compile the help.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if the help file sources are
+        /// to be kept after the compilation; otherwise, it is <see langword="false"/>. 
+        /// <para>
+        /// The default value is <see langword="false"/>, and the help file sources 
+        /// will be deleted after the compilation if the 
+        /// <see cref="BuildSettings.CleanIntermediate"/> property is <see langword="true"/>.
+        /// </para>
+        /// </value>
+        public bool KeepSources
+        {
+            get
+            {
+                return _keepSources;
+            }
+            set
+            {
+                _keepSources = value;
             }
         }
 
@@ -440,9 +466,10 @@ namespace Sandcastle.Formats
 
             BuildSettings settings = context.Settings;
 
+            string helpDirectory = context.OutputDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
-                workingDir = settings.WorkingDirectory;
+                workingDir = context.WorkingDirectory;
             }
 
             string helpName = settings.HelpName;
@@ -456,7 +483,7 @@ namespace Sandcastle.Formats
                 helpTitle = helpName;
             }
             string helpFolder = this.OutputFolder;
-            string helpPath = Path.Combine(workingDir,
+            string helpPath = Path.Combine(helpDirectory,
                 String.Format(@"{0}\{1}.hxs", helpFolder, helpName));
 
             if (String.IsNullOrEmpty(_helpTitleId))
@@ -481,7 +508,7 @@ namespace Sandcastle.Formats
                     collPrefix = "Coll";
                     this.AddProperty("CollectionPrefix", collPrefix);
                 }
-                string helpColl = Path.Combine(workingDir,
+                string helpColl = Path.Combine(helpDirectory,
                     String.Format(@"{0}\{1}{2}.hxC", helpFolder, collPrefix, helpName));
                 string registrar = Path.Combine(this.CompilerDirectory, "HxReg.exe");
                 StepHxsViewerStart hxsStart = new StepHxsViewerStart(
@@ -523,15 +550,21 @@ namespace Sandcastle.Formats
                 string application = this.Compiler;
                 string arguments   = String.Format(
                     @"-p {0}\{1}.HxC -n Output\{1}.log", helpFolder, helpName);
-                StepHxsCompiler hxcompProcess = new StepHxsCompiler(workingDir, 
+                StepHxsCompiler hxsCompiler = new StepHxsCompiler(workingDir, 
                     application, arguments);
-                hxcompProcess.Message = "HxComp Tool";
-                hxcompProcess.LogFile = Path.Combine(workingDir,
+                hxsCompiler.Message = "HxComp Tool";
+                hxsCompiler.LogFile = Path.Combine(workingDir,
                     String.Format(@"Output\{0}.log", helpName));
-                hxcompProcess.ProjectFile = Path.Combine(workingDir,
+                hxsCompiler.ProjectFile = Path.Combine(workingDir,
                     String.Format(@"{0}\{1}.HxC", helpFolder, helpName));
-                //hxcompProcess.CopyrightNotice = 2;
-                listSteps.Add(hxcompProcess);
+                //hxsCompiler.CopyrightNotice = 2;
+                hxsCompiler.HelpFolder      = helpFolder;
+                hxsCompiler.HelpToc         = tocTopics;
+                hxsCompiler.HelpName        = helpName;
+                hxsCompiler.HelpTitleId     = _helpTitleId;
+                hxsCompiler.HelpDirectory   = helpDirectory;
+                hxsCompiler.HelpCultureInfo = culture;
+                listSteps.Add(hxsCompiler);
 
                 return listSteps;
             }
@@ -549,8 +582,8 @@ namespace Sandcastle.Formats
         {
             base.Reset();
 
-            this.FormatFolder  = "html2";
-            this.OutputFolder  = "MsdnHelp";
+            this.FormatFolder     = "html2";
+            this.OutputFolder     = "MsdnHelp";
             this.ExternalLinkType = BuildLinkType.Index;
         }
 

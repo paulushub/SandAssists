@@ -123,6 +123,7 @@ namespace Sandcastle.Steps
                     if (File.Exists(pathItem))
                     {
                         // It is a file...
+                        File.SetAttributes(pathItem, FileAttributes.Normal);
                         File.Delete(pathItem);
                         if (logger != null)
                         {
@@ -133,7 +134,7 @@ namespace Sandcastle.Steps
                     else if (Directory.Exists(pathItem))
                     {
                         // It is a directory...
-                        Directory.Delete(pathItem, true);
+                        BuildDirHandler.DeleteDirectory(pathItem, true);
 
                         if (logger != null)
                         {

@@ -962,7 +962,7 @@ namespace Sandcastle.Conceptual
                 throw new BuildException(
                     "A document shared content is required.");
             }
-            string workingDir = _settings.WorkingDirectory;
+            string workingDir = _context.WorkingDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
                 throw new BuildException(

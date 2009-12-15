@@ -21,7 +21,6 @@ namespace Sandcastle.Steps
         //    @"<\s*Title\s*>(?<title>[\s|\S]*)<\s*/Title\s*>", 
         //    RegexOptions.IgnoreCase);
         private int          _langId;
-        private int          _formatIndex;
         private int          _copyright;
         private int          _messageCount;
 
@@ -39,7 +38,6 @@ namespace Sandcastle.Steps
         private CultureInfo  _helpCulture;
 
         private string       _defaultPage;
-        private string       _collectionPrefix;
 
         [NonSerialized]
         private BuildLogger  _logger;
@@ -55,32 +53,20 @@ namespace Sandcastle.Steps
         #region Constructors and Destructor
 
         public StepHxsBuilder()
+            : this(String.Empty)
         {
-            _langId           = 1033;
-            _formatIndex      = -1;
-            _helpFolder       = "MsdnHelp";
-            _helpFileVersion  = new Version(1, 0, 0, 0);
-
-            _indexSort        = true;
-            _indexMerge       = true;
-            _indexAutoInclude = true;
-            _collectionPrefix = "Coll";
-
-            this.Message      = "Building Help 2.x contents";
         }
 
         public StepHxsBuilder(string workingDir)
             : base(workingDir)
         {
             _langId           = 1033;
-            _formatIndex      = -1;
             _helpFolder       = "MsdnHelp";
             _helpFileVersion  = new Version(1, 0, 0, 0);
 
             _indexSort        = true;
             _indexMerge       = true;
             _indexAutoInclude = true;
-            _collectionPrefix = "Coll";
 
             this.Message      = "Building Help 2.x contents";
         }
@@ -186,6 +172,12 @@ namespace Sandcastle.Steps
 
         protected override bool MainExecute(BuildContext context)
         {
+            string workingDir = this.WorkingDirectory;
+            if (String.IsNullOrEmpty(workingDir))
+            {
+                throw new BuildException("A working directory is required.");
+            }
+
             if (String.IsNullOrEmpty(_helpName) || String.IsNullOrEmpty(_helpToc))
             {
                 throw new BuildException("The required property values are set.");
@@ -203,14 +195,12 @@ namespace Sandcastle.Steps
                 return buildResult;
             }
 
-            _formatIndex = -1;
             int itemCount = formats.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = formats[i];
                 if (format != null && format.FormatType == BuildFormatType.Hxs)
                 {
-                    _formatIndex = i;
                     hxsFormat = (FormatHxs)format;
                     break;
                 }
@@ -293,44 +283,32 @@ namespace Sandcastle.Steps
                     {
                     }
                 }
-                tmpText = _buildFormat["CollectionPrefix"];
-                if (String.IsNullOrEmpty(tmpText) == false)
-                {
-                    _collectionPrefix = tmpText;
-                }
 
-                _helpDir = Path.Combine(this.WorkingDirectory, _helpFolder);
+                _helpDir = Path.Combine(workingDir, _helpFolder);
                 if (Directory.Exists(_helpDir) == false)
                 {
                     Directory.CreateDirectory(_helpDir);
                 }
 
-                buildResult = CreateContents();
+                buildResult = CreateContents(context);
                 if (buildResult == false)
                 {
                     return buildResult;
                 }
 
-                buildResult = CreateProject();
+                buildResult = CreateProject(context);
                 if (buildResult == false)
                 {
                     return buildResult;
                 }
 
-                buildResult = CreateToc();
+                buildResult = CreateToc(context);
                 if (buildResult == false)
                 {
                     return buildResult;
                 }
 
-                buildResult = CreateIndex();
-
-                if (buildResult)
-                {
-                    CreateCollection();
-                }
-
-                return buildResult;
+                buildResult = CreateIndex(context);
             }
             catch (Exception ex)
             {
@@ -339,15 +317,21 @@ namespace Sandcastle.Steps
                     _logger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
 
-                return false;
+                buildResult = false;
             }
+
+            return buildResult;
         }
 
         #endregion
 
+        #endregion
+
+        #region Private Methods
+
         #region CreateIndex Method
 
-        protected virtual bool CreateIndex()
+        private bool CreateIndex(BuildContext context)
         {
             string langText = _langId.ToString();
 
@@ -458,7 +442,7 @@ namespace Sandcastle.Steps
 
         #region CreateContents Method
 
-        protected virtual bool CreateContents()
+        private bool CreateContents(BuildContext context)
         {
             IList<string> listSources = new List<string>();
             listSources.Add(@"icons\*.gif");
@@ -498,9 +482,9 @@ namespace Sandcastle.Steps
 
         #region CreateProject Method
 
-        protected virtual bool CreateProject()
+        private bool CreateProject(BuildContext context)
         {
-            string workingDir = _settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
                 if (_logger != null)
@@ -526,7 +510,7 @@ namespace Sandcastle.Steps
             startInfo.FileName         = "XslTransform.exe";
             startInfo.Arguments        = arguments;
             startInfo.UseShellExecute  = false;
-            startInfo.WorkingDirectory = _settings.WorkingDirectory;
+            startInfo.WorkingDirectory = workingDir;
             startInfo.RedirectStandardOutput = true;
 
             _copyright    = 2;
@@ -554,7 +538,7 @@ namespace Sandcastle.Steps
             XmlDocument xmlDoc = new XmlDocument();
             // the document contains DTD, which cannot be resolve...
             xmlDoc.XmlResolver = null;
-            string hxcFile = Path.Combine(_settings.WorkingDirectory,
+            string hxcFile = Path.Combine(workingDir,
                 String.Format("{0}\\{1}.HxC", _helpFolder, _helpName));
 
             xmlDoc.Load(hxcFile);
@@ -645,7 +629,7 @@ namespace Sandcastle.Steps
 
         #region CreateToc Method
 
-        protected virtual bool CreateToc()
+        private bool CreateToc(BuildContext context)
         {
             Process process = new Process();
 
@@ -698,7 +682,7 @@ namespace Sandcastle.Steps
                 xmlSettings.ProhibitDtd = false;
                 xmlSettings.XmlResolver = null;
 
-                string hxtFile = Path.Combine(_settings.WorkingDirectory,
+                string hxtFile = Path.Combine(context.WorkingDirectory,
                     String.Format("{0}\\{1}.HxT", _helpFolder, _helpName));
 
                 using (XmlReader xmlReader = XmlReader.Create(hxtFile, xmlSettings))
@@ -728,325 +712,6 @@ namespace Sandcastle.Steps
         }
 
         #endregion
-
-        #region CreateCollection Method
-
-        protected virtual bool CreateCollection()
-        {
-            string langText = _langId.ToString();
-
-            bool lineOnAttribute = _xmlSettings.NewLineOnAttributes;
-            _xmlSettings.NewLineOnAttributes = true;
-
-            IList<string> listFiles = CreateCollectionIndex(langText);
-
-            _xmlSettings.NewLineOnAttributes = lineOnAttribute;
-
-            if (listFiles != null && listFiles.Count != 0)
-            {
-                if (CreateCollectionToc(langText))
-                {
-                    return CreateCollectionProject(listFiles, langText);
-                }
-            }
-
-            return false;
-        }
-
-        #endregion
-
-        #region CreateCollectionToc Method
-
-        protected virtual bool CreateCollectionToc(string langText)
-        {
-            BuildExceptions.NotNullNotEmpty(langText, "langText");
-
-            string fileHxT = _collectionPrefix + _helpName + ".HxT";
-            string filePath = Path.Combine(_helpDir, fileHxT);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {
-                string tocId = Path.GetFileNameWithoutExtension(fileHxT) + "TOC";
-                xmlWriter.WriteDocType("HelpTOC", null, null, null);
-                xmlWriter.WriteStartElement("HelpTOC");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id", tocId);
-                if (_buildFormat.PluginTocFlat)
-                {   
-                    xmlWriter.WriteAttributeString("PluginStyle", "Flat"); 
-                }
-                else
-                {   
-                    xmlWriter.WriteAttributeString("PluginStyle", "Hierarchical");
-                }
-                string pluginTitle = _buildFormat.PluginTitle;
-                if (String.IsNullOrEmpty(pluginTitle))
-                {
-                    pluginTitle = _settings.HelpTitle;
-                }
-                xmlWriter.WriteAttributeString("PluginTitle", pluginTitle);
-                xmlWriter.WriteAttributeString("FileVersion",
-                    _helpFileVersion.ToString());
-                xmlWriter.WriteAttributeString("LangId", langText);
-
-                // <HelpTOCNode NodeType="TOC" Url="..." />
-                // For now, we support only the TOC NodeType.
-                // TODO: Examine the possibilities of supporting Regular NodeType
-                xmlWriter.WriteStartElement("HelpTOCNode");
-                xmlWriter.WriteAttributeString("NodeType", "TOC");
-                xmlWriter.WriteAttributeString("Url", _helpTitleId);
-                xmlWriter.WriteEndElement();
-
-                xmlWriter.WriteEndElement();
-            }
-
-            return true;
-        }
-
-        #endregion
-
-        #region CreateCollectionProject Method
-
-        protected virtual bool CreateCollectionProject(IList<string> listFiles, 
-            string langText)
-        {
-            BuildExceptions.NotNull(listFiles, "listFiles");
-            BuildExceptions.NotNullNotEmpty(langText, "langText");
-
-            string fileHxC = _collectionPrefix + _helpName + ".HxC";
-            string fileHxT = _collectionPrefix + _helpName + ".HxT";
-            string filePath = Path.Combine(_helpDir, fileHxC);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {
-                xmlWriter.WriteDocType("HelpCollection", null, null, null);
-                xmlWriter.WriteStartElement("HelpCollection");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileHxC));
-                xmlWriter.WriteAttributeString("FileVersion", 
-                    _helpFileVersion.ToString());
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteAttributeString("Title", _settings.HelpTitle);
-                xmlWriter.WriteAttributeString("Copyright", _settings.Feedback.Copyright);
-
-                // <TOCDef File="HelpFile.HxT" />
-                xmlWriter.WriteStartElement("TOCDef");
-                xmlWriter.WriteAttributeString("File", fileHxT);
-                xmlWriter.WriteEndElement();
-
-                // <KeywordIndexDef File="HelpFile_*.HxK" />
-                int itemCount = listFiles.Count;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    xmlWriter.WriteStartElement("KeywordIndexDef");
-                    xmlWriter.WriteAttributeString("File", listFiles[i]);
-                    xmlWriter.WriteEndElement();
-                }
-
-                // <ItemMoniker Name="!..." ProgId="..." InitData="" />
-                string[,] itemMonikers = CreateItemMonikers();
-                itemCount = itemMonikers.GetUpperBound(0);
-                if (_sampleInfo)
-                {
-                    itemCount++;
-                }
-
-                for (int i = 0; i < itemCount; i++)
-                {
-                    xmlWriter.WriteStartElement("ItemMoniker");
-                    xmlWriter.WriteAttributeString("Name", itemMonikers[i, 0]);
-                    xmlWriter.WriteAttributeString("ProgId", itemMonikers[i, 1]);
-                    xmlWriter.WriteAttributeString("InitData", itemMonikers[i, 2]);
-                    xmlWriter.WriteEndElement();
-                }
-
-                xmlWriter.WriteEndElement();
-            }
-
-            return true;
-        }
-
-        #endregion
-
-        #region CreateCollectionIndex Method
-
-        protected virtual IList<string> CreateCollectionIndex(string langText)
-        {
-            List<string> listFiles = new List<string>(6);
-            // 1. For the A...
-            string fileName = _collectionPrefix + _helpName + "_A.HxK";
-            listFiles.Add(fileName);
-            string filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");
-                xmlWriter.WriteAttributeString("Name", "A");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge", _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort", _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "HxLink Index");
-                xmlWriter.WriteAttributeString("Visible", "No");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();
-            }
-
-            // 2. For the B...
-            fileName = _collectionPrefix + _helpName + "_B.HxK";
-            listFiles.Add(fileName);
-            filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {   
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");
-                xmlWriter.WriteAttributeString("Name", "B");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge", _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort", _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "Dynamic Link Index");
-                xmlWriter.WriteAttributeString("Visible", "No");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();
-            }
-
-            // 3. For the F...
-            fileName = _collectionPrefix + _helpName + "_F.HxK";
-            listFiles.Add(fileName);
-            filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {   
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");
-                xmlWriter.WriteAttributeString("Name", "F");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge", _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort", _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "Dynamic Help and F1 Index");
-                xmlWriter.WriteAttributeString("Visible", "No");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();
-            }
-
-            // 4. For the K...
-            fileName = _collectionPrefix + _helpName + "_K.HxK";
-            listFiles.Add(fileName);
-            filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {   
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");
-                xmlWriter.WriteAttributeString("Name", "K");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("FileVersion", 
-                    _helpFileVersion.ToString());
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge", _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort", _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "Keyword Index");
-                xmlWriter.WriteAttributeString("Visible", "Yes");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();
-            }
-
-            // 5. For the S...
-            fileName = _collectionPrefix + _helpName + "_S.HxK";
-            listFiles.Add(fileName);
-            filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {   
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");
-                xmlWriter.WriteAttributeString("Name", "S");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge",
-                    _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort",
-                    _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "Search Enhancement Index");
-                xmlWriter.WriteAttributeString("Visible", "No");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();
-            }
-
-            // 6. For the N...
-            fileName = _collectionPrefix + _helpName + "_N.HxK";
-            listFiles.Add(fileName);
-            filePath = Path.Combine(_helpDir, fileName);
-            using (XmlWriter xmlWriter = XmlWriter.Create(filePath, _xmlSettings))
-            {   
-                xmlWriter.WriteDocType("HelpIndex", null, null, null);
-                xmlWriter.WriteStartElement("HelpIndex");  // start - HelpIndex
-                xmlWriter.WriteAttributeString("Name", "NamedUrl");
-                xmlWriter.WriteAttributeString("DTDVersion", "1.0");
-                xmlWriter.WriteAttributeString("Id",
-                    Path.GetFileNameWithoutExtension(fileName));
-                xmlWriter.WriteAttributeString("AutoInclude",
-                    _indexAutoInclude ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Merge",
-                    _indexMerge ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Sort",
-                    _indexSort ? "Yes" : "No");
-                xmlWriter.WriteAttributeString("Title", "Named Url Index");
-                xmlWriter.WriteAttributeString("Visible", "No");
-                xmlWriter.WriteAttributeString("LangId", langText);
-                xmlWriter.WriteWhitespace(_xmlSettings.NewLineChars); // force a new line
-                xmlWriter.WriteFullEndElement();           // end - HelpIndex
-            }
-
-            return listFiles;
-        }
-
-        #endregion
-
-        #region OnDataReceived Method
-
-        protected virtual void OnDataReceived(object sender, 
-            DataReceivedEventArgs e)
-        {
-            _messageCount++;
-            string textData = e.Data;
-            if (String.IsNullOrEmpty(textData))
-            {
-                return;
-            }
-
-            if (_logger != null)
-            {
-                if (_messageCount > _copyright)
-                {
-                    _logger.WriteLine(textData, BuildLoggerLevel.None);
-                }
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Private Methods
 
         #region CreateNamedUrl Method
 
@@ -1143,24 +808,24 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region CreateItemMonikers Method
+        #region OnDataReceived Method
 
-        private string[,] CreateItemMonikers()
+        private void OnDataReceived(object sender, DataReceivedEventArgs e)
         {
-            string[,] itemMonikers = new string[,] 
-            { 
-                { "!DefaultToc", "HxDs.HxHierarchy", "" }, 
-                { "!DefaultFullTextSearch", "HxDs.HxFullTextSearch", "" }, 
-                { "!DefaultAssociativeIndex", "HxDs.HxIndex", "A" }, 
-                { "!DefaultKeywordIndex", "HxDs.HxIndex", "K" }, 
-                { "!DefaultContextWindowIndex", "HxDs.HxIndex", "F" }, 
-                { "!DefaultNamedUrlIndex", "HxDs.HxIndex", "NamedUrl" }, 
-                { "!DefaultSearchWindowIndex", "HxDs.HxIndex", "S" }, 
-                { "!DefaultDynamicLinkIndex", "HxDs.HxIndex", "B" }, 
-                { "!SampleInfo", "HxDs.HxSampleCollection", _sampleInfo ? "" : "" } 
-            };
+            _messageCount++;
+            string textData = e.Data;
+            if (String.IsNullOrEmpty(textData))
+            {
+                return;
+            }
 
-            return itemMonikers;
+            if (_logger != null)
+            {
+                if (_messageCount > _copyright)
+                {
+                    _logger.WriteLine(textData, BuildLoggerLevel.None);
+                }
+            }
         }
 
         #endregion

@@ -126,13 +126,7 @@ namespace Sandcastle.References
             //Keyword: "$(SandcastleCopyComponent)";
             if (ContainsComponents("SandcastleCopyComponent") == false)
             {
-                string sandcastlePath = "%DXROOT%";
-                string fullPath = Environment.ExpandEnvironmentVariables(sandcastlePath);
-                if (String.IsNullOrEmpty(fullPath) ||
-                    Directory.Exists(fullPath) == false)
-                {
-                    sandcastlePath = _settings.SandcastleDirectory;
-                }
+                string sandcastlePath = context.SandcastleDirectory;
 
                 if (String.IsNullOrEmpty(sandcastlePath) == false ||
                     Directory.Exists(sandcastlePath))
@@ -601,7 +595,7 @@ namespace Sandcastle.References
                 throw new BuildException(
                     "A document shared content is required.");
             }
-            string workingDir = _settings.WorkingDirectory;
+            string workingDir = _context.WorkingDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
                 throw new BuildException(
@@ -692,11 +686,7 @@ namespace Sandcastle.References
         protected void OnReferenceDataItem(object sender, ConfigurationItemEventArgs args)
         {
             XPathNavigator navigator = args.Navigator;
-            string sandcastleDir = _settings.SandcastleDirectory;
-            if (String.IsNullOrEmpty(sandcastleDir))
-            {
-                sandcastleDir = "%DXROOT%";
-            }
+            string sandcastleDir = _context.SandcastleDirectory;
 
             //<data base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" />
             //<data files=".\reflection.xml" />

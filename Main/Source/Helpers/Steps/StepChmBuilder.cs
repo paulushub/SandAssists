@@ -38,9 +38,13 @@ namespace Sandcastle.Steps
         #region Private Fields
 
         private int    _formatIndex;
-        //private int    _tocWindowStyle;
+        private int    _tocWindowStyle;
+        private string _tocStyle;
         private string _helpName;
         private string _helpFolder;
+        private string _helpDirectory;
+
+        private FormatChmOptions _options;
 
         #endregion
 
@@ -94,6 +98,30 @@ namespace Sandcastle.Steps
             }
         }
 
+        public string HelpDirectory
+        {
+            get
+            {
+                return _helpDirectory;
+            }
+            set
+            {
+                _helpDirectory = value;
+            }
+        }
+
+        internal FormatChmOptions Options
+        {
+            get 
+            { 
+                return _options; 
+            }
+            set 
+            { 
+                _options = value; 
+            }
+        }
+
         #endregion
 
         #region Protected Methods
@@ -102,12 +130,6 @@ namespace Sandcastle.Steps
         {
             BuildLogger logger = context.Logger;
 
-            //string message = this.Message;
-            //if (String.IsNullOrEmpty(message))
-            //{
-            //    message = "ChmBuilder Tool";
-            //}
-
             bool buildResult = false;
             try
             {
@@ -115,12 +137,21 @@ namespace Sandcastle.Steps
 
                 if (buildResult)
                 {
-                    buildResult = base.Run(logger);
-                }
+                    if (_options != null)
+                    {
+                        _options.TocStyle = _tocStyle;
+                        FormatChmHelper chmHelper = new FormatChmHelper(_options);
+                        chmHelper.Run(context);
+                    }
+                    else
+                    {
+                        buildResult = base.Run(logger);
 
-                if (buildResult)
-                {
-                    buildResult = PostProcess(context, logger);
+                        if (buildResult)
+                        {
+                            buildResult = PostProcess(context, logger);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -156,7 +187,7 @@ namespace Sandcastle.Steps
 
             FormatChm chmFormat = null;
 
-            BuildSettings settings = context.Settings;
+            BuildSettings settings     = context.Settings;
             IList<BuildFormat> formats = settings.Formats;
             if (formats == null || formats.Count == 0)
             {
@@ -181,8 +212,8 @@ namespace Sandcastle.Steps
                 return buildResult;
             }
 
-            string workingDir = settings.WorkingDirectory;
-            string configDir  = settings.ConfigurationDirectory;
+            string workingDir  = context.WorkingDirectory;
+            string configDir   = settings.ConfigurationDirectory;
             string contentsDir = settings.ContentsDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
@@ -196,12 +227,12 @@ namespace Sandcastle.Steps
             }
             string helpDir = Path.Combine(workingDir, _helpFolder);
 
-            string chmBuilder = String.Empty;
+            string chmBuilder      = String.Empty;
             string finalChmBuilder = String.Empty;
             if (String.IsNullOrEmpty(configDir) == false &&
                 Directory.Exists(configDir))
             {
-                chmBuilder = Path.Combine(configDir, "ChmBuilder.config");
+                chmBuilder      = Path.Combine(configDir, "ChmBuilder.config");
                 finalChmBuilder = Path.Combine(workingDir, "ChmBuilder.config");
             }
             if (File.Exists(chmBuilder) == false)
@@ -232,6 +263,7 @@ namespace Sandcastle.Steps
             {
                 string fileDest = Path.Combine(workingDir, _helpFolder + @"\StopWordList.stp");
                 File.Copy(fileSource, fileDest);
+                File.SetAttributes(fileDest, FileAttributes.Normal);
                 configItem = "Full text search stop list file=StopWordList.stp";
                 configurator.AddContentItem("fullTextStopWords", configItem);
             }
@@ -261,12 +293,12 @@ namespace Sandcastle.Steps
             configurator.AddContentItem("binaryIndex", configItem);
 
             // 7. For mainFrame:
-            // MainFrame="{3}","{0}.hhc","{0}.hhk","{1}",,,,,,0x43520,,0x387e,[50,50,1050,900],,,,,,,0
+            // MainFrame="{3}","{0}.hhc","{0}.hhk","{1}","{1}",,,,,0x43520,,0x387e,[50,50,1050,900],,,,,,,0
             configItem = chmFormat["HelpWindow"];
             // if the use defined the help window, we use it...
             if (String.IsNullOrEmpty(configItem))
             {
-                configItem = "MainFrame=\"{3}\",\"{0}.hhc\",\"{0}.hhk\",\"{1}\",,,,,,";
+                configItem = "MainFrame=\"{3}\",\"{0}.hhc\",\"{0}.hhk\",\"{1}\",\"{1}\",,,,,";
                 if (chmFormat.IncludeFavorites)
                 {
                     configItem += chmFormat.IncludeAdvancedSearch ? "0x63520,,0x387e" : "0x43520,,0x387e";
@@ -281,7 +313,39 @@ namespace Sandcastle.Steps
 
             configurator.Configure(chmBuilder, finalChmBuilder);
 
-            configurator.Uninitialize();
+            configurator.Uninitialize(); 
+
+            // 2. We modify the windows styles of the table of contents
+            _tocWindowStyle = 0x800000;
+            if (chmFormat.TocHasButtons)
+            {
+                _tocWindowStyle |= TocHasButtons;
+            }
+            if (chmFormat.TocHasLines)
+            {
+                _tocWindowStyle |= TocHasLines;
+            }
+            if (chmFormat.TocLinesAtRoot)
+            {
+                _tocWindowStyle |= TocLinesAtRoot;
+            }
+            if (chmFormat.TocShowSelectionAlways)
+            {
+                _tocWindowStyle |= TocShowSelAlways;
+            }
+            if (chmFormat.TocTrackSelect)
+            {
+                _tocWindowStyle |= TocTrackSelect;
+            }
+            if (chmFormat.TocSingleExpand)
+            {
+                _tocWindowStyle |= TocSingleExpand;
+            }
+            if (chmFormat.TocFullrowSelect)
+            {
+                _tocWindowStyle |= TocFullrowSelect;
+            }
+            _tocStyle = String.Format("0x{0:x}", _tocWindowStyle);
 
             buildResult = true;
 
@@ -297,7 +361,7 @@ namespace Sandcastle.Steps
                 return buildResult;
             }
 
-            // 1. We modify the encoding of the hhp file to fix a bug...
+            // We modify the encoding of the hhp file to fix a bug...
             string filePath = Path.Combine(this.WorkingDirectory,
                 String.Format(@"{0}\{1}.hhp", _helpFolder, _helpName));
             if (File.Exists(filePath))
@@ -310,80 +374,58 @@ namespace Sandcastle.Steps
                 }
             }
 
-            //TODO: The current ChmBuilder.exe's output is an invalid HTML so this will
-            //      not work!
-            //// 2. We modify the windows styles of the table of contents
-            //BuildSettings settings = engine.Settings;
-            //FormatChm chmFormat = settings.OutputFormats[_formatIndex] as FormatChm;
-            //_tocWindowStyle = 0x800000;
-            //if (chmFormat.TocHasButtons)
-            //{
-            //    _tocWindowStyle |= TocHasButtons;
-            //}
-            //if (chmFormat.TocHasLines)
-            //{
-            //    _tocWindowStyle |= TocHasLines;
-            //}
-            //if (chmFormat.TocLinesAtRoot)
-            //{
-            //    _tocWindowStyle |= TocLinesAtRoot;
-            //}
-            //if (chmFormat.TocShowSelectionAlways)
-            //{
-            //    _tocWindowStyle |= TocShowSelAlways;
-            //}
-            //if (chmFormat.TocTrackSelect)
-            //{
-            //    _tocWindowStyle |= TocTrackSelect;
-            //}
-            //if (chmFormat.TocSingleExpand)
-            //{
-            //    _tocWindowStyle |= TocSingleExpand;
-            //}
-            //if (chmFormat.TocFullrowSelect)
-            //{
-            //    _tocWindowStyle |= TocFullrowSelect;
-            //}
-            //string windowStyle = String.Format("0x{0:x}", _tocWindowStyle);
-            ////<OBJECT type="text/site properties">
-            ////    <param name="Window Styles" value="0x801627">
-            ////</OBJECT>
-            //filePath = Path.Combine(this.WorkingDirectory,
-            //    String.Format(@"{0}\{1}.hhc", _helpFolder, _helpName));
+           // //<object type="text/site properties">
+           // //    <param name="Window Styles" value="0x801627"/>
+           // //</object>
+           // filePath = Path.Combine(this.WorkingDirectory,
+           //     String.Format(@"{0}\{1}.hhc", _helpFolder, _helpName));
 
-            //XmlDocument document = new XmlDocument();
-            //document.Load(filePath);
+           // XmlDocument document = null;
+           // try
+           // {
+           //     document = new XmlDocument();
+           //     document.Load(filePath);
 
-            //XPathNavigator navigator = document.CreateNavigator();
+           //     XPathNavigator navigator = document.CreateNavigator();
 
-            //navigator.MoveToChild("BODY", String.Empty);
+           //     navigator.MoveToChild("body", String.Empty);
 
-            //XmlWriter xmlWriter = navigator.PrependChild();
-            //xmlWriter.WriteStartElement("OBJECT");
-            //xmlWriter.WriteAttributeString("type", "text/site properties");
+           //     XmlWriter xmlWriter = navigator.PrependChild();
+           //     xmlWriter.WriteStartElement("object");
+           //     xmlWriter.WriteAttributeString("type", "text/site properties");
 
-            //xmlWriter.WriteStartElement("param");
-            //xmlWriter.WriteAttributeString("name", "Window Styles");
-            //xmlWriter.WriteAttributeString("value", windowStyle);
-            //xmlWriter.WriteEndElement();
-            
-            //xmlWriter.WriteEndElement();
- 
-            //xmlWriter.Close();
+           //     xmlWriter.WriteStartElement("param");
+           //     xmlWriter.WriteAttributeString("name", "Window Styles");
+           //     xmlWriter.WriteAttributeString("value", windowStyle);
+           //     xmlWriter.WriteEndElement();
 
-            //XmlWriterSettings xmlSettings = new XmlWriterSettings();
+           //     xmlWriter.WriteEndElement();
 
-            //xmlSettings.Indent = true;
-            //xmlSettings.Encoding = new UTF8Encoding(false);
-            //xmlSettings.OmitXmlDeclaration = false;
+           //     xmlWriter.Close();
 
-            //xmlWriter = XmlWriter.Create(filePath, xmlSettings);
+           //     XmlWriterSettings xmlSettings = new XmlWriterSettings();
 
-            //document.Save(xmlWriter);
+           //     xmlSettings.Indent = true;
+           //     xmlSettings.Encoding = new UTF8Encoding(false);
+           //     xmlSettings.OmitXmlDeclaration = false;
 
-            //xmlWriter.Close();
+           //     xmlWriter = XmlWriter.Create(filePath, xmlSettings);
 
-            buildResult = true;
+           //     document.Save(xmlWriter);
+
+           //     xmlWriter.Close();
+
+           //     buildResult = true;
+           //}
+           // catch (Exception ex)
+           // {
+           //     if (logger != null)
+           //     {
+           //         logger.WriteLine(ex, BuildLoggerLevel.Error);
+           //     }
+
+           //     buildResult = false;
+           // }
 
             return buildResult;
         }

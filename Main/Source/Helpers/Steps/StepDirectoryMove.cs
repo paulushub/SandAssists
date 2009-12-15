@@ -152,7 +152,7 @@ namespace Sandcastle.Steps
                     {
                         if (_isOverride)
                         {
-                            Directory.Delete(dirDest, true);
+                            BuildDirHandler.DeleteDirectory(dirDest, true);
                         }
                         else
                         {

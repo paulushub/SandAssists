@@ -107,12 +107,6 @@ namespace Sandcastle.Steps
                 int itemCount  = _listDirs.Count;
                 int dirDeleted = 0;
 
-                //if (logger != null)
-                //{
-                //    logger.WriteLine("Deleting directories...", 
-                //        BuildLoggerLevel.Started);
-                //}
-
                 for (int i = 0; i < itemCount; i++)
                 {
                     string dirPath = _listDirs[i];
@@ -121,10 +115,28 @@ namespace Sandcastle.Steps
                         continue;
                     }
 
-                    if (Directory.Exists(dirPath))
+                    DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
+                    if (dirInfo.Exists)
                     {
                         // It is a directory...
-                        Directory.Delete(dirPath, recursive);
+                        try
+                        {
+                            dirInfo.Attributes = FileAttributes.Normal;
+                            dirInfo.Delete(true);
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // One possible cause of this is read-only file, so first
+                            // try another method of deleting the directory...
+                            foreach (string file in BuildDirHandler.FindFiles(
+                                dirInfo, "*.*", SearchOption.AllDirectories))
+                            {
+                                File.SetAttributes(file, FileAttributes.Normal);
+                                File.Delete(file);
+                            }
+
+                            dirInfo.Delete(true);
+                        }
 
                         if (logger != null)
                         {
@@ -141,14 +153,6 @@ namespace Sandcastle.Steps
                         }
                     }
                 }
-                
-                //if (logger != null)
-                //{
-                //    logger.WriteLine("Deleting directories.", 
-                //        BuildLoggerLevel.Ended);
-                //}
-
-                //return (dirDeleted > 0); // could stop the steps...
 
                 return true;
             }

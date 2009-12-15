@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template author="Sandcastle Assist Team" version="1.0">
+    <Config
+		name        = "Reference With Syntax Topic"
+		icon        = "Sandcastle.32x32.Topics"
+		category    = "Sandcastle"
+        subcategory = "MAML Conceptual Topics"
+		defaultname = "Topic${Number}.maml"
+		language    = "XML"/>
+
+    <Description>A template used for reference with syntax documentation topics.</Description>
+
+    <Properties>
+        <Property
+			name          = "TopicGuid"
+			localizedName = "Topic ID"
+			type          = "System.Guid"
+			defaultValue  = "${Guid}"
+			category      = "Metadata"
+			description   = "Topic ID"/>
+        <Property
+			name          = "TopicTitle"
+			localizedName = "Topic Title"
+			type          = "System.String"
+			defaultValue  = "Reference With Syntax Topic${Number}"
+			category      = "Metadata"
+			description   = "The topic title"/>
+        <Property
+			name          = "TocTopicTitle"
+			localizedName = "TOC Topic Title"
+			type          = "System.String"
+			defaultValue  = "Reference With Syntax Topic${Number}"
+			category      = "Metadata"
+			description   = "The table of contents (TOC) topic title"/>
+        <Property
+			name          = "TopicAuthor"
+			localizedName = "Topic Author"
+			type          = "System.String"
+			defaultValue  = "${User}"
+			category      = "Authoring"
+			description   = "The author or editor of topic"/>
+        <Property
+			name          = "TopicCulture"
+			localizedName = "Topic Language"
+			type          = "System.Globalization.CultureInfo"
+			defaultValue  = ""
+			category      = "Authoring"
+			description   = "The language of this topic. For spell-checking and language specific operations."/>
+        <Property
+			name          = "TopicCreationDate"
+			localizedName = "Topic Creation Date"
+			type          = "System.DateTime"
+            readonly      = "true"
+			defaultValue  = "${Date:G}"
+			category      = "Authoring"
+			description   = "The date and time the topic is created."/>
+    </Properties>
+
+    <Files>
+        <File name="${FullName}" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<developerReferenceWithSyntaxDocument 
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Optional: Provide an abstract. Delete if not needed. -->
+    <summary>
+        <para>{TODO: A summary or an abstract}</para>
+    </summary>
+
+    <!-- Required: A comprehensive introduction. -->
+    <introduction address="introduction">
+        <para>{TODO: An introduction}</para>
+    </introduction>
+
+    <!-- Required: Provide description and syntax covered by this topic. 
+         This will not create a collapsible section. -->
+    <syntaxSection>
+        <!-- Optional: Provide information on the required syntax following -->
+        <sections address="sections1">
+            <section address="section11">
+                <title>{TODO: Syntax section title}</title>
+                <content>
+                    <para>{TODO: Syntax section content}</para>
+                </content>
+            </section>
+            <section address="sections12">
+                <title/>
+                <content/>
+            </section>
+        </sections>           
+
+        <!--Required: The syntax of programming language routine, such as C/C++ method -->
+        <legacySyntax>
+            <parameterReference>{TODO: A parameter reference}</parameterReference>
+        </legacySyntax>
+    </syntaxSection>
+
+    <!-- Optional: For methods and functions, provide the description of the parameters 
+         This will create a collapsible section with title "Parameters". -->
+    <parameters address="parameters">
+        <content>
+            <para>{TODO: The parameters information}</para>
+        </content>
+    </parameters>
+
+    <!-- Optional: A description of the return value of method/function or property value. 
+         This will create a collapsible section with title "Return Value". -->
+    <returnValue address="returnvalue">
+        <content>
+            <para>{TODO: The return value information}</para>
+        </content>
+    </returnValue>
+
+    <!-- Optional: The type and description of the exceptions thrown by the method or property. 
+         This will create a collapsible section with title "Exceptions". -->
+    <exceptions address="exceptions">            
+        <content>                
+            <para>{TODO: The exceptions information}</para>
+        </content>
+    </exceptions>
+
+    <!-- Optional: A reference documentation remarks. 
+         This will create a collapsible section with title "Remarks". -->
+    <languageReferenceRemarks address="languagereferenceremarks">
+        <content>
+            <para>{TODO: The remarks on this method or property}</para>
+        </content>
+    </languageReferenceRemarks>
+
+    <!-- Optional: An illustration or sample code. 
+         This will create a collapsible section with title "Example". -->
+    <codeExample>
+        <code>{TODO: A code example}</code>
+    </codeExample>
+
+    <!-- Optional: If not a .NET syntax documentation, then the .NET equivalent, if any. 
+         This will create a collapsible section with title ".NET Framework Equivalent". -->
+    <dotNetFrameworkEquivalent address="dotnetframeworkequivalent">
+        <content>
+            <para>{TODO: The .NET Framework equivalent information}</para>
+        </content>
+    </dotNetFrameworkEquivalent>
+
+    <!-- Optional: An information on the requirement of this method or property. 
+         This will create a collapsible section with title "Requirements". -->
+    <requirements address="requirements">
+        <content>
+            <para>{TODO: The information on requirements}</para>
+        </content>
+    </requirements>
+
+    <!-- Optional: A section providing other documentations, if any -->
+    <section address="section1">
+        <title>{TODO: A section title}</title>
+        <content>
+            <para>{TODO: A section content}</para>
+        </content>
+    </section>
+
+    <!-- Required: But can be empty. Links to internal and/or external topics and resources: 
+        (1). A Local Link (2). An External Link (3). A Code Entity Reference Link. -->
+    <relatedTopics>
+        <!-- 1. Using a Local Link - format and required tag(s) are illustrated below:
+            <link xlink:href="Required: Link Topic's ID">Optional: Link text</link> -->
+        <!-- 2. Using external link - format and required tag(s) are illustrated below:
+            <externalLink>
+                <linkText>Required: Link text</linkText>
+                <linkAlternateText>Optional: Alternate link text</linkAlternateText>
+                <linkUri>Required: Link URI (eg: http://sandcastle.codeplex.com) </linkUri>
+            </externalLink> -->
+        <!-- 3. Using Code Entity Reference Link - format and required tag(s) are illustrated below:
+            <codeEntityReference>Required: API XMLDoc ID</codeEntityReference>
+            Example:
+                For Namespace: <codeEntityReference>N:aNamespace</codeEntityReference>
+                For Type:      <codeEntityReference>T:aNamespace.aClass</codeEntityReference>
+                For Property:  <codeEntityReference>P:aNamespace.aClass.aProperty</codeEntityReference>
+                For Method:    <codeEntityReference>M:aNamespace.aClass.aMethod</codeEntityReference> -->
+    </relatedTopics>
+</developerReferenceWithSyntaxDocument>
+            ]]>
+        </File>
+        <File name="${Path}/${FileNameWithoutExtension}.cmp" DependentUpon="${FileNameWithoutExtension}.maml" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<metadata fileAssetGuid="${Properties.TopicGuid}" assetTypeId="CompanionFile">
+    <topic id="${Properties.TopicGuid}">
+        <title>${Properties.TopicTitle}</title>
+        <tableOfContentsTitle>${Properties.TocTopicTitle}</tableOfContentsTitle>
+    </topic>
+    <authoring>
+        <author>${Properties.TopicAuthor}</author>
+        <revision>1</revision>
+        <culture>${Properties.TopicCulture}</culture>
+        <dateCreated>${Properties.TopicCreationDate}</dateCreated>
+        <dateModified>${Properties.TopicCreationDate}</dateModified>
+    </authoring>
+    <attributes/>
+    <keywords/>
+    <tasks/>
+    <memo/>
+</metadata>            
+            ]]>
+        </File>
+    </Files>
+</Template>

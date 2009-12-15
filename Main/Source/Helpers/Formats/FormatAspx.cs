@@ -59,7 +59,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override bool IsCompiled
+        public override bool IsCompilable
         {
             get
             {

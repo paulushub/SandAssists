@@ -126,6 +126,7 @@ namespace Sandcastle.Steps
 
             try
             {
+                File.SetAttributes(_htmlHelpFile, FileAttributes.Normal);
                 File.Delete(_htmlHelpFile);
 
                 return true;

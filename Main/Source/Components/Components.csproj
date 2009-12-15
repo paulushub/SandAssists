@@ -63,7 +63,7 @@
   <ItemGroup>
     <Reference Include="BuildAssemblerLibrary, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Program Files\Sandcastle\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files\Sandcastle\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sandcastle.Iris, Version=0.1.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">

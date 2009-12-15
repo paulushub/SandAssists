@@ -1,0 +1,101 @@
+﻿<AddIn name        = "Sandcastle Workshop"
+       author      = "Sandcastle Assist Team"
+       url         = "http://sandassist.codeplex.com/"
+       description = "Sandcastle .NET documentation compiler Add-In core component.">
+
+    <Manifest>
+        <Identity name="Sandcastle.Workshop"/>
+        <Dependency addin="ICSharpCode.XmlEditor" requirePreload = "true"/>
+    </Manifest>
+
+    <Runtime>
+        <Import assembly = "Sandcastle.Workshop.dll"/>
+    </Runtime>
+
+    <!-- The Start Page plugin entries -->
+    <Path name = "/SharpDevelop/Workbench/MainMenu/View">
+        <MenuItem id = "StatusBarSeparator"
+		          insertafter  = "StatusBarToggle"
+		          insertbefore = "ShowStartPage"
+				  type = "Separator"/>
+        <MenuItem id = "ShowStartPage"
+		          insertafter  = "StatusBarSeparator"
+		          insertbefore = "StartPageSeparator"
+		          label = "${res:XML.MainMenu.ViewMenu.ShowStartPage}"
+		          icon  = "Icons.16x16.StartPage"
+		          class = "Sandcastle.Workshop.StartPage.StartPageCommand"/>
+        <MenuItem id = "StartPageSeparator"
+				  insertbefore = "FullScreen"
+				  type = "Separator"/>
+    </Path>
+
+    <!--Begin: Extensions of the Standard Toolbar -->
+    <Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
+        <ToolbarItem id      = "ShowStartPage"
+	                 insertafter  = "HelpTopicsSeparator"
+	                 insertbefore = "HelpTopics"
+		             icon         = "Icons.16x16.StartPage"
+		             tooltip      = "${res:StartPage.StartPageContentName}"
+		             class        = "Sandcastle.Workshop.StartPage.StartPageCommand"/>
+    </Path>
+    <!--End: Extensions of the Standard Toolbar -->
+
+    <Path name = "/Workspace/AutostartNothingLoaded">
+        <Class id = "StartPageStartupCommand"
+		       class = "Sandcastle.Workshop.StartPage.StartPageStartupCommand"/>
+    </Path>
+
+    <!--<Path name = "/SharpDevelop/ViewContent/StartPage/Items">
+        <Class id="RecentProjects"
+               class="ICSharpCode.StartPage.RecentProjectsControl"/>
+    </Path>-->
+
+    <!-- MAML/Companion Editor/View Bindings -->
+    <Path name = "/SharpDevelop/Workbench/DisplayBindings">
+        <DisplayBinding id = "MamlEditor"
+		                insertbefore = "XmlEditor"
+		                title = "MAML Editor"
+		                class = "Sandcastle.Workshop.Bindings.MamlDisplayBinding"/>
+        <DisplayBinding id  = "MamlPreviewer"
+                       type  = "Secondary"
+                       class = "Sandcastle.Workshop.Bindings.MamlPreviewDisplayBinding"
+                       fileNamePattern = "\.(aml|maml)$" />
+        <DisplayBinding id  = "MetadataTextViewer"
+                       type  = "Secondary"
+                       class = "Sandcastle.Workshop.Bindings.MetadataTextViewBinding"
+                       fileNamePattern = "\.cmp$" />
+    </Path>
+
+    <Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+        <MenuItem id = "WebSitesSeparator" type = "Separator" />
+        <MenuItem id = "AboutWorshop"
+                  label = "${res:XML.MainMenu.HelpMenu.About}"
+                  icon = "Icons.16x16.AboutIcon"
+                  class = "Sandcastle.Workshop.Commands.HelpAboutWorkshop" />
+    </Path>
+
+    <!-- MAML file filter -->
+    <Path name = "/SharpDevelop/Workbench/FileFilter">
+        <FileFilter id = "Maml"
+		            insertbefore="AllFiles"
+		            name = "Sandcastle Topic Files (*.aml;*.maml)"
+		            extensions = "*.aml;*.maml"/>
+        <FileFilter id = "Cmp"
+		            insertbefore="AllFiles"
+		            name = "Sandcastle Topic Companion Files (*.cmp)"
+		            extensions = "*.cmp"/>
+    </Path>
+
+    <!-- Extra project browser icons -->
+    <Path name = "/Workspace/Icons">
+        <Icon id         = "MamlFileIcon"
+		      extensions = ".aml;.maml;.cmp"
+		      resource   = "Sandcastle.16x16.Topics" />
+    </Path>
+
+    <!-- Extend the SharpDevelop AddIn-Tree like this:
+    <Path name = ...>
+        <.../>
+    </Path>
+    -->
+</AddIn>

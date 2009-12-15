@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.#Develop.AddInOptions.Name}"
+		  icon        = "C#.File.FullFile"
+		  category    = "C#"
+		  subcategory = "Extensibility"
+		  defaultname = "AddInOptions${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.#Develop.AddInOptions.Description}</Description>
+
+    <References>
+        <Reference include="ICSharpCode.Core" hintPath="${AppBinPath}\ICSharpCode.Core.dll" copyLocal="false" />
+    </References>
+
+    <!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#">
+            <![CDATA[
+${StandardHeader.C#}
+using System;
+
+using ICSharpCode.Core;
+
+namespace ${StandardNamespace}
+{
+	public static class AddInOptions
+	{
+		public const string OptionsProperty = "${StandardNamespace}.Options";
+
+		public const string SamplePropertyValue = "SampleProperty";
+
+		private static Properties properties;
+
+		static AddInOptions()
+		{
+			properties = PropertyService.Get(OptionsProperty, new Properties());
+		}
+
+		public static event PropertyChangedEventHandler PropertyChanged
+		{
+			add
+			{
+				properties.PropertyChanged += value;
+			}
+			remove
+			{
+				properties.PropertyChanged -= value;
+			}
+		}
+
+		public static string SampleProperty
+		{
+			get
+			{
+				return properties.Get("SamplePropertyValue", "DefaultValue");
+			}
+			set
+			{
+				properties.Set("SamplePropertyValue", value);
+			}
+		}
+	}
+}
+            ]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

@@ -22,6 +22,7 @@ namespace Sandcastle.Configurations
 
         private string _sourceFile;
         private string _destFile;
+        private string _sandcastleDir;
         private ConfigurationContent _configContent;
         private Dictionary<string, string> _dicConfigMap;
 
@@ -98,21 +99,16 @@ namespace Sandcastle.Configurations
                 return;
             }
 
-            string sandcastlePath = "%DXROOT%";
-            string fullPath = Environment.ExpandEnvironmentVariables(sandcastlePath);
-            if (String.IsNullOrEmpty(fullPath) ||
-                Directory.Exists(fullPath) == false)
-            {
-                sandcastlePath = settings.SandcastleDirectory;
-            }
+            _sandcastleDir = context.SandcastleDirectory;
+
             // Make sure the default component handlers are added...
             //Keyword: "$(SandcastleComponent)";
             if (_dicConfigMap.ContainsKey("SandcastleComponent") == false)
             {
-                if (String.IsNullOrEmpty(sandcastlePath) == false ||
-                    Directory.Exists(sandcastlePath))
+                if (String.IsNullOrEmpty(_sandcastleDir) == false ||
+                    Directory.Exists(_sandcastleDir))
                 {
-                    string sandcastleComponents = Path.Combine(sandcastlePath,
+                    string sandcastleComponents = Path.Combine(_sandcastleDir,
                         @"ProductionTools\BuildComponents.dll");
                     _dicConfigMap.Add("SandcastleComponent", sandcastleComponents);
                 }
@@ -489,12 +485,8 @@ namespace Sandcastle.Configurations
             {
                 return;
             }
-            string sandcastleDir = settings.SandcastleDirectory;
-            if (String.IsNullOrEmpty(sandcastleDir))
-            {
-                sandcastleDir = "%DXROOT%";
-            }
-            string syntaxComponents = Path.Combine(sandcastleDir,
+
+            string syntaxComponents = Path.Combine(_sandcastleDir,
                 @"ProductionTools\SyntaxComponents.dll");
 
             //<generator type="Microsoft.Ddue.Tools.VisualBasicDeclarationSyntaxGenerator" 
@@ -575,7 +567,7 @@ namespace Sandcastle.Configurations
                 xmlWriter.WriteAttributeString("assembly", syntaxComponents);
 
                 xmlWriter.WriteStartElement("filter");   // start - filter
-                xmlWriter.WriteAttributeString("files", Path.Combine(sandcastleDir,
+                xmlWriter.WriteAttributeString("files", Path.Combine(_sandcastleDir,
                     @"Presentation\Shared\configuration\xamlSyntax.config"));
                 xmlWriter.WriteEndElement();             // end - filter
 

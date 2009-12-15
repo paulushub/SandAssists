@@ -30,6 +30,7 @@ namespace Sandcastle.References
         private string _defaultAttrFile;
 
         private BuildSettings   _settings;
+        private BuildContext    _context;
         private ReferenceGroup  _group;
 
         private ConfigurationContent _configContent;
@@ -96,6 +97,7 @@ namespace Sandcastle.References
             }            
 
             _settings        = settings;
+            _context         = context;
             _defaultAttrFile = defaultAttrFile;
 
             // 1. The reference ...
@@ -224,11 +226,7 @@ namespace Sandcastle.References
             XPathNavigator navigator = args.Navigator;
             ReferenceOptions options = _group.Options;
 
-            string sandcastleDir = _settings.SandcastleDirectory;
-            if (String.IsNullOrEmpty(sandcastleDir))
-            {
-                sandcastleDir = "%DXROOT%";
-            }
+            string sandcastleDir = _context.SandcastleDirectory;
 
             if (options.Namer == ReferenceNamer.Whidbey)
             {   
@@ -302,11 +300,7 @@ namespace Sandcastle.References
         {
             XPathNavigator navigator = args.Navigator;
 
-            string sandcastleDir = _settings.SandcastleDirectory;
-            if (String.IsNullOrEmpty(sandcastleDir))
-            {
-                sandcastleDir = "%DXROOT%";
-            }
+            string sandcastleDir = _context.SandcastleDirectory;
 
             XmlWriter xmlWriter = navigator.InsertAfter();
 

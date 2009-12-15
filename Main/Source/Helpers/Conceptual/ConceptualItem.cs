@@ -381,11 +381,13 @@ namespace Sandcastle.Conceptual
             string documentPath = Path.Combine(dduexmlDir, _fileGuid + ".xml");
             if (File.Exists(documentPath))
             {
+                File.SetAttributes(documentPath, FileAttributes.Normal);
                 File.Delete(documentPath);
             }
             if (_includesTopic)
             {
                 File.Copy(_filePath, documentPath, true);
+                File.SetAttributes(documentPath, FileAttributes.Normal);
             }
             else
             {
@@ -439,6 +441,7 @@ namespace Sandcastle.Conceptual
 
             if (File.Exists(companionPath))
             {
+                File.SetAttributes(companionPath, FileAttributes.Normal);
                 File.Delete(companionPath);
             }
 
@@ -482,13 +485,15 @@ namespace Sandcastle.Conceptual
             if (!String.IsNullOrEmpty(_documentFile) && 
                 File.Exists(_documentFile))
             {
+                File.SetAttributes(_documentFile, FileAttributes.Normal);
                 File.Delete(_documentFile);
                 _documentFile = null;
             }
             if (!String.IsNullOrEmpty(_companionFile) &&
                 File.Exists(_companionFile))
             {
-                File.Delete(_companionFile);
+                File.SetAttributes(_documentFile, FileAttributes.Normal);
+                File.Delete(_documentFile);
                 _companionFile = null;
             }
 

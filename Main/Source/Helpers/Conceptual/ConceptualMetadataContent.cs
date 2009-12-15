@@ -122,6 +122,7 @@ namespace Sandcastle.Conceptual
 
                 if (File.Exists(settingPath))
                 {
+                    File.SetAttributes(settingPath, FileAttributes.Normal);
                     File.Delete(settingPath);
                 }
 

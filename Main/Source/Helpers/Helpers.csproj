@@ -61,6 +61,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Sandcastle.BTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6c2bf89a8baa2754, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -68,6 +71,9 @@
   <ItemGroup>
     <Compile Include="BuildConfiguration.cs" />
     <Compile Include="BuildConverter.cs" />
+    <Compile Include="BuildDirHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="BuildDocumenter.cs" />
     <Compile Include="BuildErrorEventArgs.cs" />
     <Compile Include="BuildEventArgs.cs" />
@@ -138,6 +144,16 @@
     <Compile Include="Configurations\IncludeItem.cs" />
     <Compile Include="Contents\TocContent.cs" />
     <Compile Include="Contents\TocItem.cs" />
+    <Compile Include="Formats\FormatChmConverter.cs" />
+    <Compile Include="Formats\FormatChmEncoding.cs" />
+    <Compile Include="Formats\FormatChmHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Formats\FormatChmOptions.cs" />
+    <Compile Include="Formats\FormatWeb.cs" />
+    <Compile Include="Formats\FormatWebConverter.cs" />
+    <Compile Include="Formats\FormatWebHelper.cs" />
+    <Compile Include="Formats\FormatWebOptions.cs" />
     <Compile Include="IBuildListener.cs" />
     <Compile Include="IBuildNamedItem.cs" />
     <Compile Include="Loggers\HtmlLogger.cs" />
@@ -198,9 +214,9 @@
     <Compile Include="References\ReferenceVisitor.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
-    <Compile Include="Steps\StepHtmBuilder.cs" />
+    <Compile Include="Steps\StepWebBuilder.cs" />
     <Compile Include="Steps\StepChmCompiler.cs" />
-    <Compile Include="Steps\StepHtmViewerStart.cs" />
+    <Compile Include="Steps\StepWebViewerStart.cs" />
     <Compile Include="Steps\StepHxsBuilder.cs" />
     <Compile Include="Steps\StepHxsCompiler.cs" />
     <Compile Include="Steps\StepHxsViewerClose.cs" />

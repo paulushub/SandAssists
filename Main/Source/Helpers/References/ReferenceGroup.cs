@@ -263,15 +263,15 @@ namespace Sandcastle.References
             _refDepencencies.Add(new DependencyItem(assembly));
         }
 
-        public override bool Initialize(BuildSettings settings)
+        public override bool Initialize(BuildContext context)
         {
-            bool initResult = base.Initialize(settings);
+            bool initResult = base.Initialize(context);
 
             string workingDir = this.WorkingDirectory;
 
             if (String.IsNullOrEmpty(workingDir))
             {
-                workingDir = settings.WorkingDirectory;
+                workingDir = context.WorkingDirectory;
                 this.WorkingDirectory = workingDir;
             }
 
@@ -360,6 +360,7 @@ namespace Sandcastle.References
                         StringComparison.CurrentCultureIgnoreCase) == false)
                     {
                         File.Copy(commentsFile, fileName, true);
+                        File.SetAttributes(fileName, FileAttributes.Normal);
                     }
                 }
 
@@ -373,6 +374,7 @@ namespace Sandcastle.References
                         StringComparison.CurrentCultureIgnoreCase) == false)
                     {
                         File.Copy(assemblyFile, fileName, true);
+                        File.SetAttributes(fileName, FileAttributes.Normal);
                     }
                 }
             }
@@ -422,6 +424,7 @@ namespace Sandcastle.References
                         StringComparison.CurrentCultureIgnoreCase) == false)
                     {
                         File.Copy(dependencyFile, fileName, true);
+                        File.SetAttributes(fileName, FileAttributes.Normal);
                     }
                 }
             }

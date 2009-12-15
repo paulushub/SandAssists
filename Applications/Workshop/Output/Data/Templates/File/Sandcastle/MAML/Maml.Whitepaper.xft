@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template author="Sandcastle Assist Team" version="1.0">
+    <Config
+		name        = "Whitepaper Topic"
+		icon        = "Sandcastle.32x32.Topics"
+		category    = "Sandcastle"
+        subcategory = "MAML Conceptual Topics"
+		defaultname = "Topic${Number}.maml"
+		language    = "XML"/>
+
+    <Description>A template used for whitepaper documentation topics.</Description>
+
+    <Properties>
+        <Property
+			name          = "TopicGuid"
+			localizedName = "Topic ID"
+			type          = "System.Guid"
+			defaultValue  = "${Guid}"
+			category      = "Metadata"
+			description   = "Topic ID"/>
+        <Property
+			name          = "TopicTitle"
+			localizedName = "Topic Title"
+			type          = "System.String"
+			defaultValue  = "Whitepaper Topic${Number}"
+			category      = "Metadata"
+			description   = "The topic title"/>
+        <Property
+			name          = "TocTopicTitle"
+			localizedName = "TOC Topic Title"
+			type          = "System.String"
+			defaultValue  = "Whitepaper Topic${Number}"
+			category      = "Metadata"
+			description   = "The table of contents (TOC) topic title"/>
+        <Property
+			name          = "TopicAuthor"
+			localizedName = "Topic Author"
+			type          = "System.String"
+			defaultValue  = "${User}"
+			category      = "Authoring"
+			description   = "The author or editor of topic"/>
+        <Property
+			name          = "TopicCulture"
+			localizedName = "Topic Language"
+			type          = "System.Globalization.CultureInfo"
+			defaultValue  = ""
+			category      = "Authoring"
+			description   = "The language of this topic. For spell-checking and language specific operations."/>
+        <Property
+			name          = "TopicCreationDate"
+			localizedName = "Topic Creation Date"
+			type          = "System.DateTime"
+            readonly      = "true"
+			defaultValue  = "${Date:G}"
+			category      = "Authoring"
+			description   = "The date and time the topic is created."/>
+    </Properties>
+
+    <Files>
+        <File name="${FullName}" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<developerWhitePaperDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Optional: Provide an abstract. Delete if not needed. -->
+    <summary>
+        <para>{TODO: A summary or an abstract}</para>
+    </summary>
+
+    <!-- Required: The byline is a short phrase or paragraph that indicates the name 
+         of the author of this article. -->
+    <byline>
+        <para>{TODO: The article author's information}</para>
+    </byline>
+
+    <!-- Required: The article date. -->
+    <date>
+        <para>{TODO: The article date in any format}</para>
+    </date>
+
+    <!-- Required: The summary of this article. This is not a collapsible section. -->
+    <summarySection address="summarysection">
+        <content>
+            <para>{TODO: The article summary}</para>
+        </content>
+    </summarySection>
+
+    <!-- Optional: Provide information on resources available for download. 
+         This is not a collapsible section. -->
+    <downloadCenterLink address="downloadcenterlink">
+        <content>
+            <para>{TODO: The download resources links and information}</para>
+        </content>
+    </downloadCenterLink>
+
+    <!-- Optional: State the parts of the framework, system or others that this applies. 
+         This will create a collapsible section with title "Applies To" -->
+    <appliesTo address="appliesto">
+        <content>
+            <para>{TODO: State where this article applies or the purpose}</para>
+        </content>
+    </appliesTo>
+
+    <!-- Optional: Information on the contents of this paper  
+         This is not a collapsible section, but you can include a <sections/> -->
+    <contents address="contents">
+        <content>
+            <para>{TODO: The contents of this paper}</para>
+        </content>
+        <sections address="sections1">
+            <section address="subsection11">
+                <title>{TODO: A section title}</title>
+                <content>
+                    <para>{TODO: A section content}</para>
+                </content>
+            </section>
+        </sections>
+    </contents>
+
+    <!-- Required: A comprehensive introduction. -->
+    <introduction address="introduction">
+        <para>{TODO: An introduction}</para>
+    </introduction>
+
+    <!-- Optional: A collapsible section of the document. -->
+    <section address="section1">
+        <title>{TODO: A section title}</title>
+        <content>
+            <para>{TODO: A section content}</para>
+        </content>
+    </section>
+
+    <!-- Required: The conclusion to this article. -->
+    <conclusion address="conclusion">
+        <content>
+            <para>{TODO: The article conclusion}</para>
+        </content>
+        <sections address="sections2">
+            <section address="subsection21">
+                <title>{TODO: A section title}</title>
+                <content>
+                    <para>{TODO: A section content}</para>
+                </content>
+            </section>
+        </sections>
+    </conclusion>
+
+    <!-- Optional: Links to internal and/or external topics and resources: 
+        (1). A Local Link (2). An External Link (3). A Code Entity Reference Link. -->
+    <relatedTopics>
+        <!-- 1. Using a Local Link - format and required tag(s) are illustrated below:
+            <link xlink:href="Required: Link Topic's ID">Optional: Link text</link> -->
+        <!-- 2. Using external link - format and required tag(s) are illustrated below:
+            <externalLink>
+                <linkText>Required: Link text</linkText>
+                <linkAlternateText>Optional: Alternate link text</linkAlternateText>
+                <linkUri>Required: Link URI (eg: http://sandcastle.codeplex.com) </linkUri>
+            </externalLink> -->
+        <!-- 3. Using Code Entity Reference Link - format and required tag(s) are illustrated below:
+            <codeEntityReference>Required: API XMLDoc ID</codeEntityReference>
+            Example:
+                For Namespace: <codeEntityReference>N:aNamespace</codeEntityReference>
+                For Type:      <codeEntityReference>T:aNamespace.aClass</codeEntityReference>
+                For Property:  <codeEntityReference>P:aNamespace.aClass.aProperty</codeEntityReference>
+                For Method:    <codeEntityReference>M:aNamespace.aClass.aMethod</codeEntityReference> -->
+    </relatedTopics>
+
+    <!-- Optional: Additional information on the paper or content. -->
+    <additionalInformation address="additionalinformation">
+        <content>
+            <para>{TODO: An additional information}</para>
+        </content>
+    </additionalInformation>
+
+    <!-- Optional: The biography of the author of this paper. -->
+    <authorBio address="authorbio">
+        <content>
+            <para>{TODO: The author's biography}</para>
+        </content>
+    </authorBio>
+</developerWhitePaperDocument>
+            ]]>
+        </File>
+        <File name="${Path}/${FileNameWithoutExtension}.cmp" DependentUpon="${FileNameWithoutExtension}.maml" language="XML">
+            <![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<metadata fileAssetGuid="${Properties.TopicGuid}" assetTypeId="CompanionFile">
+    <topic id="${Properties.TopicGuid}">
+        <title>${Properties.TopicTitle}</title>
+        <tableOfContentsTitle>${Properties.TocTopicTitle}</tableOfContentsTitle>
+    </topic>
+    <authoring>
+        <author>${Properties.TopicAuthor}</author>
+        <revision>1</revision>
+        <culture>${Properties.TopicCulture}</culture>
+        <dateCreated>${Properties.TopicCreationDate}</dateCreated>
+        <dateModified>${Properties.TopicCreationDate}</dateModified>
+    </authoring>
+    <attributes/>
+    <keywords/>
+    <tasks/>
+    <memo/>
+</metadata>            
+            ]]>
+        </File>
+    </Files>
+</Template>

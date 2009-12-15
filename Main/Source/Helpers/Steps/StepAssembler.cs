@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.References;
@@ -8,11 +9,14 @@ using Sandcastle.Conceptual;
 
 namespace Sandcastle.Steps
 {
-    public class StepAssembler : StepProcess
+    public sealed class StepAssembler : StepProcess
     {
         #region Private Fields
 
-        private BuildGroup _group;
+        private string               _lastMessage;
+        private BuildGroup           _group;
+        private BuildLoggerLevel     _lastLevel;
+        private BuildLoggerVerbosity _verbosity;
 
         #endregion
 
@@ -20,16 +24,22 @@ namespace Sandcastle.Steps
 
         public StepAssembler()
         {
+            _lastLevel = BuildLoggerLevel.None;
+            _verbosity = BuildLoggerVerbosity.None;
         }
 
         public StepAssembler(string workingDir, string arguments)
             : base(workingDir, arguments)
         {
+            _lastLevel = BuildLoggerLevel.None;
+            _verbosity = BuildLoggerVerbosity.None;
         }
 
         public StepAssembler(string workingDir, string fileName, string arguments)
             : base(workingDir, fileName, arguments)
         {
+            _lastLevel = BuildLoggerLevel.None;
+            _verbosity = BuildLoggerVerbosity.None;
         }
 
         #endregion
@@ -52,8 +62,16 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
+        #region MainExecute Method
+
         protected override bool MainExecute(BuildContext context)
         {
+            BuildLogger logger = context.Logger;
+            if (logger != null)
+            {
+                _verbosity = logger.Verbosity;
+            }
+
             if (_group == null)
             {
                 throw new BuildException(
@@ -75,10 +93,91 @@ namespace Sandcastle.Steps
                 }
             }
 
-            return base.MainExecute(context);
+            bool buildResult = base.MainExecute(context);
+
+            if (buildResult && _logger != null && !String.IsNullOrEmpty(_lastMessage))
+            {
+                if (_lastLevel == BuildLoggerLevel.Info && 
+                    _verbosity != BuildLoggerVerbosity.Quiet)
+                {
+                    _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
+                }
+            }
+
+            return buildResult;
         }
 
-        protected virtual bool CreateConfiguration(ReferenceGroup group)
+        #endregion
+
+        #region OnDataReceived Method
+
+        protected override void OnDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (_logger == null || _verbosity == BuildLoggerVerbosity.Quiet)
+            {
+                return;
+            }
+            _messageCount++;
+
+            if (_messageCount <= _copyright)
+            {
+                return;
+            }
+
+            string textData = e.Data;
+            if (String.IsNullOrEmpty(textData))
+            {
+                if (!_ignoreWhitespace)
+                {
+                    _logger.WriteLine(String.Empty, BuildLoggerLevel.None);
+                }
+                return;
+            }
+
+            int findPos = textData.IndexOf(':');
+            if (findPos <= 0)
+            {
+                _logger.WriteLine(textData, BuildLoggerLevel.None);
+                return;
+            }
+
+            string levelText = textData.Substring(0, findPos);
+            _lastMessage = textData.Substring(findPos + 1).Trim();
+            if (String.Equals(levelText, "Info"))
+            {   
+                if (_verbosity == BuildLoggerVerbosity.Detailed ||
+                    _verbosity == BuildLoggerVerbosity.Diagnostic)
+                {
+                    _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
+                }
+                _lastLevel = BuildLoggerLevel.Info;
+            }
+            else if (String.Equals(levelText, "Warn"))
+            {
+                _logger.WriteLine(_lastMessage, BuildLoggerLevel.Warn);
+                _lastLevel = BuildLoggerLevel.Warn;
+            }
+            else if (String.Equals(levelText, "Error"))
+            {
+                _logger.WriteLine(_lastMessage, BuildLoggerLevel.Error);
+                _lastLevel = BuildLoggerLevel.Error;
+            }
+            else
+            {
+                _logger.WriteLine(_lastMessage, BuildLoggerLevel.None);
+                _lastLevel = BuildLoggerLevel.None;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region CreateConfiguration Methods
+
+        private bool CreateConfiguration(ReferenceGroup group)
         {
             BuildExceptions.NotNull(group, "group");
 
@@ -89,7 +188,7 @@ namespace Sandcastle.Steps
             BuildStyle outputStyle   = settings.Style;
             BuildStyleType styleType = outputStyle.StyleType;
 
-            string workingDir = settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
             string configDir = settings.ConfigurationDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
@@ -139,7 +238,7 @@ namespace Sandcastle.Steps
             return true;
         }
 
-        protected virtual bool CreateConfiguration(ConceptualGroup group)
+        private bool CreateConfiguration(ConceptualGroup group)
         {
             BuildExceptions.NotNull(group, "group");
 
@@ -147,7 +246,7 @@ namespace Sandcastle.Steps
             BuildLogger logger     = context.Logger;
             BuildSettings settings = context.Settings;
 
-            string workingDir = settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
             string configDir  = settings.ConfigurationDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
@@ -196,6 +295,8 @@ namespace Sandcastle.Steps
 
             return true;
         }
+
+        #endregion
 
         #endregion
 

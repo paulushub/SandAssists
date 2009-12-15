@@ -2,7 +2,10 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Globalization;
 using System.Collections.Generic;
+
+using Sandcastle.Steps;
 
 namespace Sandcastle.Formats
 {
@@ -59,7 +62,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override bool IsCompiled
+        public override bool IsCompilable
         {
             get
             {
@@ -82,6 +85,57 @@ namespace Sandcastle.Formats
         public override BuildStep CreateStep(BuildContext context,
             BuildStage stage, string workingDir)
         {
+            if (context == null || context.Settings == null)
+            {
+                return null;
+            }
+
+            BuildSettings settings = context.Settings;
+
+            string helpDirectory = context.OutputDirectory;
+            if (String.IsNullOrEmpty(workingDir))
+            {
+                workingDir = context.WorkingDirectory;
+            }
+
+            string helpName = settings.HelpName;
+            if (String.IsNullOrEmpty(helpName))
+            {
+                helpName = "Documentation";
+            }
+            string helpTitle = settings.HelpTitle;
+            if (String.IsNullOrEmpty(helpTitle))
+            {
+                helpTitle = helpName;
+            }
+            string helpFolder = this.OutputFolder;
+            string helpPath = Path.Combine(helpDirectory,
+                String.Format(@"{0}\index.htm", helpFolder));
+
+            // Case 2: Starting the HtmlHelp 2.x viewer...
+            if (stage == BuildStage.StartViewer)
+            {
+            }
+
+            // Case 3: Compiling the HtmlHelp 2.x help file...
+            if (stage == BuildStage.Compilation)
+            {
+                CultureInfo culture = settings.CultureInfo;
+                int lcid = 1033;
+                if (culture != null)
+                {
+                    lcid = culture.LCID;
+                }
+                
+                BuildMultiStep listSteps = new BuildMultiStep();
+                // 2. Move the output html files to the help folder for compilation...
+                StepDirectoryMove dirMove = new StepDirectoryMove(workingDir);
+                dirMove.Add(@"Output\" + this.FormatFolder, helpFolder + @"\html");
+                listSteps.Add(dirMove); 
+
+                return listSteps;
+            }
+
             return null;
         }
 
@@ -95,8 +149,8 @@ namespace Sandcastle.Formats
         {
             base.Reset();
 
-            this.FormatFolder  = "html3";
-            this.OutputFolder  = "WebHelp";
+            this.FormatFolder     = "html0";
+            this.OutputFolder     = "WebHelp";
             this.ExternalLinkType = BuildLinkType.Msdn;
         }
 

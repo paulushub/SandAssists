@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	<Config
+		  name        = "${res:Templates.File.Html.EmptyHtml.Name}"
+		  icon        = "Icons.32x32.HTMLFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Html${Number}.html"
+		  language    = "HTML"/>
+	
+	<Description>${res:Templates.File.Html.EmptyHtmlFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="HTML">
+			<![CDATA[
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Untitled Page</title>
+    </head>
+    <body>
+    </body>
+</html>
+			]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

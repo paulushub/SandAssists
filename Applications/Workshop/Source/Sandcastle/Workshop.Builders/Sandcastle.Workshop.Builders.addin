@@ -1,0 +1,21 @@
+﻿<AddIn name        = "Sandcastle Workshop Builders"
+       author      = "Sandcastle Assist Team"
+       url         = "http://sandassist.codeplex.com/"
+       description = "Sandcastle .NET documentation compiler Add-In project and contents management component.">
+
+    <Manifest>
+        <Identity name="Sandcastle.Workshop.Builders"/>
+        <Dependency addin="ICSharpCode.XmlEditor"/>
+        <Dependency addin="Sandcastle.Workshop"/>
+    </Manifest>
+
+    <Runtime>
+        <Import assembly = "Sandcastle.Workshop.Builders.dll"/>
+    </Runtime>
+    
+    <!-- Extend the SharpDevelop AddIn-Tree like this:
+    <Path name = ...>
+        <.../>
+    </Path>
+    -->
+</AddIn>

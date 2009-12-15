@@ -178,7 +178,7 @@ namespace Sandcastle.References
                 group["$ReflectionBuilderFile"] =
                     String.Format("MRefBuilder{0}.config", indexText);
 
-                if (!group.Initialize(settings))
+                if (!group.Initialize(this.Context))
                 {
                     this.IsInitialized = false;
 
@@ -204,6 +204,7 @@ namespace Sandcastle.References
             }
 
             BuildLogger logger     = this.Logger;
+            BuildContext context   = this.Context;
             BuildSettings settings = this.Settings;
 
             try
@@ -218,7 +219,7 @@ namespace Sandcastle.References
                         continue;
                     }
 
-                    if (group.Initialize(settings))
+                    if (group.Initialize(context))
                     {
                         _curGroup = group;
 
@@ -282,7 +283,7 @@ namespace Sandcastle.References
             //}
             //bool cleanIntermediate = settings.CleanIntermediate;
 
-            //string workingDir = settings.WorkingDirectory;
+            //string workingDir = context.WorkingDirectory;
 
             //if (settings.IsCombinedBuild == false)
             //{
@@ -361,6 +362,7 @@ namespace Sandcastle.References
 
         private bool CreateReflectionStep(ReferenceGroup group, string sandcastleDir)
         {
+            BuildContext context           = this.Context;
             BuildSettings settings         = this.Settings;
             ReferenceOptions options       = group.Options;
             string assemblyDir             = group.AssemblyFolder;
@@ -373,14 +375,15 @@ namespace Sandcastle.References
             string refInfoFile    = Path.ChangeExtension(reflectionFile, ".org");
 
             BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir       = settings.WorkingDirectory;
+            string workingDir       = context.WorkingDirectory;
 
             StringBuilder textBuilder = new StringBuilder();
             // Call MRefBuilder to generate the reflection...
             // MRefBuilder Assembly.dll 
             // /out:reflection.org /config:MRefBuilder.config 
             //   /internal-
-            string application = "MRefBuilder.exe";
+            string application = Path.Combine(context.SandcastleToolsDirectory, 
+                "MRefBuilder.exe");
             textBuilder.AppendFormat(@"{0}\*.dll", assemblyDir);
             if (dependencies != null && dependencies.Count > 0)
             {
@@ -403,7 +406,7 @@ namespace Sandcastle.References
             StepMrefBuilder mRefProcess = new StepMrefBuilder(workingDir,
                 application, arguments);
             mRefProcess.Group   = group;
-            mRefProcess.Message = "MRefBuilder Tool";
+            mRefProcess.Message = "MRefBuilder Tool - Creating XML-formatted Reflection Information";
             mRefProcess.CopyrightNotice = 2;
             _listSteps.Add(mRefProcess);
 
@@ -416,7 +419,8 @@ namespace Sandcastle.References
             //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
             //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
             //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
-            application = "XslTransform.exe";
+            application = Path.Combine(context.SandcastleToolsDirectory, 
+                "XslTransform.exe");
             string prodPath = Path.Combine(sandcastleDir, "ProductionTransforms");
             string textTemp = prodPath;
             if (outputStyle == BuildStyleType.Prototype)
@@ -468,7 +472,8 @@ namespace Sandcastle.References
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl"  
             //   reflection.xml /out:manifest.xml
-            application = "XslTransform.exe";
+            application = Path.Combine(context.SandcastleToolsDirectory, 
+                "XslTransform.exe");
             textTemp = Path.Combine(prodPath, "ReflectionToManifest.xsl");
             textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
             textBuilder.AppendFormat(" {0} /out:{1}", reflectionFile, manifestFile);
@@ -504,7 +509,7 @@ namespace Sandcastle.References
             int folderCount = listFolders.Count;
 
             BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = settings.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
             string tempText = null;
 
@@ -564,13 +569,14 @@ namespace Sandcastle.References
 
             // 6. Assemble the help files using the BuildAssembler
             // BuildAssembler.exe /config:Project.config manifest.xml
-            string application = "BuildAssembler.exe";
+            string application = Path.Combine(context.SandcastleToolsDirectory, 
+                "BuildAssembler.exe");
             string arguments = String.Format(" /config:{0} {1}", 
                 configFile, manifestFile);
             StepAssembler buildAssProcess = new StepAssembler(workingDir,
                 application, arguments);
             buildAssProcess.Group   = group;
-            buildAssProcess.Message = "BuildAssembler Tool";
+            buildAssProcess.Message = "BuildAssembler Tool - Reference Topics: " + group.Name;
             buildAssProcess.CopyrightNotice = 2;
             _listSteps.Add(buildAssProcess);
 
@@ -578,7 +584,8 @@ namespace Sandcastle.References
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\createvstoc.xsl" 
             //    reflection.xml /out:ApiToc.xml
-            application = "XslTransform.exe";
+            application = Path.Combine(context.SandcastleToolsDirectory, 
+                "XslTransform.exe");
             if (outputStyle == BuildStyleType.Prototype)
             {
                 tempText = Path.Combine(sandcastleDir,

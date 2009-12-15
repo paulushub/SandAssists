@@ -1,0 +1,20 @@
+﻿<AddIn name        = "Sandcastle Workshop Tools"
+       author      = "Sandcastle Assist Team"
+       url         = "http://sandassist.codeplex.com/"
+       description = "Sandcastle .NET documentation compiler Add-In tools and utilities component.">
+
+    <Manifest>
+        <Identity name="Sandcastle.Workshop.Tools"/>
+        <Dependency addin="Sandcastle.Workshop"/>
+    </Manifest>
+
+    <Runtime>
+        <Import assembly = "Sandcastle.Workshop.Tools.dll"/>
+    </Runtime>
+    
+    <Path name = "/Workspace/Tools">
+        <MenuItem id = "Sandcastle.Workshop.ToolsCommand1"
+                  label = "Sandcastle.Workshop.Tools"
+                  class = "Sandcastle.Workshop.Tools.ToolCommand1"/>
+    </Path>
+</AddIn>

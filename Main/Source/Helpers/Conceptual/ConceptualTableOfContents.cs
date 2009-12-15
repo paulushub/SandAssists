@@ -80,6 +80,7 @@ namespace Sandcastle.Conceptual
 
                 if (File.Exists(tocPath))
                 {
+                    File.SetAttributes(tocPath, FileAttributes.Normal);
                     File.Delete(tocPath);
                 }
 

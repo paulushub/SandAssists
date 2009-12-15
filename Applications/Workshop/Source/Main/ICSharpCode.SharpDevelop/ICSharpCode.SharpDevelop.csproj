@@ -1,0 +1,1061 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</ProjectGuid>
+    <AssemblyName>ICSharpCode.SharpDevelop</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <OutputType>Library</OutputType>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>88080384</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DelaySign>False</DelaySign>
+    <NoWarn>0809 1591</NoWarn>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>http://localhost/ICSharpCode.SharpDevelop/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG,TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\Output\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\Output\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.Build.Framework">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Gui\AbstractSecondaryViewContent.cs" />
+    <Compile Include="Gui\AbstractViewContentHandlingLoadErrors.cs" />
+    <Compile Include="Gui\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
+    <Compile Include="Gui\Components\FontSelectionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\FontSelectionPanel.Designer.cs">
+      <DependentUpon>FontSelectionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Components\PanelWithSizeGrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\SideBar\SharpDevelopSideTabItemFactory.cs" />
+    <Compile Include="Gui\Components\SideBar\TextEditorSideBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\StringListEditor.Designer.cs">
+      <DependentUpon>StringListEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AddOpenWithEntryDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AddOpenWithEntryDialog.Designer.cs">
+      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AsynchronousWaitDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
+      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AbstractAttachToProcessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\AbstractAttachToProcessForm.Designer.cs">
+      <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ChooseLayoutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ChooseLayoutDialog.Designer.cs">
+      <DependentUpon>ChooseLayoutDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\DialogPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\DialogPanel.Designer.cs">
+      <DependentUpon>DialogPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ExtractInterfaceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\NewFileDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\NewFileDialog.Designer.cs">
+      <DependentUpon>NewFileDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\NewProjectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\NewProjectDialog.Designer.cs">
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OpenWithDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OpenWithDialog.Designer.cs">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\EditTemplateDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\EditTemplateDialog.Designer.cs">
+      <DependentUpon>EditTemplateDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\CodeGenerationPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\CodeGenerationPanel.Designer.cs">
+      <DependentUpon>CodeGenerationPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\EditStandardHeaderPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\EditStandardHeaderPanel.Designer.cs">
+      <DependentUpon>EditStandardHeaderPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ExternalToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ExternalToolPanel.Designer.cs">
+      <DependentUpon>ExternalToolPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\FullScreenPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\FullScreenPanel.Designer.cs">
+      <DependentUpon>FullScreenPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\LoadSavePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\LoadSavePanel.Designer.cs">
+      <DependentUpon>LoadSavePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectAndSolutionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectAndSolutionPanel.Designer.cs">
+      <DependentUpon>ProjectAndSolutionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\AdvancedBuildSettingsBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\AdvancedBuildSettingsBase.Designer.cs">
+      <DependentUpon>AdvancedBuildSettingsBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationPanel.Designer.cs">
+      <DependentUpon>ApplicationPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\BuildEventsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\BuildEventsPanel.Designer.cs">
+      <DependentUpon>BuildEventsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\DebugPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\DebugPanel.Designer.cs">
+      <DependentUpon>DebugPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\PublishPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\PublishPanel.Designer.cs">
+      <DependentUpon>PublishPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsPanel.Designer.cs">
+      <DependentUpon>ReferencePathsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\SigningPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\SigningPanel.Designer.cs">
+      <DependentUpon>SigningPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\SelectVisualStylePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\SelectVisualStylePanel.Designer.cs">
+      <DependentUpon>SelectVisualStylePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\SelectCulturePanel.Designer.cs">
+      <DependentUpon>SelectCulturePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\OutputWindowPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\OutputWindowPanel.Designer.cs">
+      <DependentUpon>OutputWindowPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.Designer.cs">
+      <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\CreateKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\CreateKeyForm.Designer.cs">
+      <DependentUpon>CreateKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\TaskListOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\TaskListOptions.Designer.cs">
+      <DependentUpon>TaskListOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ProjectDialogPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\ProjectOptions\ProjectDialogPanel.Designer.cs">
+      <DependentUpon>ProjectDialogPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.Designer.cs">
+      <DependentUpon>AddWebReferenceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.Designer.cs">
+      <DependentUpon>SelectReferenceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\UserCredentialsDialog.Designer.cs">
+      <DependentUpon>UserCredentialsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\WebServicesView.Designer.cs">
+      <DependentUpon>WebServicesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
+      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\TabbedOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\TabbedOptions.Designer.cs">
+      <DependentUpon>TabbedOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\TreeViewOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\TreeViewOptions.Designer.cs">
+      <DependentUpon>TreeViewOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\WindowsListDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\WindowsListDialog.Designer.cs">
+      <DependentUpon>WindowsListDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\Wizard\WizardDialog.Designer.cs">
+      <DependentUpon>WizardDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\WordCountDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\WordCountDialog.Designer.cs">
+      <DependentUpon>WordCountDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Components\FontSelectionPanelHelper.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\ClassBrowserFilter.cs" />
+    <Compile Include="Gui\Pads\DriveObject.cs" />
+    <Compile Include="Gui\Pads\FileList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\IconManager.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\PropertiesFolderNode.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\Nodes\SearchResultNode.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\Nodes\SearchRootNode.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\SearchDocumentInfo.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\SearchResult.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\SearchResultMatch.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\SearchResultPanel.cs" />
+    <Compile Include="Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
+    <Compile Include="Gui\Pads\ShellTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\TaskList\TaskListPadCommands.cs" />
+    <Compile Include="Gui\Pads\ToolsPad.cs" />
+    <Compile Include="Gui\Workbench\Workbench.Designer.cs">
+      <DependentUpon>Workbench.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
+    <Compile Include="Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
+    <Compile Include="Internal\ExternalTool\ExternalTool.cs" />
+    <Compile Include="Internal\Templates\ClipEntry.cs" />
+    <Compile Include="Internal\Templates\ClipService.cs" />
+    <Compile Include="Internal\Templates\Project\ProjectCreateInformation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\Templates\Project\ProjectDescriptor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\Templates\Project\ProjectTemplate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\Templates\Project\SolutionDescriptor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Project\ProjectStartException.cs" />
+    <Compile Include="Project\Solution\ProjectGuids.cs" />
+    <Compile Include="Internal\Templates\CodeTemplate.cs" />
+    <Compile Include="Internal\Templates\File\FileDescriptionTemplate.cs" />
+    <Compile Include="Internal\Templates\File\FileTemplate.cs" />
+    <Compile Include="Internal\Templates\ClipTemplate.cs" />
+    <Compile Include="Internal\Templates\File\INewFileCreator.cs" />
+    <Compile Include="Project\BuildEngine.cs" />
+    <Compile Include="Project\ConfigurationBinding.cs" />
+    <Compile Include="Project\ConfigurationHelper.cs" />
+    <Compile Include="Project\ContextSpecificProperties.cs" />
+    <Compile Include="Project\IBuildFeedbackSink.cs" />
+    <Compile Include="Project\MSBuildFileProject.cs" />
+    <Compile Include="Project\ProjectLoadException.cs" />
+    <Compile Include="Project\ProjectPropertyChangedEventArgs.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Debugger\BreakpointBookmark.cs" />
+    <Compile Include="Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Services\Debugger\CurrentLineBookmark.cs" />
+    <Compile Include="Services\Debugger\DebuggerDoozer.cs" />
+    <Compile Include="Services\Debugger\DebuggerGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Services\Debugger\DebuggerService.cs" />
+    <Compile Include="Services\Debugger\DefaultDebugger.cs" />
+    <Compile Include="Services\Debugger\IDebugger.cs" />
+    <Compile Include="Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
+    <Compile Include="Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
+    <Compile Include="Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
+    <Compile Include="Services\File\FileServiceOpenedFile.cs" />
+    <Compile Include="Services\File\FileChangeWatcher.cs" />
+    <Compile Include="Services\File\OpenedFile.cs" />
+    <Compile Include="Services\File\RecentOpen.cs" />
+    <Compile Include="Services\Language\LanguageService.cs" />
+    <Compile Include="Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
+    <Compile Include="Internal\Doozers\DefaultDialogPanelDescriptor.cs" />
+    <Compile Include="Internal\Doozers\DialogPanelDoozer.cs" />
+    <Compile Include="Internal\Doozers\IDialogPanel.cs" />
+    <Compile Include="Internal\Doozers\IDialogPanelDescriptor.cs" />
+    <Compile Include="Services\File\FileService.cs" />
+    <Compile Include="Services\File\FileEventArgs.cs" />
+    <Compile Include="Services\ProjectService\CompileModifiedProjectsOnly.cs" />
+    <Compile Include="Services\RefactoringService\DomProgressMonitor.cs" />
+    <Compile Include="Services\RefactoringService\ExtractInterfaceOptions.cs" />
+    <Compile Include="Services\SharpDevelopService.cs" />
+    <Compile Include="Services\Tasks\Task.cs" />
+    <Compile Include="Services\Tasks\TaskService.cs" />
+    <Compile Include="Services\DisplayBinding\IDisplayBinding.cs" />
+    <Compile Include="Internal\ExternalTool\ToolLoader.cs" />
+    <Compile Include="Internal\Templates\CodeTemplateLoader.cs" />
+    <Compile Include="Services\LanguageBinding\ILanguageBinding.cs" />
+    <Compile Include="Services\LanguageBinding\LanguageBindingService.cs" />
+    <Compile Include="Services\ParserService\ParserService.cs" />
+    <Compile Include="Services\DisplayBinding\DisplayBindingDoozer.cs" />
+    <Compile Include="Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
+    <Compile Include="Services\LanguageBinding\LanguageBindingDoozer.cs" />
+    <Compile Include="Services\Language\Language.cs" />
+    <Compile Include="Services\DisplayBinding\DisplayBindingService.cs" />
+    <Compile Include="Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
+    <Compile Include="Services\AmbienceService\NetAmbience.cs" />
+    <Compile Include="Services\AmbienceService\AmbienceService.cs" />
+    <Compile Include="Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
+    <Compile Include="Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
+    <Compile Include="Gui\IViewContent.cs" />
+    <Compile Include="Gui\IWorkbench.cs" />
+    <Compile Include="Gui\IWorkbenchLayout.cs" />
+    <Compile Include="Gui\IWorkbenchWindow.cs" />
+    <Compile Include="Gui\IPadContent.cs" />
+    <Compile Include="Gui\AbstractViewContent.cs" />
+    <Compile Include="Gui\AbstractPadContent.cs" />
+    <Compile Include="Gui\ContentInterfaces\IClipboardHandler.cs" />
+    <Compile Include="Gui\ContentInterfaces\IEditable.cs" />
+    <Compile Include="Gui\ContentInterfaces\IPositionable.cs" />
+    <Compile Include="Gui\WorkbenchSingleton.cs" />
+    <Compile Include="Commands\AutostartCommands.cs" />
+    <Compile Include="Commands\EditCommands.cs" />
+    <Compile Include="Commands\FileCommands.cs" />
+    <Compile Include="Commands\FileTabStripCommands.cs" />
+    <Compile Include="Commands\HelpCommands.cs" />
+    <Compile Include="Commands\MenuItemBuilders.cs" />
+    <Compile Include="Commands\ProjectMenuCommands.cs" />
+    <Compile Include="Commands\BuildCommands.cs" />
+    <Compile Include="Commands\SideBarCommands.cs" />
+    <Compile Include="Commands\ToolsCommands.cs" />
+    <Compile Include="Commands\WindowCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\SolutionNodeCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\FolderNodeCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\ProjectNodeCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\ReferenceFolderNodeCommands.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\HtmlViewPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\SideBar\SharpDevelopSideBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\SideBar\SharpDevelopSideTabItem.cs" />
+    <Compile Include="Gui\ContentInterfaces\IPrintable.cs" />
+    <Compile Include="Gui\Dialogs\OptionPanels\SelectCulturePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\COMReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\GacReferencePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\WebReference.cs" />
+    <Compile Include="Gui\Dialogs\Wizard\AbstractWizardPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\Wizard\CurrentPanelPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\Wizard\IWizardPanel.cs" />
+    <Compile Include="Gui\Dialogs\Wizard\StatusPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\Wizard\WizardDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\FileScout.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\PropertyPad\PropertyPad.cs" />
+    <Compile Include="Gui\Workbench\Workbench.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Workbench\WorkbenchLayout.cs" />
+    <Compile Include="Gui\Workbench\WorkbenchWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ClassBrowserIconService.cs" />
+    <Compile Include="Gui\Pads\PropertyPad\PropertyPadCommands.cs" />
+    <Compile Include="Gui\ContentInterfaces\ICustomizedCommands.cs" />
+    <Compile Include="Commands\VBConverter\ConvertBuffer.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\LocalizedObject.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\LocalizedPropertyDescriptor.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\LocalizedPropertyAttribute.cs" />
+    <Compile Include="Gui\ContentInterfaces\IParseInformationListener.cs" />
+    <Compile Include="Commands\CustomStringTagProvider.cs" />
+    <Compile Include="Internal\Templates\CodeTemplateGroup.cs" />
+    <Compile Include="Commands\VBConverter\CSharpConvertBuffer.cs" />
+    <Compile Include="Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
+    <Compile Include="Gui\ContentInterfaces\IContextHelpProvider.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\LocalizedTypeDescriptor.cs" />
+    <Compile Include="Internal\Templates\File\ScriptRunner.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\TemplateTypeConverter.cs" />
+    <Compile Include="Internal\Templates\StandardHeaders.cs" />
+    <Compile Include="Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
+    <Compile Include="Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
+    <Compile Include="Internal\Doozers\PadDoozer.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
+    <Compile Include="Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
+    <Compile Include="Gui\Workbench\ViewContentEventHandler.cs" />
+    <Compile Include="Internal\ConditionEvaluators\ActiveWindowStateEvaluator.cs" />
+    <Compile Include="Internal\ConditionEvaluators\OpenWindowStateEvaluator.cs" />
+    <Compile Include="Internal\ConditionEvaluators\DebuggerSupportsEvaluator.cs" />
+    <Compile Include="Commands\ChooseLayoutCommand.cs" />
+    <Compile Include="Gui\Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\FileLineReference.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\OutputTextLineParser.cs" />
+    <Compile Include="Project\Items\FileProjectItem.cs" />
+    <Compile Include="Project\IProject.cs" />
+    <Compile Include="Project\Items\ProjectItem.cs" />
+    <Compile Include="Project\Items\ReferenceProjectItem.cs" />
+    <Compile Include="Project\Solution\Solution.cs" />
+    <Compile Include="Services\ProjectService\ProjectService.cs" />
+    <Compile Include="Services\ProjectService\SolutionEventHandler.cs" />
+    <Compile Include="Services\ProjectService\ProjectEventHandler.cs" />
+    <Compile Include="Commands\FileMenuCommands.cs" />
+    <Compile Include="Services\ParserService\ParseInformationEventHandler.cs" />
+    <Compile Include="Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Services\ProjectService\ProjectConfigurationEventHandler.cs" />
+    <Compile Include="Commands\DebugCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\BaseNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\ProjectBrowserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\ProjectBrowser\ProjectBrowserPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\ProjectBrowser\ProjectBrowserPad.cs" />
+    <Compile Include="Project\Items\ProjectReferenceProjectItem.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\FileNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\SolutionNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\ProjectNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\CustomNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\NodeBuilder\DefaultDotNetNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\CustomFolderNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\DefaultFileNodeCommands.cs" />
+    <Compile Include="Gui\Dialogs\ProjectOptionsView.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
+    <Compile Include="Services\LanguageBinding\LanguageBindingDescriptor.cs" />
+    <Compile Include="Services\DisplayBinding\DisplayBindingDescriptor.cs" />
+    <Compile Include="Services\ParserService\Doozer\ParserDoozer.cs" />
+    <Compile Include="Services\ParserService\Doozer\ParserDescriptor.cs" />
+    <Compile Include="Internal\Doozers\PadDescriptor.cs" />
+    <Compile Include="Project\MissingProject.cs" />
+    <Compile Include="Project\UnknownProject.cs" />
+    <Compile Include="Gui\Pads\ErrorList\ErrorListPad.cs" />
+    <Compile Include="Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\ClassBrowser.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\ClassBrowserToolbarCommands.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\ProjectNode.cs" />
+    <Compile Include="Gui\Components\ExtTreeView\ExtTreeNode.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\ClassNode.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\MemberNode.cs" />
+    <Compile Include="Gui\Components\ExtTreeView\ExtTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Components\ExtTreeView\ExtFolderNode.cs" />
+    <Compile Include="Gui\Pads\CompilerMessageView\TextEventHandler.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\ReferenceFolderNode.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\BaseTypesNode.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\DerivedTypesNode.cs" />
+    <Compile Include="Project\Solution\SolutionFolder.cs" />
+    <Compile Include="Project\Solution\SolutionItem.cs" />
+    <Compile Include="Project\Solution\ProjectSection.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\SolutionFolderNode.cs" />
+    <Compile Include="Project\Solution\ISolutionFolderContainer.cs" />
+    <Compile Include="Project\Solution\ISolutionFolder.cs" />
+    <Compile Include="Project\Solution\AbstractSolutionFolder.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\SolutionItemNode.cs" />
+    <Compile Include="Gui\ContentInterfaces\IUndoHandler.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\Commands\ClipboardHandlerNodeCommands.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodeVisitors\ProjectBrowserTreeNodeVisitor.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodeVisitors\FileRenameTreeNodeVisitor.cs" />
+    <Compile Include="Project\Items\ComReferenceProjectItem.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\ReferenceFolderNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\ReferenceNode.cs" />
+    <Compile Include="Services\ProjectService\ProjectItemEventHandler.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodeVisitors\UpdateReferencesVisitor.cs" />
+    <Compile Include="Project\Items\TypeLibrary.cs" />
+    <Compile Include="Project\Items\UnknownProjectItem.cs" />
+    <Compile Include="Services\File\FileRenameEventArgs.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodeVisitors\FileRemoveTreeNodeVisitor.cs" />
+    <Compile Include="Services\ProjectService\SolutionFolderEventHandler.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodeVisitors\SolutionFolderRemoveVisitor.cs" />
+    <Compile Include="Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
+    <Compile Include="Project\WebReferenceUrl.cs" />
+    <Compile Include="Project\Converter\CombineToSolution.cs" />
+    <Compile Include="Project\Converter\PrjxToSolutionProject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Bookmarks\BookmarkFactory.cs" />
+    <Compile Include="Bookmarks\MarkerBookmark.cs" />
+    <Compile Include="Bookmarks\BookmarkFolderNode.cs" />
+    <Compile Include="Bookmarks\BookmarkNode.cs" />
+    <Compile Include="Bookmarks\BookmarkPad.cs" />
+    <Compile Include="Bookmarks\BookmarkPadToolbarCommands.cs" />
+    <Compile Include="Bookmarks\BookmarkEx.cs" />
+    <Compile Include="Bookmarks\BookmarkExEventHandler.cs" />
+    <Compile Include="Bookmarks\BookmarkExManager.cs" />
+    <Compile Include="Services\ClipboardService.cs" />
+    <Compile Include="Services\TextEditingService.cs" />
+    <Compile Include="TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
+    <Compile Include="TextEditor\Codons\SyntaxModeDoozer.cs" />
+    <Compile Include="TextEditor\Commands\AbstractEditActionMenuCommand.cs" />
+    <Compile Include="CodeGenerators\AbstractClassImplementorCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\AbstractFieldCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\AbstractPropertyCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\CodeGenerationForm.Designer.cs">
+      <DependentUpon>CodeGenerationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CodeGenerators\CodeGeneratorBase.cs" />
+    <Compile Include="CodeGenerators\ConstructorCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EqualsCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\GetterAndSetterCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\GetterCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\InterfaceImplementorCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\OnXXXMethodsCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\OverrideMethodsCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\OverridePropertiesCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\SetterCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\ToStringCodeGenerator.cs" />
+    <Compile Include="TextEditor\Commands\GenerateCodeCommand.cs">
+    </Compile>
+    <Compile Include="TextEditor\Commands\PasteAsCommands.cs" />
+    <Compile Include="TextEditor\Commands\TextAreaContextmenuCommands.cs" />
+    <Compile Include="TextEditor\Commands\ToolCommands.cs" />
+    <Compile Include="TextEditor\Gui\CommandPromptControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextEditor\Gui\CompletionWindow\CodeCompletionData.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\CodeCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\CommentCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\TemplateCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\IFileDocumentProvider.cs" />
+    <Compile Include="TextEditor\Gui\InsightWindow\IndexerInsightDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\InsightWindow\MethodInsightDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CodeErrorMarker.cs" />
+    <Compile Include="TextEditor\Gui\ITextAreaControlProvider.cs" />
+    <Compile Include="TextEditor\Gui\NRefactoryCodeCompletionBinding.cs" />
+    <Compile Include="TextEditor\Gui\ParserFoldingStrategy.cs" />
+    <Compile Include="TextEditor\Gui\QuickClassBrowserPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextEditor\Gui\CodeEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextEditor\Gui\CodeEditorProperties.cs" />
+    <Compile Include="TextEditor\Gui\CodeEditorPad.cs" />
+    <Compile Include="TextEditor\Gui\CodeEditorDisplayBinding.cs" />
+    <Compile Include="Gui\Dialogs\OptionPanels\CodeTemplatePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\OptionPanels\CodeTemplatePanel.Designer.cs">
+      <DependentUpon>CodeTemplatePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextEditor\CharacterEncodings.cs" />
+    <Compile Include="Services\Tasks\TaskEventHandler.cs" />
+    <Compile Include="Project\MSBuildEngine.cs" />
+    <Compile Include="TextEditor\Gui\CodeCompletionBinding.cs" />
+    <Compile Include="Gui\Pads\DefinitionViewPad.cs" />
+    <Compile Include="Project\MSBuildEnums.cs" />
+    <Compile Include="Gui\Pads\PropertyPad\IDEContainer.cs" />
+    <Compile Include="Gui\Pads\PropertyPad\PropertyContainer.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\SchemeExtension.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bookmarks\BookmarkExConverter.cs" />
+    <Compile Include="Bookmarks\ClassMemberBookmark.cs" />
+    <Compile Include="TextEditor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Services\RefactoringService\RefactoringService.cs" />
+    <Compile Include="Services\RefactoringService\Reference.cs" />
+    <Compile Include="Services\ProjectService\ParseableFileContentEnumerator.cs" />
+    <Compile Include="Services\ParserService\ParseProjectContent.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\AbstractCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\CachedCompletionDataProvider.cs" />
+    <Compile Include="Project\Items\ImportProjectItem.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\AttributesDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\CtrlSpaceCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\CodeCompletionDataUsageCache.cs" />
+    <Compile Include="TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\BrowserCommands.cs" />
+    <Compile Include="Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
+    <Compile Include="Project\Solution\SolutionPreferences.cs" />
+    <Compile Include="Project\ConfigurationGuiHelper.cs" />
+    <Compile Include="Gui\ContentInterfaces\ICanBeDirty.cs" />
+    <Compile Include="Services\RefactoringService\RefactoringMenuBuilder.cs" />
+    <Compile Include="Services\RefactoringService\LocalVariableRefactoring.cs" />
+    <Compile Include="Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
+    <Compile Include="Internal\Doozers\DirectoryDoozer.cs" />
+    <Compile Include="Gui\Components\StringListEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ConfigurationGuiBinding.cs" />
+    <Compile Include="Project\ChooseStorageLocationButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\TextCompletionDataProvider.cs" />
+    <Compile Include="TextEditor\Gui\CompletionWindow\OverrideCompletionDataProvider.cs" />
+    <Compile Include="Gui\Pads\TaskList\TaskView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Pads\TaskList\TaskListPad.cs" />
+    <Compile Include="Gui\FormLocationHelper.cs" />
+    <Compile Include="Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\WebServicesView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\Items\WebReferencesProjectItem.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\NodeBuilder\WebReferenceNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceFolderNode.cs" />
+    <Compile Include="Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceNode.cs" />
+    <Compile Include="Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
+    <Compile Include="CodeGenerators\CodeGenerationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Project\Converter\LanguageConverter.cs" />
+    <Compile Include="Gui\Dialogs\TemplateCategoryComparer.cs" />
+    <Compile Include="Internal\Templates\TemplateCategorySortOrderFile.cs" />
+    <Compile Include="Gui\Dialogs\ReferenceDialog\HttpAuthenticationHeader.cs" />
+    <Compile Include="Gui\Dialogs\ReferenceDialog\UserCredentialsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\WebServiceDiscoveryClientProtocol.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
+    <Compile Include="Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
+    <Compile Include="Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="TextEditor\Gui\CodeEditorViewContent.cs" />
+    <Compile Include="Util\NativeMethods.cs" />
+    <Compile Include="Util\ProcessRunnerException.cs" />
+    <Compile Include="Util\LineReceivedEventArgs.cs" />
+    <Compile Include="Util\ProcessRunner.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\Nodes\AbstractProjectNode.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\ClassNodeBuilders.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\DefaultClassNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\DefaultProjectNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\ProjectNodeBuilders.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
+    <Compile Include="Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
+    <Compile Include="Services\RefactoringService\NamespaceRefactoringService.cs" />
+    <Compile Include="Services\RefactoringService\RefactorMenu.cs" />
+    <Compile Include="TextEditor\Gui\AdvancedHighlightingStrategy.cs" />
+    <Compile Include="TextEditor\Gui\AdvancedHighlighter.cs" />
+    <Compile Include="Services\NavigationService\NavigationPoint.cs" />
+    <Compile Include="TextEditor\Gui\ITextAreaToolTipProvider.cs" />
+    <Compile Include="Services\NavigationService\INavigationPoint.cs" />
+    <Compile Include="Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Commands\NavigationCommands.cs" />
+    <Compile Include="Internal\ConditionEvaluators\NavigationConditionEvaluators.cs" />
+    <Compile Include="TextEditor\Gui\TextNavigationPoint.cs" />
+    <Compile Include="Project\BuildResults.cs" />
+    <Compile Include="Project\BuildError.cs" />
+    <Compile Include="Project\MSBuildAdditionalLogger.cs" />
+    <Compile Include="Services\HelpProvider.cs" />
+    <Compile Include="Services\ParserService\CodeCompletionOptions.cs" />
+    <Compile Include="Services\RefactoringService\RefactorDocument.cs" />
+    <Compile Include="Services\ParserService\DomHostCallback.cs" />
+    <Compile Include="Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
+    <Compile Include="Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
+    <Compile Include="Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
+    <Compile Include="Services\ParserService\NetCFProjectContentRegistry.cs" />
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
+      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Dialogs\SharpDevelopColorDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Util\ExtensionMethods.cs" />
+    <Compile Include="Util\DebugTimer.cs" />
+    <Compile Include="Project\CustomTool.cs" />
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.Designer.cs">
+      <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Project\MSBuildBasedProject.cs" />
+    <Compile Include="Project\AbstractProject.cs" />
+    <Compile Include="Project\BuildOptions.cs" />
+    <Compile Include="Project\IParser.cs" />
+    <Compile Include="Project\CompilableProject.cs" />
+    <Compile Include="Project\MSBuildInternals.cs" />
+    <Compile Include="Util\Pair.cs" />
+    <Compile Include="Util\Set.cs" />
+    <Compile Include="Util\ReadOnlyCollectionWrapper.cs" />
+    <Compile Include="Project\Items\ItemType.cs" />
+    <Compile Include="Project\BuildTarget.cs" />
+    <Compile Include="Util\GenericConverter.cs" />
+    <Compile Include="Internal\Templates\TemplateLoadException.cs" />
+    <Compile Include="Util\UnclosableStream.cs" />
+    <Compile Include="Util\WorkerThread.cs" />
+    <EmbeddedResource Include="Gui\Components\FontSelectionPanel.resx">
+      <DependentUpon>FontSelectionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Components\StringListEditor.resx">
+      <DependentUpon>StringListEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\AbstractAttachToProcessForm.resx">
+      <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\AddOpenWithEntryDialog.resx">
+      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\DialogPanel.resx">
+      <DependentUpon>DialogPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\ExtractInterfaceDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\NewFileDialog.resx">
+      <DependentUpon>NewFileDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\NewProjectDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OpenWithDialog.resx">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\EditTemplateDialog.resx">
+      <DependentUpon>EditTemplateDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\CodeGenerationPanel.resx">
+      <DependentUpon>CodeGenerationPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\EditStandardHeaderPanel.resx">
+      <DependentUpon>EditStandardHeaderPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\FullScreenPanel.resx">
+      <DependentUpon>FullScreenPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\LoadSavePanel.resx">
+      <DependentUpon>LoadSavePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectAndSolutionPanel.resx">
+      <DependentUpon>ProjectAndSolutionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\SelectVisualStylePanel.resx">
+      <DependentUpon>SelectVisualStylePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\SelectCulturePanel.resx">
+      <DependentUpon>SelectCulturePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\OutputWindowPanel.resx">
+      <DependentUpon>OutputWindowPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\CreateKeyForm.resx">
+      <DependentUpon>CreateKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\TaskListOptions.resx">
+      <DependentUpon>TaskListOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.resx">
+      <DependentUpon>AddWebReferenceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.resx">
+      <DependentUpon>SelectReferenceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\ReferenceDialog\UserCredentialsDialog.resx">
+      <DependentUpon>UserCredentialsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.resx">
+      <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.resx">
+      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\TabbedOptions.resx">
+      <DependentUpon>TabbedOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\TreeViewOptions.resx">
+      <DependentUpon>TreeViewOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\WordCountDialog.resx">
+      <DependentUpon>WordCountDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Workbench\Workbench.resx">
+      <DependentUpon>Workbench.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CodeGenerators\CodeGenerationForm.resx">
+      <DependentUpon>CodeGenerationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\CodeTemplatePanel.resx">
+      <DependentUpon>CodeTemplatePanel.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\ICSharpCode.Docking\ICSharpCode.Docking.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>ICSharpCode.Docking</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Core\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
+      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
+      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.SharpDevelop.Dom\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.SharpDevelop.Widgets\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\DefaultManifest.manifest" />
+    <EmbeddedResource Include="Gui\Dialogs\ChooseLayoutDialog.resx">
+      <DependentUpon>ChooseLayoutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ExternalToolPanel.resx">
+      <DependentUpon>ExternalToolPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\AdvancedBuildSettingsBase.resx">
+      <DependentUpon>AdvancedBuildSettingsBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationPanel.resx">
+      <DependentUpon>ApplicationPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\BuildEventsPanel.resx">
+      <DependentUpon>BuildEventsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\DebugPanel.resx">
+      <DependentUpon>DebugPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\ProjectDialogPanel.resx">
+      <DependentUpon>ProjectDialogPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\PublishPanel.resx">
+      <DependentUpon>PublishPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsPanel.resx">
+      <DependentUpon>ReferencePathsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\OptionPanels\ProjectOptions\SigningPanel.resx">
+      <DependentUpon>SigningPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Dialogs\WindowsListDialog.resx">
+      <DependentUpon>WindowsListDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>ICSharpCode.SharpDevelop.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextEditor\Gui\QuickClassBrowserPanel.resx">
+      <DependentUpon>QuickClassBrowserPanel.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Arrow.gif" />
+    <Content Include="Resources\DownArrow.gif" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

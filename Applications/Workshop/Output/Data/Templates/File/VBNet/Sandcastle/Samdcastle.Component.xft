@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<Template author="Sandcastle Assist Team" version="1.0">
+
+    <Config
+		name        = "Sandcastle Build Component"
+		icon        = "VBNet.File.NewClass"
+		category    = "VB"
+		subcategory = "Sandcastle"
+		defaultname = "BuildComponent${Number}.vb"
+		language    = "VBNET"/>
+
+    <Description>This creates a Sandcastle custom build component.</Description>
+
+    <References>
+        <Reference include="System.Configuration" />
+        <Reference include="BuildAssemblerLibrary" hintPath="${SandcastlePath}\ProductionTools\BuildAssemblerLibrary.dll" copyLocal="false" />
+    </References>
+
+    <!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET">
+            <![CDATA[
+${StandardHeader.VBNET}
+Imports System
+Imports System.Configuration
+Imports System.Xml
+Imports System.Xml.XPath
+
+Imports Microsoft.Ddue.Tools
+
+''' <summary>
+''' A summary of the build component
+''' </summary>
+Public Class ${FileNameWithoutExtension}
+	Inherits BuildComponent
+	''' <summary>
+	''' Initializes a new instance of the <see cref="${FileNameWithoutExtension}"/> class.
+	''' </summary>
+	''' <param name="assembler">
+	''' An instance of the build assembler.
+	''' </param>
+	''' <param name="configuration">
+	''' An instance of <see cref="XPathNavigator"/> specifying the node in the 
+	''' configuration file defining this build component.
+	''' </param>
+	''' <exception cref="ConfigurationErrorsException">
+	''' If an error is occurred in the processing of the build component 
+	''' configuration node.
+	''' </exception>
+	Public Sub New(assembler As BuildAssembler, configuration As XPathNavigator)
+		MyBase.New(assembler, configuration)
+	End Sub
+
+	''' <summary>
+	''' Implement the build component specific logic.
+	''' </summary>
+	''' <param name="document">
+	''' An instance of the <see cref="XmlDocument"/> specifying the current 
+	''' XML document.
+	''' </param>
+	''' <param name="key">
+	''' The key (member name) of the item being documented.
+	''' </param>
+	Public Overloads Overrides Sub Apply(document As XmlDocument, key As String)
+	End Sub
+End Class
+            ]]>
+        </File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

@@ -56,6 +56,7 @@ namespace Sandcastle.Conceptual
                     Directory.CreateDirectory(tocPath);
                 }
                 tocPath = Path.Combine(tocPath, "HelpTopics.sitemap");
+                File.SetAttributes(tocPath, FileAttributes.Normal);
                 File.Delete(tocPath);
 
                 XmlWriterSettings settings = new XmlWriterSettings();
@@ -67,6 +68,7 @@ namespace Sandcastle.Conceptual
 
                 if (File.Exists(tocPath))
                 {
+                    File.SetAttributes(tocPath, FileAttributes.Normal);
                     File.Delete(tocPath);
                 }
 
