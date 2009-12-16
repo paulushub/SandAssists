@@ -1,1 +1,5 @@
+F:\SandcastleAssist\Applications\Workshop\Output\AddIns\ICSharpCode.SharpDevelop.addin
 F:\SandcastleAssist\Applications\Workshop\Output\SandcastleWorkshop.exe.config
+F:\SandcastleAssist\Applications\Workshop\Output\SandcastleWorkshop.exe
+F:\SandcastleAssist\Applications\Workshop\Source\Main\ICSharpCode.StartUp\obj\Release\ResolveAssemblyReference.cache
+F:\SandcastleAssist\Applications\Workshop\Source\Main\ICSharpCode.StartUp\obj\Release\SandcastleWorkshop.exe
