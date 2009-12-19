@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
@@ -25,13 +27,17 @@ namespace ICSharpCode.XmlEditor
 		{
 			// Find active XmlView.
 			XmlView xmlView = XmlView.ActiveXmlView;
-			if (xmlView != null) {
+			if (xmlView != null) 
+            {
 				// Create a schema based on the xml.
-				string[] schemas = xmlView.InferSchema();
-				if (schemas != null) {
+                IList<string> schemas = xmlView.InferSchema();
+				if (schemas != null) 
+                {
 					// Create a new file for each generated schema.
-					for (int i = 0; i < schemas.Length; ++i) {
-						string fileName = GenerateSchemaFileName(xmlView.TextEditorControl.FileName, i + 1);
+					for (int i = 0; i < schemas.Count; ++i) 
+                    {
+						string fileName = GenerateSchemaFileName(
+                            xmlView.TextEditorControl.FileName, i + 1);
 						OpenNewXmlFile(fileName, schemas[i]);
 					}
 				}

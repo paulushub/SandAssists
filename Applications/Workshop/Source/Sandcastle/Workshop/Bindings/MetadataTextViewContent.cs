@@ -12,7 +12,7 @@ namespace Sandcastle.Workshop.Bindings
     public sealed class MetadataTextViewContent : XmlSecondaryView
     {
         public MetadataTextViewContent(IViewContent viewContent)
-            : base(viewContent, false)
+            : base(viewContent)
         {
             this.TabPageText = "Source";
         }

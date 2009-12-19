@@ -10,6 +10,7 @@ using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -304,7 +305,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="attributes">The list of attributes the user
 		/// can choose from.</param>
 		/// <returns>The attributes selected by the user.</returns>
-		public string[] SelectNewAttributes(string[] attributes)
+        public IList<string> SelectNewAttributes(IList<string> attributes)
 		{
 			using (IAddXmlNodeDialog addAttributeDialog = CreateAddAttributeDialog(attributes)) {
 				if (addAttributeDialog.ShowDialog() == DialogResult.OK) {
@@ -329,13 +330,13 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="attributes">The list of elements the user
 		/// can choose from.</param>
 		/// <returns>The elements selected by the user.</returns>
-		public string[] SelectNewElements(string[] elements)
+        public IList<string> SelectNewElements(IList<string> elements)
 		{
 			using (IAddXmlNodeDialog addElementDialog = CreateAddElementDialog(elements)) {
 				if (addElementDialog.ShowDialog() == DialogResult.OK) {
 					return addElementDialog.GetNames();
 				}
-				return new string[0];
+				return new List<string>();
 			}
 		}
 		
@@ -659,7 +660,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="elementNames">The element names to be listed in the
 		/// dialog.</param>
-		protected virtual IAddXmlNodeDialog CreateAddElementDialog(string[] elementNames)
+        protected virtual IAddXmlNodeDialog CreateAddElementDialog(IList<string> elementNames)
 		{
 			AddXmlNodeDialog dialog = new AddXmlNodeDialog(elementNames);
 			dialog.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddElementDialog.Title}");
@@ -672,7 +673,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="attributeNames">The attribute names to be listed in the
 		/// dialog.</param>
-		protected virtual IAddXmlNodeDialog CreateAddAttributeDialog(string[] attributeNames)
+        protected virtual IAddXmlNodeDialog CreateAddAttributeDialog(IList<string> attributeNames)
 		{
 			AddXmlNodeDialog dialog = new AddXmlNodeDialog(attributeNames);
 			dialog.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.AddAttributeDialog.Title}");

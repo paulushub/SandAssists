@@ -85,6 +85,15 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\XPathQueryPadCommand.cs" />
+    <Compile Include="Completion\IXmlSchemaCompletionFactory.cs" />
+    <Compile Include="Completion\XmlCompleteAttributeValueEventArgs.cs" />
+    <Compile Include="Completion\XmlSchemaError.cs" />
+    <Compile Include="Completion\XmlSchemaProvider.cs" />
+    <Compile Include="Completion\XmlSchemaFileAssociationList.cs" />
+    <Compile Include="Completion\XmlSchemaFileAssociation.cs" />
+    <Compile Include="Completion\XmlSchemaFileAssociations.cs" />
+    <Compile Include="FileSystem.cs" />
+    <Compile Include="IFileSystem.cs" />
     <Compile Include="Parser\XmlElementPathsByNamespace.cs" />
     <Compile Include="Parser\XmlNamespace.cs" />
     <Compile Include="Parser\XmlNamespaceCollection.cs" />
@@ -121,6 +130,8 @@
     <Compile Include="Completion\XmlSchemaCompletion.cs" />
     <Compile Include="Completion\XmlSchemaCompletionCollection.cs" />
     <Compile Include="Commands\XmlTreeViewCommands.cs" />
+    <Compile Include="XmlEditorOptions.cs" />
+    <Compile Include="XmlEditorService.cs" />
     <Compile Include="XmlFoldingStrategy.cs" />
     <Compile Include="Parser\QualifiedName.cs" />
     <Compile Include="Parser\XmlElementPath.cs" />
@@ -130,7 +141,6 @@
     <Compile Include="XmlFormattingStrategy.cs" />
     <Compile Include="XmlSecondaryView.cs" />
     <Compile Include="XmlView.cs" />
-    <Compile Include="Completion\XmlSchemaManager.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Commands\ValidateXmlCommand.cs" />
     <Compile Include="OptionsPanel\XmlSchemaListBoxItem.cs" />

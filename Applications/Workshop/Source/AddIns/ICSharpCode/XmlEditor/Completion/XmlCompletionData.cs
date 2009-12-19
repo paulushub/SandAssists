@@ -14,10 +14,11 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// The type of text held in this object.
 	/// </summary>
-	public enum XmlCompletionDataType {
-		XmlElement = 1,
-		XmlAttribute = 2,
-		NamespaceUri = 3,
+	public enum XmlCompletionDataType 
+    {
+		XmlElement        = 1,
+		XmlAttribute      = 2,
+		NamespaceUri      = 3,
 		XmlAttributeValue = 4
 	}
 	
@@ -28,8 +29,8 @@ namespace ICSharpCode.XmlEditor
 	public class XmlCompletionData : ICompletionData
 	{
 		string text;
-		XmlCompletionDataType dataType = XmlCompletionDataType.XmlElement;
-		string description = String.Empty;
+        string description;
+		XmlCompletionDataType dataType;
 		
 		public XmlCompletionData(string text)
 			: this(text, String.Empty, XmlCompletionDataType.XmlElement)
@@ -46,7 +47,8 @@ namespace ICSharpCode.XmlEditor
 		{
 		}		
 
-		public XmlCompletionData(string text, string description, XmlCompletionDataType dataType)
+		public XmlCompletionData(string text, string description, 
+            XmlCompletionDataType dataType)
 		{
 			this.text = text;
 			this.description = description;
@@ -86,19 +88,37 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool InsertAction(TextArea textArea, char ch)
 		{
-			if ((dataType == XmlCompletionDataType.XmlElement) || (dataType == XmlCompletionDataType.XmlAttributeValue)) {
+			if (dataType == XmlCompletionDataType.XmlElement) 
+            {
 				textArea.InsertString(text);
 			}
-			else if (dataType == XmlCompletionDataType.NamespaceUri) {
+            else if (dataType == XmlCompletionDataType.XmlAttributeValue)
+            {
+                textArea.InsertString(text);
+            }
+			else if (dataType == XmlCompletionDataType.NamespaceUri) 
+            {
 				textArea.InsertString(String.Concat("\"", text, "\""));
-			} else {
+			} 
+            else 
+            {
 				// Insert an attribute.
 				Caret caret = textArea.Caret;
 				textArea.InsertString(String.Concat(text, "=\"\""));	
 				
 				// Move caret into the middle of the attribute quotes.
 				caret.Position = textArea.Document.OffsetToPosition(caret.Offset - 1);
+
+                XmlEditorControl editControl = 
+                    textArea.MotherTextEditorControl as XmlEditorControl;
+
+                if (editControl != null)
+                {
+                    editControl.CompleteAttributeText    = text;
+                    editControl.IsCompleteAttributeValue = true;
+                }
 			}
+
 			return false;
 		}
 	}

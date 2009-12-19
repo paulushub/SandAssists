@@ -171,7 +171,7 @@ namespace ICSharpCode.XmlEditor
         /// </summary>
         private void PopulateSchemaListBox()
         {
-            foreach (XmlSchemaCompletion schema in XmlSchemaManager.SchemaCompletionItems)
+            foreach (XmlSchemaCompletion schema in XmlEditorService.RegisteredSchemas.Schemas)
             {
                 XmlSchemaListBoxItem item = new XmlSchemaListBoxItem(schema.NamespaceUri, schema.ReadOnly);
                 schemaListBox.Items.Add(item);
@@ -265,7 +265,7 @@ namespace ICSharpCode.XmlEditor
         private bool SchemaNamespaceExists(string namespaceURI)
         {
             bool exists = true;
-            if ((XmlSchemaManager.SchemaCompletionItems[namespaceURI] == null) &&
+            if ((XmlEditorService.RegisteredSchemas.Schemas[namespaceURI] == null) &&
                 (addedSchemas[namespaceURI] == null))
             {
                 exists = false;
@@ -315,7 +315,7 @@ namespace ICSharpCode.XmlEditor
         {
             while (removedSchemaNamespaces.Count > 0)
             {
-                XmlSchemaManager.RemoveUserSchema(removedSchemaNamespaces[0]);
+                XmlEditorService.RegisteredSchemas.RemoveUserDefinedSchema(removedSchemaNamespaces[0]);
                 removedSchemaNamespaces.RemoveAt(0);
             }
         }
@@ -327,14 +327,14 @@ namespace ICSharpCode.XmlEditor
         {
             while (addedSchemas.Count > 0)
             {
-                XmlSchemaManager.AddUserSchema(addedSchemas[0]);
+                XmlEditorService.RegisteredSchemas.AddUserDefinedSchema(addedSchemas[0]);
                 addedSchemas.RemoveAt(0);
             }
         }
 
         /// <summary>
         /// Draws the list box items so we can show the read only schemas in
-        /// a different colour.
+        /// a different color.
         /// </summary>
         private void SchemaListBoxDrawItem(object sender, DrawItemEventArgs e)
         {

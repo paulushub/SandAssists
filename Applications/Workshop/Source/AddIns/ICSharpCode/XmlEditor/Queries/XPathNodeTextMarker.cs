@@ -7,6 +7,8 @@
 
 using System;
 using System.Drawing;
+using System.Collections.Generic;
+
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.XmlEditor
@@ -26,6 +28,16 @@ namespace ICSharpCode.XmlEditor
 		/// Adds markers for each XPathNodeMatch.
 		/// </summary>
 		public static void AddMarkers(MarkerStrategy markerStrategy, XPathNodeMatch[] nodes)
+		{
+			foreach (XPathNodeMatch node in nodes) {
+				AddMarker(markerStrategy, node);
+			}
+		}
+		
+		/// <summary>
+		/// Adds markers for each XPathNodeMatch.
+		/// </summary>
+		public static void AddMarkers(MarkerStrategy markerStrategy, IList<XPathNodeMatch> nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
 				AddMarker(markerStrategy, node);

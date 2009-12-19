@@ -21,16 +21,22 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlTreeEditor
 	{
-		IXmlTreeView view;
-		XmlDocument document;
-		XmlCompletionDataProvider completionDataProvider;
-		XmlNode copiedNode;
-		XmlNode cutNode;
+        private XmlNode copiedNode;
+        private XmlNode cutNode;
+        private IXmlTreeView view;
+        private XmlDocument document;
+        private XmlCompletionDataProvider completionDataProvider;
+
+        private XmlSchemaCompletion defaultSchema;
+        private XmlSchemaCompletionCollection schemas;
 		
 		public XmlTreeEditor(IXmlTreeView view, XmlCompletionDataProvider completionDataProvider)
 		{
 			this.view = view;
 			this.completionDataProvider = completionDataProvider;
+
+            this.schemas = completionDataProvider.Schemas;
+            this.defaultSchema = completionDataProvider.DefaultSchema;
 		}
 		
 		/// <summary>
@@ -98,9 +104,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlElement selectedElement = view.SelectedElement;
 			if (selectedElement != null) {
-				string[] attributesNames = GetMissingAttributes(selectedElement);
-				string[] selectedAttributeNames = view.SelectNewAttributes(attributesNames);
-				if (selectedAttributeNames.Length > 0) {
+                IList<string> attributesNames = GetMissingAttributes(selectedElement);
+                IList<string> selectedAttributeNames = view.SelectNewAttributes(attributesNames);
+				if (selectedAttributeNames.Count > 0) {
 					foreach (string attributeName in selectedAttributeNames) {
 						selectedElement.SetAttribute(attributeName, String.Empty);
 					}
@@ -151,9 +157,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlElement selectedElement = view.SelectedElement;
 			if (selectedElement != null) {
-				string[] elementNames = GetChildElements(selectedElement);
-				string[] selectedElementNames = view.SelectNewElements(elementNames);
-				if (selectedElementNames.Length > 0) {
+				IList<string> elementNames = GetChildElements(selectedElement);
+				IList<string> selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Count > 0) {
 					view.IsDirty = true;
 					foreach (string elementName in selectedElementNames) {
 						XmlElement newElement = document.CreateElement(elementName, selectedElement.NamespaceURI);
@@ -178,9 +184,9 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			if (parentElement != null) {
-				string[] elementNames = GetChildElements(parentElement);
-				string[] selectedElementNames = view.SelectNewElements(elementNames);
-				if (selectedElementNames.Length > 0) {
+                IList<string> elementNames = GetChildElements(parentElement);
+                IList<string> selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Count > 0) {
 					view.IsDirty = true;
 					foreach (string elementName in selectedElementNames) {
 						XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
@@ -206,9 +212,9 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			if (parentElement != null) {
-				string[] elementNames = GetChildElements(parentElement);
-				string[] selectedElementNames = view.SelectNewElements(elementNames);
-				if (selectedElementNames.Length > 0) {
+                IList<string> elementNames = GetChildElements(parentElement);
+                IList<string> selectedElementNames = view.SelectNewElements(elementNames);
+				if (selectedElementNames.Count > 0) {
 					view.IsDirty = true;
 					foreach (string elementName in selectedElementNames) {
 						XmlElement newElement = document.CreateElement(elementName, parentElement.NamespaceURI);
@@ -409,12 +415,12 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the missing attributes for the specified element based 
 		/// on its associated schema.
 		/// </summary>
-		string[] GetMissingAttributes(XmlElement element)
+        IList<string> GetMissingAttributes(XmlElement element)
 		{
 			XmlElementPath elementPath = GetElementPath(element);
 
 			List<string> attributes = new List<string>();
-			XmlSchemaCompletion schemaCompletionData = completionDataProvider.FindSchema(elementPath);
+			XmlSchemaCompletion schemaCompletionData = FindSchema(elementPath);
 			if (schemaCompletionData != null) {
                 XmlCompletionDataCollection completionData = schemaCompletionData.GetAttributeCompletion(elementPath);
 				foreach (ICompletionData attributeCompletionData in completionData) {					
@@ -425,8 +431,20 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 			}
-			return attributes.ToArray();
+
+			return attributes;
 		}
+
+        XmlSchemaCompletion FindSchema(XmlElementPath path)
+        {
+            XmlSchemaCompletion schema = schemas[path.GetRootNamespace()];
+            if ((schema == null) && (defaultSchema != null))
+            {
+                path.SetNamespaceForUnqualifiedNames(defaultSchema.NamespaceUri);
+                return defaultSchema;
+            }
+            return null;
+        }
 		
 		/// <summary>
 		/// Returns the path to the specified element starting from the
@@ -450,19 +468,19 @@ namespace ICSharpCode.XmlEditor
 		/// Returns a list of elements that can be children of the 
 		/// specified element.
 		/// </summary>
-		string[] GetChildElements(XmlElement element)
+		IList<string> GetChildElements(XmlElement element)
 		{
 			XmlElementPath elementPath = GetElementPath(element);
 			
 			List<string> elements = new List<string>();
-			XmlSchemaCompletion schemaCompletionData = completionDataProvider.FindSchema(elementPath);
+			XmlSchemaCompletion schemaCompletionData = FindSchema(elementPath);
 			if (schemaCompletionData != null) {
                 XmlCompletionDataCollection completionData = schemaCompletionData.GetChildElementCompletion(elementPath);
 				foreach (ICompletionData elementCompletionData in completionData) {					
 					elements.Add(elementCompletionData.Text);
 				}
 			}
-			return elements.ToArray();	
+			return elements;	
 		}
 		
 		/// <summary>

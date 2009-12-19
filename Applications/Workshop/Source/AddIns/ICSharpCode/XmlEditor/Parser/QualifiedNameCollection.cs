@@ -14,7 +14,7 @@ using System.Text;
 namespace ICSharpCode.XmlEditor
 {
 	[Serializable()]
-	public class QualifiedNameCollection : Collection<QualifiedName> 
+	public sealed class QualifiedNameCollection : Collection<QualifiedName> 
 	{
 		public QualifiedNameCollection()
 		{

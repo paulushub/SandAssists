@@ -15,13 +15,15 @@ namespace ICSharpCode.XmlEditor
 	/// Represents the path to an xml element starting from the root of the
 	/// document.
 	/// </summary>
-	public class XmlElementPath
+	public sealed class XmlElementPath : IEquatable<XmlElementPath>
 	{
-		QualifiedNameCollection elements = new QualifiedNameCollection();
-		XmlNamespaceCollection namespacesInScope = new XmlNamespaceCollection();
+		private QualifiedNameCollection elements;
+        private XmlNamespaceCollection namespacesInScope;
 		
 		public XmlElementPath()
 		{
+            elements          = new QualifiedNameCollection();
+            namespacesInScope = new XmlNamespaceCollection();
 		}
 		
 		/// <summary>
@@ -66,9 +68,11 @@ namespace ICSharpCode.XmlEditor
 		public string GetNamespaceForPrefix(string prefix)
 		{
 			return namespacesInScope.GetNamespaceForPrefix(prefix);
-		}
-		
-		/// <summary>
+        }
+
+        #region IEquatable<XmlElementPath> Members
+
+        /// <summary>
 		/// An xml element path is considered to be equal if 
 		/// each path item has the same name and namespace.
 		/// </summary>
@@ -81,13 +85,25 @@ namespace ICSharpCode.XmlEditor
 			
 			return elements.Equals(rhsPath.elements);
 		}
+
+        public bool Equals(XmlElementPath other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return elements.Equals(other.elements);
+        }
 		
 		public override int GetHashCode() 
 		{
 			return elements.GetHashCode();
-		}
-		
-		public override string ToString()
+        }
+
+        #endregion
+
+        public override string ToString()
 		{
 			return elements.ToString();
 		}
@@ -122,5 +138,5 @@ namespace ICSharpCode.XmlEditor
 			}
 			return -1;
 		}
-	}
+    }
 }

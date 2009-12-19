@@ -75,6 +75,7 @@
     <None Include="Sandcastle.Workshop.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Bindings\MamlEditorService.cs" />
     <Compile Include="Bindings\MetadataAttribute.cs" />
     <Compile Include="Bindings\MetadataAuthoring.cs" />
     <Compile Include="Bindings\MetadataContent.cs" />

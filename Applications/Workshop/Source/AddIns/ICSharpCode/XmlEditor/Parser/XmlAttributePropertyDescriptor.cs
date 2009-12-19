@@ -16,7 +16,7 @@ namespace ICSharpCode.XmlEditor
 	/// Property descriptor for an XmlAttribute. This is used when displaying
 	/// an XmlAttribute in the property grid.
 	/// </summary>
-	public class XmlAttributePropertyDescriptor : PropertyDescriptor
+	public sealed class XmlAttributePropertyDescriptor : PropertyDescriptor
 	{
 		XmlAttribute xmlAttribute;
 		public XmlAttributePropertyDescriptor(XmlAttribute xmlAttribute)

@@ -18,7 +18,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			// Find active XmlView.
 			XmlView xmlView = XmlView.ActiveXmlView;
-			if (xmlView != null) {
+			if (xmlView != null) 
+            {
 				xmlView.FormatXml();
 			}
 		}

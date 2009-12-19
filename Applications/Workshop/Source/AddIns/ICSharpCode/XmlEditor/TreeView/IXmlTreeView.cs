@@ -7,6 +7,7 @@
 
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -81,7 +82,7 @@ namespace ICSharpCode.XmlEditor
 		/// be displayed to the user.</param>
 		/// <returns>The attributes selected; otherwise an empty 
 		/// collection.</returns>
-		string[] SelectNewAttributes(string[] attributes);
+		IList<string> SelectNewAttributes(IList<string> attributes);
 		
 		/// <summary>
 		/// Gets the name of the selected attribute.
@@ -98,7 +99,7 @@ namespace ICSharpCode.XmlEditor
 		/// be displayed to the user.</param>
 		/// <returns>The attributes elements; otherwise an empty 
 		/// collection.</returns>
-		string[] SelectNewElements(string[] elements);
+        IList<string> SelectNewElements(IList<string> elements);
 		
 		/// <summary>
 		/// Appends the child element to the currently selected element.

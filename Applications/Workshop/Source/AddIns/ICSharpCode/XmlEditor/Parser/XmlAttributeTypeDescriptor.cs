@@ -15,7 +15,7 @@ namespace ICSharpCode.XmlEditor
 	/// Type descriptor that allows us to display properties in the property grid
 	/// for Xml attributes.
 	/// </summary>
-	public class XmlAttributeTypeDescriptor : ICustomTypeDescriptor
+	public sealed class XmlAttributeTypeDescriptor : ICustomTypeDescriptor
 	{
 		PropertyDescriptorCollection properties;
 		

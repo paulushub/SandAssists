@@ -30,8 +30,7 @@ namespace ICSharpCode.XmlEditor
 
         #region Constructors and Destructor
 
-        public XmlSecondaryView(IViewContent primaryViewContent,  bool includeTreeView)
-            : base(null, includeTreeView)
+        public XmlSecondaryView(IViewContent primaryViewContent)
         {
             if (primaryViewContent == null)
                 throw new ArgumentNullException("primaryViewContent");

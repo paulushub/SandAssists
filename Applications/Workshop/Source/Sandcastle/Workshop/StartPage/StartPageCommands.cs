@@ -6,6 +6,8 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
+using Sandcastle.Workshop.Bindings;
+
 namespace Sandcastle.Workshop.StartPage
 {
     public sealed class StartPageCommand : AbstractMenuCommand
@@ -49,6 +51,11 @@ namespace Sandcastle.Workshop.StartPage
 
         public StartPageStartupCommand()
         {
+            if (!MamlEditorService.IsInitialized)
+            {
+                MamlEditorService.Initialize();
+            }
+
             ProjectService.SolutionLoaded +=
                 new EventHandler<SolutionEventArgs>(OnSolutionLoaded);
             ProjectService.SolutionClosed += new EventHandler(OnSolutionClosed);

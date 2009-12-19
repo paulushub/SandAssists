@@ -12,6 +12,10 @@ namespace Sandcastle.Workshop.Bindings
 	/// </summary>
 	public sealed class MamlDisplayBinding : IDisplayBinding
 	{
+        public MamlDisplayBinding()
+        {   
+        }
+
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
             if (file == null)
@@ -24,7 +28,10 @@ namespace Sandcastle.Workshop.Bindings
                 return new MetadataDesignViewContent(file);
             }
 
-            return new MamlTextViewContent(file, false);
+            MamlTextViewContent textView = new MamlTextViewContent();
+            textView.Load(file, false);
+
+            return textView;
 		}
 		
 		/// <summary>

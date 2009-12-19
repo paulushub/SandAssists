@@ -18,7 +18,10 @@ namespace ICSharpCode.XmlEditor
 	{
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return new XmlView(file, true);
+			XmlView xmlView = new XmlView();
+            xmlView.Load(file, true);
+
+            return xmlView;
 		}
 		
 		/// <summary>

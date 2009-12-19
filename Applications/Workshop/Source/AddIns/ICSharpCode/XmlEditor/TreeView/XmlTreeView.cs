@@ -58,7 +58,11 @@ namespace ICSharpCode.XmlEditor
 			LoggingService.Debug("XmlTreeView.Dispose");
 			
 			if (!this.IsDisposed) {
-				treeViewContainer.Dispose();
+                if (treeViewContainer != null)
+                {
+                    treeViewContainer.Dispose();
+                    treeViewContainer = null;
+                }
 			}
 
 			base.Dispose(disposing);

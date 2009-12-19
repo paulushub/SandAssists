@@ -25,7 +25,8 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public partial class AddXmlNodeDialog : Form, IAddXmlNodeDialog
 	{
-		public AddXmlNodeDialog() : this(new string[0])
+        public AddXmlNodeDialog()
+            : this(new List<string>())
 		{
 		}
 		
@@ -33,11 +34,11 @@ namespace ICSharpCode.XmlEditor
 		/// Creates the dialog and adds the specified names to the
 		/// list box.
 		/// </summary>
-		public AddXmlNodeDialog(string[] names)
+        public AddXmlNodeDialog(IList<string> names)
 		{
 			InitializeComponent();
 			InitStrings();
-			if (names.Length > 0) {
+			if (names.Count > 0) {
 				AddNames(names);
 			} else {
 				RemoveNamesListBox();
@@ -49,7 +50,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the selected names in the list box together with the
 		/// custom name entered in the text box.
 		/// </summary>
-		public string[] GetNames()
+        public IList<string> GetNames()
 		{
 			// Add items selected in list box.
 			List<string> names = new List<string>();
@@ -62,7 +63,8 @@ namespace ICSharpCode.XmlEditor
 			if (customName.Length > 0) {
 				names.Add(customName);
 			}
-			return names.ToArray();
+
+			return names;
 		}
 		
 		/// <summary>
@@ -98,7 +100,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds the names to the list box.
 		/// </summary>
-		void AddNames(string[] names)
+        void AddNames(IList<string> names)
 		{
 			foreach (string name in names) {
 				namesListBox.Items.Add(name);

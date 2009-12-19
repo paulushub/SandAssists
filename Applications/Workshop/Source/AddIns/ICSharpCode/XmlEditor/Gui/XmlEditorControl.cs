@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.TextEditor;
@@ -24,9 +25,14 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
     public class XmlEditorControl : CodeEditorControl
 	{
+        private bool   _completeAttributeValue;
+        private string _completeAttributeText;
+        private Timer  _completeAttributeTimer;
+
 		private CodeCompletionWindow codeCompletionWindow;
-        private XmlSchemaCompletionCollection schemaCompletionDataItems;
+        private XmlCompletionDataProvider completionDataProvider;
         private XmlSchemaCompletion defaultSchemaCompletionData;
+        private XmlSchemaCompletionCollection schemaCompletionDataItems;
         private string defaultNamespacePrefix = String.Empty;
         private ContextMenuStrip contextMenuStrip;
         private TextAreaControl primaryTextAreaControl;
@@ -45,7 +51,14 @@ namespace ICSharpCode.XmlEditor
             GenerateEditActions();
 
             this.TextEditorProperties = CodeEditorProperties.Instance;
+
+            _completeAttributeTimer = new Timer();
+            _completeAttributeTimer.Interval = 100;
+            _completeAttributeTimer.Enabled  = false;
+            _completeAttributeTimer.Tick += new EventHandler(OnCompleteAttributeValueTimer);
 		}
+
+        public event EventHandler<XmlCompleteAttributeValueEventArgs> CompleteAttributeValue;
 		
 		/// <summary>
 		/// Gets the schemas that the xml editor will use.
@@ -88,6 +101,18 @@ namespace ICSharpCode.XmlEditor
 				defaultSchemaCompletionData = value;
 			}
 		}
+
+        internal bool IsCompleteAttributeValue
+        {
+            get { return _completeAttributeValue; }
+            set { _completeAttributeValue = value; }
+        }
+
+        internal string CompleteAttributeText
+        {
+            get { return _completeAttributeText; }
+            set { _completeAttributeText = value; }
+        }
 		
 		/// <summary>
 		/// Called when the user hits Ctrl+Space.
@@ -103,6 +128,14 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+        public void CloseCompletionWindow()
+        {
+            if (this.IsCodeCompletionWindowOpen)
+            {
+                codeCompletionWindow.Close();
+            }
+        }
+
 		/// <summary>
 		/// Adds edit actions to the xml editor.
 		/// </summary>
@@ -173,6 +206,7 @@ namespace ICSharpCode.XmlEditor
 				switch (ch) {
 					case '<':
 					case ' ':
+					case '"': // for the attribute value...
 					case '=':
 						ShowCompletionWindow(ch);
 						return false;
@@ -210,7 +244,33 @@ namespace ICSharpCode.XmlEditor
 			codeCompletionWindow.Closed -= new EventHandler(CodeCompletionWindowClosed);
 			codeCompletionWindow.Dispose();
 			codeCompletionWindow = null;
-		}
+
+            if (_completeAttributeValue)
+            {
+                _completeAttributeValue = false;
+                _completeAttributeTimer.Enabled = true;
+            }
+        }
+
+        private void OnCompleteAttributeValueTimer(object sender, EventArgs e)
+        {
+            _completeAttributeTimer.Enabled = false;
+
+            bool isCancelled = false;
+            if (this.CompleteAttributeValue != null)
+            {
+                XmlCompleteAttributeValueEventArgs args = 
+                    new XmlCompleteAttributeValueEventArgs(_completeAttributeText, false);
+                this.CompleteAttributeValue(this, args);
+
+                isCancelled = args.Cancel;
+            }
+
+            if (!isCancelled)
+            {
+                this.ShowCompletionWindow();
+            }
+        }
 
         private bool IsCodeCompletionWindowOpen
         {
@@ -225,21 +285,30 @@ namespace ICSharpCode.XmlEditor
 				codeCompletionWindow.Close();
 			}
 
-            if (this.IsCodeCompletionEnabled)
+            if (!this.IsCodeCompletionEnabled)
             {
-				XmlCompletionDataProvider completionDataProvider = 
-                    new XmlCompletionDataProvider(schemaCompletionDataItems, 
-                        defaultSchemaCompletionData, defaultNamespacePrefix);
-				codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(
-                    ParentForm, this, this.FileName, completionDataProvider, 
-                    ch, XmlEditorAddInOptions.ShowSchemaAnnotation, false);
-				
-				if (codeCompletionWindow != null) 
-                {
-					codeCompletionWindow.Closed += new EventHandler(
-                        CodeCompletionWindowClosed);
-				}
+                return;
 			}
+
+            _completeAttributeValue = false;
+            _completeAttributeText  = String.Empty;
+
+            if (completionDataProvider == null)
+            {
+                completionDataProvider = new XmlCompletionDataProvider(
+                    schemaCompletionDataItems, defaultSchemaCompletionData, 
+                    defaultNamespacePrefix);
+            }
+
+            codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(
+                ParentForm, this, this.FileName, completionDataProvider,
+                ch, XmlEditorAddInOptions.ShowSchemaAnnotation, false);
+
+            if (codeCompletionWindow != null)
+            {
+                codeCompletionWindow.Closed += new EventHandler(
+                    CodeCompletionWindowClosed);
+            }
 		}
 
         private void DocumentChanged(object sender, DocumentEventArgs e)
@@ -268,8 +337,10 @@ namespace ICSharpCode.XmlEditor
 
         private char GetCharacterBeforeCaret()
 		{
-			string text = Document.GetText(ActiveTextAreaControl.TextArea.Caret.Offset - 1, 1);
-			if (text.Length > 0) {
+			string text = Document.GetText(
+                ActiveTextAreaControl.TextArea.Caret.Offset - 1, 1);
+            if (text != null && text.Length > 0)
+            {
 				return text[0];
 			}
 			
@@ -286,7 +357,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Checks whether the caret is inside a set of quotes (" or ').
 		/// </summary>
-        private bool IsInsideQuotes(TextArea textArea)
+        internal static bool IsInsideQuotes(TextArea textArea)
 		{
 			bool inside = false;
 			

@@ -8,6 +8,7 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -21,7 +22,7 @@ namespace ICSharpCode.XmlEditor
 		/// names that the user selected in the dialog when
 		/// it was closed.
 		/// </summary>
-		string[] GetNames();
+        IList<string> GetNames();
 		
 		/// <summary>
 		/// Shows the dialog.

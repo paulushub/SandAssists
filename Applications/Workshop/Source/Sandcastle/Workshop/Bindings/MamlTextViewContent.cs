@@ -11,10 +11,14 @@ namespace Sandcastle.Workshop.Bindings
 {
     public sealed class MamlTextViewContent : XmlView
     {
-        public MamlTextViewContent(OpenedFile file, bool includeTreeView)
-            : base(file, includeTreeView)
+        public MamlTextViewContent()
         {
             this.TabPageText = "Source";
+        }
+
+        protected override void LoadSchemas(OpenedFile file)
+        {
+            this.Schemas = MamlEditorService.RegisteredSchemas.Schemas;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.primaryViewContent = primaryViewContent;
 			
 			primaryFile = primaryViewContent.PrimaryFile;
-			this.Files.Add(primaryFile);
+            this.Files.Add(primaryFile);
 		}
 		
 		public override void Load(OpenedFile file, Stream stream)

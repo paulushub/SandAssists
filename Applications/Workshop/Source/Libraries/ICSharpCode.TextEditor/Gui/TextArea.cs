@@ -202,7 +202,6 @@ namespace ICSharpCode.TextEditor
 			leftMargins.AddRange(new AbstractMargin[] { iconBarMargin, gutterMargin, foldMargin });
 			OptionsChanged();
 			
-			
 			new TextAreaMouseHandler(this).Attach();
 			new TextAreaDragDropHandler().Attach(this);
 			

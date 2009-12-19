@@ -433,8 +433,8 @@ namespace ICSharpCode.XmlEditor
 				XPathNodeTextMarker.RemoveMarkers(markerStrategy);
 
 				// Run XPath query.
-				XPathNodeMatch[] nodes = view.SelectNodes(xPathComboBox.Text, GetNamespaces());
-				if (nodes.Length > 0) {
+				IList<XPathNodeMatch> nodes = view.SelectNodes(xPathComboBox.Text, GetNamespaces());
+				if (nodes.Count > 0) {
 					AddXPathResults(nodes);
 					XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
 				} else {
@@ -461,7 +461,7 @@ namespace ICSharpCode.XmlEditor
 			tabControl.SelectedTab = tabControl.TabPages[0];
 		}
 		
-		void AddXPathResults(XPathNodeMatch[] nodes)
+		void AddXPathResults(IList<XPathNodeMatch> nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
 				ListViewItem item = new ListViewItem(node.DisplayValue);

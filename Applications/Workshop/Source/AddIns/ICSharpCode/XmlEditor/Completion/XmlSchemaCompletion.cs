@@ -65,7 +65,7 @@ namespace ICSharpCode.XmlEditor
             : this()
 		{
             StreamReader reader = new StreamReader(fileName, true);
-            ReadSchema(reader);
+            ReadSchema(GetUri(fileName), reader);
             this.fileName = fileName;
 		}
 
@@ -161,14 +161,6 @@ namespace ICSharpCode.XmlEditor
 			
 			return uri;
 		}
-
-		/// <summary>
-		/// Gets the possible root elements for an xml document using this schema.
-		/// </summary>
-        //public XmlCompletionDataCollection GetElementCompletion()
-        //{
-        //    return GetElementCompletion(String.Empty);
-        //}
 
         public XmlCompletionDataCollection GetRootElementCompletion()
         {
@@ -456,16 +448,36 @@ namespace ICSharpCode.XmlEditor
 
         private void ReadSchema(string baseUri, TextReader reader)
         {
-            XmlTextReader xmlReader = new XmlTextReader(baseUri, reader);
+            XmlReaderSettings settings = new XmlReaderSettings();
 
             // Setting the resolver to null allows us to
             // load the xhtml1-strict.xsd without any exceptions if
             // the referenced dtds exist in the same folder as the .xsd
             // file.  If this is not set to null the dtd files are looked
             // for in the assembly's folder.
-            xmlReader.XmlResolver = null;
+            settings.XmlResolver = null;
+            settings.ProhibitDtd = false;
+            XmlReader xmlReader = XmlReader.Create(reader, settings, baseUri);
+
             ReadSchema(xmlReader);
-        }		
+        }
+
+        private void ReadSchema(TextReader reader)
+        {
+            XmlReaderSettings settings = new XmlReaderSettings();
+            // Setting the resolver to null allows us to
+            // load the xhtml1-strict.xsd without any exceptions if
+            // the referenced dtds exist in the same folder as the .xsd
+            // file.  If this is not set to null the dtd files are looked
+            // for in the assembly's folder.
+            //xmlReader.XmlResolver = null;
+            settings.XmlResolver = null;
+            settings.ProhibitDtd = false;
+            XmlReader xmlReader = XmlReader.Create(reader, settings);
+
+            ReadSchema(xmlReader);
+        }					
+		
 		/// <summary>
 		/// Loads the schema.
 		/// </summary>
@@ -485,22 +497,6 @@ namespace ICSharpCode.XmlEditor
 				reader.Close();
 			}
 		}
-
-        private void ReadSchema(TextReader reader)
-		{
-            XmlReaderSettings settings = new XmlReaderSettings();
-			// Setting the resolver to null allows us to
-			// load the xhtml1-strict.xsd without any exceptions if
-			// the referenced dtds exist in the same folder as the .xsd
-			// file.  If this is not set to null the dtd files are looked
-			// for in the assembly's folder.
-			//xmlReader.XmlResolver = null;
-            settings.XmlResolver = null;
-            settings.ProhibitDtd = false;
-            XmlReader xmlReader = XmlReader.Create(reader, settings);
-			
-			ReadSchema(xmlReader);
-		}					
 			
 		/// <summary>
 		/// Finds an element in the schema.
@@ -896,24 +892,22 @@ namespace ICSharpCode.XmlEditor
 			
 			foreach (XmlSchemaObject schemaObject in attributes) {
 				XmlSchemaAttribute attribute = schemaObject as XmlSchemaAttribute;
+                XmlSchemaAttributeGroupRef attributeGroupRef = schemaObject as XmlSchemaAttributeGroupRef;
 				if (attribute != null) 
                 {
 					if (!IsProhibitedAttribute(attribute)) 
                     {
-						AddAttribute(data, attribute);
+                        AddAttribute(data, attribute, namespacesInScope);
 					} else {
 						prohibitedAttributes.Add(attribute);
 					}
-				} 
-                else
+				}
+                else if (attributeGroupRef != null)
                 {
-                    XmlSchemaAttributeGroupRef attributeGroupRef = schemaObject as XmlSchemaAttributeGroupRef;
-                    if (attributeGroupRef != null)
-                    {
-                        data.AddRange(GetAttributeCompletion(attributeGroupRef, namespacesInScope));
-                    }
+                    data.AddRange(GetAttributeCompletion(attributeGroupRef, namespacesInScope));
                 }
 			}
+
 			return data;
 		}
 
@@ -933,7 +927,8 @@ namespace ICSharpCode.XmlEditor
             return new XmlCompletionDataCollection();
         }
 
-        private XmlCompletionDataCollection GetBaseComplexTypeAttributeCompletion(XmlQualifiedName baseTypeName, XmlNamespaceCollection namespacesInScope)
+        private XmlCompletionDataCollection GetBaseComplexTypeAttributeCompletion(
+            XmlQualifiedName baseTypeName, XmlNamespaceCollection namespacesInScope)
         {
             XmlSchemaComplexType baseComplexType = FindNamedType(_completionSchema, baseTypeName);
             if (baseComplexType != null)
@@ -964,29 +959,35 @@ namespace ICSharpCode.XmlEditor
 		
 			return prohibited;
 		}
-		
-		/// <summary>
-		/// Adds an attribute to the completion data collection.
-		/// </summary>
-		/// <remarks>
-		/// Note the special handling of xml:lang attributes.
-		/// </remarks>
+
         private void AddAttribute(XmlCompletionDataCollection data, 
-            XmlSchemaAttribute attribute)
-		{
-			string name = attribute.Name;
-			if (name == null) {
-				if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace") {
-					name = String.Concat("xml:", attribute.RefName.Name);
-				}
-			}
-			
-			if (name != null) {
+            XmlSchemaAttribute attribute, XmlNamespaceCollection namespacesInScope)
+        {
+            string name = attribute.Name;
+            if (name == null)
+            {
+                if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace")
+                {
+                    name = String.Concat("xml:", attribute.RefName.Name);
+                }
+                else
+                {
+                    string prefix = namespacesInScope.GetPrefix(attribute.RefName.Namespace);
+                    if (!String.IsNullOrEmpty(prefix))
+                    {
+                        name = String.Concat(prefix, ":", attribute.RefName.Name);
+                    }
+                }
+            }
+
+            if (name != null)
+            {
                 string documentation = _docExtrator.Extract(attribute.Annotation);
-				XmlCompletionData completionData = new XmlCompletionData(name, documentation, XmlCompletionDataType.XmlAttribute);
-				data.Add(completionData);
-			}
-		}
+                XmlCompletionData item = new XmlCompletionData(name, 
+                    documentation, XmlCompletionDataType.XmlAttribute);
+                data.Add(item);
+            }
+        }
 
         private static XmlSchemaComplexType FindNamedType(XmlSchema schema, 
             XmlQualifiedName name)

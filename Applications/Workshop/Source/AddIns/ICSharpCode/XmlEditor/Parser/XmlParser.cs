@@ -23,13 +23,9 @@ namespace ICSharpCode.XmlEditor
 	/// since we are interested in the complete path or tree to the
 	/// currently active element.
 	/// </remarks>
-	public sealed class XmlParser
+	public static class XmlParser
 	{
 		static readonly char[] whitespaceCharacters = new char[] {' ', '\n', '\t', '\r'};
-		
-		XmlParser()
-		{
-		}
 		
 		/// <summary>
 		/// Gets path of the xml element start tag that the specified
@@ -575,7 +571,8 @@ namespace ICSharpCode.XmlEditor
 			return path;
 		}
 		
-		static string GetAttributeName(string xml, int index, bool ignoreWhitespace, bool ignoreQuote, bool ignoreEqualsSign)
+		static string GetAttributeName(string xml, int index, bool ignoreWhitespace, 
+            bool ignoreQuote, bool ignoreEqualsSign)
 		{
 			string name = String.Empty;
 			

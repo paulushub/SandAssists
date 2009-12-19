@@ -11,16 +11,10 @@ using System.Collections.ObjectModel;
 
 namespace ICSharpCode.XmlEditor
 {
-	public class XmlNamespaceCollection : Collection<XmlNamespace>
+	public sealed class XmlNamespaceCollection : Collection<XmlNamespace>
 	{
 		public XmlNamespaceCollection()
 		{
-		}
-		
-		public XmlNamespace[] ToArray()
-		{
-			List<XmlNamespace> namespaces = new List<XmlNamespace>(this);
-			return namespaces.ToArray();
 		}
 		
 		public string GetNamespaceForPrefix(string prefix)

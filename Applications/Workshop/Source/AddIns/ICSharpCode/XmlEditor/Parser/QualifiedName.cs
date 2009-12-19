@@ -19,13 +19,15 @@ namespace ICSharpCode.XmlEditor
 	/// class just adds this extra information alongside the 
 	/// <see cref="XmlQualifiedName"/>.
 	/// </remarks>
-	public class QualifiedName
+	public sealed class QualifiedName : IEquatable<QualifiedName>
 	{
-		XmlQualifiedName xmlQualifiedName = XmlQualifiedName.Empty;
-		string prefix = String.Empty;
+        private string prefix;
+		private XmlQualifiedName xmlQualifiedName;
 		
 		public QualifiedName()
 		{
+            prefix           = String.Empty;
+            xmlQualifiedName = XmlQualifiedName.Empty;
 		}
 		
 		public QualifiedName(string name, string namespaceUri)
@@ -39,12 +41,15 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public QualifiedName(string name, string namespaceUri, string prefix)
+            : this()
 		{
 			xmlQualifiedName = new XmlQualifiedName(name, namespaceUri);
 			this.prefix = prefix;
-		}
-		
-		public static bool operator ==(QualifiedName lhs, QualifiedName rhs)
+        }
+
+        #region IEquatable<QualifiedName> Members
+
+        public static bool operator ==(QualifiedName lhs, QualifiedName rhs)
 		{
 			object lhsObject = (object)lhs;
 			object rhsObject = (object)rhs;
@@ -78,6 +83,17 @@ namespace ICSharpCode.XmlEditor
 			}
 			return false;
 		}
+
+        public bool Equals(QualifiedName other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            return xmlQualifiedName.Equals(other.xmlQualifiedName);
+        }
+
+        #endregion
 		
 		public override int GetHashCode() 
 		{
@@ -156,5 +172,5 @@ namespace ICSharpCode.XmlEditor
 			name = name.Substring(index + 1);
 			return new QualifiedName(name, String.Empty, prefix);
 		}
-	}
+    }
 }

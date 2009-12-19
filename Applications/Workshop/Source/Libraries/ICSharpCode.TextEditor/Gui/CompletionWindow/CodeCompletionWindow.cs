@@ -205,13 +205,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (control.TextEditorProperties.MouseWheelScrollDown)
 				scrollDistance = -scrollDistance;
 			int newValue = vScrollBar.Value + vScrollBar.SmallChange * scrollDistance;
-			vScrollBar.Value = Math.Max(vScrollBar.Minimum, Math.Min(vScrollBar.Maximum - vScrollBar.LargeChange + 1, newValue));
+			vScrollBar.Value = Math.Max(vScrollBar.Minimum, 
+                Math.Min(vScrollBar.Maximum - vScrollBar.LargeChange + 1, newValue));
 		}
 
 		void CodeCompletionListViewSelectedItemChanged(object sender, EventArgs e)
 		{
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
-			if (showDeclarationWindow && data != null && data.Description != null && data.Description.Length > 0) {
+			if (showDeclarationWindow && data != null && 
+                data.Description != null && data.Description.Length > 0) {
 				declarationViewWindow.Description = data.Description;
 				SetDeclarationViewLocation();
 			} else {
@@ -233,7 +235,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				case CompletionDataProviderKeyResult.InsertionKey:
 					return InsertSelectedItem(ch);
 				default:
-					throw new InvalidOperationException("Invalid return value of dataProvider.ProcessKey");
+					throw new InvalidOperationException(
+                        "Invalid return value of dataProvider.ProcessKey");
 			}
 		}
 
@@ -269,7 +272,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (offset < startOffset || offset > endOffset) {
 				Close();
 			} else {
-				codeCompletionListView.SelectItemWithStart(control.Document.GetText(startOffset, offset - startOffset));
+				codeCompletionListView.SelectItemWithStart(
+                    control.Document.GetText(startOffset, offset - startOffset));
 			}
 		}
 		
@@ -347,7 +351,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 						control.Document.Remove(startOffset, endOffset - startOffset);
 					}
 					Debug.Assert(startOffset <= document.TextLength);
-					result = dataProvider.InsertAction(data, control.ActiveTextAreaControl.TextArea, startOffset, ch);
+					result = dataProvider.InsertAction(data, 
+                        control.ActiveTextAreaControl.TextArea, startOffset, ch);
 				} finally {
 					control.EndUpdate();
 				}
@@ -358,8 +363,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		Size GetListViewSize()
 		{
-			int height = codeCompletionListView.ItemHeight * Math.Min(MaxListLength, completionData.Count);
-			int width = codeCompletionListView.ItemHeight * 10;
+			int height = codeCompletionListView.ItemHeight * Math.Min(
+                MaxListLength, completionData.Count + 1);
+			int width = codeCompletionListView.ItemHeight * 6;
 			if (!fixedListViewWidth) {
 				width = GetListViewWidth(width, height);
 			}
@@ -380,7 +386,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			float width = defaultWidth;
 			using (Graphics graphics = codeCompletionListView.CreateGraphics()) {
 				for (int i = 0; i < completionData.Count; ++i) {
-					float itemWidth = graphics.MeasureString(completionData[i].Text.ToString(), codeCompletionListView.Font).Width;
+					float itemWidth = graphics.MeasureString(completionData[i].Text.ToString(), 
+                        codeCompletionListView.Font).Width;
 					if(itemWidth > width) {
 						width = itemWidth;
 					}
@@ -401,7 +408,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             {
                 width += ScrollbarWidth; // Compensate for scroll bar.
 			}
-			return (int)width;
+			return (int)(width + 1);
 		}
 	}
 }
