@@ -11,10 +11,11 @@ namespace Sandcastle
         /// <summary>
         /// Indicates unknown or unspecified build output format.
         /// </summary>
-        None   = 0,
-        Chm    = 1,
-        Hxs    = 2,
-        Htm    = 3,
-        Custom = 4
+        None      = 0,
+        WebHelp   = 1,
+        HtmlHelp1 = 2,
+        HtmlHelp2 = 3,
+        HtmlHelp3 = 4,
+        Custom    = 5
     }
 }

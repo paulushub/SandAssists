@@ -11,7 +11,7 @@ using Sandcastle.Components.Codes;
 
 namespace Sandcastle.Components
 {
-    public abstract class CodeComponent : BuilderComponent
+    public abstract class CodeComponent : BuildComponentEx
     {
         #region Private Fields
 

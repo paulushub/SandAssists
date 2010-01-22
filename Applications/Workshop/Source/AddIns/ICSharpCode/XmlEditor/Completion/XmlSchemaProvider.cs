@@ -112,12 +112,26 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (fileSystem.DirectoryExists(directory)) {
 				foreach (string fileName in fileSystem.GetFilesInDirectory(directory, searchPattern)) {
-					XmlSchemaCompletion schema = ReadSchema(fileName, readOnly);
+                    XmlSchemaCompletion schema = LoadSchema(fileName, readOnly);
 					if (schema != null) {
 						AddSchema(schema);
 					}
 				}
 			}
+		}
+
+        public void ReadSchema(string fileName, bool readOnly)
+		{
+            if (String.IsNullOrEmpty(fileName) || !File.Exists(fileName))
+            {
+                return;
+            }
+
+            XmlSchemaCompletion schema = LoadSchema(fileName, readOnly);
+            if (schema != null)
+            {
+                AddSchema(schema);
+            }
 		}
 
         private void OnUserDefinedSchemaRemoved()
@@ -142,7 +156,7 @@ namespace ICSharpCode.XmlEditor
             }
         }
 
-        private XmlSchemaCompletion ReadSchema(string fileName, bool readOnly)
+        private XmlSchemaCompletion LoadSchema(string fileName, bool readOnly)
 		{
 			try {
 				string baseUri = XmlSchemaCompletion.GetUri(fileName);

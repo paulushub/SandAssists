@@ -105,7 +105,7 @@ namespace Sandcastle.Components
                 return;
             }
 
-            BuilderController controller = BuilderController.Controller;
+            BuildComponentController controller = BuildComponentController.Controller;
             if (controller == null)
             {
                 return;
@@ -153,7 +153,7 @@ namespace Sandcastle.Components
             }
         }
 
-        private void ParseAssemblies(XmlReader reader, BuilderController controller)
+        private void ParseAssemblies(XmlReader reader, BuildComponentController controller)
         {
             XmlNodeType nodeType = XmlNodeType.None;
             string nodeName = String.Empty;

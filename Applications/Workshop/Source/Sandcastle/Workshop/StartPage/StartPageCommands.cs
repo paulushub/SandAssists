@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -43,6 +43,7 @@ namespace Sandcastle.Workshop.StartPage
     {
         #region Private Fields
 
+        private bool _isFormClosing;
         private static bool _pageWasAvailable;
 
         #endregion
@@ -54,6 +55,15 @@ namespace Sandcastle.Workshop.StartPage
             if (!MamlEditorService.IsInitialized)
             {
                 MamlEditorService.Initialize();
+            }
+            if (!HtmlEditorService.IsInitialized)
+            {
+                HtmlEditorService.Initialize();
+            }
+
+            if (WorkbenchSingleton.Workbench != null)
+            {
+                WorkbenchSingleton.Workbench.WorkbenchClosing += new EventHandler(OnWorkbenchClosing);
             }
 
             ProjectService.SolutionLoaded +=
@@ -70,7 +80,7 @@ namespace Sandcastle.Workshop.StartPage
         public override void Run()
         {
             // First check the option to run the startup page...
-            if (!WorkshopProperties.ShowStartPage)
+            if (!WorkshopService.ShowStartPage)
             {
                 return;
             }
@@ -91,14 +101,26 @@ namespace Sandcastle.Workshop.StartPage
 
         #region Private Methods
 
+        private void OnWorkbenchClosing(object sender, EventArgs e)
+        {
+            _pageWasAvailable = false;
+            _isFormClosing    = true;
+        }
+
         private void OnSolutionClosing(object sender, SolutionEventArgs e)
         {
+            if (_isFormClosing)
+            {
+                _pageWasAvailable = false;
+                return;
+            }
+
             if (_pageWasAvailable)
             {
                 return;
             }
 
-            foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray())
+            foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection)
             {
                 if (v is StartPageViewContent)
                 {
@@ -109,7 +131,7 @@ namespace Sandcastle.Workshop.StartPage
 
         private void OnSolutionClosed(object sender, EventArgs e)
         {
-            if (_pageWasAvailable)
+            if (_pageWasAvailable && !_isFormClosing)
             {
                 foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection)
                 {
@@ -128,13 +150,13 @@ namespace Sandcastle.Workshop.StartPage
         {
             _pageWasAvailable = false;
 
-            if (!WorkshopProperties.CloseOnProjectLoad)
+            if (!WorkshopService.CloseOnProjectLoad)
             {
                 return;
             }
 
             // close all start pages when loading a solution
-            foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray())
+            foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection)
             {
                 if (v is StartPageViewContent)
                 {

@@ -74,7 +74,7 @@ namespace Sandcastle.Formats
         {
             get
             {
-                return BuildFormatType.Htm;
+                return BuildFormatType.WebHelp;
             }
         }
 

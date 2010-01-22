@@ -94,6 +94,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets the name of the primary file being edited. Might return null if no file is edited.
 		/// </summary>
 		string PrimaryFileName { get; }
+
+        Uri PrimaryUri
+        {
+            get;
+        }
 		
 		bool IsDisposed { get; }
 		

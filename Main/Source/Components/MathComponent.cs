@@ -12,7 +12,7 @@ using Sandcastle.Components.Maths;
 
 namespace Sandcastle.Components
 {
-    public abstract class MathComponent : BuilderComponent
+    public abstract class MathComponent : BuildComponentEx
     {
         #region Internal Fields
 
@@ -46,14 +46,14 @@ namespace Sandcastle.Components
             XPathNavigator navigator = configuration.SelectSingleNode("paths");
             if (navigator == null)
             {
-                throw new BuilderException(
+                throw new BuildComponentException(
                     "The input/output paths, or <paths> tag, is required.");
             }
             _inputPath = navigator.GetAttribute("inputPath", String.Empty);
 
             if (String.IsNullOrEmpty(_inputPath))
             {
-                throw new BuilderException("The input path is required.");
+                throw new BuildComponentException("The input path is required.");
             }
             _inputPath = Environment.ExpandEnvironmentVariables(_inputPath);
             _inputPath = Path.GetFullPath(_inputPath);
@@ -85,7 +85,7 @@ namespace Sandcastle.Components
             _outputBasePath = navigator.GetAttribute("baseOutput", String.Empty);
             if (String.IsNullOrEmpty(_outputBasePath))
             {
-                throw new BuilderException("The base output path is required.");
+                throw new BuildComponentException("The base output path is required.");
             }
             _outputBasePath = Environment.ExpandEnvironmentVariables(_outputBasePath);
             _outputBasePath = Path.GetFullPath(_outputBasePath);
@@ -93,7 +93,7 @@ namespace Sandcastle.Components
             _outputPath = navigator.GetAttribute("outputPath", String.Empty);
             if (String.IsNullOrEmpty(_outputPath))
             {
-                throw new BuilderException("The output path is required.");
+                throw new BuildComponentException("The output path is required.");
             }
             _outputPath = Environment.ExpandEnvironmentVariables(_outputPath);
             _outputPath = Path.Combine(_outputBasePath, _outputPath);
@@ -155,7 +155,7 @@ namespace Sandcastle.Components
             XPathNodeIterator iterator = configuration.Select("formatter");
             if (navigator == null)
             {
-                throw new BuilderException(
+                throw new BuildComponentException(
                     "At least a formatter is required to use this component.");
             }
 
@@ -166,7 +166,7 @@ namespace Sandcastle.Components
                 string attribute = formatter.GetAttribute("format", String.Empty);
                 if (String.IsNullOrEmpty(attribute))
                 {
-                    throw new BuilderException("The format tag is required.");
+                    throw new BuildComponentException("The format tag is required.");
                 }
 
                 if (String.Equals(attribute, "latex", 

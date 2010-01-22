@@ -21,18 +21,19 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public sealed class XmlFoldStart
 	{
-		int line = 0;
-		int col = 0;
-		string prefix = String.Empty;
-		string name = String.Empty;
-		string foldText = String.Empty;
+		private int line;
+		private int col;
+		private string prefix;
+		private string name;
+		private string foldText;
 		
 		public XmlFoldStart(string prefix, string name, int line, int col)
 		{
-			this.line = line;
-			this.col = col;
-			this.prefix = prefix;
-			this.name = name;
+			this.line     = line;
+			this.col      = col;
+			this.prefix   = prefix;
+			this.name     = name;
+            this.foldText = String.Empty;
 		}
 		
 		/// <summary>
@@ -73,7 +74,6 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return foldText;
 			}
-			
 			set {
 				foldText = value;
 			}
@@ -115,7 +115,10 @@ namespace ICSharpCode.XmlEditor
 			
 			try {
 				string xml = document.TextContent;
-                XmlReader reader = XmlReader.Create(new StringReader(xml));
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.XmlResolver = null;
+                settings.ProhibitDtd = false;
+                XmlReader reader = XmlReader.Create(new StringReader(xml), settings);
 				while (reader.Read()) {
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:

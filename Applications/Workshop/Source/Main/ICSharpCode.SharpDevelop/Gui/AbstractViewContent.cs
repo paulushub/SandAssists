@@ -32,9 +32,14 @@ namespace ICSharpCode.SharpDevelop.Gui
         private bool isDisposed;
         private bool _autoRegisterViewOnFiles;
         private string tabPageText;
-        private IWorkbenchWindow workbenchWindow;
         private FilesCollection files;
+        private IWorkbenchWindow workbenchWindow;
         private ReadOnlyCollection<OpenedFile> filesReadonly;
+
+        private bool isDirty;
+        private bool registeredOnViewContentChange;
+        private bool wasActiveViewContent;
+        private string titleName;
 
         private SecondaryViewContentCollection secondaryViewContentCollection;
 
@@ -75,8 +80,16 @@ namespace ICSharpCode.SharpDevelop.Gui
         #region Public Events
 
         public event EventHandler Disposed;
-
         public event EventHandler TabPageTextChanged;
+
+        public event EventHandler TitleNameChanged;
+        public event EventHandler DirtyChanged;
+
+        #endregion
+
+        #region Private Events
+
+        private EventHandler isActiveViewContentChanged;
 
         #endregion
 
@@ -240,25 +253,34 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region Files
-		
-		void InitFiles()
+
+        private void InitFiles()
 		{
 			files = new FilesCollection(this);
 			filesReadonly = new ReadOnlyCollection<OpenedFile>(files);
 		}
 		
-		protected Collection<OpenedFile> Files {
-			get { return files; }
+		protected Collection<OpenedFile> Files 
+        {
+			get 
+            { 
+                return files; 
+            }
 		}
 		
-		IList<OpenedFile> IViewContent.Files {
-			get { return filesReadonly; }
+		IList<OpenedFile> IViewContent.Files 
+        {
+			get 
+            { 
+                return filesReadonly; 
+            }
 		}
 		
 		/// <summary>
 		/// Gets the primary file being edited. Might return null if no file is edited.
 		/// </summary>
-		public virtual OpenedFile PrimaryFile {
+		public virtual OpenedFile PrimaryFile 
+        {
 			get {
 				if (files.Count != 0)
 					return files[0];
@@ -270,8 +292,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the name of the primary file being edited. Might return null if no file is edited.
 		/// </summary>
-		public virtual string PrimaryFileName {
-			get {
+		public virtual string PrimaryFileName 
+        {
+			get 
+            {
 				OpenedFile file = PrimaryFile;
 				if (file != null)
 					return file.FileName;
@@ -279,33 +303,56 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return null;
 			}
 		}
-		
-		void RegisterFileEventHandlers(OpenedFile newItem)
+
+        public virtual Uri PrimaryUri
+        {
+            get
+            {
+                string primaryFile = this.PrimaryFileName;
+                if (!String.IsNullOrEmpty(primaryFile))
+                {   
+                    try
+                    {
+                        Uri fileUri = new Uri(primaryFile);
+
+                        return fileUri;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        private void RegisterFileEventHandlers(OpenedFile newItem)
 		{
 			newItem.FileNameChanged += OnFileNameChanged;
-			newItem.DirtyChanged += OnIsDirtyChanged;
+			newItem.DirtyChanged    += OnIsDirtyChanged;
             if (_autoRegisterViewOnFiles)
             {
 				newItem.RegisterView(this);
 			}
 			OnIsDirtyChanged(null, EventArgs.Empty); // re-evaluate this.IsDirty after changing the file collection
 		}
-		
-		void UnregisterFileEventHandlers(OpenedFile oldItem)
+
+        private void UnregisterFileEventHandlers(OpenedFile oldItem)
 		{
 			oldItem.FileNameChanged -= OnFileNameChanged;
-			oldItem.DirtyChanged -= OnIsDirtyChanged;
+			oldItem.DirtyChanged    -= OnIsDirtyChanged;
             if (_autoRegisterViewOnFiles)
             {
 				oldItem.UnregisterView(this);
 			}
 			OnIsDirtyChanged(null, EventArgs.Empty); // re-evaluate this.IsDirty after changing the file collection
 		}
-		
-		void OnFileNameChanged(object sender, EventArgs e)
+
+        private void OnFileNameChanged(object sender, EventArgs e)
 		{
 			OnFileNameChanged((OpenedFile)sender);
-			if (titleName == null && files.Count > 0 && sender == files[0]) {
+			if (titleName == null && files.Count > 0 && sender == files[0]) 
+            {
 				OnTitleNameChanged(EventArgs.Empty);
 			}
 		}
@@ -320,16 +367,13 @@ namespace ICSharpCode.SharpDevelop.Gui
         #endregion
 
         #region TitleName
-        public event EventHandler TitleNameChanged;
-		
+
 		void OnTitleNameChanged(EventArgs e)
 		{
 			if (TitleNameChanged != null) {
 				TitleNameChanged(this, e);
 			}
 		}
-		
-		string titleName;
 		
 		string IViewContent.TitleName {
 			get {
@@ -351,6 +395,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
+
 		#endregion
 		
 		#region IDisposable
@@ -387,48 +432,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region IsDirty
-		bool IsDirtyInternal {
-			get {
-				foreach (OpenedFile file in this.Files) {
-					if (file.IsDirty)
-						return true;
-				}
-				return false;
-			}
-		}
-		
-		bool isDirty;
 		
 		public virtual bool IsDirty {
-			get { return isDirty; }
+			get 
+            {
+                return isDirty; 
+            }
 		}
-		
-		void OnIsDirtyChanged(object sender, EventArgs e)
-		{
-			bool newIsDirty = IsDirtyInternal;
-			if (newIsDirty != isDirty) {
-				isDirty = newIsDirty;
-				RaiseIsDirtyChanged();
-			}
-		}
+
+        private bool IsDirtyInternal
+        {
+            get
+            {
+                foreach (OpenedFile file in this.Files)
+                {
+                    if (file.IsDirty)
+                        return true;
+                }
+                return false;
+            }
+        }
 		
 		/// <summary>
 		/// Raise the IsDirtyChanged event. Call this method only if you have overridden the IsDirty property
 		/// to implement your own handling of IsDirty.
 		/// </summary>
-		protected void RaiseIsDirtyChanged()
+        protected virtual void OnDirtyChanged(EventArgs e)
 		{
 			if (DirtyChanged != null)
-				DirtyChanged(this, EventArgs.Empty);
+				DirtyChanged(this, e);
 		}
+
+        private void OnIsDirtyChanged(object sender, EventArgs e)
+        {
+            bool newIsDirty = IsDirtyInternal;
+            if (newIsDirty != isDirty)
+            {
+                isDirty = newIsDirty;
+                OnDirtyChanged(e);
+            }
+        }
 		
-		public event EventHandler DirtyChanged;
 		#endregion
 		
 		#region IsActiveViewContent
-		EventHandler isActiveViewContentChanged;
-		bool registeredOnViewContentChange;
-		bool wasActiveViewContent;
 		
 		/// <summary>
 		/// Gets if this view content is the active view content.
@@ -454,16 +501,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				isActiveViewContentChanged -= value;
 			}
 		}
-		
-		void UnregisterOnActiveViewContentChanged()
+
+        private void UnregisterOnActiveViewContentChanged()
 		{
 			if (registeredOnViewContentChange) {
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
 				registeredOnViewContentChange = false;
 			}
 		}
-		
-		void OnActiveViewContentChanged(object sender, EventArgs e)
+
+        private void OnActiveViewContentChanged(object sender, EventArgs e)
 		{
 			bool isActiveViewContent = IsActiveViewContent;
 			if (isActiveViewContent != wasActiveViewContent) {
@@ -472,6 +519,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					isActiveViewContentChanged(this, e);
 			}
 		}
+
 		#endregion
 
         #region FilesCollection Class

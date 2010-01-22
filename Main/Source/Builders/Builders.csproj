@@ -20,6 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,66 +63,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildConfig.cs" />
-    <Compile Include="BuildConfigReader.cs" />
-    <Compile Include="BuildConfigWriter.cs" />
-    <Compile Include="BuildContext.cs" />
-    <Compile Include="BuildEngine.cs" />
-    <Compile Include="BuildLogger.cs" />
-    <Compile Include="BuildSettings.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="BuildTaskGroup.cs" />
-    <Compile Include="BuildTaskItem.cs" />
-    <Compile Include="BuildTaskResult.cs" />
-    <Compile Include="Conceptual\ConceptualCategory.cs" />
-    <Compile Include="Conceptual\ConceptualCategoryFilter.cs" />
-    <Compile Include="Conceptual\ConceptualConfig.cs" />
-    <Compile Include="Conceptual\ConceptualItemList.cs" />
-    <Compile Include="Conceptual\ConceptualItemType.cs" />
-    <Compile Include="Conceptual\ConceptualTopicIdFilter.cs" />
-    <Compile Include="Conceptual\ConceptualUtils.cs" />
-    <Compile Include="Conceptual\ConceptualFilter.cs" />
-    <Compile Include="BuildObject.cs" />
-    <Compile Include="Conceptual\ConceptualItemReader.cs" />
-    <Compile Include="Conceptual\ConceptualItemWriter.cs" />
-    <Compile Include="Contents\DdueXmlObject.cs" />
-    <Compile Include="Tasks\TaskHtmlHelpBuilder.cs" />
-    <Compile Include="Tasks\TaskConceptualAssembler.cs" />
-    <Compile Include="Tasks\TaskConceptualCleanUp.cs" />
-    <Compile Include="Tasks\TaskConceptualContents.cs" />
-    <Compile Include="Tasks\TaskConceptualXslManifest.cs" />
-    <Compile Include="Tasks\TaskConceptualXslToc.cs" />
-    <Compile Include="Tasks\TaskDirectoryCopy.cs" />
-    <Compile Include="Tasks\TaskDirectoryCreate.cs" />
-    <Compile Include="Tasks\TaskDirectoryDelete.cs" />
-    <Compile Include="Tasks\TaskDirectoryMove.cs" />
-    <Compile Include="Tasks\TaskException.cs" />
-    <Compile Include="Tasks\TaskHtmlHelpCompile.cs" />
-    <Compile Include="Tasks\TaskHtmlHelpDbcsFix.cs" />
-    <Compile Include="Tasks\TaskMailNotify.cs" />
-    <Compile Include="Tasks\TaskMergeToc.cs" />
-    <Compile Include="Tasks\TaskMsdnHelpXslHxC.cs" />
-    <Compile Include="Tasks\TaskMsdnHelpXslHxT.cs" />
-    <Compile Include="Tasks\TaskNone.cs" />
-    <Compile Include="Tasks\TaskReferenceContents.cs" />
-    <Compile Include="Conceptual\ConceptualRevisionFilter.cs" />
-    <Compile Include="BuildTask.cs" />
-    <Compile Include="Conceptual\ConceptualEngine.cs" />
-    <Compile Include="Contents\DdueXmlBuildManifest.cs" />
-    <Compile Include="Contents\DdueXmlMetadataContent.cs" />
-    <Compile Include="Conceptual\ConceptualItem.cs" />
-    <Compile Include="Contents\DdueXmlMetaItem.cs" />
-    <Compile Include="Conceptual\ConceptualContext.cs" />
-    <Compile Include="Conceptual\ConceptualObject.cs" />
-    <Compile Include="Contents\DdueXmlContent.cs" />
-    <Compile Include="Contents\DdueXmlSettingsLoc.cs" />
-    <Compile Include="Contents\DdueXmlTableOfContents.cs" />
-    <Compile Include="Contents\DdueXmlMetadata.cs" />
+    <Compile Include="BuilderException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -133,46 +82,15 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="References\ReferenceConfiguration.cs" />
-    <Compile Include="References\ReferenceContext.cs" />
-    <Compile Include="References\ReferenceEngine.cs" />
-    <Compile Include="References\ReferenceObject.cs" />
-    <Compile Include="Tasks\TaskRunProcess.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
-    <None Include="Builders.cd" />
-    <None Include="Conceptual\ConceptualFilters.cd" />
-    <None Include="Contents\DdueXmlObjects.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="References\References.cd" />
-    <None Include="Schemas\CodeSnippets.xsd">
-      <SubType>
-      </SubType>
-    </None>
-    <None Include="Schemas\CodeSnippets.xsx">
-      <DependentUpon>CodeSnippets.xsd</DependentUpon>
-    </None>
-    <None Include="Schemas\ConceptualContent.xsd">
-      <SubType>
-      </SubType>
-    </None>
-    <None Include="Schemas\ConceptualContent.xsx">
-      <DependentUpon>ConceptualContent.xsd</DependentUpon>
-    </None>
-    <None Include="Schemas\MediaArts.xsd">
-      <SubType>
-      </SubType>
-    </None>
-    <None Include="Schemas\MediaArts.xsx">
-      <DependentUpon>MediaArts.xsd</DependentUpon>
-    </None>
-    <None Include="Tasks\Tasks.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -182,19 +100,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Schemas\CodeSnippetSample.xml" />
-    <Content Include="Schemas\ConceptualContentSample.xml" />
-    <Content Include="Schemas\ConceptualSchema.xml" />
-    <Content Include="Schemas\MediaArtsSample.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</Project>
-      <Name>Common</Name>
+      <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
+    <Folder Include="Documenters\" />
+    <Folder Include="MSBuilds\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

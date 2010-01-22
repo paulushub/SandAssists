@@ -136,7 +136,7 @@ namespace Sandcastle.Formats
         {
             get
             {
-                return BuildFormatType.Hxs;
+                return BuildFormatType.HtmlHelp2;
             }
         }
 

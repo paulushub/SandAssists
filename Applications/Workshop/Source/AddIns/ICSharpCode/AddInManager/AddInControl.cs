@@ -17,6 +17,9 @@ namespace ICSharpCode.AddInManager
 {
 	public class AddInControl : Control
 	{
+        private const int pathHeight = 10;
+
+        private bool isSelected;
         private bool isExternal;
         private Font boldFont;
         private AddIn addIn;
@@ -46,12 +49,13 @@ namespace ICSharpCode.AddInManager
 			this.addIn       = addIn;
             this.managerForm = form;
 			this.BackColor   = SystemColors.Window;
-			this.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/AddInManager/ContextMenu");
+			this.ContextMenuStrip = MenuService.CreateContextMenu(this, 
+                "/AddIns/AddInManager/ContextMenu");
 
             // Prevent the path drawing, it is tool small and not really useful
             isExternal = false; 
 			
-			this.ClientSize = new Size(100, isExternal ? 40 + pathHeight : 40);
+			this.ClientSize = new Size(100, isExternal ? 42 + pathHeight : 42);
 			this.SetStyle(ControlStyles.Selectable, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -83,8 +87,6 @@ namespace ICSharpCode.AddInManager
             base.Dispose(disposing);
         }
 		
-		bool selected;
-
         public AddIn AddIn
         {
             get
@@ -101,13 +103,17 @@ namespace ICSharpCode.AddInManager
             }
         }
 		
-		public bool Selected {
-			get {
-				return selected;
+		public bool Selected 
+        {
+			get 
+            {
+				return isSelected;
 			}
-			set {
-				if (selected != value) {
-					selected = value;
+			set 
+            {
+				if (isSelected != value) 
+                {
+					isSelected = value;
 					Invalidate();
 				}
 			}
@@ -138,28 +144,6 @@ namespace ICSharpCode.AddInManager
             }
         }
 		
-        //protected override void OnClick(EventArgs e)
-        //{
-        //    base.OnClick(e);
-        //    Focus();
-        //}
-
-        //protected override void OnContextMenuStripChanged(EventArgs e)
-        //{
-        //    base.OnClick(e);
-        //    Focus();
-        //    base.OnContextMenuStripChanged(e);
-        //}
-		
-		private static Color Mix(Color c1, Color c2, float perc)
-		{
-			float p1 = 1 - perc;
-			float p2 = perc;
-			return Color.FromArgb((int)(c1.R * p1 + c2.R * p2),
-			                      (int)(c1.G * p1 + c2.G * p2),
-			                      (int)(c1.B * p1 + c2.B * p2));
-		}
-		
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
@@ -176,7 +160,8 @@ namespace ICSharpCode.AddInManager
 			bounds.Inflate(-2, -2);
 			Color startColor = SystemColors.ControlLightLight;
 			Color endColor = SystemColors.Control;
-			if (selected) {
+			if (isSelected) 
+            {
 				startColor = Mix(SystemColors.ControlLightLight, SystemColors.Highlight, 0.1f);
 				endColor   = Mix(SystemColors.ControlLightLight, SystemColors.Highlight, 0.65f);
 			}
@@ -219,45 +204,41 @@ namespace ICSharpCode.AddInManager
 			string description = GetText(out textBrush);
 			int titleWidth;
 
-			g.DrawString(addIn.Name, boldFont, textBrush, innerMargin, innerMargin);
-			titleWidth = (int)g.MeasureString(addIn.Name, boldFont).Width + 1;
+            g.DrawString(addIn.Name, boldFont, textBrush, egdeRadius, egdeRadius);
+			SizeF textSize = g.MeasureString(addIn.Name, boldFont);
+            titleWidth = (int)textSize.Width + 1;
 			if (addIn.Version != null && addIn.Version.ToString() != "0.0.0.0") {
-				g.DrawString(addIn.Version.ToString(), Font, textBrush, innerMargin + titleWidth + 4, innerMargin);
+                g.DrawString(addIn.Version.ToString(), this.Font, textBrush, innerMargin + titleWidth + 4, innerMargin);
 			}
 
-			RectangleF textBounds = bounds;
-			textBounds.Offset(innerMargin, 0);
-			textBounds.Inflate(-innerMargin * 2, -2);
-            //textBounds.Offset(innerMargin, innerMargin);
-			//textBounds.Inflate(-innerMargin * 2, -innerMargin * 2 + 2);
-            //if (isExternal)
-            //    textBounds.Height -= pathHeight;
-            g.DrawString(description, Font, textBrush, textBounds, stringFormat);
-            //if (isExternal) {
-            //    textBounds.Y = textBounds.Bottom + 2;
-            //    textBounds.Height = pathHeight + 2;
-            //    using (Font font = new Font(Font.Name, 7, FontStyle.Italic)) {
-            //        using (StringFormat sf = new StringFormat(StringFormatFlags.NoWrap)) {
-            //            sf.Trimming = StringTrimming.EllipsisPath;
-            //            sf.Alignment = StringAlignment.Far;
-            //            g.DrawString(addIn.FileName, font,
-            //                         selected ? SystemBrushes.HighlightText : SystemBrushes.ControlText,
-            //                         textBounds, sf);
-            //        }
-            //    }
-            //}
+            RectangleF textBounds = new RectangleF(bounds.X + innerMargin * 2,
+                bounds.Y + textSize.Height + 3, bounds.Width - innerMargin * 4,
+                bounds.Height - egdeRadius - textSize.Height);
+
+            g.DrawString(description, this.Font, textBrush, textBounds, stringFormat);
 		}
+
+        private static Color Mix(Color c1, Color c2, float perc)
+        {
+            float p1 = 1 - perc;
+            float p2 = perc;
+            return Color.FromArgb((int)(c1.R * p1 + c2.R * p2),
+                                  (int)(c1.G * p1 + c2.G * p2),
+                                  (int)(c1.B * p1 + c2.B * p2));
+        }
 		
-		const int pathHeight = 10;
-		
-		string GetText(out Brush textBrush)
+		private string GetText(out Brush textBrush)
 		{
-			switch (addIn.Action) {
+			switch (addIn.Action) 
+            {
 				case AddInAction.Enable:
-					if (addIn.Enabled) {
+					if (addIn.Enabled) 
+                    {
 						textBrush = SystemBrushes.ControlText;
 						return addIn.Properties["description"];
-					} else {
+					} 
+                    else 
+                    {
 						textBrush = SystemBrushes.ActiveCaption;
 						return ResourceService.GetString("AddInManager.AddInEnabled");
 					}

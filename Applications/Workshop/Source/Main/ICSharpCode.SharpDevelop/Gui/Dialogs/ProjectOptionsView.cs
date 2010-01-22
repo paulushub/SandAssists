@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		public ProjectOptionsView(AddInTreeNode node, IProject project)
             : this()
 		{
-			this.project = project;
+			this.project   = project;
 			this.TitleName = project.Name;
 
 			
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 
-        bool MyIsDirty
+        private bool IsDirtyInternal
         {
             get
             {
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
                 if (myIsDirty != value)
                 {
                     myIsDirty = value;
-                    RaiseIsDirtyChanged();
+                    OnDirtyChanged(EventArgs.Empty);
                 }
             }
         }
@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					}
 				}
 			}
-			this.MyIsDirty = dirty;
+            this.IsDirtyInternal = dirty;
 		}
 	}
 }

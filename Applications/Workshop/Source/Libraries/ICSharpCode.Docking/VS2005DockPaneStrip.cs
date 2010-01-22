@@ -1117,15 +1117,14 @@ namespace WeifenLuo.WinFormsUI.Docking
             if (tab.TabWidth == 0)
                 return;
 
-            Rectangle rectIcon = new Rectangle(
-                rect.X + DocumentIconGapLeft,
+            Rectangle rectIcon = new Rectangle(rect.X + DocumentIconGapLeft,
                 rect.Y + rect.Height - 1 - DocumentIconGapBottom - DocumentIconHeight,
                 DocumentIconWidth, DocumentIconHeight);
             Rectangle rectText = rectIcon;
             if (DockPane.DockPanel.ShowDocumentIcon)
             {
                 rectText.X += rectIcon.Width + DocumentIconGapRight;
-                rectText.Y = rect.Y;
+                rectText.Y  = rect.Y;
                 rectText.Width = rect.Width - rectIcon.Width - DocumentIconGapLeft -
                     DocumentIconGapRight - DocumentTextGapRight;
                 rectText.Height = rect.Height;

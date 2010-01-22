@@ -18,42 +18,91 @@ using WeifenLuo.WinFormsUI.Docking;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.TabControls;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	internal sealed class WorkbenchWindow : DockContent, IWorkbenchWindow, IOwnerState
+	public sealed class WorkbenchWindow : DockContent, IWorkbenchWindow, IOwnerState
 	{
-		readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
-		
-		#region IOwnerState
-		[Flags]
-		public enum OpenFileTabStates {
-			Nothing             = 0,
-			FileDirty           = 1,
-			FileReadOnly        = 2,
-			FileUntitled        = 4
-		}
-		
-		public System.Enum InternalState {
-			get {
-				IViewContent content = this.ActiveViewContent;
-				OpenFileTabStates state = OpenFileTabStates.Nothing;
-				if (content != null) {
-					if (content.IsDirty)
-						state |= OpenFileTabStates.FileDirty;
-					if (content.IsReadOnly)
-						state |= OpenFileTabStates.FileReadOnly;
-					if (content.PrimaryFile != null && content.PrimaryFile.IsUntitled)
-						state |= OpenFileTabStates.FileUntitled;
-				}
-				return state;
-			}
-		}
-		#endregion
+        #region IOwnerState
 
-        YaTabControl viewTabControl;
-        XlTabDrawer viewTabDrawer;
+        [Flags]
+        public enum OpenFileTabStates
+        {
+            Nothing = 0,
+            FileDirty = 1,
+            FileReadOnly = 2,
+            FileUntitled = 4
+        }
+
+        #endregion
+
+        private readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
+		
+        private YaTabControl viewTabControl;
+        private XlTabDrawer viewTabDrawer;
+
+        private IViewContent oldActiveViewContent;
+
+        private readonly ViewContentCollection viewContents;
+		
+		public WorkbenchWindow()
+		{
+			viewContents = new ViewContentCollection(this);
+			
+			this.DockAreas = DockAreas.Document;
+			this.DockPadding.All = 1;
+
+			OnTitleNameChanged(this, EventArgs.Empty);
+			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
+
+            this.BackColor = Environment.OSVersion.Version.Major >= 6 ?
+                Color.FromArgb(233, 236, 250) : SystemColors.ControlLight;
+
+            this.AllowDrop = true;
+        }
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) 
+            {
+				// DetachContent must be called before the controls are disposed
+				this.ViewContents.Clear();
+				if (this.TabPageContextMenu != null) {
+					this.TabPageContextMenu.Dispose();
+					this.TabPageContextMenu = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
+
+        public event EventHandler WindowSelected;
+        public event EventHandler WindowDeselected;
+
+        public event EventHandler TitleChanged;
+        public event EventHandler WindowClosed;
+
+        public event EventHandler ActiveViewContentChanged;
+
+        public System.Enum InternalState
+        {
+            get
+            {
+                IViewContent content = this.ActiveViewContent;
+                OpenFileTabStates state = OpenFileTabStates.Nothing;
+                if (content != null && !content.IsDisposed)
+                {
+                    if (content.IsDirty)
+                        state |= OpenFileTabStates.FileDirty;
+                    if (content.IsReadOnly)
+                        state |= OpenFileTabStates.FileReadOnly;
+                    if (content.PrimaryFile != null && content.PrimaryFile.IsUntitled)
+                        state |= OpenFileTabStates.FileUntitled;
+                }
+                return state;
+            }
+        }
 		
 		public string Title {
 			get {
@@ -68,7 +117,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// The current view content which is shown inside this window.
 		/// </summary>
-		public IViewContent ActiveViewContent {
+		public IViewContent ActiveViewContent 
+        {
 			get {
 				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
 				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0 && viewTabControl.SelectedIndex < ViewContents.Count) {
@@ -86,12 +136,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				SwitchView(pos);
 			}
 		}
-		
-		public event EventHandler ActiveViewContentChanged;
-		
-		IViewContent oldActiveViewContent;
-		
-		void UpdateActiveViewContent()
+
+        private void UpdateActiveViewContent()
 		{
 			UpdateTitle();
 			IViewContent newActiveViewContent = this.ActiveViewContent;
@@ -99,113 +145,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ActiveViewContentChanged(this, EventArgs.Empty);
 			}
 			oldActiveViewContent = newActiveViewContent;
-		}
-		
-		sealed class ViewContentCollection : Collection<IViewContent>
-		{
-			readonly WorkbenchWindow window;
-			
-			internal ViewContentCollection(WorkbenchWindow window)
-			{
-				this.window = window;
-			}
-			
-			protected override void ClearItems()
-			{
-				foreach (IViewContent vc in this) {
-					window.UnregisterContent(vc);
-				}
-				
-				base.ClearItems();
-				window.ClearContent();
-				window.UpdateActiveViewContent();
-			}
-			
-			protected override void InsertItem(int index, IViewContent item)
-			{
-				base.InsertItem(index, item);
-				
-				window.RegisterNewContent(item);
-				
-				item.Control.Dock = DockStyle.Fill;
-				if (Count == 1) {
-					window.Controls.Add(item.Control);
-				} else {
-					if (Count == 2) {
-						window.CreateViewTabControl();
-						IViewContent oldItem = this[0];
-						if (oldItem == item) oldItem = this[1];
-
-                        YaTabPage oldPage = new YaTabPage(StringParser.Parse(oldItem.TabPageText));
-                        //oldPage.UseVisualStyleBackColor = true;
-						oldPage.Controls.Add(oldItem.Control);
-                        window.viewTabControl.TabPages.Add(oldPage);
-					}
-
-                    YaTabPage newPage = new YaTabPage(StringParser.Parse(item.TabPageText));
-                    //newPage.UseVisualStyleBackColor = true;
-					newPage.Controls.Add(item.Control);
-					
-					// Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
-                    if (index == window.viewTabControl.TabPages.Count)
-                    {
-                        window.viewTabControl.TabPages.Add(newPage);
-					} else {
-                        window.viewTabControl.TabPages.Insert(index, newPage);
-					}
-
-                    if (window.viewTabControl.TabPages.Count != 0)
-                    {
-                        int selIndex = window.viewTabControl.SelectedIndex;
-                        if (selIndex == -1)
-                        {
-                            window.viewTabControl.SelectedIndex = 0;
-                        }
-                    }
-				}
-				window.UpdateActiveViewContent();
-			}
-			
-			protected override void RemoveItem(int index)
-			{
-				window.UnregisterContent(this[index]);
-				
-				base.RemoveItem(index);
-				
-				if (Count < 2) {
-					window.ClearContent();
-					if (Count == 1) {
-						window.Controls.Add(this[0].Control);
-					}
-				} else {
-					window.viewTabControl.TabPages.RemoveAt(index);
-				}
-				window.UpdateActiveViewContent();
-			}
-			
-			protected override void SetItem(int index, IViewContent item)
-			{
-				window.UnregisterContent(this[index]);
-				
-				base.SetItem(index, item);
-				
-				window.RegisterNewContent(item);
-				
-				item.Control.Dock = DockStyle.Fill;
-				if (Count == 1) {
-					window.ClearContent();
-					window.Controls.Add(item.Control);
-				} else {
-                    YaTabPage page = window.viewTabControl.TabPages[index];
-					page.Controls.Clear();
-					page.Controls.Add(item.Control);
-					page.Text = StringParser.Parse(item.TabPageText);
-				}
-				window.UpdateActiveViewContent();
-			}
-		}
-		
-		readonly ViewContentCollection viewContents;
+        }
 		
 		public IList<IViewContent> ViewContents {
 			get { return viewContents; }
@@ -229,33 +169,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SelectWindow()
 		{
 			Show();
-		}
-		
-		public WorkbenchWindow()
-		{
-			viewContents = new ViewContentCollection(this);
-			
-			this.DockAreas = DockAreas.Document;
-			this.DockPadding.All = 1;
-
-			OnTitleNameChanged(this, EventArgs.Empty);
-			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
-
-            this.BackColor = Environment.OSVersion.Version.Major >= 6 ?
-                Color.FromArgb(233, 236, 250) : SystemColors.ControlLight;
-        }
-		
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing) {
-				// DetachContent must be called before the controls are disposed
-				this.ViewContents.Clear();
-				if (this.TabPageContextMenu != null) {
-					this.TabPageContextMenu.Dispose();
-					this.TabPageContextMenu = null;
-				}
-			}
-			base.Dispose(disposing);
 		}
 		
 		private void CreateViewTabControl()
@@ -285,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void ClearContent()
+		private void ClearContent()
 		{
 			this.Controls.Clear();
 			if (viewTabControl != null) {
@@ -297,20 +210,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 				viewTabControl = null;
 			}
 		}
-		
-		void OnTitleNameChanged(object sender, EventArgs e)
+
+        private void OnTitleNameChanged(object sender, EventArgs e)
 		{
 			if (sender == ActiveViewContent) {
 				UpdateTitle();
 			}
 		}
-		
-		void OnIsDirtyChanged(object sender, EventArgs e)
+
+        private void OnIsDirtyChanged(object sender, EventArgs e)
 		{
 			UpdateTitle();
 		}
-		
-		void UpdateTitle()
+
+        private void UpdateTitle()
 		{
 			IViewContent content = ActiveViewContent;
 			if (content == null && this.ViewContents.Count > 0) {
@@ -336,8 +249,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		
-		void RegisterNewContent(IViewContent content)
+
+        private void RegisterNewContent(IViewContent content)
 		{
 			Debug.Assert(content.WorkbenchWindow == null);
 			content.WorkbenchWindow = this;
@@ -346,8 +259,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.TitleNameChanged   += OnTitleNameChanged;
 			content.DirtyChanged     += OnIsDirtyChanged;
 		}
-		
-		void UnregisterContent(IViewContent content)
+
+        private void UnregisterContent(IViewContent content)
 		{
 			content.WorkbenchWindow = null;
 			
@@ -355,8 +268,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.TitleNameChanged   -= OnTitleNameChanged;
 			content.DirtyChanged     -= OnIsDirtyChanged;
 		}
-		
-		void OnTabPageTextChanged(object sender, EventArgs e)
+
+        private void OnTabPageTextChanged(object sender, EventArgs e)
 		{
 			RefreshTabPageTexts();
 		}
@@ -445,8 +358,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			RefreshTabPageTexts();
 		}
-		
-		void RefreshTabPageTexts()
+
+        private void RefreshTabPageTexts()
 		{
 			if (viewTabControl != null) {
                 for (int i = 0; i < viewTabControl.TabPages.Count; ++i)
@@ -456,8 +369,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		
-		void OnTitleChanged(EventArgs e)
+
+        private void OnTitleChanged(EventArgs e)
 		{
 			if (TitleChanged != null) {
 				TitleChanged(this, e);
@@ -468,8 +381,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			e.Cancel = !CloseWindow(false);
 		}
-		
-		void OnCloseEvent(EventArgs e)
+
+        private void OnCloseEvent(EventArgs e)
 		{
 			OnWindowDeselected(e);
 			if (WindowClosed != null) {
@@ -490,11 +403,192 @@ namespace ICSharpCode.SharpDevelop.Gui
 				WindowDeselected(this, e);
 			}
 		}
-		
-		public event EventHandler WindowSelected;
-		public event EventHandler WindowDeselected;
-		
-		public event EventHandler TitleChanged;
-		public event EventHandler WindowClosed;
-	}
+
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+
+            try
+            {
+                if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                    foreach (string file in files)
+                    {
+                        if (File.Exists(file))
+                        {
+                            e.Effect = DragDropEffects.Copy;
+                            return;
+                        }
+                    }
+                }
+                e.Effect = DragDropEffects.None;
+            }
+            catch (Exception ex)
+            {
+                MessageService.ShowError(ex);
+            }
+        }
+
+        protected override void OnDragDrop(DragEventArgs e)
+        {
+            base.OnDragDrop(e);
+
+            try
+            {
+                if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                    foreach (string file in files)
+                    {
+                        if (File.Exists(file))
+                        {
+                            IProjectLoader loader = ProjectService.GetProjectLoader(file);
+                            if (loader != null)
+                            {
+                                FileUtility.ObservedLoad(
+                                    new NamedFileOperationDelegate(loader.Load), file);
+                            }
+                            else
+                            {
+                                FileService.OpenFile(file);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageService.ShowError(ex);
+            }
+        }
+
+        #region ViewContentCollection Class
+
+        private sealed class ViewContentCollection : Collection<IViewContent>
+        {
+            readonly WorkbenchWindow window;
+
+            internal ViewContentCollection(WorkbenchWindow window)
+            {
+                this.window = window;
+            }
+
+            protected override void ClearItems()
+            {
+                foreach (IViewContent vc in this)
+                {
+                    window.UnregisterContent(vc);
+                }
+
+                base.ClearItems();
+                window.ClearContent();
+                window.UpdateActiveViewContent();
+            }
+
+            protected override void InsertItem(int index, IViewContent item)
+            {
+                if (item == null || item.IsDisposed)
+                {
+                    return;
+                }
+
+                base.InsertItem(index, item);
+
+                window.RegisterNewContent(item);
+
+                item.Control.Dock = DockStyle.Fill;
+                if (Count == 1)
+                {
+                    window.Controls.Add(item.Control);
+                }
+                else
+                {
+                    if (Count == 2)
+                    {
+                        window.CreateViewTabControl();
+                        IViewContent oldItem = this[0];
+                        if (oldItem == item) oldItem = this[1];
+
+                        YaTabPage oldPage = new YaTabPage(StringParser.Parse(oldItem.TabPageText));
+                        //oldPage.UseVisualStyleBackColor = true;
+                        oldPage.Controls.Add(oldItem.Control);
+                        window.viewTabControl.TabPages.Add(oldPage);
+                    }
+
+                    YaTabPage newPage = new YaTabPage(StringParser.Parse(item.TabPageText));
+                    //newPage.UseVisualStyleBackColor = true;
+                    newPage.Controls.Add(item.Control);
+
+                    // Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
+                    if (index == window.viewTabControl.TabPages.Count)
+                    {
+                        window.viewTabControl.TabPages.Add(newPage);
+                    }
+                    else
+                    {
+                        window.viewTabControl.TabPages.Insert(index, newPage);
+                    }
+
+                    if (window.viewTabControl.TabPages.Count != 0)
+                    {
+                        int selIndex = window.viewTabControl.SelectedIndex;
+                        if (selIndex == -1)
+                        {
+                            window.viewTabControl.SelectedIndex = 0;
+                        }
+                    }
+                }
+                window.UpdateActiveViewContent();
+            }
+
+            protected override void RemoveItem(int index)
+            {
+                window.UnregisterContent(this[index]);
+
+                base.RemoveItem(index);
+
+                if (Count < 2)
+                {
+                    window.ClearContent();
+                    if (Count == 1)
+                    {
+                        window.Controls.Add(this[0].Control);
+                    }
+                }
+                else
+                {
+                    window.viewTabControl.TabPages.RemoveAt(index);
+                }
+                window.UpdateActiveViewContent();
+            }
+
+            protected override void SetItem(int index, IViewContent item)
+            {
+                window.UnregisterContent(this[index]);
+
+                base.SetItem(index, item);
+
+                window.RegisterNewContent(item);
+
+                item.Control.Dock = DockStyle.Fill;
+                if (Count == 1)
+                {
+                    window.ClearContent();
+                    window.Controls.Add(item.Control);
+                }
+                else
+                {
+                    YaTabPage page = window.viewTabControl.TabPages[index];
+                    page.Controls.Clear();
+                    page.Controls.Add(item.Control);
+                    page.Text = StringParser.Parse(item.TabPageText);
+                }
+                window.UpdateActiveViewContent();
+            }
+        }
+
+        #endregion
+    }
 }

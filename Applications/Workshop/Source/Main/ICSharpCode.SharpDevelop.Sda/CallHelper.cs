@@ -102,6 +102,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#endregion
 		
 		#region Initialize and run Workbench
+
 		public void RunWorkbench(WorkbenchSettings settings)
 		{
 			if (settings.RunOnNewThread) {
@@ -174,6 +175,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				return l;
 			}
 		}
+
 		void GetOpenDocuments(List<Document> l)
 		{
 			foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
@@ -195,6 +197,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				return OpenDocumentInternal(fileName);
 			}
 		}
+
 		Document OpenDocumentInternal(string fileName)
 		{
 			return Document.FromWindow(FileService.OpenFile(fileName));
@@ -208,6 +211,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				OpenProjectInternal(fileName);
 			}
 		}
+
 		void OpenProjectInternal(string fileName)
 		{
 			Project.ProjectService.LoadSolutionOrProject(fileName);
@@ -227,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				return CloseWorkbenchInternal(force);
 			}
 		}
+
 		bool CloseWorkbenchInternal(bool force)
 		{
 			if (force) {
@@ -265,6 +270,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			return WorkbenchSingleton.MainForm.Visible;
 		}
+
 		void SetWorkbenchVisibleInternal(bool value)
 		{
 			WorkbenchSingleton.MainForm.Visible = value;

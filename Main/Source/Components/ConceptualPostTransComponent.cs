@@ -93,7 +93,7 @@ namespace Sandcastle.Components
 
             _pageCount++;
 
-            BuilderStyle style = this.Style;
+            BuildComponentStyle style = this.Style;
 
             // 1. Apply the math...
             if (_mathApply)
@@ -104,11 +104,11 @@ namespace Sandcastle.Components
             // 2. Apply the codes...
             if (_codeApply)
             {
-                if (style == BuilderStyle.Vs2005)
+                if (style == BuildComponentStyle.Vs2005)
                 {
                     ApplyCode(docNavigator);
                 }
-                else if (style == BuilderStyle.Hana)
+                else if (style == BuildComponentStyle.Hana)
                 {
                     if (_codeHanaSelector == null)
                     {   
@@ -118,7 +118,7 @@ namespace Sandcastle.Components
 
                     ApplyCode(docNavigator, _codeHanaSelector);
                 }
-                else if (style == BuilderStyle.Prototype)
+                else if (style == BuildComponentStyle.Prototype)
                 {
                     if (_codeProtoSelector == null)
                     {   
@@ -148,7 +148,7 @@ namespace Sandcastle.Components
                 return;
             }
 
-            BuilderStyle builderStyle = this.Style;
+            BuildComponentStyle builderStyle = this.Style;
 
             XPathNavigator navigator = null;
             XPathNavigator[] arrNavigator =
@@ -296,7 +296,7 @@ namespace Sandcastle.Components
                         }
                         else
                         {
-                            if (builderStyle == BuilderStyle.Hana)
+                            if (builderStyle == BuildComponentStyle.Hana)
                             {
                                 xmlWriter.WriteStartElement("div");
                                 xmlWriter.WriteAttributeString("class", "mathHana");
@@ -308,7 +308,7 @@ namespace Sandcastle.Components
                             xmlWriter.WriteAttributeString("alt", String.Empty);
                             xmlWriter.WriteEndElement();
 
-                            if (builderStyle == BuilderStyle.Hana)
+                            if (builderStyle == BuildComponentStyle.Hana)
                             {
                                 xmlWriter.WriteEndElement();
                             }

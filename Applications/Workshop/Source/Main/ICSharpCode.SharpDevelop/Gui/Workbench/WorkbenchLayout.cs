@@ -27,20 +27,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
 	/// </summary>
-	internal sealed class WorkbenchLayout : IWorkbenchLayout
+	public sealed class WorkbenchLayout : IWorkbenchLayout
 	{
         private Workbench wbForm;
 
         private DockPanel dockPanel;
-        private Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
-        private AutoHideMenuStripContainer mainMenuContainer;
-        private AutoHideStatusStripContainer statusStripContainer;
         private ToolStripPanel topStripPanel;
         private ToolStripPanel leftStripPanel;
         private ToolStripPanel bottomStripPanel;
         private ToolStripPanel rightStripPanel;
 
         private ContextMenuStrip _panelStripMenu;
+
+        private Dictionary<string, PadContentWrapper> contentHash;
+        private AutoHideMenuStripContainer mainMenuContainer;
+        private AutoHideStatusStripContainer statusStripContainer;
 		
 		// prevent setting ActiveContent to null when application loses focus (e.g. because of context menu popup)
         private IDockContent lastActiveContent;
@@ -48,6 +49,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#if DEBUG
 		static bool firstTimeError = true; // TODO: Debug statement only, remove me
 		#endif
+
+        public WorkbenchLayout()
+        {
+            contentHash = new Dictionary<string, PadContentWrapper>(
+                StringComparer.OrdinalIgnoreCase);
+        }
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
@@ -128,20 +135,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel.Dock = DockStyle.Fill;
 			dockPanel.RightToLeftLayout = true;
 
-            //if (wbForm.ToolBars != null) {
-            //    //topStripPanel.Controls.AddRange(wbForm.ToolBars);
-            //}        
-			
-			// Known issues with certain DocumentStyles:
-			//   DockingMdi:
-			//    - this is the default value
-			//    - after switching between layouts, text editor tooltips sometimes do not show up anymore
-			//   DockingSdi:
-			//    - in this mode, the tab bar is not shown when there is only one open window
-			//   DockingWindow:
-			//    - SharpDevelop 2.x used this mode
-			//    - it was also the only mode supported by the early DockPanelSuite versions used by SharpDevelop 1.x
-			
 			dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
 			
 			wbForm.Controls.Add(dockPanel);
@@ -206,14 +199,6 @@ namespace ICSharpCode.SharpDevelop.Gui
                     }
 
                     topStripPanel.Join(toolStrip, (i < 2) ? 0 : 1);
-                    //if (i < 5)
-                    //{
-                    //    topStripPanel.Join(toolStrip, (i < 2) ? 0 : 1);
-                    //}
-                    //else
-                    //{
-                    //    bottomStripPanel.Join(toolStrip, 0);
-                    //}
                 }
             }
 
@@ -777,6 +762,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         public void SuspendLayout()
         {
+            //wbForm.SuspendLayout();
             topStripPanel.SuspendLayout();
             leftStripPanel.SuspendLayout();
             bottomStripPanel.SuspendLayout();
@@ -789,6 +775,7 @@ namespace ICSharpCode.SharpDevelop.Gui
             leftStripPanel.PerformLayout();
             bottomStripPanel.PerformLayout();
             rightStripPanel.PerformLayout();
+            //wbForm.PerformLayout();
         }
 
         public void ResumeLayout(bool performLayout)
@@ -797,6 +784,7 @@ namespace ICSharpCode.SharpDevelop.Gui
             leftStripPanel.ResumeLayout(performLayout);
             bottomStripPanel.ResumeLayout(performLayout);
             rightStripPanel.ResumeLayout(performLayout);
+            //wbForm.ResumeLayout(performLayout);
         }
 	}
 }

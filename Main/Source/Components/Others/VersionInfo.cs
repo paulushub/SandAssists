@@ -23,8 +23,8 @@ namespace Sandcastle.Components.Others
         public VersionInfo(string assemblyName, string assemblyVersion, 
             string fileVersion)
         {
-            BuilderExceptions.NotNullNotEmpty(assemblyName, "assemblyName");
-            BuilderExceptions.NotNullNotEmpty(assemblyVersion, "assemblyVersion");
+            BuildComponentExceptions.NotNullNotEmpty(assemblyName, "assemblyName");
+            BuildComponentExceptions.NotNullNotEmpty(assemblyVersion, "assemblyVersion");
 
             _fileVersion     = fileVersion;
             _assemblyName    = assemblyName;
@@ -42,7 +42,7 @@ namespace Sandcastle.Components.Others
 
         public VersionInfo(VersionInfo source)
         {
-            BuilderExceptions.NotNull(source, "source");
+            BuildComponentExceptions.NotNull(source, "source");
 
             _fileVersion     = source._fileVersion;
             _assemblyName    = source._assemblyName;

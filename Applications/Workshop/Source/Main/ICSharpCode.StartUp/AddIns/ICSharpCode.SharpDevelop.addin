@@ -176,7 +176,7 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
 			<ToolbarItem id      = "Refresh"
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
-			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+			             tooltip = "${res:Web.Browser.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 		</Condition>
 	</Path>
@@ -664,7 +664,7 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
 		<MenuItem id    = "RefreshReference"
 		          icon  = "Icons.16x16.BrowserRefresh"
-		          label = "${res:AddIns.HtmlHelp2.Refresh}"
+		          label = "${res:Web.Browser.Refresh}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshReference"/>
 		<MenuItem id    = "Remove"
 		          label = "${res:Global.RemoveButtonText}"
@@ -1120,37 +1120,37 @@
         <Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserPane" action="Disable">
             <ToolbarItem id      = "Back"
 		                 icon    = "Icons.16x16.BrowserBefore"
-		                 label   = "${res:AddIns.HtmlHelp2.Back}"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Back}"
+		                 label   = "${res:Web.Browser.Back}"
+		                 tooltip = "${res:Web.Browser.Back}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoBack"/>
 
             <ToolbarItem id      = "Forward"
 		                 icon    = "Icons.16x16.BrowserAfter"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Forward}"
+		                 tooltip = "${res:Web.Browser.Forward}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoForward"/>
 
             <ToolbarItem id = "NavigateSeparator" type  = "Separator"/>
 
             <ToolbarItem id      = "Stop"
 		                 icon    = "Icons.16x16.BrowserCancel"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Stop}"
+		                 tooltip = "${res:Web.Browser.Stop}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Stop"/>
 
             <ToolbarItem id      = "Refresh"
 		                 icon    = "Icons.16x16.BrowserRefresh"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+		                 tooltip = "${res:Web.Browser.Refresh}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Refresh"/>
 
             <ToolbarItem id      = "GoHome"
 		                 icon    = "Icons.16x16.BrowserHome"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Homepage}"
+		                 tooltip = "${res:Web.Browser.Homepage}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoHome"/>
 
             <ToolbarItem id = "NewWindowSeparator" type  = "Separator"/>
 
             <ToolbarItem id      = "NewWindow"
 		                 icon    = "Icons.16x16.BrowserTab"
-		                 tooltip = "${res:AddIns.HtmlHelp2.NewWindow}"
+		                 tooltip = "${res:Web.Browser.NewWindow}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.NewWindow"/>
 
             <ToolbarItem id = "SearchSeparator" type  = "Separator"/>
@@ -1161,7 +1161,7 @@
 
             <ToolbarItem id      = "GoSearch"
 		                 icon    = "Icons.16x16.BrowserSearch"
-		                 tooltip = "${res:AddIns.HtmlHelp2.Search}"
+		                 tooltip = "${res:Web.Browser.Search}"
 		                 class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.WebSearch"/>
         </Condition>
     </Path>
@@ -1175,12 +1175,12 @@
 
         <ToolbarItem id      = "URLComboBox"
 		             type    = "ComboBox"
-		             tooltip = "${res:AddIns.HtmlHelp2.EnterURL}"
+		             tooltip = "${res:Web.Browser.EnterURL}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBox"/>
 
         <ToolbarItem id      = "GoToUrl"
 		             icon    = "Icons.16x16.BrowserGoUrl"
-		             tooltip = "${res:AddIns.HtmlHelp2.Search}"
+		             tooltip = "${res:Web.Browser.Search}"
 		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoToUrl"/>
     </Path>
@@ -1955,7 +1955,7 @@
     <Path name = "/SharpDevelop/Workbench/MainMenu">
         <MenuItem id = "Help" label = "${res:XML.MainMenu.HelpMenu}" type="Menu">
             <MenuItem id       = "HelpTopics"
-			          label    = "${res:XML.MainMenu.HelpMenu.Topics}"
+			          label    = "${res:XML.MainMenu.HelpMenu.Documentation}"
 			          icon     = "Icons.16x16.HelpIcon"
 			          shortcut = "F1"
 			          link     = "http://www.codeplex.com/SandAssist/"/>
@@ -2106,44 +2106,44 @@
 	<Path name = "/SharpDevelop/ViewContent/Browser/Toolbar">
 		<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
-		             tooltip = "${res:AddIns.HtmlHelp2.Back}"
+		             tooltip = "${res:Web.Browser.Back}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoBack"/>
 		
 		<ToolbarItem id      = "Forward"
 		             icon    = "Icons.16x16.BrowserAfter"
-		             tooltip = "${res:AddIns.HtmlHelp2.Forward}"
+		             tooltip = "${res:Web.Browser.Forward}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoForward"/>
 		
 		<ToolbarItem id      = "Stop"
 		             icon    = "Icons.16x16.BrowserCancel"
-		             tooltip = "${res:AddIns.HtmlHelp2.Stop}"
+		             tooltip = "${res:Web.Browser.Stop}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Stop"/>
 		
 		<ToolbarItem id      = "Refresh"
 		             icon    = "Icons.16x16.BrowserRefresh"
-		             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+		             tooltip = "${res:Web.Browser.Refresh}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Refresh"/>
 		
 		<ToolbarItem id = "Separator" type  = "Separator"/>
 		
 		<ToolbarItem id      = "GoHome"
 		             icon    = "Icons.16x16.BrowserHome"
-		             tooltip = "${res:AddIns.HtmlHelp2.Homepage}"
+		             tooltip = "${res:Web.Browser.Homepage}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoHome"/>
 		
 		<ToolbarItem id      = "GoSearch"
 		             icon    = "Icons.16x16.BrowserSearch"
-		             tooltip = "${res:AddIns.HtmlHelp2.Search}"
+		             tooltip = "${res:Web.Browser.Search}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoSearch"/>
 		
 		<ToolbarItem id      = "URLComboBox"
 		             type    = "ComboBox"
-		             tooltip = "${res:AddIns.HtmlHelp2.EnterURL}"
+		             tooltip = "${res:Web.Browser.EnterURL}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBox"/>
 		
 		<ToolbarItem id      = "NewWindow"
 		             icon    = "Icons.16x16.BrowserWindow"
-		             tooltip = "${res:AddIns.HtmlHelp2.NewWindow}"
+		             tooltip = "${res:Web.Browser.NewWindow}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.NewWindow"/>
 	</Path>
 	

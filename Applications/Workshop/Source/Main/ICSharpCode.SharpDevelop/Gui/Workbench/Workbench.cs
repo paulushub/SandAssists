@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the Workspace with a multiple document interface.
 	/// </summary>
-    sealed partial class Workbench : Form, IWorkbench
+    public sealed partial class Workbench : Form, IWorkbench
 	{
 		private readonly static string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
         private readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
@@ -37,8 +37,13 @@ namespace ICSharpCode.SharpDevelop.Gui
         private bool isActiveWindow; // Gets whether SharpDevelop is the active application in Windows
 
         private bool closeAll;
+        private bool suspendToolbarUpdate;
 
         private Timer _uiUpdateTimer;
+
+//		public ToolStripManager ToolStripManager = new ToolStripManager();
+		public MenuStrip   _topMenu;
+        public ToolStrip[] _toolBars;
 
         private bool fullscreen;
         private FormWindowState defaultWindowState = FormWindowState.Normal;
@@ -47,6 +52,12 @@ namespace ICSharpCode.SharpDevelop.Gui
         private FormWindowState _fullscreeWindowState;
 
         private IWorkbenchLayout layout;
+		
+		IWorkbenchWindow activeWorkbenchWindow;
+		
+		IViewContent activeViewContent;
+		
+		object activeContent;
 
         public Workbench()
         {
@@ -59,10 +70,28 @@ namespace ICSharpCode.SharpDevelop.Gui
             this.BackColor = Environment.OSVersion.Version.Major >= 6 ?
                 Color.FromArgb(233, 236, 250) : SystemColors.ControlLight;
         }
+
+        public event EventHandler WorkbenchLoaded;
+        public event EventHandler WorkbenchShown;
+        public event EventHandler WorkbenchClosing;
+        public event EventHandler WorkbenchClosed;
+
+        public event EventHandler ActiveWorkbenchWindowChanged;
+		
+		/// <summary>
+		/// Is called, when the active view content has changed.
+		/// </summary>
+		public event EventHandler ActiveViewContentChanged;
+		
+		/// <summary>
+		/// Is called, when the active content has changed.
+		/// </summary>
+		public event EventHandler ActiveContentChanged;
 		
 		#region FullScreen & View content properties
 
-		public bool FullScreen {
+		public bool FullScreen 
+        {
 			get 
             {
 				return fullscreen;
@@ -100,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				RedrawAllComponents();
 			}
 		}
-		
+
 		public string Title {
 			get {
 				return Text;
@@ -169,7 +198,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnActiveWindowChanged(object sender, EventArgs e)
 		{
-            if (closeAll) return;
+            if (closeAll) 
+                return;
 			
 			if (layout == null) {
 				this.ActiveWorkbenchWindow = null;
@@ -179,8 +209,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.ActiveContent = layout.ActiveContent;
 			}
         }
-		
-		IWorkbenchWindow activeWorkbenchWindow;
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
@@ -223,10 +251,6 @@ namespace ICSharpCode.SharpDevelop.Gui
             }
         }
 		
-		public event EventHandler ActiveWorkbenchWindowChanged;
-		
-		IViewContent activeViewContent;
-		
 		/// <summary>
 		/// The active view content inside the active workbench window.
 		/// </summary>
@@ -251,13 +275,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		/// <summary>
-		/// Is called, when the active view content has changed.
-		/// </summary>
-		public event EventHandler ActiveViewContentChanged;
-		
-		object activeContent;
-		
 		public object ActiveContent {
 			get {
 				return activeContent;
@@ -271,11 +288,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Is called, when the active content has changed.
-		/// </summary>
-		public event EventHandler ActiveContentChanged;
+
 		#endregion
 		
 		public Form MainForm {
@@ -592,12 +605,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnResize(e);
 
-            if (!FullScreen && WindowState != FormWindowState.Minimized)
+            if (!this.FullScreen && this.WindowState != FormWindowState.Minimized)
             {
-                defaultWindowState = WindowState;
-                if (WindowState == FormWindowState.Normal)
+                defaultWindowState = this.WindowState;
+                if (this.WindowState == FormWindowState.Normal)
                 {
-                    normalBounds = Bounds;
+                    normalBounds = this.Bounds;
                 }
             }
 		}
@@ -658,16 +671,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 //		{
 //			SetStandardStatusBar(null, null);
 //		}
-		
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			base.OnClosing(e);
-			
-			if (ProjectService.IsBuilding) {
-				MessageService.ShowMessage(StringParser.Parse("${res:MainWindow.CannotCloseWithBuildInProgressMessage}"));
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            if (this.WorkbenchLoaded != null)
+            {
+                this.WorkbenchLoaded(this, e);
+            }
+
+            //ToolStripManager.LoadSettings(this);
+            UpdateToolbarsVisibility();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            if (ProjectService.IsBuilding)
+            {
+				MessageService.ShowMessage(StringParser.Parse(
+                    "${res:MainWindow.CannotCloseWithBuildInProgressMessage}"));
 				e.Cancel = true;
+
 				return;
 			}
+
+            if (this.WorkbenchClosing != null)
+            {
+                this.WorkbenchClosing(this, e);
+            }
+
+            if (!suspendToolbarUpdate)
+            {
+                suspendToolbarUpdate = true;
+            }
 			
 			ProjectService.SaveSolutionPreferences();
 			
@@ -691,20 +730,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ProjectService.CloseSolution();
 
             //ToolStripManager.SaveSettings(this);
-		}
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            //ToolStripManager.LoadSettings(this);
-            UpdateToolbarsVisibility();
         }
-		
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
-		}
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (!suspendToolbarUpdate)
+            {
+                suspendToolbarUpdate = true;
+            }
+
+            base.OnFormClosed(e);
+
+            if (this.WorkbenchClosed != null)
+            {
+                this.WorkbenchClosed(this, e);
+            }
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            if (this.WorkbenchShown != null)
+            {
+                this.WorkbenchShown(this, e);
+            }
+        }
 
         private void SetProjectTitle(object sender, ProjectEventArgs e)
 		{
@@ -720,11 +771,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
-//		public ToolStripManager ToolStripManager = new ToolStripManager();
-		public MenuStrip   _topMenu;
-
-        public ToolStrip[] _toolBars;
-
         public MenuStrip TopMenu
         {
             get
@@ -815,6 +861,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         private void UpdateToolbarsVisibility()
         {
+            if (closeAll || suspendToolbarUpdate)
+            {
+                return;
+            }
+
             if (_toolBars == null || _toolBars.Length <= 1)
             {
                 return;
@@ -836,7 +887,6 @@ namespace ICSharpCode.SharpDevelop.Gui
                 for (int i = 0; i < itemCount; i++)
                 {
                     ToolStrip toolStrip = _toolBars[i];
-
                     bool isVisible = toolStrip.Visible;
 
                     ToolbarService.UpdateToolbarVisibility(toolStrip);
@@ -888,7 +938,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// Handle keyboard shortcuts
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if (ProcessCommandKey != null) {
+			if (ProcessCommandKey != null) 
+            {
 				KeyEventArgs e = new KeyEventArgs(keyData);
 				ProcessCommandKey(this, e);
 				if (e.Handled || e.SuppressKeyPress)
@@ -901,56 +952,76 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void OnDragEnter(DragEventArgs e)
 		{
-			try {
-				base.OnDragEnter(e);
-				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+            base.OnDragEnter(e);
+
+			try 
+            {
+				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) 
+                {
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-					foreach (string file in files) {
-						if (File.Exists(file)) {
+					foreach (string file in files) 
+                    {
+						if (File.Exists(file)) 
+                        {
 							e.Effect = DragDropEffects.Copy;
 							return;
 						}
 					}
 				}
 				e.Effect = DragDropEffects.None;
-			} catch (Exception ex) {
+			} 
+            catch (Exception ex) 
+            {
 				MessageService.ShowError(ex);
 			}
 		}
 		
 		protected override void OnDragDrop(DragEventArgs e)
 		{
-			try {
-				base.OnDragDrop(e);
-				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+            base.OnDragDrop(e);
+
+			try 
+            {
+				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) 
+                {
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 					
-					foreach (string file in files) {
-						if (File.Exists(file)) {
+					foreach (string file in files) 
+                    {
+						if (File.Exists(file)) 
+                        {
 							IProjectLoader loader = ProjectService.GetProjectLoader(file);
-							if (loader != null) {
-								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
-							} else {
+							if (loader != null) 
+                            {
+								FileUtility.ObservedLoad(
+                                    new NamedFileOperationDelegate(loader.Load), file);
+							} 
+                            else 
+                            {
 								FileService.OpenFile(file);
 							}
 						}
 					}
 				}
-			} catch (Exception ex) {
+			} 
+            catch (Exception ex) 
+            {
 				MessageService.ShowError(ex);
 			}
 		}
 		
 		protected override void OnActivated(EventArgs e)
 		{
+            base.OnActivated(e);
+
 			isActiveWindow = true;
-			base.OnActivated(e);
 		}
 		
 		protected override void OnDeactivate(EventArgs e)
 		{
+            base.OnDeactivate(e);
+
 			isActiveWindow = false;
-			base.OnDeactivate(e);
 		}
 
         private void OnViewOpened(ViewContentEventArgs e)

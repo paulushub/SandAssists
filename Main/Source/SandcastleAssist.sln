@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources\Reso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{EFADD64A-F0D3-45AF-A916-A95EA333331C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{048F177F-802E-494D-89E0-CD4074F8A33C}"
 EndProject
@@ -26,12 +26,10 @@ Global
 		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
-		SccProjectUniqueName0 = Builders\\Builders.csproj
-		SccProjectName0 = Builders
-		SccLocalPath0 = Builders
-		SccProjectUniqueName1 = Common\\Common.csproj
-		SccProjectName1 = Common
-		SccLocalPath1 = Common
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Builders\\Builders.csproj
+		SccProjectName1 = Builders
+		SccLocalPath1 = Builders
 		SccProjectUniqueName2 = Components\\Components.csproj
 		SccProjectName2 = Components
 		SccLocalPath2 = Components
@@ -44,7 +42,9 @@ Global
 		SccProjectUniqueName5 = Helpers\\Helpers.csproj
 		SccProjectName5 = Helpers
 		SccLocalPath5 = Helpers
-		SccLocalPath6 = .
+		SccProjectUniqueName6 = Core\\Core.csproj
+		SccProjectName6 = Core
+		SccLocalPath6 = Core
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU

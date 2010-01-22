@@ -36,7 +36,7 @@
         private void InitializeComponent()
         {
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.nodeTree = new System.Windows.Forms.TreeView();
+            this.nodeTree = new ICSharpCode.Core.WinForms.TreeViewVista();
             this.optionPanel = new System.Windows.Forms.Panel();
             this.acceptBtn = new System.Windows.Forms.Button();
             this.cancelBtn = new System.Windows.Forms.Button();
@@ -51,7 +51,7 @@
             this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer.Location = new System.Drawing.Point(8, 8);
+            this.splitContainer.Location = new System.Drawing.Point(8, 9);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -61,7 +61,7 @@
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.optionPanel);
-            this.splitContainer.Size = new System.Drawing.Size(596, 381);
+            this.splitContainer.Size = new System.Drawing.Size(596, 413);
             this.splitContainer.SplitterDistance = 220;
             this.splitContainer.TabIndex = 0;
             // 
@@ -72,7 +72,8 @@
             this.nodeTree.HideSelection = false;
             this.nodeTree.Location = new System.Drawing.Point(0, 0);
             this.nodeTree.Name = "nodeTree";
-            this.nodeTree.Size = new System.Drawing.Size(220, 381);
+            this.nodeTree.ShowRootLines = false;
+            this.nodeTree.Size = new System.Drawing.Size(220, 413);
             this.nodeTree.TabIndex = 0;
             // 
             // optionPanel
@@ -80,15 +81,15 @@
             this.optionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.optionPanel.Location = new System.Drawing.Point(0, 0);
             this.optionPanel.Name = "optionPanel";
-            this.optionPanel.Size = new System.Drawing.Size(372, 381);
+            this.optionPanel.Size = new System.Drawing.Size(372, 413);
             this.optionPanel.TabIndex = 0;
             // 
             // acceptBtn
             // 
             this.acceptBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.acceptBtn.Location = new System.Drawing.Point(448, 402);
+            this.acceptBtn.Location = new System.Drawing.Point(448, 436);
             this.acceptBtn.Name = "acceptBtn";
-            this.acceptBtn.Size = new System.Drawing.Size(75, 23);
+            this.acceptBtn.Size = new System.Drawing.Size(75, 25);
             this.acceptBtn.TabIndex = 1;
             this.acceptBtn.Text = "${res:Global.OKButtonText}";
             this.acceptBtn.UseVisualStyleBackColor = true;
@@ -97,9 +98,9 @@
             // 
             this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(529, 402);
+            this.cancelBtn.Location = new System.Drawing.Point(529, 436);
             this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.cancelBtn.Size = new System.Drawing.Size(75, 25);
             this.cancelBtn.TabIndex = 2;
             this.cancelBtn.Text = "${res:Global.CancelButtonText}";
             this.cancelBtn.UseVisualStyleBackColor = true;
@@ -109,16 +110,16 @@
             this.bottomSeparator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.bottomSeparator.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.bottomSeparator.Location = new System.Drawing.Point(8, 395);
+            this.bottomSeparator.Location = new System.Drawing.Point(8, 428);
             this.bottomSeparator.Name = "bottomSeparator";
             this.bottomSeparator.Size = new System.Drawing.Size(596, 2);
             this.bottomSeparator.TabIndex = 3;
             // 
             // HighlightingDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(612, 434);
+            this.ClientSize = new System.Drawing.Size(612, 470);
             this.Controls.Add(this.bottomSeparator);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.acceptBtn);
@@ -143,7 +144,7 @@
 
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Button acceptBtn;
-        private System.Windows.Forms.TreeView nodeTree;
+        private ICSharpCode.Core.WinForms.TreeViewVista nodeTree;
         private System.Windows.Forms.Button cancelBtn;
         private System.Windows.Forms.Panel optionPanel;
         private System.Windows.Forms.Label bottomSeparator;

@@ -447,7 +447,7 @@ namespace Sandcastle.Steps
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = formats[i];
-                if (format != null && format.FormatType == BuildFormatType.Hxs)
+                if (format != null && format.FormatType == BuildFormatType.HtmlHelp2)
                 {
                     hxsFormat = (FormatHxs)format;
                     break;

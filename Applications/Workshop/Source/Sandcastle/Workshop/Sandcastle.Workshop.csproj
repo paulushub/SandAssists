@@ -75,16 +75,20 @@
     <None Include="Sandcastle.Workshop.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Bindings\HtmlEditorService.cs" />
+    <Compile Include="Bindings\HtmlPreviewDisplayBinding.cs" />
+    <Compile Include="Bindings\HtmlPreviewViewContent.cs" />
+    <Compile Include="Bindings\HtmlTextViewContent.cs" />
     <Compile Include="Bindings\MamlEditorService.cs" />
-    <Compile Include="Bindings\MetadataAttribute.cs" />
-    <Compile Include="Bindings\MetadataAuthoring.cs" />
-    <Compile Include="Bindings\MetadataContent.cs" />
-    <Compile Include="Bindings\MetadataKeyword.cs" />
-    <Compile Include="Bindings\MetadataKeywordIndex.cs" />
-    <Compile Include="Bindings\MetadataTask.cs" />
-    <Compile Include="Bindings\MetadataTaskImpact.cs" />
-    <Compile Include="Bindings\MetadataTaskStatus.cs" />
-    <Compile Include="Bindings\MetadataTaskType.cs" />
+    <Compile Include="Metadata\MetadataAttribute.cs" />
+    <Compile Include="Metadata\MetadataAuthoring.cs" />
+    <Compile Include="Metadata\MetadataContent.cs" />
+    <Compile Include="Metadata\MetadataKeyword.cs" />
+    <Compile Include="Metadata\MetadataKeywordIndex.cs" />
+    <Compile Include="Metadata\MetadataTask.cs" />
+    <Compile Include="Metadata\MetadataTaskImpact.cs" />
+    <Compile Include="Metadata\MetadataTaskStatus.cs" />
+    <Compile Include="Metadata\MetadataTaskType.cs" />
     <Compile Include="Commands\GeneralCommands.cs" />
     <Compile Include="Dialogs\AboutCreditsTabPage.cs">
       <SubType>UserControl</SubType>
@@ -120,6 +124,7 @@
     <Compile Include="Bindings\MetadataDesignViewContent.cs" />
     <Compile Include="Bindings\MetadataTextViewBinding.cs" />
     <Compile Include="Bindings\MetadataTextViewContent.cs" />
+    <Compile Include="Bindings\HtmlDisplayBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bindings\MamlDisplayBinding.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -136,7 +141,7 @@
     <Compile Include="StartPage\StartPageViewControl.Designer.cs">
       <DependentUpon>StartPageViewControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="WorkshopProperties.cs" />
+    <Compile Include="WorkshopService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AddIns\ICSharpCode\XmlEditor\ICSharpCode.XmlEditor.csproj">

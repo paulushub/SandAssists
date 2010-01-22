@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </attribute>
 	/// <attribute name="title" use="required">
 	/// Title of the pad that is shown in the user interface.
-	/// Should be a resource string, e.g. "${res:AddIns.HtmlHelp2.Contents}"
+    /// Should be a resource string, e.g. "${res:Web.Browser.Contents}"
 	/// </attribute>
 	/// <attribute name="icon" use="optional">
 	/// Specifies the name of the icon resource used for the pad.

@@ -20,6 +20,7 @@ namespace Sandcastle.Workshop.Bindings
             _webBrowser.WebBrowserShortcutsEnabled = true;
 
             this.TabPageText = "Design";
+
             this.Files.Add(file);
             file.ForceInitializeView(this);
         }

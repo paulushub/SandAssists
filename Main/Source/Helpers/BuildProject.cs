@@ -141,7 +141,7 @@ namespace Sandcastle
 
             if (!_logger.IsInitialize)
             {
-                _logger.Initialize(_settings);
+                _logger.Initialize();
             }
 
             buildResult = _documenter.Build();

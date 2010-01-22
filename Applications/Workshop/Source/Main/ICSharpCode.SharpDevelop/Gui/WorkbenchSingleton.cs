@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string uiLanguageProperty      = "CoreProperties.UILanguage";
 		const string workbenchMemento        = "WorkbenchMemento";
 		const string activeContentState      = "Workbench.ActiveContent";
-		
+
 		static STAThreadCaller caller;
 		static IWorkbench workbench;
 		
@@ -146,12 +146,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			NavigationService.Unload();
 			
 			ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
+
+            FileService.Unload();
 			
 			if (WorkbenchUnloaded != null) {
 				WorkbenchUnloaded(null, EventArgs.Empty);
 			}
-			
-			FileService.Unload();
 		}
 		
 		#region Safe Thread Caller

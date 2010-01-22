@@ -20,6 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +63,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -76,6 +80,24 @@
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
+    <None Include="Schemas\CodeSnippets.xsd" />
+    <None Include="Schemas\CodeSnippets.xsx">
+      <DependentUpon>CodeSnippets.xsd</DependentUpon>
+    </None>
+    <None Include="Schemas\ConceptualContent.xsd" />
+    <None Include="Schemas\ConceptualContent.xsx">
+      <DependentUpon>ConceptualContent.xsd</DependentUpon>
+    </None>
+    <None Include="Schemas\MediaArts.xsd" />
+    <None Include="Schemas\MediaArts.xsx">
+      <DependentUpon>MediaArts.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Schemas\CodeSnippetSample.xml" />
+    <Content Include="Schemas\ConceptualContentSample.xml" />
+    <Content Include="Schemas\ConceptualSchema.xml" />
+    <Content Include="Schemas\MediaArtsSample.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

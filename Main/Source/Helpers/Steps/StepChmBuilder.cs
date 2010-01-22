@@ -199,7 +199,7 @@ namespace Sandcastle.Steps
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = formats[i];
-                if (format != null && format.FormatType == BuildFormatType.Chm)
+                if (format != null && format.FormatType == BuildFormatType.HtmlHelp1)
                 {
                     _formatIndex = i;
                     chmFormat = (FormatChm)format;

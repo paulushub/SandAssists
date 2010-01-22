@@ -237,7 +237,7 @@ namespace Sandcastle
             // 2. If the logger is not initialized, we initialize it now...
             if (!_helpLogger.IsInitialize)
             {
-                _helpLogger.Initialize(_settings);
+                _helpLogger.Initialize();
             }
 
             IList<BuildFormat> listFormats = this.Settings.Formats;
@@ -397,7 +397,7 @@ namespace Sandcastle
 
             if (!_helpLogger.IsInitialize)
             {
-                _helpLogger.Initialize(_settings);
+                _helpLogger.Initialize();
             }
 
             if (!CreatePreBuildSteps())

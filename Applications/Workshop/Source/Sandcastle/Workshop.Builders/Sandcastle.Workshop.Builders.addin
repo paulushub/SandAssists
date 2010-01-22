@@ -5,8 +5,8 @@
 
     <Manifest>
         <Identity name="Sandcastle.Workshop.Builders"/>
-        <Dependency addin="ICSharpCode.XmlEditor"/>
-        <Dependency addin="Sandcastle.Workshop"/>
+        <Dependency addin="ICSharpCode.XmlEditor" requirePreload = "true"/>
+        <Dependency addin="Sandcastle.Workshop" requirePreload = "true"/>
     </Manifest>
 
     <Runtime>
@@ -18,4 +18,16 @@
         <.../>
     </Path>
     -->
+
+    <!-- MAML/Companion Editor/View Bindings -->
+    <Path name = "/SharpDevelop/Workbench/DisplayBindings">
+        <DisplayBinding id = "ContentsDesigner"
+		                insertbefore = "MamlEditor"
+		                title = "Sandcastle Contents Designer"
+		                class = "Sandcastle.Workshop.Bindings.ContentsDisplayBinding"/>
+        <DisplayBinding id  = "ContentsEditor"
+                       type  = "Secondary"
+                       class = "Sandcastle.Workshop.Bindings.ContentsTextViewBinding"
+                       fileNamePattern = "\.(biblio|maths|media|samples|script|shared|snippets|styles|tokens|transforms)$" />
+    </Path>
 </AddIn>

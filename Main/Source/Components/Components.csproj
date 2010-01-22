@@ -63,7 +63,12 @@
   <ItemGroup>
     <Reference Include="BuildAssemblerLibrary, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files\Sandcastle\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
+      <HintPath>$(DXROOT)\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BuildComponents, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DXROOT)\ProductionTools\BuildComponents.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sandcastle.Iris, Version=0.1.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">
@@ -81,10 +86,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuilderComponents.cs" />
-    <Compile Include="BuilderController.cs" />
-    <Compile Include="BuilderExceptions.cs" />
-    <Compile Include="BuilderStyle.cs" />
+    <Compile Include="BuildComponents.cs" />
+    <Compile Include="BuildComponentController.cs" />
+    <Compile Include="BuildComponentExceptions.cs" />
+    <Compile Include="BuildComponentStyle.cs" />
     <Compile Include="CodeComponent.cs" />
     <Compile Include="Codes\CodeController.cs" />
     <Compile Include="Codes\CodeHighlightInfo.cs" />
@@ -92,11 +97,13 @@
     <Compile Include="ConceptualLinkComponent.cs" />
     <Compile Include="ConceptualMediaComponent.cs" />
     <Compile Include="ConceptualPreTransComponent.cs" />
-    <Compile Include="BuilderComponent.cs" />
-    <Compile Include="BuilderException.cs" />
+    <Compile Include="BuildComponentEx.cs" />
+    <Compile Include="BuildComponentException.cs" />
     <Compile Include="Codes\CodeFormatter.cs" />
     <Compile Include="ConceptualCodeComponent.cs" />
     <Compile Include="Codes\CodeHighlightMode.cs" />
+    <Compile Include="Copiers\CopyComponentEx.cs" />
+    <Compile Include="Copiers\InheritDocCopyComponent.cs" />
     <Compile Include="LinkComponent.cs" />
     <Compile Include="MathComponent.cs" />
     <Compile Include="Maths\MathFormatter.cs" />
@@ -155,7 +162,7 @@
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
-    <None Include="Diagrams\BuilderComponents.cd" />
+    <None Include="Diagrams\BuildComponents.cd" />
     <None Include="Diagrams\Codes.cd" />
     <None Include="Diagrams\Maths.cd" />
     <None Include="Properties\Settings.settings">

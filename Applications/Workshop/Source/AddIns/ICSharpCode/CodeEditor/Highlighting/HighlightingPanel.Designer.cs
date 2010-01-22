@@ -98,10 +98,12 @@
             this.userList.Name = "userList";
             this.userList.Size = new System.Drawing.Size(370, 86);
             this.userList.TabIndex = 9;
+            this.userList.SelectedIndexChanged += new System.EventHandler(this.OnUserListChanged);
             // 
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.deleteButton.Enabled = false;
             this.deleteButton.Location = new System.Drawing.Point(117, 107);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(72, 24);
@@ -111,6 +113,7 @@
             // modifyButton
             // 
             this.modifyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.modifyButton.Enabled = false;
             this.modifyButton.Location = new System.Drawing.Point(197, 107);
             this.modifyButton.Name = "modifyButton";
             this.modifyButton.Size = new System.Drawing.Size(72, 24);
@@ -149,7 +152,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.capLabel);
             this.Name = "HighlightingPanel";
-            this.Size = new System.Drawing.Size(404, 412);
             this.groupBuiltIn.ResumeLayout(false);
             this.groupUserDefined.ResumeLayout(false);
             this.ResumeLayout(false);

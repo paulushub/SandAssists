@@ -16,5 +16,10 @@ namespace Sandcastle.Workshop.Bindings
         {
             this.TabPageText = "Source";
         }
+
+        protected override void LoadSchemas(OpenedFile file)
+        {
+            // The companion/metadata XML file does not currently have a schema definition.
+        }
     }
 }

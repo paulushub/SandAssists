@@ -146,7 +146,7 @@
 			      label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
 			      class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		<MenuItem id = "GoToDefinition"
-			      label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+			      label = "${res:SharpDevelop.Refactoring.GotoDefinitionCommand}"
 			      class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.TextEditor.Commands.HighlightingTypeBuilder" />

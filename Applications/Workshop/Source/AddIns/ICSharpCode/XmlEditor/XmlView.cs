@@ -96,11 +96,6 @@ namespace ICSharpCode.XmlEditor
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
 		}
 
-        //public XmlView(bool includeTreeView)
-        //    : this()
-        //{
-        //}
-
 		/// <summary>
 		/// Gets the active XmlView.
 		/// </summary>

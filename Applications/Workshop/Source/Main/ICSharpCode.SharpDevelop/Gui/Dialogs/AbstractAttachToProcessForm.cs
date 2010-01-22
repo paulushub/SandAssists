@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			processColumnHeader.Text = StringParser.Parse("${res:ComponentInspector.AttachDialog.ProcessLabel}");
 			processIdColumnHeader.Text = StringParser.Parse("${res:Global.ID}");
-			titleColumnHeader.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.Title}");
+            titleColumnHeader.Text = StringParser.Parse("${res:Web.Browser.Title}");
 			                 
 			attachButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AttachToProcessForm.AttachButtonText}");
 			cancelButton.Text = StringParser.Parse("${res:Global.CancelButtonText}");

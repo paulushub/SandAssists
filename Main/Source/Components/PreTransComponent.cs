@@ -9,7 +9,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components
 {
-    public abstract class PreTransComponent : BuilderComponent
+    public abstract class PreTransComponent : BuildComponentEx
     {
         #region Constructors and Destructor
 

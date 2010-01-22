@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 	public sealed class SharpDevelopHost
 	{
 		#region CreateDomain
+
 		/// <summary>
 		/// Create an AppDomain capable of hosting SharpDevelop.
 		/// </summary>
@@ -40,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			s.ApplicationName = "SharpDevelop.Sda";
 			return s;
 		}
+
 		#endregion
 		
 		#region Static helpers
@@ -66,6 +68,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		SDInitStatus initStatus;
 		
 		#region Constructors
+
 		/// <summary>
 		/// Create a new AppDomain to host SharpDevelop.
 		/// </summary>
@@ -96,9 +99,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 			helper.InitSharpDevelopCore(new CallbackHelper(this), startup);
 			initStatus = SDInitStatus.CoreInitialized;
 		}
+
 		#endregion
 		
 		#region Workbench Initialization and startup
+
 		/// <summary>
 		/// Initializes the workbench (create the MainForm instance, construct menu from AddInTree etc.)
 		/// and runs it using the supplied settings.
@@ -122,6 +127,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				throw new InvalidOperationException();
 			}
 		}
+
 		#endregion
 		
 		#region Application control

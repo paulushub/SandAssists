@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Collections.Generic;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -17,6 +18,46 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public interface IWorkbench : IMementoCapable
 	{
+		/// <summary>
+		/// Is called, when the ActiveWorkbenchWindow property changes.
+		/// </summary>
+		event EventHandler ActiveWorkbenchWindowChanged;
+		
+		/// <summary>
+		/// Is called, when the active view content has changed.
+		/// </summary>
+		event EventHandler ActiveViewContentChanged;
+		
+		/// <summary>
+		/// Is called, when the active content has changed.
+		/// </summary>
+		event EventHandler ActiveContentChanged;
+		
+		/// <summary>
+		/// Is called, when a workbench view was opened
+		/// </summary>
+		/// <example>
+		/// WorkbenchSingleton.WorkbenchCreated += delegate {
+		/// 	WorkbenchSingleton.Workbench.ViewOpened += ...;
+		/// };
+		/// </example>
+		event ViewContentEventHandler ViewOpened;
+		
+		/// <summary>
+		/// Is called, when a workbench view was closed
+		/// </summary>
+		event ViewContentEventHandler ViewClosed;
+		
+		/// <summary>
+		/// Is called when a key is pressed. Can be used to intercept command keys.
+		/// </summary>
+		event KeyEventHandler ProcessCommandKey;
+
+        event EventHandler WorkbenchLoaded;
+        event EventHandler WorkbenchShown;
+        event EventHandler WorkbenchClosing;
+        event EventHandler WorkbenchClosed;
+		
 		/// <summary>
 		/// Gets the main form for the work bench.
 		/// </summary>
@@ -69,21 +110,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Is called, when the ActiveWorkbenchWindow property changes.
-		/// </summary>
-		event EventHandler ActiveWorkbenchWindowChanged;
-		
-		/// <summary>
 		/// The active view content inside the active workbench window.
 		/// </summary>
 		IViewContent ActiveViewContent {
 			get;
 		}
-		
-		/// <summary>
-		/// Is called, when the active view content has changed.
-		/// </summary>
-		event EventHandler ActiveViewContentChanged;
 		
 		/// <summary>
 		/// The active content, depending on where the focus currently is.
@@ -93,11 +124,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		object ActiveContent {
 			get;
 		}
-		
-		/// <summary>
-		/// Is called, when the active content has changed.
-		/// </summary>
-		event EventHandler ActiveContentChanged;
 		
 		IWorkbenchLayout WorkbenchLayout {
 			get;
@@ -162,25 +188,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Updates the toolstrip renderer.
 		/// </summary>
 		void UpdateRenderer();
-		
-		/// <summary>
-		/// Is called, when a workbench view was opened
-		/// </summary>
-		/// <example>
-		/// WorkbenchSingleton.WorkbenchCreated += delegate {
-		/// 	WorkbenchSingleton.Workbench.ViewOpened += ...;
-		/// };
-		/// </example>
-		event ViewContentEventHandler ViewOpened;
-		
-		/// <summary>
-		/// Is called, when a workbench view was closed
-		/// </summary>
-		event ViewContentEventHandler ViewClosed;
-		
-		/// <summary>
-		/// Is called when a key is pressed. Can be used to intercept command keys.
-		/// </summary>
-		event KeyEventHandler ProcessCommandKey;
 	}
 }

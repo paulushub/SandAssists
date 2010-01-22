@@ -25,11 +25,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
     public partial class HighlightingPanel : DialogPanel
     {
-        private List<ValidationEventArgs> errors = new List<ValidationEventArgs>();
+        private List<ValidationEventArgs> errors;
 
         public HighlightingPanel()
         {
             InitializeComponent();
+
+            errors = new List<ValidationEventArgs>();
 
             // Initialize the language-based resources
             InitializeResources();
@@ -317,7 +319,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
             MessageService.ShowWarning(msg.ToString());
         }
 
-        internal class HighlightItem
+        private void OnUserListChanged(object sender, EventArgs e)
+        {
+            int selIndex = userList.SelectedIndex;
+
+            deleteButton.Enabled = (selIndex >= 0);
+            modifyButton.Enabled = (selIndex >= 0);
+        }
+
+        #region HighlightItem Class
+
+        internal sealed class HighlightItem
         {
             string fileName;
             SyntaxMode syntaxMode;
@@ -366,5 +378,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
                 }
             }
         }
+
+        #endregion
     }
 }

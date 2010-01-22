@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace Sandcastle.Workshop.Bindings
 {
     /// <summary>
-    /// Description of PreviewDisplayBinding.
+    /// Description of MamlPreviewDisplayBinding.
     /// </summary>
     public sealed class MamlPreviewDisplayBinding : ISecondaryDisplayBinding
     {

@@ -255,8 +255,17 @@ namespace ICSharpCode.SharpDevelop.Gui
                 IViewContent content = window.ActiveViewContent;
                 if (content != null)
                 {
+                    string primaryFile = content.PrimaryFileName;
+                    if (String.IsNullOrEmpty(primaryFile))
+                    {
+                        Uri primaryUri = content.PrimaryUri;
+                        if (primaryUri != null)
+                        {
+                            primaryFile = primaryUri.ToString();
+                        }
+                    }
                     ListViewItem viewItem = new ListViewItem(
-                        new string[] { window.Title, content.PrimaryFileName });
+                        new string[] { window.Title, primaryFile });
                     viewItem.Tag = window;
                     windowList.Items.Add(viewItem);
 

@@ -226,7 +226,7 @@ namespace Sandcastle
 
             if (_logger.IsInitialize == false)
             {
-                _logger.Initialize(settings);
+                _logger.Initialize();
             }
 
             _settings         = settings;

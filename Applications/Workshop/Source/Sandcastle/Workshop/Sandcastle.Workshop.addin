@@ -64,6 +64,15 @@
                        type  = "Secondary"
                        class = "Sandcastle.Workshop.Bindings.MetadataTextViewBinding"
                        fileNamePattern = "\.cmp$" />
+        
+        <DisplayBinding id = "HtmlEditor"
+		                insertbefore = "MamlEditor"
+		                title = "Html Editor"
+		                class = "Sandcastle.Workshop.Bindings.HtmlDisplayBinding"/>
+        <DisplayBinding id  = "HtmlPreviewer"
+                       type  = "Secondary"
+                       class = "Sandcastle.Workshop.Bindings.HtmlPreviewDisplayBinding"
+                       fileNamePattern = "\.(htm|html)$" />
     </Path>
 
     <Path name = "/SharpDevelop/Workbench/MainMenu/Help">
@@ -80,6 +89,10 @@
 		            insertbefore="AllFiles"
 		            name = "Sandcastle Topic Files (*.aml;*.maml)"
 		            extensions = "*.aml;*.maml"/>
+        <FileFilter id = "Html"
+		            insertbefore="AllFiles"
+		            name = "HTML Files (*.htm;*.html)"
+		            extensions = "*.htm;*.html"/>
         <FileFilter id = "Cmp"
 		            insertbefore="AllFiles"
 		            name = "Sandcastle Topic Companion Files (*.cmp)"

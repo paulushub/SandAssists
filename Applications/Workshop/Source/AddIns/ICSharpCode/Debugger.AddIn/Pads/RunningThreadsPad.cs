@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			id.Text       = ResourceService.GetString("Global.ID");
 			name.Text     = ResourceService.GetString("Global.Name");
-			location.Text = ResourceService.GetString("AddIns.HtmlHelp2.Location");
+            location.Text = ResourceService.GetString("Web.Browser.Location");
 			priority.Text = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority");
 			breaked.Text  = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Frozen");
 		}

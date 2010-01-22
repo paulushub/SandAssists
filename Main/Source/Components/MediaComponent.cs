@@ -9,7 +9,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components
 {
-    public abstract class MediaComponent : BuilderComponent
+    public abstract class MediaComponent : BuildComponentEx
     {
         #region Constructors and Destructor
 

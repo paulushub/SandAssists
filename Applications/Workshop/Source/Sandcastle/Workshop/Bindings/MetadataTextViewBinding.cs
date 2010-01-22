@@ -12,8 +12,6 @@ namespace Sandcastle.Workshop.Bindings
     /// </summary>
     public sealed class MetadataTextViewBinding : ISecondaryDisplayBinding
     {
-        private int createCount = 0;
-
         public MetadataTextViewBinding()
         {
         }
@@ -40,12 +38,6 @@ namespace Sandcastle.Workshop.Bindings
 
         public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
         {
-            createCount++;
-
-            if (createCount > 1)
-            {
-                createCount = 0;
-            }
             return new IViewContent[] { new MetadataTextViewContent(viewContent) };
         }
     }

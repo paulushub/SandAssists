@@ -11,7 +11,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components
 {
-    public abstract class PostTransComponent : BuilderComponent
+    public abstract class PostTransComponent : BuildComponentEx
     {
         #region Private Fields
 
@@ -21,7 +21,7 @@ namespace Sandcastle.Components
         private List<string>      _listStyles;
         private List<string>      _listScripts;
 
-        private BuilderStyle      _builderStyle;
+        private BuildComponentStyle      _builderStyle;
 
         private XPathExpression   _headSelector;
         private XPathExpression   _islandSelector;
@@ -50,7 +50,7 @@ namespace Sandcastle.Components
             XPathNavigator configuration) : base(assembler, configuration)
         {
             _isfirstUse     = true;
-            _builderStyle   = BuilderStyle.None;
+            _builderStyle   = BuildComponentStyle.None;
 
             _logoLink       = String.Empty; // "http://www.codeplex.com/";
             _logoImage      = String.Empty; // "../images/AssistLogo.jpg";
@@ -65,13 +65,13 @@ namespace Sandcastle.Components
             XPathNavigator navigator = configuration.SelectSingleNode("paths");
             if (navigator == null)
             {
-                throw new BuilderException("The output paths tag, <path>, is required.");
+                throw new BuildComponentException("The output paths tag, <path>, is required.");
             }
             _outputPath = navigator.GetAttribute("outputPath", String.Empty);
 
             if (String.IsNullOrEmpty(_outputPath))
             {
-                throw new BuilderException("The output path attribute is required.");
+                throw new BuildComponentException("The output path attribute is required.");
             }
 
             XPathNodeIterator iterator = configuration.Select("attributes/attribute");
@@ -223,7 +223,7 @@ namespace Sandcastle.Components
             }
         }
 
-        public BuilderStyle Style
+        public BuildComponentStyle Style
         {
             get
             {
@@ -246,7 +246,7 @@ namespace Sandcastle.Components
             XmlNode div = document.SelectSingleNode("//div[@id='control']");
             if (div != null)
             {
-                _builderStyle = BuilderStyle.Prototype;
+                _builderStyle = BuildComponentStyle.Prototype;
 
                 return;
             }
@@ -255,7 +255,7 @@ namespace Sandcastle.Components
             if (div != null)
             {
                 _builderStyle = (div.ChildNodes.Count != 1) ?
-                    BuilderStyle.Hana : BuilderStyle.Vs2005;
+                    BuildComponentStyle.Hana : BuildComponentStyle.Vs2005;
             }
         }
 
@@ -268,7 +268,7 @@ namespace Sandcastle.Components
         {
             try
             {
-                if (_builderStyle == BuilderStyle.None)
+                if (_builderStyle == BuildComponentStyle.None)
                 {
                     DetermineStyle(document);
                 }
@@ -589,7 +589,7 @@ namespace Sandcastle.Components
 
             if (_headDivSelector == null)
             {
-                if (_builderStyle != BuilderStyle.Prototype)
+                if (_builderStyle != BuildComponentStyle.Prototype)
                 {
                     _headDivSelector = XPathExpression.Compile("//div[@id='header']");
                 }
@@ -602,15 +602,15 @@ namespace Sandcastle.Components
                 }
             }
 
-            if (_builderStyle == BuilderStyle.Vs2005)
+            if (_builderStyle == BuildComponentStyle.Vs2005)
             {
                 ApplyHeaderVS(docNavigator);
             }
-            else if (_builderStyle == BuilderStyle.Prototype)
+            else if (_builderStyle == BuildComponentStyle.Prototype)
             {
                 ApplyHeaderPrototype(docNavigator);
             }
-            else if (_builderStyle == BuilderStyle.Hana)
+            else if (_builderStyle == BuildComponentStyle.Hana)
             {
                 ApplyHeaderHana(docNavigator);
             }

@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			//item.DropDown.Items.Add(new ToolStripSeparator());
 			
 			if (cu != null && cu.FileName != null && !region.IsEmpty) {
-				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"),
+				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:SharpDevelop.Refactoring.GotoDefinitionCommand}"),
 				                                                             ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GotoArrowIndex]);
 				gotoDefinitionItem.ShortcutKeys = Keys.Control | Keys.Enter;
 				gotoDefinitionItem.Click += delegate {

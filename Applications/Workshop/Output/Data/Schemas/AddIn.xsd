@@ -778,9 +778,9 @@
 				<xs:attribute name="title" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-			Title of the pad that is shown in the user interface.
-			Should be a resource string, e.g. "${res:AddIns.HtmlHelp2.Contents}"
-			</xs:documentation>
+                            Title of the pad that is shown in the user interface.
+                            Should be a resource string, e.g. "${res:Web.Browser.Contents}"
+                        </xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="icon" use="optional" type="xs:string">

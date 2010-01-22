@@ -76,12 +76,12 @@ namespace Sandcastle.Workshop.StartPage
 
             _isInitializing = true;
 
-            chkCloseOnProject.Checked = WorkshopProperties.CloseOnProjectLoad;
-            chkShowOnStartup.Checked  = WorkshopProperties.ShowStartPage;
+            chkCloseOnProject.Checked = WorkshopService.CloseOnProjectLoad;
+            chkShowOnStartup.Checked  = WorkshopService.ShowStartPage;
 
             try
             {
-                panelAssistants.Expand = WorkshopProperties.ExpandStartPageAssistant;
+                panelAssistants.Expand = WorkshopService.ExpandStartPageAssistant;
 
                 tableRecents.BeginUpdate();
                 TableModel tableModel = new TableModel();
@@ -203,7 +203,7 @@ namespace Sandcastle.Workshop.StartPage
                 return;
             }
 
-            WorkshopProperties.ExpandStartPageAssistant = panelAssistants.Expand;
+            WorkshopService.ExpandStartPageAssistant = panelAssistants.Expand;
         }
 
         private void OnProjectNew(object sender, EventArgs e)
@@ -237,7 +237,7 @@ namespace Sandcastle.Workshop.StartPage
                 return;
             }
 
-            WorkshopProperties.CloseOnProjectLoad = chkCloseOnProject.Checked;
+            WorkshopService.CloseOnProjectLoad = chkCloseOnProject.Checked;
         }
 
         private void OnShowPageOnStartup(object sender, EventArgs e)
@@ -247,7 +247,7 @@ namespace Sandcastle.Workshop.StartPage
                 return;
             }
 
-            WorkshopProperties.ShowStartPage = chkShowOnStartup.Checked;
+            WorkshopService.ShowStartPage = chkShowOnStartup.Checked;
         }
 
         #endregion
