@@ -138,7 +138,7 @@ namespace ICSharpCode.XmlEditor
 			
 			try {
 				// Set namespaces.
-				string[] namespaces = memento.Get(NamespacesProperty, new string[0]);
+				StringList namespaces = memento.Get(NamespacesProperty, new StringList());
 				foreach (string ns in namespaces) {
 					XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
 					AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
@@ -153,7 +153,7 @@ namespace ICSharpCode.XmlEditor
 				
 				// Set xpath query history.
 				XPathComboBox.Text = memento.Get(XPathComboBoxTextProperty, String.Empty);
-				string[] xpaths = memento.Get(XPathComboBoxItemsProperty, new string[0]);
+                StringList xpaths = memento.Get(XPathComboBoxItemsProperty, new StringList());
 				foreach (string xpath in xpaths) {
 					xPathComboBox.Items.Add(xpath);
 				}
@@ -623,26 +623,26 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the namespaces and prefixes as a string array.
 		/// </summary>
-		string[] GetNamespaceStringArray()
+        private StringList GetNamespaceStringArray()
 		{
-			List<string> namespaces = new List<string>();
+            StringList namespaces = new StringList();
 			foreach (XmlNamespace ns in GetNamespaces()) {
 				namespaces.Add(ns.ToString());
 			}
-			return namespaces.ToArray();
+			return namespaces;
 		}
 		
 		/// <summary>
 		/// Gets the previously used XPath queries from the combo box drop down list.
 		/// </summary>
 		/// <returns></returns>
-		string [] GetXPathHistory()
+		private StringList GetXPathHistory()
 		{
-			List<string> xpaths = new List<string>();
+            StringList xpaths = new StringList();
 			foreach (string xpath in xPathComboBox.Items) {
 				xpaths.Add(xpath);
 			}
-			return xpaths.ToArray();
+			return xpaths;
 		}
 		
 		/// <summary>

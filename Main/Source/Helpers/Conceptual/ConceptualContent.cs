@@ -108,12 +108,12 @@ namespace Sandcastle.Conceptual
                 xmlReader.MoveToContent();
 
                 if (String.Equals(xmlReader.Name, "files",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     ReadFiles(group, xmlReader);
                 }
                 else if (String.Equals(xmlReader.Name, "conceptualContent",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     ReadContents(group, xmlReader);
                 }

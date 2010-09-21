@@ -12,29 +12,14 @@ using Sandcastle.Components.Maths;
 
 namespace Sandcastle.Components
 {
-    public class ReferenceMathComponent : MathComponent
+    public sealed class ReferenceMathComponent : MathComponent
     {
         #region Private Fields
 
-        private int             _pageCount;
+        private int     _pageCount;
 
-        //private int             _mathNumber;
-        //private bool            _isNumbered;
-        private bool            _isInline;
-        private string          _mathClass;
-
-        //private bool            _numberShow;
-        //private bool            _numberByPage;
-        //private bool            _numberIncludesPage;
-        //private string          _numberFormat;
-
-        //private string          _linkPath;
-        //private string          _inputPath;
-        //private string          _outputBasePath;
-        //private string          _outputPath;
-        
-        //private MathFormatter   _latexFormatter;
-        //private XPathExpression _xpathSelector;
+        private bool    _isInline;
+        private string  _mathClass;
 
         #endregion
 
@@ -43,13 +28,20 @@ namespace Sandcastle.Components
         public ReferenceMathComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration, false)
         {
-            if (_latexFormatter != null)
+            try
             {
-                _xpathSelector = XPathExpression.Compile(
-                    "//math[starts-with(@address, 'Math')]");
+                if (_latexFormatter != null)
+                {
+                    _xpathSelector = XPathExpression.Compile(
+                        "//math[starts-with(@address, 'Math')]");
 
-                MathController.Create("reference", _numberShow, 
-                    _numberIncludesPage, _numberByPage, _numberFormat);
+                    MathController.Create("reference", _numberShow, 
+                        _numberIncludesPage, _numberByPage, _numberFormat);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
@@ -58,6 +50,156 @@ namespace Sandcastle.Components
         #region Public Methods
 
         public override void Apply(XmlDocument document, string key)
+        {
+            // If there is no LaTeX installed, we do no process the math, as this
+            // will throw exceptions...
+            if (!_isLaTeXInstalled)
+            {
+                return;
+            }
+
+            if (_latexFormatter == null)
+            {
+                return;
+            }
+
+            try
+            {
+                this.ApplyMath(document);
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected override string FormatEquation(string mathInfo, string mathText)
+        {
+            _mathClass = MathController.MathImage;
+            _isInline  = false;
+
+            try
+            {
+                int separator = mathInfo.IndexOf('.');
+                if (separator < 0)
+                {
+                    return null;
+                }
+                string mathFormat = mathInfo.Substring(0, separator);
+                string mathNumber = mathInfo.Substring(separator + 1);
+                if (String.IsNullOrEmpty(mathFormat) || 
+                    String.IsNullOrEmpty(mathNumber))
+                {
+                    return null;
+                }
+
+                if (String.Equals(mathFormat, "MathNone",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    separator = mathText.IndexOf(':');
+                    if (separator <= 0 || separator == (mathText.Length - 1))
+                    {
+                        return null;
+                    }
+                    string mathClass = mathText.Substring(0, separator);
+                    string mathFile  = mathText.Substring(separator + 1);
+                    if (String.IsNullOrEmpty(mathClass) ||
+                        String.IsNullOrEmpty(mathFile))
+                    {
+                        return null;
+                    }
+
+                    _mathClass  = mathClass;
+                    _isNumbered = false;
+
+                    //return ("../" + mathFile);
+                    return mathFile;
+                } 
+                else if (String.Equals(mathFormat, "MathTeX",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    int equationNumber = Convert.ToInt32(mathNumber);
+                    _isNumbered = (equationNumber > 0);
+
+                    if (_latexFormatter.Create(mathText, false, false))
+                    {
+                        string mathFile  = _latexFormatter.ImageFile;
+
+                        string outputFile = Path.Combine(_outputPath, mathFile);
+                        File.Move(_latexFormatter.ImagePath, outputFile);
+
+                        //return (_linkPath + mathFile);
+                        return mathFile;
+                    }
+
+                    return null;
+                }
+                else if (String.Equals(mathFormat, "MathTeXUser",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    if (_latexFormatter.Create(mathText, false, true))
+                    {
+                        string mathFile  = _latexFormatter.ImageFile;
+
+                        string outputFile = Path.Combine(_outputPath, mathFile);
+                        File.Move(_latexFormatter.ImagePath, outputFile);
+
+                        //return (_linkPath + mathFile);
+                        return mathFile;
+                    }
+
+                    return null;
+                }
+                else if (String.Equals(mathFormat, "MathTeXInline",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _isInline = true;
+                    if (_latexFormatter.Create(mathText, true, false))
+                    {
+                        _mathClass = "mathInline";
+                        string mathFile  = _latexFormatter.ImageFile;
+
+                        string outputFile = Path.Combine(_outputPath, mathFile);
+                        File.Move(_latexFormatter.ImagePath, outputFile);
+
+                        _isNumbered = false;
+                        //return (_linkPath + mathFile);
+                        return mathFile;
+                    }
+
+                    return null;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                base.WriteMessage(MessageLevel.Error, ex);
+
+                return null;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_latexFormatter != null)
+            {
+                _latexFormatter.Dispose();
+                _latexFormatter = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ApplyMath(XmlDocument document)
         {
             _pageCount++;
 
@@ -118,8 +260,15 @@ namespace Sandcastle.Components
                         xmlWriter.WriteStartElement("span");  // start - span
                         xmlWriter.WriteAttributeString("class", _mathClass);
                         xmlWriter.WriteStartElement("img");   // start - img
-                        xmlWriter.WriteAttributeString("src", mediaFormat);
                         xmlWriter.WriteAttributeString("alt", String.Empty);
+                        //xmlWriter.WriteAttributeString("src", mediaFormat);
+
+                        xmlWriter.WriteStartElement("span");
+                        xmlWriter.WriteAttributeString("name", "SandMath");
+                        xmlWriter.WriteAttributeString("class", "tgtSentence");
+                        xmlWriter.WriteString(mediaFormat);
+                        xmlWriter.WriteEndElement();
+
                         xmlWriter.WriteEndElement();          // end - img
                         xmlWriter.WriteEndElement();          // end - span
                     }
@@ -152,11 +301,20 @@ namespace Sandcastle.Components
                             xmlWriter.WriteStartElement("td");  // start - td
                             xmlWriter.WriteAttributeString("class", 
                                 MathController.MathLeft);
+                            xmlWriter.WriteAttributeString("style",
+                                "background-color:white;border:0");
 
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", _mathClass);
-                            xmlWriter.WriteAttributeString("src", mediaFormat);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
+                            //xmlWriter.WriteAttributeString("src", mediaFormat);
+
+                            xmlWriter.WriteStartElement("span");
+                            xmlWriter.WriteAttributeString("name", "SandMath");
+                            xmlWriter.WriteAttributeString("class", "tgtSentence");
+                            xmlWriter.WriteString(mediaFormat);
+                            xmlWriter.WriteEndElement();
+
                             xmlWriter.WriteEndElement();
 
                             xmlWriter.WriteEndElement();        // end - tr
@@ -164,6 +322,8 @@ namespace Sandcastle.Components
                             xmlWriter.WriteStartElement("td");  // start - td
                             xmlWriter.WriteAttributeString("class", 
                                 MathController.MathRight);
+                            xmlWriter.WriteAttributeString("style",
+                                "background-color:white;border:0");
                             if (_numberIncludesPage)
                             {
                                 xmlWriter.WriteString(String.Format(_numberFormat,
@@ -207,8 +367,15 @@ namespace Sandcastle.Components
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", 
                                 MathController.MathImage);
-                            xmlWriter.WriteAttributeString("src", mediaFormat);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
+                            //xmlWriter.WriteAttributeString("src", mediaFormat);
+
+                            xmlWriter.WriteStartElement("span");
+                            xmlWriter.WriteAttributeString("name", "SandMath");
+                            xmlWriter.WriteAttributeString("class", "tgtSentence");
+                            xmlWriter.WriteString(mediaFormat);
+                            xmlWriter.WriteEndElement();
+
                             xmlWriter.WriteEndElement();
 
                             if (hasTitle)
@@ -240,127 +407,6 @@ namespace Sandcastle.Components
                     this.WriteMessage(MessageLevel.Warn,
                         String.Format("Math item not valid - {0}", mathInfo));
                 }
-            }
-        }
-
-        public override void Dispose()
-        {
-            if (_latexFormatter != null)
-            {
-                _latexFormatter.Dispose();
-                _latexFormatter = null;
-            }
-
-            base.Dispose();
-        }
-
-        #endregion
-
-        #region Protected Methods
-
-        protected override string FormatEquation(string mathInfo, string mathText)
-        {
-            _mathClass = MathController.MathImage;
-            _isInline  = false;
-
-            try
-            {
-                int separator = mathInfo.IndexOf('.');
-                if (separator < 0)
-                {
-                    return null;
-                }
-                string mathFormat = mathInfo.Substring(0, separator);
-                string mathNumber = mathInfo.Substring(separator + 1);
-                if (String.IsNullOrEmpty(mathFormat) || 
-                    String.IsNullOrEmpty(mathNumber))
-                {
-                    return null;
-                }
-
-                if (String.Equals(mathFormat, "MathNone",
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    separator = mathText.IndexOf(':');
-                    if (separator <= 0 || separator == (mathText.Length - 1))
-                    {
-                        return null;
-                    }
-                    string mathClass = mathText.Substring(0, separator);
-                    string mathFile  = mathText.Substring(separator + 1);
-                    if (String.IsNullOrEmpty(mathClass) ||
-                        String.IsNullOrEmpty(mathFile))
-                    {
-                        return null;
-                    }
-
-                    _mathClass  = mathClass;
-                    _isNumbered = false;
-
-                    return ("../" + mathFile);
-                } 
-                else if (String.Equals(mathFormat, "MathTeX",
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    int equationNumber = Convert.ToInt32(mathNumber);
-                    _isNumbered = (equationNumber > 0);
-
-                    if (_latexFormatter != null && 
-                        _latexFormatter.Create(mathText, false, false))
-                    {
-                        string mathFile  = _latexFormatter.ImageFile;
-
-                        string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
-
-                        return (_linkPath + mathFile);
-                    }
-
-                    return null;
-                }
-                else if (String.Equals(mathFormat, "MathTeXUser",
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    if (_latexFormatter != null &&
-                        _latexFormatter.Create(mathText, false, true))
-                    {
-                        string mathFile  = _latexFormatter.ImageFile;
-
-                        string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
-
-                        return (_linkPath + mathFile);
-                    }
-
-                    return null;
-                }
-                else if (String.Equals(mathFormat, "MathTeXInline",
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    _isInline = true;
-                    if (_latexFormatter != null && 
-                        _latexFormatter.Create(mathText, true, false))
-                    {
-                        _mathClass = "mathInline";
-                        string mathFile  = _latexFormatter.ImageFile;
-
-                        string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
-
-                        _isNumbered = false;
-                        return (_linkPath + mathFile);
-                    }
-
-                    return null;
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                base.WriteMessage(MessageLevel.Error, ex);
-
-                return null;
             }
         }
 

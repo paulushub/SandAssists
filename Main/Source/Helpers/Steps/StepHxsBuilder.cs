@@ -10,10 +10,11 @@ using System.Runtime.CompilerServices;
 
 using Sandcastle.Formats;
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Steps
 {
-    public class StepHxsBuilder : BuildStep
+    public sealed class StepHxsBuilder : BuildStep
     {
         #region Private Fields
 
@@ -39,6 +40,9 @@ namespace Sandcastle.Steps
 
         private string       _defaultPage;
 
+        private BuildLoggerLevel     _lastLevel;
+        private BuildLoggerVerbosity _verbosity;
+
         [NonSerialized]
         private BuildLogger  _logger;
         [NonSerialized]
@@ -55,6 +59,9 @@ namespace Sandcastle.Steps
         public StepHxsBuilder()
             : this(String.Empty)
         {
+            this.LogTitle = "Building Help 2.x contents";
+            _lastLevel   = BuildLoggerLevel.None;
+            _verbosity   = BuildLoggerVerbosity.None;
         }
 
         public StepHxsBuilder(string workingDir)
@@ -68,7 +75,9 @@ namespace Sandcastle.Steps
             _indexMerge       = true;
             _indexAutoInclude = true;
 
-            this.Message      = "Building Help 2.x contents";
+            this.LogTitle      = "Building Help 2.x contents";
+            _lastLevel        = BuildLoggerLevel.None;
+            _verbosity        = BuildLoggerVerbosity.None;
         }
 
         #endregion
@@ -170,7 +179,7 @@ namespace Sandcastle.Steps
 
         #region MainExecute Method
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             string workingDir = this.WorkingDirectory;
             if (String.IsNullOrEmpty(workingDir))
@@ -184,6 +193,10 @@ namespace Sandcastle.Steps
             }
 
             _logger = context.Logger;
+            if (_logger != null)
+            {
+                _verbosity = _logger.Verbosity;
+            }
 
             bool buildResult = false;
             FormatHxs hxsFormat = null;
@@ -224,11 +237,11 @@ namespace Sandcastle.Steps
 
             // We create a common XML Settings for all the writers...
             _xmlSettings = new XmlWriterSettings();
-            _xmlSettings.Encoding = Encoding.UTF8;
-            _xmlSettings.Indent = true;
-            _xmlSettings.IndentChars = "\t";
+            _xmlSettings.Encoding           = Encoding.UTF8;
+            _xmlSettings.Indent             = true;
+            _xmlSettings.IndentChars        = "    ";
             _xmlSettings.OmitXmlDeclaration = false;
-            _xmlSettings.CloseOutput = true;
+            _xmlSettings.CloseOutput        = true;
 
             buildResult = true;
             try
@@ -448,9 +461,29 @@ namespace Sandcastle.Steps
             listSources.Add(@"icons\*.gif");
             listSources.Add(@"scripts\*.js");
             listSources.Add(@"styles\*.css");
-            listSources.Add(@"images\*.*");
-            listSources.Add(@"math\*.*");
-            listSources.Add(@"media\*.*");
+
+            // The images, maths and media directories may be empty...
+            string tempDir = Path.Combine(_helpDir, "images");
+            if (Directory.Exists(tempDir) && 
+                !DirectoryUtils.IsDirectoryEmpty(tempDir))
+            {
+                listSources.Add(@"images\*.*");
+            }
+
+            tempDir = Path.Combine(_helpDir, "maths");
+            if (Directory.Exists(tempDir) &&
+                !DirectoryUtils.IsDirectoryEmpty(tempDir))
+            {
+                listSources.Add(@"maths\*.*");
+            }
+            
+            tempDir = Path.Combine(_helpDir, "media");
+            if (Directory.Exists(tempDir) &&
+                !DirectoryUtils.IsDirectoryEmpty(tempDir))
+            {
+                listSources.Add(@"media\*.*");
+            }
+
             listSources.Add(@"html\*.htm");
             //listSources.Add();
 
@@ -530,6 +563,13 @@ namespace Sandcastle.Steps
             int exitCode = process.ExitCode;
             process.Close();
             if (exitCode != 0)
+            {
+                return false;
+            }
+
+            // For the unexpected case of no argument options to the
+            // XslTransformer tool, the exit code is still 0...
+            if (_lastLevel == BuildLoggerLevel.Error)
             {
                 return false;
             }
@@ -693,7 +733,7 @@ namespace Sandcastle.Steps
                         if (xmlReader.NodeType == XmlNodeType.Element)
                         {
                             if (String.Equals(xmlReader.Name, "HelpTOCNode",
-                                StringComparison.CurrentCultureIgnoreCase))
+                                StringComparison.OrdinalIgnoreCase))
                             {
                                 string urlAttribute = xmlReader.GetAttribute("Url");
                                 if (String.IsNullOrEmpty(urlAttribute) == false)
@@ -812,18 +852,104 @@ namespace Sandcastle.Steps
 
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
         {
+            if (_logger == null || _verbosity == BuildLoggerVerbosity.Quiet)
+            {
+                return;
+            }
             _messageCount++;
+
+            if (_messageCount <= _copyright)
+            {
+                return;
+            }
+
             string textData = e.Data;
             if (String.IsNullOrEmpty(textData))
             {
                 return;
             }
 
-            if (_logger != null)
+            int findPos = textData.IndexOf(':');
+            if (findPos <= 0)
             {
-                if (_messageCount > _copyright)
+                // 1. Check for no options/arguments...
+                if (textData.StartsWith("XslTransformer", StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.WriteLine(textData, BuildLoggerLevel.None);
+                    _logger.WriteLine(textData, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                    return;
+                }
+
+                // 2. Check for missing or extra assembly directories...
+                if (textData.StartsWith("Specify", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(textData, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                    return;
+                }
+
+                _logger.WriteLine(textData, BuildLoggerLevel.Info);
+                _lastLevel = BuildLoggerLevel.Info;
+                return;
+            }
+
+            string levelText = textData.Substring(0, findPos);
+            string messageText = textData.Substring(findPos + 1).Trim();
+            if (String.Equals(levelText, "Info"))
+            {
+                if (_verbosity != BuildLoggerVerbosity.Minimal)
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Info);
+                }
+                _lastLevel = BuildLoggerLevel.Info;
+            }
+            else if (String.Equals(levelText, "Warn"))
+            {
+                _logger.WriteLine(messageText, BuildLoggerLevel.Warn);
+                _lastLevel = BuildLoggerLevel.Warn;
+            }
+            else if (String.Equals(levelText, "Error"))
+            {
+                _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                _lastLevel = BuildLoggerLevel.Error;
+            }
+            else
+            {
+                // Check for invalid options...
+                if (String.Equals(levelText, "?",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                }
+                else if (String.Equals(levelText, "xsl",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                }
+                else if (String.Equals(levelText, "arg",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                }
+                else if (String.Equals(levelText, "out",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                }
+                else if (String.Equals(levelText, "w",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.WriteLine(messageText, BuildLoggerLevel.Error);
+                    _lastLevel = BuildLoggerLevel.Error;
+                }
+                else
+                {
+                    _logger.WriteLine(textData, BuildLoggerLevel.Info);
+                    _lastLevel = BuildLoggerLevel.None;
                 }
             }
         }

@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Aga.Controls.Tree
 {
-	public class SortedTreeModel: TreeModelBase
+	public class SortedTreeModel : TreeModelBase
 	{
 		private ITreeModel _innerModel;
 		public ITreeModel InnerModel

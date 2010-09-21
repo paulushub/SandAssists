@@ -11,11 +11,14 @@ using System.Text;
 using System.Drawing;
 using System.Threading;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Forms;
+using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Commands;
 
 using ICSharpCode.SharpDevelop.Sda.Properties;
 
@@ -169,25 +172,39 @@ namespace ICSharpCode.SharpDevelop.Sda
             }
             return sb.ToString();
         }
-		
-		void CopyInfoToClipboard()
+
+        private void CopyInfoToClipboard()
 		{
-			if (copyErrorCheckBox.Checked) {
-                string exceptionText = exceptionTextBox.Text;
-				if (Application.OleRequired() == ApartmentState.STA) {
-					ClipboardWrapper.SetText(exceptionText);
-				} else {
-					Thread th = new Thread((ThreadStart)delegate {
-					                       	ClipboardWrapper.SetText(exceptionText);
-					                       });
-					th.Name = "CopyInfoToClipboard";
-					th.SetApartmentState(ApartmentState.STA);
-					th.Start();
-				}
+			if (!copyErrorCheckBox.Checked) 
+            {
+                return;
 			}
+
+            try
+            {
+                string exceptionText = exceptionTextBox.Text;
+                if (Application.OleRequired() == ApartmentState.STA)
+                {
+                    ClipboardWrapper.SetText(exceptionText);
+                }
+                else
+                {
+                    Thread th = new Thread((ThreadStart)delegate
+                    {
+                        ClipboardWrapper.SetText(exceptionText);
+                    });
+                    th.Name = "CopyInfoToClipboard";
+                    th.SetApartmentState(ApartmentState.STA);
+                    th.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Warn(ex);
+            }
 		}
-		
-		void buttonClick(object sender, System.EventArgs e)
+
+        private void OnReportApplicationClick(object sender, System.EventArgs e)
 		{
 			CopyInfoToClipboard();
 			
@@ -199,22 +216,47 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			try {
 				Process.Start(url);
-			} catch (Exception e) {
-				LoggingService.Warn("Cannot start " + url, e);
+			} catch (Exception ex) {
+				LoggingService.Warn("Cannot start " + url, ex);
 			}
 		}
-		
-		void continueButtonClick(object sender, System.EventArgs e)
+
+        private void OnContinueApplicationClick(object sender, EventArgs e)
 		{
-			DialogResult = System.Windows.Forms.DialogResult.Ignore;
-			Close();
+            CopyInfoToClipboard();
+
+            this.DialogResult = System.Windows.Forms.DialogResult.Ignore;
+			this.Close();
 		}
-		
-		void CloseButtonClick(object sender, EventArgs e)
+
+        private void OnCloseApplicationClick(object sender, EventArgs e)
 		{
-			if (MessageBox.Show(StringParser.Parse("${res:ICSharpCode.SharpDevelop.ExceptionBox.QuitWarning}"), MessageService.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+            CopyInfoToClipboard();
+
+            if (MessageBox.Show(StringParser.Parse("${res:ICSharpCode.SharpDevelop.ExceptionBox.QuitWarning}"), MessageService.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
 			    == DialogResult.Yes)
 			{
+                this.DialogResult = System.Windows.Forms.DialogResult.Abort;
+                this.Close();
+
+                try
+                {
+                    IList<IWorkbenchWindow> workbenches = 
+                        WorkbenchSingleton.Workbench.WorkbenchWindowCollection;
+                    foreach (IWorkbenchWindow window in workbenches)
+                    {
+                        window.CloseWindow(true);
+                    }
+                    WorkbenchSingleton.MainForm.Close();
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Warn(ex);
+                }
+
+                Application.SetUnhandledExceptionMode(
+                    UnhandledExceptionMode.ThrowException);
+
 				Application.Exit();
 			}
 		}

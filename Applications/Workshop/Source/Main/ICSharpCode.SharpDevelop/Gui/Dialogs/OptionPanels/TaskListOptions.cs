@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
             //SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream(
             //    "ICSharpCode.SharpDevelop.Resources.TaskListOptions.xfrm"));
 
-            string[] tokens = PropertyService.Get("SharpDevelop.TaskListTokens", 
+            IList<string> tokens = PropertyService.Get("SharpDevelop.TaskListTokens", 
                 ParserService.DefaultTaskListTokens);
             taskListView.BeginUpdate();
             foreach (string token in tokens)

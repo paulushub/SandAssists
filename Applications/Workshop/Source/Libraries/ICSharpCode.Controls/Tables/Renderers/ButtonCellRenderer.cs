@@ -79,16 +79,17 @@ namespace XPTable.Renderers
 		/// <returns>The ButtonCellRenderer data for the specified Cell</returns>
 		protected ButtonRendererData GetButtonRendererData(Cell cell)
 		{
-			object rendererData = this.GetRendererData(cell);
+            ButtonRendererData rendererData = 
+                this.GetRendererData(cell) as ButtonRendererData;
 
-			if (rendererData == null || !(rendererData is ButtonRendererData))
+			if (rendererData == null)
 			{
 				rendererData = new ButtonRendererData();
 
 				this.SetRendererData(cell, rendererData);
 			}
 
-			return (ButtonRendererData) rendererData;
+			return rendererData;
 		}
 
 		/// <summary>

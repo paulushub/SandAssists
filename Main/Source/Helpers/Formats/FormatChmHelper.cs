@@ -99,8 +99,7 @@ namespace Sandcastle.Formats
             string treeFileName  = Path.Combine(workingDir, "treeFile.dat");
             string blockFileName = Path.Combine(workingDir, "blockFile.dat");
 
-            _plusTree = BplusTree.Initialize(treeFileName, blockFileName, 
-                context.ApiNamingMethod > 1 ? 128 : 42);
+            _plusTree    = hBplusTree.Initialize(treeFileName, blockFileName, 64);
             _indentCount = 0;
 
             WriteHtmls();
@@ -236,7 +235,6 @@ namespace Sandcastle.Formats
                             break;
 
                         default:
-                            //Console.WriteLine(reader.Name);
                             break;
                     }
                 }
@@ -311,21 +309,23 @@ namespace Sandcastle.Formats
 
             //StreamWriter sw = new StreamWriter(hhpFile, false, 
             //    Encoding.GetEncoding(_lang.CodePage));
-            StreamWriter sw = new StreamWriter(hhpFile, false, new UTF8Encoding(false));
-            string var0 = _options.ProjectName;
-            string var1 = _defaultTopic;
-            string var2 = _lang.Name;
-            string var3 = GetChmTitle();
-
-            XPathNodeIterator iter = _config.CreateNavigator().Select(
-                "/configuration/hhpTemplate/line");
-
-            while (iter.MoveNext())
+            using (StreamWriter sw = new StreamWriter(hhpFile, false, 
+                new UTF8Encoding(false)))
             {
-                String line = iter.Current.Value;
-                sw.WriteLine(line, var0, var1, var2, var3);
+                string var0 = _options.ProjectName;
+                string var1 = _defaultTopic;
+                string var2 = _lang.Name;
+                string var3 = GetChmTitle();
+
+                XPathNodeIterator iter = _config.CreateNavigator().Select(
+                    "/configuration/hhpTemplate/line");
+
+                while (iter.MoveNext())
+                {
+                    String line = iter.Current.Value;
+                    sw.WriteLine(line, var0, var1, var2, var3);
+                }
             }
-            sw.Close();
         }
 
         private void WriteHtmls()

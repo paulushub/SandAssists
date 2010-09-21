@@ -181,22 +181,22 @@ namespace Sandcastle.Contents
                 return false;
             }
             if (!String.Equals(this._name, other._name, 
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
             if (!String.Equals(this._description, other._description,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
             if (!String.Equals(this._tag, other._tag,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
             if (!String.Equals(this._helpId, other._helpId,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

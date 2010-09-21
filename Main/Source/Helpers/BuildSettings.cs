@@ -63,7 +63,7 @@ namespace Sandcastle
         // Logging information or settings...
         private bool   _useLogFile;
         private bool   _keepLogFile;
-        private string _logFile;
+        private string _logFileName;
 
         private bool   _isInitialized;
         private bool   _cleanIntermediate;
@@ -116,7 +116,7 @@ namespace Sandcastle
         {
             _useLogFile      = true;
             _keepLogFile     = true;
-            _logFile         = "HelpBuild.log";
+            _logFileName     = "HelpBuild.log";
 
             _rootContainer   = true;
             _rootTitle       = "Programmer's Reference";
@@ -154,15 +154,21 @@ namespace Sandcastle
             chmFormat.Reset();
             chmFormat.Enabled = true; // enable only this format...
             _listFormats.Add(chmFormat);
+            
             FormatHxs hxsFormat = new FormatHxs();
             hxsFormat.Reset();
             _listFormats.Add(hxsFormat);
+            
+            FormatMhv mhvFormat = new FormatMhv();
+            mhvFormat.Reset();
+            _listFormats.Add(mhvFormat);
+
             FormatWeb htmFormat = new FormatWeb();
             htmFormat.Reset();
             _listFormats.Add(htmFormat);
-
+            
             _properties = new Dictionary<string, string>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
 
             // Add all the "standard" Sandcastle/Assist folders....
             _outputFolders = new List<string>();
@@ -171,7 +177,7 @@ namespace Sandcastle
             _outputFolders.Add("styles");
             _outputFolders.Add("media");
             _outputFolders.Add("images");
-            _outputFolders.Add("math");
+            _outputFolders.Add("maths");
         }
 
         /// <summary>
@@ -184,9 +190,9 @@ namespace Sandcastle
             _rootTitle     = source._rootTitle;
             _rootContainer = source._rootContainer;
 
-            _syntaxType = source._syntaxType;
-            _properties = source._properties;
-            _listFormats = source._listFormats;
+            _syntaxType    = source._syntaxType;
+            _properties    = source._properties;
+            _listFormats   = source._listFormats;
             _outputFolders = source._outputFolders;
         }
 
@@ -225,6 +231,12 @@ namespace Sandcastle
 
                 if (!String.IsNullOrEmpty(value))
                 {
+                    // If the title is not yet set, give it this value...
+                    if (String.IsNullOrEmpty(_helpTitle))
+                    {
+                        _helpTitle = value;
+                    }
+
                     if (value.IndexOf(' ') >= 0)
                     {
                         throw new BuildException(
@@ -274,15 +286,15 @@ namespace Sandcastle
             }
         }
         
-        public string LogFile
+        public string LogFileName
         {
             get
             {
-                return _logFile;
+                return _logFileName;
             }
             set
             {
-                _logFile = value;
+                _logFileName = value;
             }
         }
 

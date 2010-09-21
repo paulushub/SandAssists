@@ -14,22 +14,22 @@ namespace Sandcastle
         /// <summary>
         /// Indicates the Visual Studio 2005 and 2008 help build style.
         /// </summary>
-        Vs2005    = 0,
-        /// <summary>
-        /// Indicates the new and experimental Havana build style.
-        /// </summary>
-        Hana      = 1,
-        /// <summary>
-        /// Indicates the prototype build style.
-        /// </summary>
-        Prototype = 2,
+        ClassicWhite  = 0,
         /// <summary>
         /// Indicates the new version of the Whidbey (or VS.NET 2003) build style.
         /// </summary>
-        Whidbey   = 3,
+        ClassicBlue   = 1,
+        /// <summary>
+        /// Indicates the lightweight build style used by the Visual Studio 2010.
+        /// </summary>
+        Lightweight   = 2,
+        /// <summary>
+        /// indicates the script free build style used by the Visual Studio 2010.
+        /// </summary>
+        ScriptFree    = 3,
         /// <summary>
         /// Indicates a user-defined build style.
         /// </summary>
-        Custom    = 4
+        Custom        = 4
     }
 }

@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -22,7 +24,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		#region IParser interface
-		public string[] LexerTags {
+		public IList<string> LexerTags {
 			get {
 				return null;
 			}

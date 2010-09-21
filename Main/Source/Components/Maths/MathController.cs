@@ -108,12 +108,12 @@ namespace Sandcastle.Components.Maths
         public static MathController GetInstance(string buildType)
         {
             if (String.Equals(buildType, "conceptual",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _conceptualFormatter;
             }
             else if (String.Equals(buildType, "reference",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _referenceFormatter;
             }
@@ -125,7 +125,7 @@ namespace Sandcastle.Components.Maths
             bool numberIncludesPage, bool numberByPage, string numberFormat)
         {
             if (String.Equals(buildType, "conceptual",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_conceptualFormatter == null)
                 {
@@ -134,7 +134,7 @@ namespace Sandcastle.Components.Maths
                 }
             }
             else if (String.Equals(buildType, "reference",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_referenceFormatter == null)
                 {

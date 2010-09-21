@@ -13,20 +13,23 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs06.codeplex.com/
-		SccProjectUniqueName0 = Helpers\\ConsoleSample\\ConsoleSample.csproj
-		SccProjectName0 = Helpers/ConsoleSample
-		SccLocalPath0 = Helpers\\ConsoleSample
-		SccProjectUniqueName1 = Helpers\\SampleLibrary\\SampleLibrary.csproj
-		SccProjectName1 = Helpers/SampleLibrary
-		SccLocalPath1 = Helpers\\SampleLibrary
-		SccProjectUniqueName2 = Helpers\\SampleRegisterTopics\\SampleRegisterTopics.csproj
-		SccProjectName2 = Helpers/SampleRegisterTopics
-		SccLocalPath2 = Helpers\\SampleRegisterTopics
-		SccProjectUniqueName3 = Helpers\\SampleTopics\\SampleTopics.csproj
-		SccProjectName3 = Helpers/SampleTopics
-		SccLocalPath3 = Helpers\\SampleTopics
-		SccLocalPath4 = .
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Helpers\\ConsoleSample\\ConsoleSample.csproj
+		SccProjectName1 = Helpers/ConsoleSample
+		SccLocalPath1 = Helpers\\ConsoleSample
+		SccProjectUniqueName2 = Helpers\\SampleLibrary\\SampleLibrary.csproj
+		SccProjectName2 = Helpers/SampleLibrary
+		SccLocalPath2 = Helpers\\SampleLibrary
+		SccProjectUniqueName3 = Helpers\\SampleRegisterTopics\\SampleRegisterTopics.csproj
+		SccProjectName3 = Helpers/SampleRegisterTopics
+		SccLocalPath3 = Helpers\\SampleRegisterTopics
+		SccProjectUniqueName4 = Helpers\\SampleTopics\\SampleTopics.csproj
+		SccProjectName4 = Helpers/SampleTopics
+		SccLocalPath4 = Helpers\\SampleTopics
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DotNetZip1.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

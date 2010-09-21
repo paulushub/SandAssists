@@ -24,11 +24,9 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 
 using XPTable.Models;
-
 
 namespace XPTable.Events
 {
@@ -41,8 +39,6 @@ namespace XPTable.Events
 	public delegate void RowEventHandler(object sender, RowEventArgs e);
 
 	#endregion
-
-
 
 	#region RowEventArgs
 	

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using Sandcastle.Steps;
 using Sandcastle.Contents;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.References
 {
@@ -14,7 +15,7 @@ namespace Sandcastle.References
         #region Private Fields
 
         private ReferenceGroup        _curGroup;
-        private BuildMultiStep        _listSteps;
+        private IList<string>         _listFolders;
         private List<BuildFormat>     _listFormats;
         private List<ReferenceGroup>  _listGroups;
 
@@ -37,7 +38,7 @@ namespace Sandcastle.References
         }
 
         public ReferenceEngine(BuildSettings settings, BuildLoggers logger,
-            BuildContext context, BuildConfiguration configuration)
+            BuildContext context, IncludeContentList configuration)
             : base(settings, logger, context, configuration)
         {
         }
@@ -67,13 +68,24 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// Gets the list of the folders created or are use by this build engine.
+        /// </summary>
+        public override IList<string> Folders
+        {
+            get
+            {
+                return _listFolders;
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
         #region CreateSteps Method
 
-        public override BuildStep CreateSteps(BuildGroup group)
+        public override BuildStep CreateInitialSteps(BuildGroup group)
         {
             ReferenceGroup curGroup = group as ReferenceGroup;
             if (curGroup == null)
@@ -81,13 +93,56 @@ namespace Sandcastle.References
                 return null;
             }
 
-            if (this.CreateSteps(curGroup))
+            BuildMultiStep listSteps = new BuildMultiStep();
+            listSteps.Message     = "References topics for the group: " + group.Name;
+            listSteps.LogTitle    = String.Empty;
+            listSteps.LogTimeSpan = true;
+
+            this.CreateSteps(listSteps, curGroup);
+            if (listSteps.Count != 0)
             {
-                return _listSteps;
+                return listSteps;
             }
 
             return null;
         }
+
+        public override BuildStep CreateFinalSteps(BuildGroup group)
+        {
+            ReferenceGroup curGroup = group as ReferenceGroup;
+            if (curGroup == null)
+            {
+                return null;
+            }
+
+            BuildContext context   = this.Context;
+            BuildSettings settings = this.Settings;
+
+            string reflectionFile = group["$ReflectionFile"];
+            string manifestFile   = group["$ManifestFile"];
+            string configFile     = group["$ConfigurationFile"];
+            string tocFile        = group["$TocFile"];
+
+            string sandcastleDir = settings.StylesDirectory;
+
+            BuildStyleType outputStyle = settings.Style.StyleType;
+            string workingDir = context.WorkingDirectory;
+
+            // Assemble the help files using the BuildAssembler
+            // BuildAssembler.exe /config:Project.config manifest.xml
+            string application = Path.Combine(context.SandcastleToolsDirectory,
+                "BuildAssembler.exe");
+            string arguments = String.Format(" /config:{0} {1}",
+                configFile, manifestFile);
+            StepAssembler buildAssProcess = new StepAssembler(workingDir,
+                application, arguments);
+            buildAssProcess.Group           = group;
+            buildAssProcess.LogTitle        = String.Empty;
+            buildAssProcess.Message         = "For the group: " + group.Name;
+            buildAssProcess.CopyrightNotice = 2;
+
+            return buildAssProcess;
+       }
 
         #endregion
 
@@ -172,11 +227,12 @@ namespace Sandcastle.References
                 group["$ManifestFile"] =
                     String.Format("ApiManifest{0}.xml", indexText);
                 group["$ConfigurationFile"] =
-                    String.Format("Sandcastle{0}.config", indexText);
+                    String.Format("Reference{0}.config", indexText);
                 group["$ReflectionFile"] =
                     String.Format("Reflection{0}.xml", indexText);
                 group["$ReflectionBuilderFile"] =
                     String.Format("MRefBuilder{0}.config", indexText);
+                group["$GroupIndex"] = indexText;
 
                 if (!group.Initialize(this.Context))
                 {
@@ -224,9 +280,13 @@ namespace Sandcastle.References
                         _curGroup = group;
 
                         // Create the build steps...
-                        this.CreateSteps(group);
+                        BuildMultiStep listSteps = new BuildMultiStep();
+                        this.CreateSteps(listSteps, group);
 
-                        buildResult = this.RunSteps(_listSteps.Steps);
+                        if (listSteps.Count != 0)
+                        {
+                            buildResult = this.RunSteps(listSteps.Steps);
+                        }
 
                         if (buildResult)
                         {
@@ -328,11 +388,11 @@ namespace Sandcastle.References
 
         #region CreateSteps Methods
 
-        private bool CreateSteps(ReferenceGroup group)
+        private void CreateSteps(BuildMultiStep listSteps, ReferenceGroup group)
         {
             if (_listFormats == null || _listFormats.Count == 0)
             {
-                return false;
+                return;
             }
 
             BuildSettings settings = this.Settings;
@@ -341,44 +401,116 @@ namespace Sandcastle.References
 
             if (String.IsNullOrEmpty(sandcastleDir))
             {
-                return false;
+                return;
             }
 
-            _listSteps = new BuildMultiStep();
+            string helpStyle = BuildStyleUtils.StyleFolder(
+                outputStyle.StyleType);  
+            string workingDir = this.Context.WorkingDirectory;
 
-            BuildStyleType styleType = outputStyle.StyleType;
-            string helpStyle = styleType.ToString();
-            if (styleType == BuildStyleType.Whidbey)
+            // 1. Ensure that we have a valid list of folders...
+            IList<string> listFolders = new List<string>();
+            IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
+
+            // 2. Handle the resources...
+            StepDirectoryCopy copyResources = new StepDirectoryCopy(
+                workingDir);
+            copyResources.LogTitle = String.Empty;
+            copyResources.Message  = "Copying user-defined resources.";
+            IList<ResourceContent> resourceContents = group.ResourceContents;
+            if (resourceContents != null && resourceContents.Count != 0)
             {
-                helpStyle = BuildStyleType.Vs2005.ToString();
+                int contentCount = resourceContents.Count;
+                for (int j = 0; j < contentCount; j++)
+                {
+                    ResourceContent resourceContent = resourceContents[j];
+                    if (resourceContent == null || resourceContent.Count == 0)
+                    {
+                        continue;
+                    }
+                    IList<ResourceItem> listResources = resourceContent.Items;
+                    if (listResources == null || listResources.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    int itemCount = listResources.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ResourceItem resource = listResources[i];
+                        if (resource != null && !resource.IsEmpty)
+                        {
+                            string destFolder = resource.Destination;
+                            copyResources.Add(resource.Source, destFolder);
+
+                            // Add this to the output folders so that it is copied
+                            // to the final output/build directories...
+                            if (destFolder.StartsWith("Output",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                DirectoryInfo info = new DirectoryInfo(destFolder);
+                                destFolder = info.Name;
+                                if (!String.IsNullOrEmpty(destFolder) &&
+                                    !dicFolders.ContainsKey(destFolder))
+                                {
+                                    dicFolders.Add(destFolder, true);
+                                    listFolders.Add(destFolder);
+                                } 
+                            }
+                        }
+                    }
+                }
             }
 
-            return CreateReferenceSteps(group, sandcastleDir, helpStyle);
+            if (copyResources.IsValid)
+            {
+                listSteps.Add(copyResources);  
+            }
+            else
+            {
+                StepNone placeHolder = new StepNone();
+                placeHolder.LogTitle = String.Empty;
+                placeHolder.Message  = "Copying user-defined resources.";
+                listSteps.Add(placeHolder);  
+            }
+
+            _listFolders = listFolders;
+
+            this.CreateReflectionSteps(listSteps, group, 
+                sandcastleDir, helpStyle);
         }
 
         #endregion
 
-        #region CreateReflectionStep Method
+        #region CreateReflectionSteps Method
 
-        private bool CreateReflectionStep(ReferenceGroup group, string sandcastleDir)
+        private void CreateReflectionSteps(BuildMultiStep listSteps, 
+            ReferenceGroup group, string sandcastleDir, string helpStyle)
         {
-            BuildContext context           = this.Context;
-            BuildSettings settings         = this.Settings;
-            ReferenceOptions options       = group.Options;
-            string assemblyDir             = group.AssemblyFolder;
-            string dependencyDir           = group.DependencyFolder;
+            BuildContext context     = this.Context;
+            BuildSettings settings   = this.Settings;
+
             DependencyContent dependencies = group.Dependencies;
+            ReferenceOptions options = group.Options;
+            string assemblyDir       = group.AssemblyFolder;
+            string dependencyDir     = group.DependencyFolder;
 
             string reflectionFile = group["$ReflectionFile"];
             string manifestFile   = group["$ManifestFile"];
             string refBuilderFile = group["$ReflectionBuilderFile"];
             string refInfoFile    = Path.ChangeExtension(reflectionFile, ".org");
+            string configFile     = group["$ConfigurationFile"];
+            string tocFile        = group["$TocFile"];
 
             BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir       = context.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
+            string tempText = null;
+
+            // Create the reflection and the manifest
             StringBuilder textBuilder = new StringBuilder();
-            // Call MRefBuilder to generate the reflection...
+            // 1. Call MRefBuilder to generate the reflection...
             // MRefBuilder Assembly.dll 
             // /out:reflection.org /config:MRefBuilder.config 
             //   /internal-
@@ -405,14 +537,16 @@ namespace Sandcastle.References
             string arguments = textBuilder.ToString();
             StepMrefBuilder mRefProcess = new StepMrefBuilder(workingDir,
                 application, arguments);
-            mRefProcess.Group   = group;
-            mRefProcess.Message = "MRefBuilder Tool - Creating XML-formatted Reflection Information";
+            mRefProcess.Group    = group;
+            mRefProcess.LogTitle = String.Empty;
+            mRefProcess.Message  = "Creating XML-formatted reflection information.";
             mRefProcess.CopyrightNotice = 2;
-            _listSteps.Add(mRefProcess);
+
+            listSteps.Add(mRefProcess);
 
             textBuilder.Length = 0;
 
-            // Apply Transforms
+            // 2. Apply Transforms
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
             //    reflection.org 
@@ -423,13 +557,16 @@ namespace Sandcastle.References
                 "XslTransform.exe");
             string prodPath = Path.Combine(sandcastleDir, "ProductionTransforms");
             string textTemp = prodPath;
-            if (outputStyle == BuildStyleType.Prototype)
-            {
-                textTemp = Path.Combine(prodPath, "ApplyPrototypeDocModel.xsl");
-            }
-            else
+            if (outputStyle == BuildStyleType.ClassicWhite ||
+                outputStyle == BuildStyleType.ClassicBlue)
             {
                 textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
+            }
+            else if (outputStyle == BuildStyleType.Lightweight)
+            {
+            }
+            else if (outputStyle == BuildStyleType.ScriptFree)
+            {
             }
             textBuilder.AppendFormat("/xsl:\"{0}\" ", textTemp);
             textBuilder.Append(refInfoFile);
@@ -462,13 +599,15 @@ namespace Sandcastle.References
             arguments = textBuilder.ToString();
             StepXslTransform applyDocProcess = new StepXslTransform(workingDir,
                 application, arguments);
-            applyDocProcess.Message = "XslTransform Tool - Applying model/Adding filenames";
+            applyDocProcess.LogTitle = String.Empty;
+            applyDocProcess.Message  = "Xsl Transformation - Applying model and adding filenames";
             applyDocProcess.CopyrightNotice = 2;
-            _listSteps.Add(applyDocProcess);
+
+            listSteps.Add(applyDocProcess);
 
             textBuilder.Length = 0;
 
-            // and finally the manifest...
+            // 3. and finally the manifest...
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl"  
             //   reflection.xml /out:manifest.xml
@@ -480,151 +619,39 @@ namespace Sandcastle.References
             arguments = textBuilder.ToString();
             StepXslTransform manifestProcess = new StepXslTransform(workingDir,
                 application, arguments);
-            manifestProcess.Message = "XslTransform Tool - Reflection to Manifest";
+            manifestProcess.LogTitle = String.Empty;
+            manifestProcess.Message  = "Xsl Transformation - Reflection to Manifest";
             manifestProcess.CopyrightNotice = 2;
-            _listSteps.Add(manifestProcess);
 
-            return true;
-        }
-
-        #endregion
-
-        #region CreateReferenceSteps Method
-
-        private bool CreateReferenceSteps(ReferenceGroup group, 
-            string sandcastleDir, string helpStyle)
-        {
-            BuildContext context   = this.Context;
-            BuildSettings settings = this.Settings;
-            int formatCount = _listFormats.Count;
-
-            string reflectionFile = group["$ReflectionFile"];
-            string manifestFile = group["$ManifestFile"];
-            string configFile = group["$ConfigurationFile"];
-            string tocFile = group["$TocFile"];
-
-            // Ensure that we have a valid list of folders...
-            IList<string> listFolders = new List<string>();
-            IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
-            int folderCount = listFolders.Count;
-
-            BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = context.WorkingDirectory;
-
-            string tempText = null;
-
-            // 2. Handle the resources...
-            IList<ResourceContent> resourceContents = group.ResourceContents;
-            if (resourceContents != null && resourceContents.Count != 0)
-            {
-                int contentCount = resourceContents.Count;
-                for (int j = 0; j < contentCount; j++)
-                {
-                    ResourceContent resourceContent = resourceContents[j];
-                    if (resourceContent == null || resourceContent.Count == 0)
-                    {
-                        continue;
-                    }
-                    IList<ResourceItem> listResources = resourceContent.Items;
-                    if (listResources != null && listResources.Count > 0)
-                    {
-                        StepDirectoryCopy copyResources = new StepDirectoryCopy(
-                            workingDir);
-                        int itemCount = listResources.Count;
-
-                        for (int i = 0; i < itemCount; i++)
-                        {
-                            ResourceItem resource = listResources[i];
-                            if (resource != null && resource.IsEmpty == false)
-                            {
-                                string destFolder = resource.Destination;
-                                copyResources.Add(resource.Source, destFolder);
-
-                                // Add this to the output folders so that it is copied
-                                // to the final output/build directories...
-                                if (destFolder.StartsWith("Output",
-                                    StringComparison.CurrentCultureIgnoreCase))
-                                {
-                                    DirectoryInfo info = new DirectoryInfo(destFolder);
-                                    destFolder = info.Name;
-                                    if (String.IsNullOrEmpty(destFolder) == false &&
-                                        dicFolders.ContainsKey(destFolder) == false)
-                                    {
-                                        dicFolders.Add(destFolder, true);
-                                        listFolders.Add(destFolder);
-                                    }
-                                }
-                            }
-                        }
-
-                        _listSteps.Add(copyResources);
-                    }
-                }
-                // resource folder might have being added...
-                folderCount = listFolders.Count;
-            }
-
-            // 3. Create the reflection and the manifest
-            CreateReflectionStep(group, sandcastleDir);
-
-            // 6. Assemble the help files using the BuildAssembler
-            // BuildAssembler.exe /config:Project.config manifest.xml
-            string application = Path.Combine(context.SandcastleToolsDirectory, 
-                "BuildAssembler.exe");
-            string arguments = String.Format(" /config:{0} {1}", 
-                configFile, manifestFile);
-            StepAssembler buildAssProcess = new StepAssembler(workingDir,
-                application, arguments);
-            buildAssProcess.Group   = group;
-            buildAssProcess.Message = "BuildAssembler Tool - Reference Topics: " + group.Name;
-            buildAssProcess.CopyrightNotice = 2;
-            _listSteps.Add(buildAssProcess);
+            listSteps.Add(manifestProcess);
 
             // 4. Create the reflection table of contents
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\createvstoc.xsl" 
             //    reflection.xml /out:ApiToc.xml
-            application = Path.Combine(context.SandcastleToolsDirectory, 
+            application = Path.Combine(context.SandcastleToolsDirectory,
                 "XslTransform.exe");
-            if (outputStyle == BuildStyleType.Prototype)
-            {
-                tempText = Path.Combine(sandcastleDir,
-                    @"ProductionTransforms\CreatePrototypeToc.xsl");
-            }
-            else
+            if (outputStyle == BuildStyleType.ClassicWhite ||
+                outputStyle == BuildStyleType.ClassicBlue)
             {
                 tempText = Path.Combine(sandcastleDir,
                     @"ProductionTransforms\CreateVSToc.xsl");
             }
+            else if (outputStyle == BuildStyleType.Lightweight)
+            {
+            }
+            else if (outputStyle == BuildStyleType.ScriptFree)
+            {
+            }
             arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}",
                 tempText, reflectionFile, tocFile);
-            StepProcess tocProcess = new StepProcess(workingDir,
+            StepXslTransform tocProcess = new StepXslTransform(workingDir,
                 application, arguments);
-            tocProcess.Message = "XslTransform Tool - Creating References TOC";
+            tocProcess.LogTitle = String.Empty;
+            tocProcess.Message  = "Xsl Transformation - Creating References TOC";
             tocProcess.CopyrightNotice = 2;
-            _listSteps.Add(tocProcess);
-
-            // 7. Create the final "Help" sub-directories
-            StepDirectoryCreate helpDirs = new StepDirectoryCreate(workingDir);
-            // 8. Copy outputs to the "Help" sub-directories
-            StepDirectoryCopy copyDirs = new StepDirectoryCopy(workingDir);
-            for (int i = 0; i < formatCount; i++)
-            {
-                BuildFormat format = _listFormats[i];
-                string helpOutputDir = format.OutputFolder;
-
-                for (int j = 0; j < folderCount; j++)
-                {
-                    string folder = listFolders[j];
-                    tempText = String.Format(@"{0}\{1}", helpOutputDir, folder);
-                    helpDirs.Add(tempText);
-                    copyDirs.Add(String.Format(@"Output\{0}\", folder), tempText);
-                }
-            }
-            _listSteps.Add(helpDirs);
-            _listSteps.Add(copyDirs);
-
-            return true;
+            
+            listSteps.Add(tocProcess);
         }
 
         #endregion

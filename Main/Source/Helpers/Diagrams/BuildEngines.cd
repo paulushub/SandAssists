@@ -33,7 +33,7 @@
         <Point X="1.188" Y="4.25" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="this[System.Int32]" Type="Sandcastle.Configurations.ConfigurationItem" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="this[System.Int32]" Type="Sandcastle.Configurators.ConfigurationItem" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="3.25" Y="2.125" />
         <Point X="1.312" Y="2.125" />
@@ -206,7 +206,7 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.805" />
   </Class>
-  <Class Name="Sandcastle.Configurations.ConfigurationItem" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.ConfigurationItem" Collapsed="true">
     <Position X="0.5" Y="1.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAIAAQAgAEAAAAAAAAAAYAAAAAAQAAAABA=</HashCode>

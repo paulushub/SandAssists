@@ -32,12 +32,12 @@
       <Property Name="Handlers" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Sandcastle.Configurations.AssemblerConfigurator" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.AssemblerConfigurator" Collapsed="true">
     <Position X="2.5" Y="4" Width="2.25" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="Handlers" Type="Sandcastle.Configurations.ConfigurationContent">
+    <AssociationLine Name="Handlers" Type="Sandcastle.Configurators.ConfigurationContent">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.859" Y="0.06" />
       </MemberNameLabel>
@@ -58,35 +58,35 @@
       <Property Name="Settings" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Sandcastle.Configurations.GenericConfigurator" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.GenericConfigurator" Collapsed="true">
     <Position X="1.25" Y="1.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAIAAQAAAABcAAgABAAAAAAEAAAABAgAAABAAAACg=</HashCode>
       <FileName>Configurations\GenericConfigurator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.SharedContentConfigurator" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.SharedContentConfigurator" Collapsed="true">
     <Position X="4" Y="0.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AgAAIAAQAAAABcAAgQBAAAYCQEAAIABAgGAABCBAACg=</HashCode>
       <FileName>Configurations\SharedContentConfigurator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.ConfigurationItemEventArgs" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.ConfigurationItemEventArgs" Collapsed="true">
     <Position X="3.75" Y="6.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAABQAAAAAAAAgAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
       <FileName>Configurations\ConfigurationItemEvents.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.ConfigurationKeywords" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.ConfigurationKeywords" Collapsed="true">
     <Position X="4" Y="7.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AEAAAAUAABQAQEAAEABAAAAAAgCBAKAAAAAAYAADAAA=</HashCode>
       <FileName>Configurations\ConfigurationKeywords.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.ConfigurationItem" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.ConfigurationItem" Collapsed="true">
     <Position X="0.75" Y="6.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAIAAQAgAEAAAAAAAAAAYAAAAAAQAAAABA=</HashCode>
@@ -99,7 +99,7 @@
   </Class>
   <Class Name="Sandcastle.BuildEngine" Collapsed="true">
     <Position X="5" Y="3" Width="1.5" />
-    <AssociationLine Name="Handlers" Type="Sandcastle.Configurations.ConfigurationContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Handlers" Type="Sandcastle.Configurators.ConfigurationContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.75" Y="3" />
         <Point X="5.75" Y="2.708" />
@@ -134,16 +134,16 @@
       <FileName>BuildSettings.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.IncludeConfigurator" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.IncludeConfigurator" Collapsed="true">
     <Position X="4.25" Y="1.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Configurations\IncludeConfigurator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Configurations.ConfigurationContent" Collapsed="true">
+  <Class Name="Sandcastle.Configurators.ConfigurationContent" Collapsed="true">
     <Position X="0.5" Y="3" Width="2" />
-    <AssociationLine Name="this[System.String]" Type="Sandcastle.Configurations.ConfigurationItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="this[System.String]" Type="Sandcastle.Configurators.ConfigurationItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="0.5" Y="3.315" />
         <Point X="0.26" Y="3.315" />
@@ -169,7 +169,7 @@
       <FileName>BuildConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Delegate Name="Sandcastle.Configurations.ConfigurationItemHandler" Collapsed="true">
+  <Delegate Name="Sandcastle.Configurators.ConfigurationItemHandler" Collapsed="true">
     <Position X="0.5" Y="7.75" Width="2" />
     <TypeIdentifier>
       <HashCode>BAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>

@@ -9,15 +9,6 @@ using System.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 
-// To simplify the process of finding the toolbox bitmap resource:
-// #1 Create an internal class called "resfinder" outside of the root namespace.
-// #2 Use "resfinder" in the toolbox bitmap attribute instead of the control name.
-// #3 use the "<default namespace>.<resourcename>" string to locate the resource.
-// See: http://www.bobpowell.net/toolboxbitmap.htm
-internal class resfinder
-{
-}
-
 namespace WeifenLuo.WinFormsUI.Docking
 {
     [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "0#")]
@@ -41,6 +32,8 @@ namespace WeifenLuo.WinFormsUI.Docking
         
 		public DockPanel()
 		{
+            InitializeComponent();
+
             this.BackColor = Environment.OSVersion.Version.Major >= 6 ?
                 Color.FromArgb(233, 236, 250) : SystemColors.ControlLight;
 
@@ -72,7 +65,56 @@ namespace WeifenLuo.WinFormsUI.Docking
             ResumeLayout();
         }
 
-		private AutoHideStripBase m_autoHideStripControl = null;
+        private bool m_disposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!m_disposed && disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                    components = null;
+                }
+
+                m_focusManager.Dispose();
+                if (m_mdiClientController != null)
+                {
+                    m_mdiClientController.HandleAssigned -= new EventHandler(MdiClientHandleAssigned);
+                    m_mdiClientController.MdiChildActivate -= new EventHandler(ParentFormMdiChildActivate);
+                    m_mdiClientController.Layout -= new LayoutEventHandler(MdiClient_Layout);
+                    m_mdiClientController.Dispose();
+                }
+                FloatWindows.Dispose();
+                Panes.Dispose();
+                DummyContent.Dispose();
+
+                m_disposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private Color m_BackColor;
+        /// <summary>
+        /// Determines the color with which the client rectangle will be drawn.
+        /// If you take this property instead of the BackColor it will not have any influence on the borders to the surrounding controls (DockPane).
+        /// If you use BackColor the borders to the surrounding controls (DockPane) will also change there colors.
+        /// Alternatively you can use both of them (BackColor to draw the define the color of the borders and DockBackColor to define the color of the client rectangle). 
+        /// For Backgroundimages: Set your prefered Image, then set the DockBackColor and the BackColor to the same Color (Control)
+        /// </summary>
+        public Color DockBackColor
+        {
+            get
+            {
+                return !m_BackColor.IsEmpty ? m_BackColor : base.BackColor;
+            }
+            set
+            {
+                m_BackColor = value;
+            }
+        }
+
+		private AutoHideStripBase m_autoHideStripControl;
 		internal AutoHideStripBase AutoHideStripControl
 		{
 			get
@@ -85,6 +127,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 				return m_autoHideStripControl;
 			}
 		}
+
         internal void ResetAutoHideStripControl()
         {
             if (m_autoHideStripControl != null)
@@ -109,32 +152,6 @@ namespace WeifenLuo.WinFormsUI.Docking
 					pane.SetContentBounds();
 
 			InvalidateWindowRegion();
-		}
-
-		private bool m_disposed = false;
-		protected override void Dispose(bool disposing)
-		{
-			lock (this)
-			{
-				if (!m_disposed && disposing)
-				{
-                    m_focusManager.Dispose();
-					if (m_mdiClientController != null)
-					{
-						m_mdiClientController.HandleAssigned -= new EventHandler(MdiClientHandleAssigned);
-						m_mdiClientController.MdiChildActivate -= new EventHandler(ParentFormMdiChildActivate);
-						m_mdiClientController.Layout -= new LayoutEventHandler(MdiClient_Layout);
-						m_mdiClientController.Dispose();
-					}
-					FloatWindows.Dispose();
-					Panes.Dispose();
-					DummyContent.Dispose();
-
-					m_disposed = true;
-				}
-				
-				base.Dispose(disposing);
-			}
 		}
 
 		[Browsable(false)]
@@ -176,7 +193,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get	{	return m_dummyContent;	}
 		}
 
-        private bool m_rightToLeftLayout = false;
+        private bool m_rightToLeftLayout;
         [DefaultValue(false)]
         [LocalizedCategory("Appearance")]
         [LocalizedDescription("DockPanel_RightToLeftLayout_Description")]
@@ -204,7 +221,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
-		private bool m_showDocumentIcon = false;
+		private bool m_showDocumentIcon;
 		[DefaultValue(false)]
 		[LocalizedCategory("Category_Docking")]
 		[LocalizedDescription("DockPanel_ShowDocumentIcon_Description")]
@@ -220,6 +237,25 @@ namespace WeifenLuo.WinFormsUI.Docking
 				Refresh();
 			}
 		}
+
+        private DockPanelSkin m_dockPanelSkin = new DockPanelSkin();
+        [LocalizedCategory("Category_Docking")]
+        [LocalizedDescription("DockPanel_DockPanelSkin")]
+        public DockPanelSkin Skin
+        {
+            get { return m_dockPanelSkin; }
+            set { m_dockPanelSkin = value; }
+        }
+
+        private DocumentTabStripLocation m_documentTabStripLocation = DocumentTabStripLocation.Top;
+        [DefaultValue(DocumentTabStripLocation.Top)]
+        [LocalizedCategory("Category_Docking")]
+        [LocalizedDescription("DockPanel_DocumentTabStripLocation")]
+        public DocumentTabStripLocation DocumentTabStripLocation
+        {
+            get { return m_documentTabStripLocation; }
+            set { m_documentTabStripLocation = value; }
+        }
 
 		[Browsable(false)]
 		public DockPanelExtender Extender
@@ -529,9 +565,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 						content.DockHandler.SetPaneAndVisible(content.DockHandler.Pane);
 				}
 
-                PerformMdiClientLayout();
+                ResumeLayout(true, true);
 
-				ResumeLayout(true, true);
+                PerformMdiClientLayout();
 			}
 		}
 
@@ -621,9 +657,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 		{
 			base.OnPaint(e);
 
-			Graphics g = e.Graphics;
-			g.FillRectangle(SystemBrushes.AppWorkspace, ClientRectangle);
-		}
+            if (DockBackColor == BackColor) return;
+
+            Graphics g = e.Graphics;
+            SolidBrush bgBrush = new SolidBrush(DockBackColor);
+            g.FillRectangle(bgBrush, ClientRectangle);
+            bgBrush.Dispose();
+        }
 
 		internal void AddContent(IDockContent content)
 		{
@@ -898,7 +938,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			SetRegion(rects);
 		}
 
-		private Rectangle[] m_clipRects = null;
+		private Rectangle[] m_clipRects;
 		private void SetRegion(Rectangle[] clipRects)
 		{
 			if (!IsClipRectsChanged(clipRects))

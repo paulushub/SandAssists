@@ -63,7 +63,7 @@ namespace Sandcastle
             _listSnippets  = new List<SnippetContent>();
             _listResources = new List<ResourceContent>();
             _properties    = new Dictionary<string, string>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -632,6 +632,11 @@ namespace Sandcastle
             }
 
             return listShared;
+        }     
+
+        public virtual IList<RuleItem> PrepareSharedRule()
+        {
+            return null;
         }
 
         #endregion

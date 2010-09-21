@@ -6,6 +6,10 @@ using Sandcastle.Formats;
 using Sandcastle.Contents;
 using Sandcastle.Conceptual;
 using Sandcastle.References;
+using Sandcastle.Configurators;
+
+using Sandcastle.Loggers;
+using Sandcastle.Reflections;
 
 namespace Sandcastle.Helpers.Sample
 {
@@ -13,7 +17,27 @@ namespace Sandcastle.Helpers.Sample
     {
         static void Main(string[] args)
         {
-            bool useCustomStyles = true;
+            try
+            {
+                ReflectionIndexedBuilder indexedBuilder =
+                    new ReflectionIndexedBuilder();
+
+                if (!indexedBuilder.Exists)
+                {
+                    Console.WriteLine("Please wait, building reflection database...");
+                    indexedBuilder.AddDocuments();
+                }
+
+                indexedBuilder.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+
+                return;
+            }
+
+            bool useCustomStyles = false;
 
             string sampleDir  = @"..\Samples\Helpers\";
             sampleDir = Path.GetFullPath(sampleDir);
@@ -24,9 +48,9 @@ namespace Sandcastle.Helpers.Sample
             BuildProject project = new BuildProject();
             BuildDocumenter documenter = project.Documenter;
 
-            BuildConfiguration configuration = documenter.Configuration;
+            IncludeContentList configuration = documenter.Configuration;
 
-            BuildStyleType styleType = BuildStyleType.Vs2005;
+            BuildStyleType styleType = BuildStyleType.ClassicWhite;
 
             BuildSettings settings = documenter.Settings;
             settings.WorkingDirectory = workingDir;
@@ -42,7 +66,7 @@ namespace Sandcastle.Helpers.Sample
             feedBack.Company = "Sandcastle Assist";
             feedBack.Product = "Sandcastle Helpers";
             feedBack.EmailAddress = "paulselormey@gmail.com";
-            feedBack.FeedbackType = BuildFeedbackType.Rating;
+            feedBack.FeedbackType = BuildFeedbackType.None;
             feedBack.Copyright = 
                 "Copyright &#169; 2007-2008 Sandcastle Assist. All Rights Reserved.";
             feedBack.CopyrightLink = "http://www.codeplex.com/SandAssist";
@@ -66,9 +90,16 @@ namespace Sandcastle.Helpers.Sample
             if (hxsFormat != null)
             {
                 //hxsFormat.SeparateIndexFile = true;
+                hxsFormat.Enabled = true;
                 hxsFormat.Indent = true;
             }
-            //FormatWeb webFormat = settings.Formats[2] as FormatWeb;
+            FormatMhv mhvFormat = settings.Formats[2] as FormatMhv;
+            if (mhvFormat != null)
+            {
+                mhvFormat.Enabled = true;
+                mhvFormat.Indent = true;
+            }
+            //FormatWeb webFormat = settings.Formats[3] as FormatWeb;
             //if (webFormat != null)
             //{
             //    webFormat.Enabled = true;
@@ -90,13 +121,15 @@ namespace Sandcastle.Helpers.Sample
             configuration.Add("codeStyle", codeStyle);
 
             string assistStyle = Path.Combine(sandAssistDir,
-                String.Format(@"Styles\{0}\SandAssist.css", styleType.ToString()));
+                String.Format(@"Styles\{0}\SandAssist.css", 
+                BuildStyleUtils.StyleFolder(styleType)));
             assistStyle = String.Format("<style file=\"{0}\"/>", assistStyle);
             configuration.Add("assistStyle", assistStyle);
 
             // We add support for the extra script - currently only for prototype.
             string assistScripts = Path.Combine(sandAssistDir,
-                String.Format(@"Scripts\{0}\SandAssist.js", styleType.ToString()));
+                String.Format(@"Scripts\{0}\SandAssist.js",
+                BuildStyleUtils.StyleFolder(styleType)));
             assistScripts = String.Format("<script file=\"{0}\"/>", assistScripts);
             configuration.Add("assistScripts", assistScripts);
 
@@ -170,7 +203,7 @@ namespace Sandcastle.Helpers.Sample
                     string helpRegisterDir = Path.Combine(sampleDir, @"..\SampleRegisterTopics\");
 
                     // Prepare the documents and project file paths 
-                    string projectFile = Path.Combine(helpRegisterDir, "Topics.xml");
+                    string projectFile  = Path.Combine(helpRegisterDir, "Topics.xml");
                     string documentsDir = Path.Combine(helpRegisterDir, "Documents");
 
                     // First add the conceptual contents for the topics...
@@ -184,6 +217,10 @@ namespace Sandcastle.Helpers.Sample
                     }
                 }
 
+                //project.Logger.Verbosity = BuildLoggerVerbosity.Detailed;
+                project.Logger.Add(new XmlLogger("XmlLogFile.xml"));
+                project.Logger.Add(new HtmlLogger("HmtlLogFile.htm"));
+                project.Logger.Add(new ConsoleLogger());
                 if (project.Initialize())
                 {
                     project.Build();

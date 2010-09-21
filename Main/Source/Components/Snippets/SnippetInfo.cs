@@ -174,13 +174,13 @@ namespace Sandcastle.Components.Snippets
             }
 
             if (String.Equals(_exampleId, other._exampleId, 
-                StringComparison.CurrentCultureIgnoreCase) == false)
+                StringComparison.OrdinalIgnoreCase) == false)
             {
                 return false;
             }
 
             return String.Equals(_snippetId, other._snippetId,
-                StringComparison.CurrentCultureIgnoreCase);
+                StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

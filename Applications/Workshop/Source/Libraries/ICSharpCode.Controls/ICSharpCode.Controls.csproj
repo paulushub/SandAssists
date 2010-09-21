@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TextEllipsis.cs" />
     <Compile Include="Tables\Editors\CellEditor.cs" />
     <Compile Include="Tables\Editors\ColorCellEditor.cs" />
     <Compile Include="Tables\Editors\ComboBoxCellEditor.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Tables\Renderers\LinkLabelRendererData.cs" />
     <Compile Include="Tables\Renderers\NumberCellRenderer.cs" />
     <Compile Include="Tables\Renderers\NumberRendererData.cs" />
+    <Compile Include="Tables\Renderers\PathCellRenderer.cs" />
     <Compile Include="Tables\Renderers\ProgressBarCellRenderer.cs" />
     <Compile Include="Tables\Renderers\Renderer.cs" />
     <Compile Include="Tables\Renderers\TextCellRenderer.cs" />
@@ -365,6 +367,16 @@
       <DependentUpon>TreeViewAdv.cs</DependentUpon>
     </Compile>
     <Compile Include="TreeView\Tree\TreeViewRowDrawEventArgs.cs" />
+    <Compile Include="VistaMenu\VistaMenuControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VistaMenu\VistaMenuControl.designer.cs">
+      <DependentUpon>VistaMenuControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VistaMenu\VistaMenuItem.cs" />
+    <Compile Include="VistaMenu\VistaMenuItemClickArgs.cs" />
+    <Compile Include="VistaMenu\VistaMenuItems.cs" />
+    <Compile Include="VistaMenu\VistaMenuOrientation.cs" />
     <Compile Include="XPanderPanels\ProgressBar\ProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -471,6 +483,9 @@
     <EmbeddedResource Include="TreeView\Tree\TreeViewAdv.resx">
       <DependentUpon>TreeViewAdv.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="VistaMenu\VistaMenuControl.resx">
+      <DependentUpon>VistaMenuControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="XPanderPanels\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -511,6 +526,7 @@
     <Content Include="XPanderPanels\Resources\Expand.jpg" />
     <Content Include="XPanderPanels\Resources\Expand_h.jpg" />
     <None Include="ICSharpCode.Controls.snk" />
+    <None Include="VistaMenu\VistaMenu.cd" />
     <None Include="XPanderPanels\Resources\ChevronRight.png" />
     <None Include="XPanderPanels\Resources\ChevronLeft.png" />
   </ItemGroup>

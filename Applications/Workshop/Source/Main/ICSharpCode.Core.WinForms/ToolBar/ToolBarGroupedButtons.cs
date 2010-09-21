@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.Core.WinForms
 {
-    public class ToolBarGroupedButtons : ICommandGroup
+    public sealed class ToolBarGroupedButtons : ICommandGroup
     {
         private bool   _isCheckOnClick;
         private string _operation;

@@ -16,6 +16,7 @@ namespace Sandcastle.Components
         #region Private Fields
 
         private bool              _isfirstUse;
+        private bool              _hasFeedback;
         private string            _outputPath;
 
         private List<string>      _listStyles;
@@ -26,6 +27,10 @@ namespace Sandcastle.Components
         private XPathExpression   _headSelector;
         private XPathExpression   _islandSelector;
         private XPathExpression   _includeSelector;
+
+        private XPathExpression _feedbackRowSelector;
+        private XPathExpression _feedbackSpanSelector;
+
 
         private List<MsAttribute> _listAttributes;
 
@@ -49,118 +54,126 @@ namespace Sandcastle.Components
         protected PostTransComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _isfirstUse     = true;
-            _builderStyle   = BuildComponentStyle.None;
-
-            _logoLink       = String.Empty; // "http://www.codeplex.com/";
-            _logoImage      = String.Empty; // "../images/AssistLogo.jpg";
-            _logoAltText    = String.Empty;
-            _logoCellCss    = String.Empty; // "width: 64px; height: 64px; padding: 3px";
-            _logoImageCss   = String.Empty;
-            _logoLinkedCss  = "border: none; text-decoration: none";
-            _logoAlign      = LogoAlignment.Center;
-            _logoPlacement  = LogoPlacement.Left;
-            _logoLinkTarget = "_blank";
-
-            XPathNavigator navigator = configuration.SelectSingleNode("paths");
-            if (navigator == null)
+            try
             {
-                throw new BuildComponentException("The output paths tag, <path>, is required.");
-            }
-            _outputPath = navigator.GetAttribute("outputPath", String.Empty);
+                _hasFeedback    = true;
+                _isfirstUse     = true;
+                _builderStyle   = BuildComponentStyle.None;
 
-            if (String.IsNullOrEmpty(_outputPath))
-            {
-                throw new BuildComponentException("The output path attribute is required.");
-            }
+                _logoLink       = String.Empty; // "http://www.codeplex.com/";
+                _logoImage      = String.Empty; // "AssistLogo.jpg";
+                _logoAltText    = String.Empty;
+                _logoCellCss    = String.Empty; // "width: 64px; height: 64px; padding: 3px";
+                _logoImageCss   = String.Empty;
+                _logoLinkedCss  = "border: none; text-decoration: none";
+                _logoAlign      = LogoAlignment.Center;
+                _logoPlacement  = LogoPlacement.Left;
+                _logoLinkTarget = "_blank";
 
-            XPathNodeIterator iterator = configuration.Select("attributes/attribute");
-
-            if (iterator != null && iterator.Count > 0)
-            {
-                _listAttributes = new List<MsAttribute>(iterator.Count);
-
-                foreach (XPathNavigator navAttribute in iterator)
+                XPathNavigator navigator = configuration.SelectSingleNode("paths");
+                if (navigator == null)
                 {
-                    string attrName  = navAttribute.GetAttribute("name", String.Empty);
-                    string attrValue = navAttribute.GetAttribute("value", String.Empty);
-                    if (!String.IsNullOrEmpty(attrName))
+                    throw new BuildComponentException("The output paths tag, <path>, is required.");
+                }
+                _outputPath = navigator.GetAttribute("outputPath", String.Empty);
+
+                if (String.IsNullOrEmpty(_outputPath))
+                {
+                    throw new BuildComponentException("The output path attribute is required.");
+                }
+
+                XPathNodeIterator iterator = configuration.Select("attributes/attribute");
+
+                if (iterator != null && iterator.Count > 0)
+                {
+                    _listAttributes = new List<MsAttribute>(iterator.Count);
+
+                    foreach (XPathNavigator navAttribute in iterator)
                     {
-                        if (!String.IsNullOrEmpty(attrValue))
+                        string attrName  = navAttribute.GetAttribute("name", String.Empty);
+                        string attrValue = navAttribute.GetAttribute("value", String.Empty);
+                        if (!String.IsNullOrEmpty(attrName))
                         {
-                            _listAttributes.Add(new MsAttribute(attrName, attrValue));
+                            if (!String.IsNullOrEmpty(attrValue))
+                            {
+                                _listAttributes.Add(new MsAttribute(attrName, attrValue));
+                            }
+                            else
+                            {
+                                base.WriteMessage(MessageLevel.Error,
+                                    "The value of the MS Help 2 attribute cannot be null or emptry.");
+                            }
                         }
                         else
                         {
                             base.WriteMessage(MessageLevel.Error,
-                                "The value of the MS Help 2 attribute cannot be null or emptry.");
+                                "The name of the MS Help 2 attribute cannot be null or emptry.");
                         }
                     }
-                    else
-                    {
-                        base.WriteMessage(MessageLevel.Error,
-                            "The name of the MS Help 2 attribute cannot be null or emptry.");
-                    }
+
+                    base.WriteMessage(MessageLevel.Info, String.Format(
+                        "Loaded {0} MS Help 2 Attributes.", _listAttributes.Count));
                 }
 
-                base.WriteMessage(MessageLevel.Info, String.Format(
-                    "Loaded {0} MS Help 2 Attributes.", _listAttributes.Count));
-            }
-
-            iterator = configuration.Select("scripts/script");
-            if (iterator != null && iterator.Count > 0)
-            {
-                _listScripts = new List<string>(iterator.Count);
-
-                foreach (XPathNavigator navScript in iterator)
+                iterator = configuration.Select("scripts/script");
+                if (iterator != null && iterator.Count > 0)
                 {
-                    string scriptPath = navScript.GetAttribute("file", String.Empty);
-                    if (!String.IsNullOrEmpty(scriptPath))
+                    _listScripts = new List<string>(iterator.Count);
+
+                    foreach (XPathNavigator navScript in iterator)
                     {
-                        scriptPath = Environment.ExpandEnvironmentVariables(
-                            scriptPath);
-                        if (File.Exists(scriptPath))
+                        string scriptPath = navScript.GetAttribute("file", String.Empty);
+                        if (!String.IsNullOrEmpty(scriptPath))
                         {
-                            _listScripts.Add(scriptPath);
+                            scriptPath = Environment.ExpandEnvironmentVariables(
+                                scriptPath);
+                            if (File.Exists(scriptPath))
+                            {
+                                _listScripts.Add(scriptPath);
+                            }
                         }
                     }
+
+                    base.WriteMessage(MessageLevel.Info, String.Format(
+                        "Loaded {0} scripts.", _listScripts.Count));
                 }
 
-                base.WriteMessage(MessageLevel.Info, String.Format(
-                    "Loaded {0} scripts.", _listScripts.Count));
-            }
-
-            iterator = configuration.Select("styles/style");
-            if (iterator != null && iterator.Count > 0)
-            {
-                _listStyles = new List<string>(iterator.Count);
-
-                foreach (XPathNavigator navStyle in iterator)
+                iterator = configuration.Select("styles/style");
+                if (iterator != null && iterator.Count > 0)
                 {
-                    string stylePath = navStyle.GetAttribute("file", String.Empty);
-                    if (!String.IsNullOrEmpty(stylePath))
+                    _listStyles = new List<string>(iterator.Count);
+
+                    foreach (XPathNavigator navStyle in iterator)
                     {
-                        stylePath = Environment.ExpandEnvironmentVariables(stylePath);
-                        if (File.Exists(stylePath))
+                        string stylePath = navStyle.GetAttribute("file", String.Empty);
+                        if (!String.IsNullOrEmpty(stylePath))
                         {
-                            _listStyles.Add(stylePath);
+                            stylePath = Environment.ExpandEnvironmentVariables(stylePath);
+                            if (File.Exists(stylePath))
+                            {
+                                _listStyles.Add(stylePath);
+                            }
                         }
                     }
+
+                    base.WriteMessage(MessageLevel.Info, String.Format(
+                        "Loaded {0} styles.", _listStyles.Count));
                 }
 
-                base.WriteMessage(MessageLevel.Info, String.Format(
-                    "Loaded {0} styles.", _listStyles.Count));
+                // Handle the header...
+                this.ParseHeader(configuration);
+
+                _includeSelector = XPathExpression.Compile(
+                    "//span[@name='SandInclude' and @class='tgtSentence']");
+
+                // This is overkill, but we keep it until feature review...
+                _headSelector   = XPathExpression.Compile("//head");
+                _islandSelector = XPathExpression.Compile("//head/xml");
             }
-
-            // Handle the header...
-            this.ParseHeader(configuration);
-
-            _includeSelector = XPathExpression.Compile(
-                "//span[@name='SandInclude' and @class='tgtSentence']");
-
-            // This is overkill, but we keep it until feature review...
-            _headSelector   = XPathExpression.Compile("//head");
-            _islandSelector = XPathExpression.Compile("//head/xml");
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
         }
 
         #endregion
@@ -172,6 +185,22 @@ namespace Sandcastle.Components
             get
             {
                 return _isfirstUse;
+            }
+        }
+
+        protected bool HasLogo
+        {
+            get
+            {
+                return !String.IsNullOrEmpty(_logoImage);
+            }
+        }
+
+        protected bool HasFeedback
+        {
+            get
+            {
+                return _hasFeedback;
             }
         }
 
@@ -377,7 +406,7 @@ namespace Sandcastle.Components
             // 3. Copy the logo image, if available...
             if (!String.IsNullOrEmpty(_logoImage) || File.Exists(_logoImage))
             {
-                string imageFile = Path.GetFileName(_logoImage);
+                string imageFile     = Path.GetFileName(_logoImage);
                 string imageDestPath = Path.Combine(_outputPath, "images");
                 string imageDestFile = Path.Combine(imageDestPath, imageFile);
 
@@ -391,7 +420,9 @@ namespace Sandcastle.Components
                 }
 
                 // Change the logo file to the output mode "../images/Logo.jpg"
-                _logoImage = "../images/" + imageFile;
+                //_logoImage = "../images/" + imageFile;
+                // the directory ../images is now handled with include shared contents 
+                _logoImage = imageFile;  
             }
         }
 
@@ -478,8 +509,12 @@ namespace Sandcastle.Components
                 //   src="../scripts/EventUtilities.js"> </script>
                 xmlWriter.WriteStartElement("script");
                 xmlWriter.WriteAttributeString("type", "text/javascript");
-                xmlWriter.WriteAttributeString("src", 
-                    "../scripts/" + scriptFile);
+                //xmlWriter.WriteAttributeString("src", 
+                //    "../scripts/" + scriptFile);
+
+                this.WriteIncludeAttribute(xmlWriter, "src", "scriptPath",
+                    scriptFile);
+
                 xmlWriter.WriteString(String.Empty);
                 xmlWriter.WriteEndElement();
             }
@@ -523,7 +558,11 @@ namespace Sandcastle.Components
                 xmlWriter.WriteStartElement("link");
                 xmlWriter.WriteAttributeString("rel", "stylesheet");
                 xmlWriter.WriteAttributeString("type", "text/css");
-                xmlWriter.WriteAttributeString("href", "../styles/" + styleFile);
+                //xmlWriter.WriteAttributeString("href", "../styles/" + styleFile);
+
+                this.WriteIncludeAttribute(xmlWriter, "href", "stylePath",
+                    styleFile);
+                
                 xmlWriter.WriteEndElement();
             }
 
@@ -582,7 +621,7 @@ namespace Sandcastle.Components
                 throw new ArgumentNullException("docNavigator",
                     "The document navigator cannot be null (or Nothing).");
             }
-            if (String.IsNullOrEmpty(_logoImage))
+            if (String.IsNullOrEmpty(_logoImage) && _hasFeedback)
             {
                 return;
             }
@@ -594,25 +633,47 @@ namespace Sandcastle.Components
                     _headDivSelector = XPathExpression.Compile("//div[@id='header']");
                 }
             }
-            if (String.IsNullOrEmpty(_logoAlignText))
+
+            if (!String.IsNullOrEmpty(_logoImage))
             {
-                if (_logoAlign != LogoAlignment.None)
+                if (String.IsNullOrEmpty(_logoAlignText))
                 {
-                    _logoAlignText = GetLogoAlignment();
+                    if (_logoAlign != LogoAlignment.None)
+                    {
+                        _logoAlignText = GetLogoAlignment();
+                    }
+                }
+
+                if (_builderStyle == BuildComponentStyle.Vs2005)
+                {
+                    ApplyHeaderVS(docNavigator);
+                }
+                else if (_builderStyle == BuildComponentStyle.Prototype)
+                {
+                    ApplyHeaderPrototype(docNavigator);
+                }
+                else if (_builderStyle == BuildComponentStyle.Hana)
+                {
+                    ApplyHeaderHana(docNavigator);
                 }
             }
-
-            if (_builderStyle == BuildComponentStyle.Vs2005)
-            {
-                ApplyHeaderVS(docNavigator);
-            }
-            else if (_builderStyle == BuildComponentStyle.Prototype)
-            {
-                ApplyHeaderPrototype(docNavigator);
-            }
-            else if (_builderStyle == BuildComponentStyle.Hana)
-            {
-                ApplyHeaderHana(docNavigator);
+            else
+            {   
+                if (!_hasFeedback)
+                {
+                    if (_builderStyle == BuildComponentStyle.Vs2005)
+                    {
+                        RemoveFeedbackVS(docNavigator);
+                    }
+                    else if (_builderStyle == BuildComponentStyle.Prototype)
+                    {
+                        RemoveFeedbackPrototype(docNavigator);
+                    }
+                    else if (_builderStyle == BuildComponentStyle.Hana)
+                    {
+                        RemoveFeedbackHana(docNavigator);
+                    }
+                }
             }
         }
 
@@ -626,7 +687,9 @@ namespace Sandcastle.Components
 
         private void ParseHeader(XPathNavigator configuration)
         {
-            //<header>
+            _hasFeedback = true;
+
+            //<header feedback="true|false">
             //    <logo width="0" height="0" padding="0">
             //        <image path="" altText="" class=""/>
             //        <link uri="" target="" class="" />
@@ -636,9 +699,23 @@ namespace Sandcastle.Components
             //        <table name="" operation="" />
             //    </tables>
             //</header>      
-            string tempText = String.Empty;
             XPathNavigator navigator = configuration.SelectSingleNode("header");
-            if (navigator == null || navigator.HasChildren == false)
+            if (navigator == null)
+            {
+                return;
+            }
+
+            string tempText = navigator.GetAttribute("feedback", String.Empty);
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                bool feedbackValue = true;
+                if (Boolean.TryParse(tempText, out feedbackValue))
+                {
+                    _hasFeedback = feedbackValue;
+                }
+            }
+
+            if (navigator.HasChildren == false)
             {
                 return;
             }
@@ -649,8 +726,8 @@ namespace Sandcastle.Components
                 return;
             }
 
-            int logoWidth = this.GetXmlIntValue(logoNode, "width", 0);
-            int logoHeight = this.GetXmlIntValue(logoNode, "height", 0);
+            int logoWidth   = this.GetXmlIntValue(logoNode, "width", 0);
+            int logoHeight  = this.GetXmlIntValue(logoNode, "height", 0);
             int logoPadding = this.GetXmlIntValue(logoNode, "padding", 0);
 
             // <image path="" altText="" class=""/>
@@ -858,6 +935,31 @@ namespace Sandcastle.Components
             bool hasLogoLink = !String.IsNullOrEmpty(_logoLink);
 
             XPathNavigator headerDiv = docNavigator.SelectSingleNode(_headDivSelector);
+            if (!_hasFeedback)
+            {
+                if (_feedbackRowSelector == null)
+                {
+                    _feedbackRowSelector = XPathExpression.Compile(
+                        "//table[@id='bottomTable']/tr[@id='headerTableRow3']/td");
+                }
+                if (_feedbackSpanSelector == null)
+                {
+                    _feedbackSpanSelector = XPathExpression.Compile(
+                        "//include[@item='feedbackHeader']");
+                }
+                XPathNavigator feedbackRow = docNavigator.SelectSingleNode(
+                    _feedbackRowSelector);
+                if (feedbackRow != null)
+                {
+                    XPathNavigator feedbackSpan = feedbackRow.SelectSingleNode(
+                        _feedbackSpanSelector);
+                    if (feedbackSpan != null)
+                    {
+                        feedbackSpan.DeleteSelf();
+                    }
+                }
+            }
+
             XPathNavigator topTable = headerDiv.SelectSingleNode(
                 "//table[@id='topTable']");
             XPathNavigator bottomTable = headerDiv.SelectSingleNode(
@@ -904,6 +1006,7 @@ namespace Sandcastle.Components
                     writer.WriteAttributeString("href", _logoLink);
                     writer.WriteAttributeString("target", _logoLinkTarget);
                 }
+
                 writer.WriteStartElement("img"); //start - img
                 writer.WriteAttributeString("id", "logoImage");
                 if (!String.IsNullOrEmpty(_logoImageCss))
@@ -917,8 +1020,11 @@ namespace Sandcastle.Components
                         writer.WriteAttributeString("style", _logoLinkedCss);
                     }
                 }
-                writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                //writer.WriteAttributeString("src", _logoImage);
+
+                this.WriteIncludeAttribute(writer, "src", "imagePath", _logoImage);
+
                 writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
@@ -961,8 +1067,11 @@ namespace Sandcastle.Components
                         writer.WriteAttributeString("style", _logoLinkedCss);
                     }
                 }
-                writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                //writer.WriteAttributeString("src", _logoImage);
+
+                this.WriteIncludeAttribute(writer, "src", "imagePath", _logoImage);
+
                 writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
@@ -1021,8 +1130,11 @@ namespace Sandcastle.Components
                         writer.WriteAttributeString("style", _logoLinkedCss);
                     }
                 }
-                writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                //writer.WriteAttributeString("src", _logoImage);
+
+                this.WriteIncludeAttribute(writer, "src", "imagePath", _logoImage);
+
                 writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
@@ -1101,8 +1213,11 @@ namespace Sandcastle.Components
                         writer.WriteAttributeString("style", _logoLinkedCss);
                     }
                 }
-                writer.WriteAttributeString("src", _logoImage);
                 writer.WriteAttributeString("alt", _logoAltText);
+                //writer.WriteAttributeString("src", _logoImage);
+
+                this.WriteIncludeAttribute(writer, "src", "imagePath", _logoImage);
+
                 writer.WriteEndElement(); // end - img
                 if (hasLogoLink)
                 {
@@ -1638,6 +1753,60 @@ namespace Sandcastle.Components
             writer.WriteEndElement(); // table
 
             writer.Close();
+        }
+
+        #endregion
+
+        #region RemoveFeedback Method - VS 2005/8 (Whidbey)
+
+        private void RemoveFeedbackVS(XPathNavigator docNavigator)
+        {
+            if (!_hasFeedback)
+            {
+                XPathNavigator headerDiv = docNavigator.SelectSingleNode(_headDivSelector);
+                if (headerDiv == null)
+                {
+                    return;
+                }
+                if (_feedbackRowSelector == null)
+                {
+                    _feedbackRowSelector = XPathExpression.Compile(
+                        "//table[@id='bottomTable']/tr[@id='headerTableRow3']/td");
+                }
+                XPathNavigator feedbackRow = docNavigator.SelectSingleNode(
+                    _feedbackRowSelector);
+                if (feedbackRow == null)
+                {
+                    return;
+                }
+                if (_feedbackSpanSelector == null)
+                {
+                    _feedbackSpanSelector = XPathExpression.Compile(
+                        "//include[@item='feedbackHeader']");
+                }
+                XPathNavigator feedbackSpan = feedbackRow.SelectSingleNode(
+                    _feedbackSpanSelector);
+                if (feedbackSpan != null)
+                {
+                    feedbackSpan.DeleteSelf();
+                }
+            }
+        }
+
+        #endregion
+
+        #region RemoveFeedback Method - Prototype
+
+        private void RemoveFeedbackPrototype(XPathNavigator docNavigator)
+        {
+        }
+
+        #endregion
+
+        #region RemoveFeedback Method - Hana
+
+        private void RemoveFeedbackHana(XPathNavigator docNavigator)
+        {
         }
 
         #endregion

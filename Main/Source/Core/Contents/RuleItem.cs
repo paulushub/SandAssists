@@ -33,7 +33,7 @@ namespace Sandcastle.Contents
         {
             BuildExceptions.NotNullNotEmpty(name, "name");
 
-            _name = name;
+            _name  = name;
             _value = value;
         }
 

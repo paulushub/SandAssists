@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarDropDownButton : ToolStripDropDownButton , IStatusUpdate
+	public sealed class ToolBarDropDownButton : ToolStripDropDownButton , IStatusUpdate
 	{
 		object caller;
 		Codon codon;
-		ICommand menuBuilder = null;
+		ICommand menuBuilder;
 		ArrayList subItems;
 		
 		public ToolBarDropDownButton(Codon codon, object caller, ArrayList subItems)
@@ -112,7 +112,7 @@ namespace ICSharpCode.Core.WinForms
             }
         }
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
@@ -127,7 +127,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon != null) {
 				if (codon.Properties.Contains("tooltip")) {

@@ -12,7 +12,7 @@ namespace Sandcastle
     /// The converters are used to import and export between various project and/or 
     /// content file formats supported by currently known documentation applications.
     /// </remarks>
-    public abstract class BuildConverter : MarshalByRefObject, IDisposable
+    public abstract class BuildConverter : BuildObject, IDisposable
     {
         #region Private Fields
 

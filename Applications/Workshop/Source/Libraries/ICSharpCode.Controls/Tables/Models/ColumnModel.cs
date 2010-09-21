@@ -67,7 +67,6 @@ namespace XPTable.Models
 
 		#endregion
 		
-		
 		#region Private Fields
 
 		/// <summary>
@@ -116,7 +115,6 @@ namespace XPTable.Models
         private SortColumnCollection secondarySortOrder;
 
 		#endregion
-
 
 		#region Constructor
 
@@ -199,7 +197,6 @@ namespace XPTable.Models
 		}
 
 		#endregion
-
 
 		#region Methods
 

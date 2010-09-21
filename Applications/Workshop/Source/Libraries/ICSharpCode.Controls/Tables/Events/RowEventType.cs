@@ -24,9 +24,7 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
-
 
 namespace XPTable.Events
 {

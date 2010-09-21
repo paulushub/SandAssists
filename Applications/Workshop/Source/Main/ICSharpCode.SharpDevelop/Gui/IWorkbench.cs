@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	public interface IWorkbench : IMementoCapable
+	public interface IWorkbench : IMementoCapable, IDisposable
 	{
 		/// <summary>
 		/// Is called, when the ActiveWorkbenchWindow property changes.
@@ -72,6 +72,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 			set;
 		}
+
+        bool IsDisposed
+        {
+            get;
+        }
 		
 		/// <summary>
 		/// A collection in which all opened view contents (including all secondary view contents) are saved.

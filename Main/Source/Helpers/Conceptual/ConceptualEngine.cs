@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 using Sandcastle.Steps;
 using Sandcastle.Contents;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.Conceptual
 {
@@ -17,7 +18,7 @@ namespace Sandcastle.Conceptual
         #region Private Fields
 
         private ConceptualGroup       _curGroup;
-        private BuildMultiStep        _listSteps;
+        private IList<string>         _listFolders;
         private List<BuildFormat>     _listFormats;
         private List<ConceptualGroup> _listGroups;
 
@@ -40,7 +41,7 @@ namespace Sandcastle.Conceptual
         }
 
         public ConceptualEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context, BuildConfiguration configuration)
+            BuildContext context, IncludeContentList configuration)
             : base(settings, logger, context, configuration)
         {
         }
@@ -67,6 +68,17 @@ namespace Sandcastle.Conceptual
                 }
 
                 return _listGroups.AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of the folders created or are use by this build engine.
+        /// </summary>
+        public override IList<string> Folders
+        {
+            get
+            {
+                return _listFolders;
             }
         }
 
@@ -168,6 +180,7 @@ namespace Sandcastle.Conceptual
                     String.Format("ProjectSettings{0}.xml", indexText);
                 group["$ProjSettingsLoc"] =
                     String.Format("ProjectSettings{0}.loc.xml", indexText);
+                group["$GroupIndex"] = indexText;
 
                 if (!group.Initialize(this.Context))
                 {
@@ -185,7 +198,7 @@ namespace Sandcastle.Conceptual
 
         #region CreateSteps Method
 
-        public override BuildStep CreateSteps(BuildGroup group)
+        public override BuildStep CreateInitialSteps(BuildGroup group)
         {
             ConceptualGroup curGroup = group as ConceptualGroup;
             if (curGroup == null)
@@ -193,12 +206,55 @@ namespace Sandcastle.Conceptual
                 return null;
             }
 
-            if (this.CreateSteps(curGroup))
+            BuildMultiStep listSteps = new BuildMultiStep();
+            listSteps.Message     = "Conceptual topics for the group: " + group.Name;
+            listSteps.LogTitle    = String.Empty;
+            listSteps.LogTimeSpan = true;
+
+            this.CreateSteps(listSteps, curGroup);
+
+            if (listSteps.Count != 0)
             {
-                return _listSteps;
+                return listSteps;
             }
 
             return null;
+        }
+
+        public override BuildStep CreateFinalSteps(BuildGroup group)
+        {
+            ConceptualGroup curGroup = group as ConceptualGroup;
+            if (curGroup == null)
+            {
+                return null;
+            }
+
+            BuildContext context   = this.Context;
+            BuildSettings settings = this.Settings;
+
+            string manifestFile      = group["$ManifestFile"];
+            string buildManifestFile = group["$BuildManifestFile"];
+            string configFile        = group["$ConfigurationFile"];
+            string tocFile           = group["$TocFile"];
+            string buildTocFile      = group["$BuildTocFile"];
+
+            string workingDir = context.WorkingDirectory;
+
+            // Assemble the help files using the BuildAssembler
+            // BuildAssembler.exe /config:Project.config manifest.xml
+            string application = Path.Combine(context.SandcastleToolsDirectory,
+                "BuildAssembler.exe");
+            //arguments = "/config:Conceptual.config Manifest.xml";
+            string arguments = String.Format(" /config:{0} {1}",
+                configFile, manifestFile);
+            StepAssembler buildAssProcess = new StepAssembler(workingDir,
+                application, arguments);
+            buildAssProcess.Group           = group;
+            buildAssProcess.LogTitle        = String.Empty;
+            buildAssProcess.Message         = "For the group: " + group.Name;
+            buildAssProcess.CopyrightNotice = 2;
+
+            return buildAssProcess;
         }
 
         #endregion
@@ -234,9 +290,10 @@ namespace Sandcastle.Conceptual
                     {
                         _curGroup = group;
 
-                        this.CreateSteps(group);
+                        BuildMultiStep listSteps = new BuildMultiStep();
+                        this.CreateSteps(listSteps, group);
 
-                        buildResult = this.RunSteps(_listSteps.Steps);
+                        buildResult = this.RunSteps(listSteps.Steps);
 
                         if (buildResult)
                         {
@@ -290,23 +347,6 @@ namespace Sandcastle.Conceptual
                 return;
             }
 
-            //bool cleanIntermediate = settings.CleanIntermediate;
-            //if (cleanIntermediate)
-            //{
-            //    try
-            //    {
-            //        CleanUpIntermediate();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        BuildLogger outputLogger = this.Logger;
-            //        if (outputLogger != null)
-            //        {
-            //            outputLogger.WriteLine(ex);
-            //        }
-            //    }    
-            //}
-
             if (_listGroups != null)
             {
                 int itemCount = _listGroups.Count;
@@ -331,11 +371,11 @@ namespace Sandcastle.Conceptual
 
         #region CreateSteps Methods
 
-        private bool CreateSteps(ConceptualGroup group)
+        private void CreateSteps(BuildMultiStep listSteps, ConceptualGroup group)
         {
             if (_listFormats == null || _listFormats.Count == 0)
             {
-                return false;
+                return;
             }
 
             BuildSettings settings = this.Settings;
@@ -344,49 +384,23 @@ namespace Sandcastle.Conceptual
 
             if (String.IsNullOrEmpty(sandcastleDir))
             {
-                return false;
+                return;
             }
 
-            _listSteps = new BuildMultiStep();
+            string helpStyle  = BuildStyleUtils.StyleFolder(
+                outputStyle.StyleType);
+            string workingDir = this.Context.WorkingDirectory;
 
-            BuildStyleType styleType = outputStyle.StyleType;
-            string helpStyle = styleType.ToString();
-            if (styleType == BuildStyleType.Whidbey)
-            {
-                helpStyle = BuildStyleType.Vs2005.ToString();
-            }
-
-            return CreateTopicSteps(group, sandcastleDir, helpStyle);
-        }
-
-        #endregion
-
-        #region CreateTopicSteps Method
-
-        private bool CreateTopicSteps(ConceptualGroup group, string sandcastleDir, 
-            string helpStyle)            
-        {
-            BuildContext context   = this.Context;
-            BuildSettings settings = this.Settings;
-            int formatCount = _listFormats.Count;
-
-            string manifestFile      = group["$ManifestFile"];
-            string buildManifestFile = group["$BuildManifestFile"];
-            string configFile        = group["$ConfigurationFile"];
-            string tocFile           = group["$TocFile"];
-            string buildTocFile      = group["$BuildTocFile"];
-
-            // Ensure that we have a valid list of folders...
+            // 1. Ensure that we have a valid list of folders...
             IList<string> listFolders = new List<string>();
             IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
             int folderCount = listFolders.Count;
 
-            BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = context.WorkingDirectory;
-
-            string tempText = null;
-
             // 2. Handle the resources...
+            StepDirectoryCopy copyResources = new StepDirectoryCopy(
+                workingDir);
+            copyResources.LogTitle = String.Empty;
+            copyResources.Message  = "Copying user-defined resources.";
             IList<ResourceContent> resourceContents = group.ResourceContents;
             if (resourceContents != null && resourceContents.Count != 0)
             {
@@ -399,43 +413,77 @@ namespace Sandcastle.Conceptual
                         continue;
                     }
                     IList<ResourceItem> listResources = resourceContent.Items;
-                    if (listResources != null && listResources.Count > 0)
+                    if (listResources == null || listResources.Count == 0)
                     {
-                        StepDirectoryCopy copyResources = new StepDirectoryCopy(
-                            workingDir);
-                        int itemCount = listResources.Count;
+                        continue;
+                    }
 
-                        for (int i = 0; i < itemCount; i++)
+                    int itemCount = listResources.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ResourceItem resource = listResources[i];
+                        if (resource != null && !resource.IsEmpty)
                         {
-                            ResourceItem resource = listResources[i];
-                            if (resource != null && resource.IsEmpty == false)
-                            {
-                                string destFolder = resource.Destination;
-                                copyResources.Add(resource.Source, destFolder);
+                            string destFolder = resource.Destination;
+                            copyResources.Add(resource.Source, destFolder);
 
-                                // Add this to the output folders so that it is copied
-                                // to the final output/build directories...
-                                if (destFolder.StartsWith("Output", 
-                                    StringComparison.CurrentCultureIgnoreCase))
+                            // Add this to the output folders so that it is copied
+                            // to the final output/build directories...
+                            if (destFolder.StartsWith("Output", 
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                DirectoryInfo info = new DirectoryInfo(destFolder);
+                                destFolder = info.Name;
+                                if (!String.IsNullOrEmpty(destFolder) &&
+                                    !dicFolders.ContainsKey(destFolder))
                                 {
-                                    DirectoryInfo info = new DirectoryInfo(destFolder);
-                                    destFolder = info.Name;
-                                    if (String.IsNullOrEmpty(destFolder) == false &&
-                                        dicFolders.ContainsKey(destFolder) == false)
-                                    {
-                                        dicFolders.Add(destFolder, true);
-                                        listFolders.Add(destFolder);
-                                    }
+                                    dicFolders.Add(destFolder, true);
+                                    listFolders.Add(destFolder);
                                 }
                             }
                         }
-
-                        _listSteps.Add(copyResources);
                     }
                 }
-                // resource folder might have being added...
-                folderCount = listFolders.Count; 
             }
+
+            if (copyResources.IsValid)
+            {
+                listSteps.Add(copyResources);
+            }
+            else
+            {
+                StepNone placeHolder = new StepNone();
+                placeHolder.LogTitle = String.Empty;
+                placeHolder.Message  = "Copying user-defined resources.";
+                listSteps.Add(placeHolder);
+            }
+
+            _listFolders = listFolders;
+
+            this.CreateTopicSteps(listSteps, group, sandcastleDir, helpStyle);
+        }
+
+        #endregion
+
+        #region CreateTopicSteps Method
+
+        private void CreateTopicSteps(BuildMultiStep listSteps, 
+            ConceptualGroup group, string sandcastleDir, string helpStyle)            
+        {
+            BuildContext context   = this.Context;
+            BuildSettings settings = this.Settings;
+
+            string manifestFile      = group["$ManifestFile"];
+            string buildManifestFile = group["$BuildManifestFile"];
+            string configFile        = group["$ConfigurationFile"];
+            string tocFile           = group["$TocFile"];
+            string buildTocFile      = group["$BuildTocFile"];
+
+            BuildStyleType outputStyle = settings.Style.StyleType;
+            string workingDir = context.WorkingDirectory;
+
+            string tempText = null;
 
             // 3. Create the conceptual manifest
             // XslTransform.exe 
@@ -449,9 +497,11 @@ namespace Sandcastle.Conceptual
                 tempText, buildManifestFile, manifestFile);
             StepXslTransform manifestProcess = new StepXslTransform(workingDir,
                 application, arguments);
-            manifestProcess.Message = "XslTransform Tool - Conceptual Manifest";
+            manifestProcess.LogTitle = String.Empty;
+            manifestProcess.Message  = "Xsl Transformation - Creating conceptual manifest";
             manifestProcess.CopyrightNotice = 2;
-            _listSteps.Add(manifestProcess);
+            
+            listSteps.Add(manifestProcess);
 
             // 4. Create the conceptual table of contents
             // XslTransform.exe 
@@ -463,131 +513,11 @@ namespace Sandcastle.Conceptual
                 tempText, buildTocFile, tocFile);
             StepXslTransform tocProcess = new StepXslTransform(workingDir,
                 application, arguments);
-            tocProcess.Message = "XslTransform Tool - Creating Conceptual TOC";
+            tocProcess.LogTitle = String.Empty;
+            tocProcess.Message  = "Xsl Transformation - Creating conceptual TOC";
             tocProcess.CopyrightNotice = 2;
-            _listSteps.Add(tocProcess);
 
-            // 6. Assemble the help files using the BuildAssembler
-            // BuildAssembler.exe /config:Project.config manifest.xml
-            application = Path.Combine(context.SandcastleToolsDirectory, 
-                "BuildAssembler.exe");
-            //arguments = "/config:Conceptual.config Manifest.xml";
-            arguments = String.Format(" /config:{0} {1}",
-                configFile, manifestFile);
-            StepAssembler buildAssProcess = new StepAssembler(workingDir,
-                application, arguments);
-            buildAssProcess.Group   = group;
-            buildAssProcess.Message = "BuildAssembler Tool - Conceptual Topics: " + group.Name;
-            buildAssProcess.CopyrightNotice = 2;
-            _listSteps.Add(buildAssProcess);
-
-            // 7. Create the final "Help" sub-directories
-            StepDirectoryCreate helpDirs = new StepDirectoryCreate(workingDir);
-            // 8. Copy outputs to the "Help" sub-directories
-            StepDirectoryCopy copyDirs = new StepDirectoryCopy(workingDir);
-            for (int i = 0; i < formatCount; i++)
-            {
-                BuildFormat format  = _listFormats[i];
-                string helpOutputDir = format.OutputFolder;
-
-                for (int j = 0; j < folderCount; j++)
-                {
-                    string folder = listFolders[j];
-                    tempText = String.Format(@"{0}\{1}", helpOutputDir, folder);
-                    helpDirs.Add(tempText);
-                    copyDirs.Add(String.Format(@"Output\{0}\", folder), tempText);
-                }
-            }
-            _listSteps.Add(helpDirs);
-            _listSteps.Add(copyDirs);
-
-            return true;
-        }
-
-        #endregion
-
-        #region CleanUpIntermediate
-
-        private void CleanUpIntermediate()
-        {
-            BuildContext context = this.Context;
-            if (context == null)
-            {
-                return;
-            }
-
-            string workingDir = context.WorkingDirectory;
-
-            string dduexmlDir   = Path.Combine(workingDir, "DdueXml");
-            string compDir      = Path.Combine(workingDir, "XmlComp");
-            string extractedDir = Path.Combine(workingDir, "ExtractedFiles");
-
-            if (Directory.Exists(dduexmlDir))
-            {
-                BuildDirHandler.DeleteDirectory(dduexmlDir, true);
-            }
-            if (Directory.Exists(compDir))
-            {
-                BuildDirHandler.DeleteDirectory(compDir, true);
-            }
-            if (Directory.Exists(extractedDir))
-            {
-                BuildDirHandler.DeleteDirectory(extractedDir, true);
-            }
-
-            int groupCount = (_listGroups == null) ? 0 : _listGroups.Count;
-            for (int i = 0; i < groupCount; i++)
-            {
-                string manifestFile = _listGroups[i].ManifestFile;
-                if (!String.IsNullOrEmpty(manifestFile) && File.Exists(manifestFile))
-                {
-                    File.SetAttributes(manifestFile, FileAttributes.Normal);
-                    File.Delete(manifestFile);
-                }
-            }
-            // Lookup and delete the manifest and toc dynamic files...
-            string tempFile = Path.Combine(workingDir, "Manifest.xml");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, "ApiManifest.xml");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, "reflection.org");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, "reflection.xml");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, "TopicsToc.xml");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, "ApiToc.xml");
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
-            tempFile = Path.Combine(workingDir, BuildToc.HelpToc);
-            if (File.Exists(tempFile))
-            {
-                File.SetAttributes(tempFile, FileAttributes.Normal);
-                File.Delete(tempFile);
-            }
+            listSteps.Add(tocProcess);
         }
 
         #endregion

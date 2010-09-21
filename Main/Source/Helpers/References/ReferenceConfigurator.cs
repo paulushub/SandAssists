@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Sandcastle.Contents;
-using Sandcastle.Configurations;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.References
 {
@@ -27,7 +27,7 @@ namespace Sandcastle.References
         private ReferenceGroup     _group;
 
         private BuildFormat        _singleFormat;
-        private BuildConfiguration _configuration;
+        private IncludeContentList _configuration;
         private IList<BuildFormat> _listFormats;
 
         #endregion
@@ -55,7 +55,7 @@ namespace Sandcastle.References
                 }
 
                 IncludeContent content = _configuration.GetContent(
-                    BuildConfiguration.IncludeDefault);
+                    IncludeContentList.IncludeDefault);
 
                 if (content != null && content.Count > 0)
                 {
@@ -63,7 +63,7 @@ namespace Sandcastle.References
                 }
 
                 content = _configuration.GetContent(
-                    BuildConfiguration.IncludeReferences);
+                    IncludeContentList.IncludeReferences);
 
                 if (content != null && content.Count > 0)
                 {
@@ -211,7 +211,7 @@ namespace Sandcastle.References
             }
             else
             {
-                item = _configuration[BuildConfiguration.IncludeReferences, key];
+                item = _configuration[IncludeContentList.IncludeReferences, key];
                 if (item != null)
                 {
                     isFound = true;
@@ -254,42 +254,27 @@ namespace Sandcastle.References
         /// </remarks>
         protected virtual void RegisterItemHandlers()
         {
-            // 1. The reference skeleton templeate...
-            this.RegisterConfigurationItem(ConfigurationKeywords.Skeleton,
+            // 1. The reference skeleton template...
+            this.RegisterConfigurationItem(ConfiguratorKeywords.Skeleton,
                 new ConfigurationItemHandler(OnSkeletonItem));
             // 2. The reference topics contents...
-            this.RegisterConfigurationItem(ConfigurationKeywords.ReferenceData,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceData,
                 new ConfigurationItemHandler(OnReferenceDataItem));
             // 4. The reference syntax generators...
-            this.RegisterConfigurationItem(ConfigurationKeywords.SyntaxGenerators,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.SyntaxGenerators,
                 new ConfigurationItemHandler(OnSyntaxGeneratorsItem));
             //// 3. The reference tokens...
             //this.RegisterItem(ConfigItems.Tokens,
             //    new ConfigItemHandler(OnTokensItem));
             // 5. The reference metadata attributes...
-            this.RegisterConfigurationItem(ConfigurationKeywords.ReferenceContents,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceContents,
                 new ConfigurationItemHandler(OnReferenceContentsItem));
             // . The reference code snippets ...
-            this.RegisterConfigurationItem(ConfigurationKeywords.CodeSnippets,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
                 new ConfigurationItemHandler(OnCodeSnippetsItem));
-            //// 6. The reference metadata settings...
-            //this.RegisterItem(ConfigItems.MetadataVersion,
-            //    new ConfigItemHandler(OnMetadataVersionItem));
-            //// 7. The reference metadata settings...
-            //this.RegisterItem(ConfigItems.MetadataSettings,
-            //    new ConfigItemHandler(OnMetadataSettingsItem));
             // 8. The reference transform...
-            this.RegisterConfigurationItem(ConfigurationKeywords.Transforms,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
                 new ConfigurationItemHandler(OnTransformsItem));
-            //// 9. The reference media links...
-            //this.RegisterItem(ConfigItems.MediaLinks,
-            //    new ConfigItemHandler(OnMediaLinksItem));
-            // 10. The reference shared contents...
-            this.RegisterConfigurationItem(ConfigurationKeywords.SharedContents,
-                new ConfigurationItemHandler(OnSharedContentsItem));
-            //// 11. The reference topics links...
-            //this.RegisterItem(ConfigItems.TopicsLinks,
-            //    new ConfigItemHandler(OnTopicsLinksItem));
             //// . The reference ...
             //this.RegisterItem(ConfigItems,
             //    new ConfigItemHandler(OnItem));
@@ -315,23 +300,23 @@ namespace Sandcastle.References
             }
 
             // Handle the case of output formats only for now...
-            if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.CloneComponent",
-                StringComparison.CurrentCultureIgnoreCase))
+            if (String.Equals(configKeyword, "Sandcastle.Components.CloneComponent",
+                StringComparison.OrdinalIgnoreCase))
             {
                 this.OnClonedInclude(args);
             }
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.IntellisenseComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnIntellisenseInclude(args);
             //}
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.ExampleComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnExampleInclude(args);
             //}
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.HxfGeneratorComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnHxfGeneratorInclude(args);
             //}
@@ -398,13 +383,13 @@ namespace Sandcastle.References
 
                 int itemCount = _listFormats.Count;
 
-                //<component type="Microsoft.Ddue.Tools.CloneComponent"
+                //<component type="Sandcastle.Components.CloneComponent"
                 //         assembly="%DXROOT%\ProductionTools\BuildComponents.dll">
                 //  <branch>
                 //  </branch>
                 //</component>
 
-                string componentAssembly = this.GetComponents("SandcastleComponent");
+                string componentAssembly = this.GetComponents("SandAssistComponent");
                 if (String.IsNullOrEmpty(componentAssembly))
                 {
                     return;
@@ -412,17 +397,31 @@ namespace Sandcastle.References
 
                 xmlWriter.WriteStartElement("component");  // start - component
                 xmlWriter.WriteAttributeString("type",
-                    "Microsoft.Ddue.Tools.CloneComponent");
+                    "Sandcastle.Components.CloneComponent");
                 xmlWriter.WriteAttributeString("assembly", componentAssembly);
-                for (int i = 0; i < itemCount; i++)
+
+                for (int i = 0; i < itemCount - 1; i++)
                 {
                     BuildFormat format = _listFormats[i];
                     if (format != null)
                     {
+                        xmlWriter.WriteComment(String.Format(
+                            " For the help format: {0} ", format.FormatName));
                         xmlWriter.WriteStartElement("branch");  // start - branch
                         format.WriteAssembler(_context, _group, xmlWriter);
                         xmlWriter.WriteEndElement();            // end - branch
                     }
+                }
+
+                // For the default branch...
+                BuildFormat formatDefault = _listFormats[itemCount - 1];
+                if (formatDefault != null)
+                {
+                    xmlWriter.WriteComment(String.Format(
+                        " For the help format: {0} ", formatDefault.FormatName));
+                    xmlWriter.WriteStartElement("default");  // start - default
+                    formatDefault.WriteAssembler(_context, _group, xmlWriter);
+                    xmlWriter.WriteEndElement();             // end - default
                 }
 
                 xmlWriter.WriteEndElement();               // end - component
@@ -571,109 +570,6 @@ namespace Sandcastle.References
             }
 
             xmlWriter.WriteEndElement();                // end - transform
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnSharedContentsItem Method
-
-        /// <summary>
-        /// This specifies the shared items used in the conceptual topics, both the
-        /// Sandcastle style defaults and the user-defined items.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnSharedContentsItem(object sender, ConfigurationItemEventArgs args)
-        {
-            IList<string> sharedContents = _style.GetSharedContents(
-                BuildEngineType.Reference);
-            if (sharedContents == null || sharedContents.Count == 0)
-            {
-                throw new BuildException(
-                    "A document shared content is required.");
-            }
-            string workingDir = _context.WorkingDirectory;
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                throw new BuildException(
-                    "The working directory is required, it is not specified.");
-            }
-
-            XPathNavigator navigator = args.Navigator;
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            //<content file="%DXROOT%\Presentation\Vs2005\content\shared_content.xml" />
-
-            int itemCount = sharedContents.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                string sharedContent = sharedContents[i];
-                if (String.IsNullOrEmpty(sharedContent) == false)
-                {
-                    xmlWriter.WriteStartElement("content");
-                    xmlWriter.WriteAttributeString("file", sharedContent);
-                    xmlWriter.WriteEndElement();
-                }
-            }
-
-            //<!-- Overrides the contents to customize it -->
-            //<content file=".\SharedContent.xml" />
-            sharedContents = null;
-            string path = _settings.ContentsDirectory;
-            if (String.IsNullOrEmpty(path) == false &&
-                System.IO.Directory.Exists(path) == true)
-            {
-                sharedContents = _style.GetSharedContents();
-            }
-
-            if (sharedContents != null && sharedContents.Count != 0)
-            {
-                SharedContentConfigurator configurator = 
-                    new SharedContentConfigurator();
-                configurator.Initialize(_context, BuildEngineType.Reference);
-
-                IList<SharedItem> listShared = _group.PrepareShared();
-                if (listShared != null && listShared.Count > 0)
-                {
-                    configurator.Contents.Add(listShared);
-                }
-
-                xmlWriter.WriteComment(" Overrides the contents to customize it... ");
-                itemCount = sharedContents.Count;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    string sharedContent = sharedContents[i];
-                    if (String.IsNullOrEmpty(sharedContent))
-                    {
-                        continue;
-                    }
-
-                    string sharedFile = Path.Combine(path, sharedContent);
-
-                    if (!File.Exists(sharedFile))
-                    {
-                        continue;
-                    }
-
-                    string fileName = _group["$SharedContentFile"];
-                    if (itemCount > 1)  // not yet the case....
-                    {
-                        fileName = fileName.Replace(".", i.ToString() + ".");
-                    }
-                    string finalSharedFile = Path.Combine(workingDir, fileName);
-
-                    configurator.Configure(sharedFile, finalSharedFile);
-
-                    xmlWriter.WriteStartElement("content");
-                    xmlWriter.WriteAttributeString("file", fileName);
-                    xmlWriter.WriteEndElement();
-                }
-
-                configurator.Uninitialize();
-           }
 
             xmlWriter.Close();
             navigator.DeleteSelf();

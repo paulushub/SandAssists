@@ -78,7 +78,7 @@ namespace Sandcastle.Conceptual
             }
 
             bool isFiltered = itemCat.IndexOf(_category.Name, 
-                StringComparison.CurrentCultureIgnoreCase) >= 0;
+                StringComparison.OrdinalIgnoreCase) >= 0;
 
             return this.Inverse ? !isFiltered : isFiltered;
         }

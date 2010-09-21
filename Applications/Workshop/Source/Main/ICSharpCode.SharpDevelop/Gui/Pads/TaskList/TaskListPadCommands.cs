@@ -7,6 +7,8 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 
@@ -85,6 +87,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Length];
 			
 			for (int i = 0; i < buttons.Length; i++)
+			{
+				buttons[i] = new ShowTaskListTokenButton(tokens[i]);
+			}
+			
+			return buttons;
+		}
+		public static ShowTaskListTokenButton[] BuildItems(IList<string> tokens)
+		{
+			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Count];
+
+            for (int i = 0; i < tokens.Count; i++)
 			{
 				buttons[i] = new ShowTaskListTokenButton(tokens[i]);
 			}

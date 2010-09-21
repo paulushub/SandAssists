@@ -7,11 +7,12 @@ using System.Xml;
 using System.Xml.XPath;
 
 using Sandcastle.Formats;
-using Sandcastle.Configurations;
+using Sandcastle.Utilities;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.Steps
 {
-    public class StepChmBuilder : StepProcess
+    public sealed class StepChmBuilder : StepProcess
     {
         #region Private Const Fields
 
@@ -36,14 +37,17 @@ namespace Sandcastle.Steps
         #endregion
 
         #region Private Fields
-
-        private int    _formatIndex;
+                
         private int    _tocWindowStyle;
+        private bool   _optimizeStyle;
+
         private string _tocStyle;
         private string _helpName;
         private string _helpFolder;
+        private string _helpSource;
         private string _helpDirectory;
 
+        private FormatChm        _format;
         private FormatChmOptions _options;
 
         #endregion
@@ -52,22 +56,26 @@ namespace Sandcastle.Steps
 
         public StepChmBuilder()
         {
-            _helpFolder  = "HtmlHelp";
-            this.Message = "ChmBuilder Tool";
+            this.ConstructorDefaults();
         }
 
         public StepChmBuilder(string workingDir, string arguments)
             : base(workingDir, arguments)
         {
-            _helpFolder  = "HtmlHelp";
-            this.Message = "ChmBuilder Tool";
+            this.ConstructorDefaults();
         }
 
         public StepChmBuilder(string workingDir, string fileName, string arguments)
             : base(workingDir, fileName, arguments)
         {
-            _helpFolder  = "HtmlHelp";
-            this.Message = "ChmBuilder Tool";
+            this.ConstructorDefaults();
+        }
+
+        private void ConstructorDefaults()
+        {
+            _optimizeStyle = true;
+            _helpFolder    = "HtmlHelp";
+            this.LogTitle  = "Building the HtmlHelp 1.x help format.";
         }
 
         #endregion
@@ -110,15 +118,52 @@ namespace Sandcastle.Steps
             }
         }
 
+        /// <summary>
+        /// Gets or set a value indicating whether the selected build style 
+        /// build for be optimized for this format. 
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the style can be optimized for
+        /// this format; otherwise, the stoke style or presentation is not
+        /// overwritten or modified. The default is <see langword="true"/>.
+        /// </value>
+        public bool OptimizeStyle
+        {
+            get
+            {
+                return _optimizeStyle;
+            }
+            set
+            {
+                _optimizeStyle = value;
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
+
+        internal FormatChm Format
+        {
+            get
+            {
+                return _format;
+            }
+            set
+            {
+                _format = value;
+            }
+        }
+
         internal FormatChmOptions Options
         {
-            get 
-            { 
-                return _options; 
+            get
+            {
+                return _options;
             }
-            set 
-            { 
-                _options = value; 
+            set
+            {
+                _options = value;
             }
         }
 
@@ -126,7 +171,7 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
@@ -152,6 +197,8 @@ namespace Sandcastle.Steps
                             buildResult = PostProcess(context, logger);
                         }
                     }
+
+                    this.OptimizeStyles(context);
                 }
             }
             catch (Exception ex)
@@ -170,6 +217,8 @@ namespace Sandcastle.Steps
 
         #region Private Methods
 
+        #region PreProcess Method
+
         private bool PreProcess(BuildContext context, BuildLogger logger)
         {
             bool buildResult = false;
@@ -185,29 +234,9 @@ namespace Sandcastle.Steps
                 return buildResult;
             }
 
-            FormatChm chmFormat = null;
+            BuildSettings settings = context.Settings;
 
-            BuildSettings settings     = context.Settings;
-            IList<BuildFormat> formats = settings.Formats;
-            if (formats == null || formats.Count == 0)
-            {
-                return buildResult;
-            }
-
-            _formatIndex  = -1;
-            int itemCount = formats.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = formats[i];
-                if (format != null && format.FormatType == BuildFormatType.HtmlHelp1)
-                {
-                    _formatIndex = i;
-                    chmFormat = (FormatChm)format;
-                    break;
-                }
-            }
-
-            if (chmFormat == null || chmFormat.Enabled == false)
+            if (_format == null || !_format.Enabled)
             {
                 return buildResult;
             }
@@ -225,14 +254,18 @@ namespace Sandcastle.Steps
 
                 return buildResult;
             }
-            string helpDir = Path.Combine(workingDir, _helpFolder);
+            _helpSource = Path.Combine(workingDir, _helpFolder);
+            if (!Directory.Exists(_helpSource))
+            {
+                throw new BuildException("The help file sources directory does not exist.");
+            }
 
             string chmBuilder      = String.Empty;
             string finalChmBuilder = String.Empty;
             if (String.IsNullOrEmpty(configDir) == false &&
                 Directory.Exists(configDir))
             {
-                chmBuilder      = Path.Combine(configDir, "ChmBuilder.config");
+                chmBuilder      = Path.Combine(configDir,  "ChmBuilder.config");
                 finalChmBuilder = Path.Combine(workingDir, "ChmBuilder.config");
             }
             if (File.Exists(chmBuilder) == false)
@@ -251,7 +284,7 @@ namespace Sandcastle.Steps
             
             // 2. For fullTextSearch: Full-text search=Yes
             configItem = "Full-text search=Yes";
-            if (!chmFormat.UseFullTextSearch)
+            if (!_format.UseFullTextSearch)
             {
                 configItem = "Full-text search=No";
             }
@@ -259,7 +292,7 @@ namespace Sandcastle.Steps
 
             // 3. For fullTextStopWords: Full text search stop list file=StopWordList.stp
             string fileSource = Path.Combine(contentsDir, "StopWordList.stp");
-            if (File.Exists(fileSource) && chmFormat.IncludeStopWords)
+            if (File.Exists(fileSource) && _format.IncludeStopWords)
             {
                 string fileDest = Path.Combine(workingDir, _helpFolder + @"\StopWordList.stp");
                 File.Copy(fileSource, fileDest);
@@ -270,7 +303,7 @@ namespace Sandcastle.Steps
 
             // 4. For autoIndex: Auto Index=Yes
             configItem = "Auto Index=Yes";
-            if (!chmFormat.UseAutoIndex)
+            if (!_format.UseAutoIndex)
             {
                 configItem = "Auto Index=No";
             }
@@ -278,7 +311,7 @@ namespace Sandcastle.Steps
 
             // 5. For binaryTOC: Binary TOC=Yes
             configItem = "Binary TOC=Yes";
-            if (!chmFormat.UseBinaryToc)
+            if (!_format.UseBinaryToc)
             {
                 configItem = "Binary TOC=No";
             }
@@ -286,7 +319,7 @@ namespace Sandcastle.Steps
 
             // 6. For binaryIndex: Binary Index=Yes
             configItem = "Binary Index=Yes";
-            if (!chmFormat.UseBinaryIndex)
+            if (!_format.UseBinaryIndex)
             {
                 configItem = "Binary Index=No";
             }
@@ -294,18 +327,18 @@ namespace Sandcastle.Steps
 
             // 7. For mainFrame:
             // MainFrame="{3}","{0}.hhc","{0}.hhk","{1}","{1}",,,,,0x43520,,0x387e,[50,50,1050,900],,,,,,,0
-            configItem = chmFormat["HelpWindow"];
+            configItem = _format["HelpWindow"];
             // if the use defined the help window, we use it...
             if (String.IsNullOrEmpty(configItem))
             {
                 configItem = "MainFrame=\"{3}\",\"{0}.hhc\",\"{0}.hhk\",\"{1}\",\"{1}\",,,,,";
-                if (chmFormat.IncludeFavorites)
+                if (_format.IncludeFavorites)
                 {
-                    configItem += chmFormat.IncludeAdvancedSearch ? "0x63520,,0x387e" : "0x43520,,0x387e";
+                    configItem += _format.IncludeAdvancedSearch ? "0x63520,,0x387e" : "0x43520,,0x387e";
                 }
                 else
                 {
-                    configItem += chmFormat.IncludeAdvancedSearch ? "0x62520,,0x387e" : "0x42520,,0x387e";
+                    configItem += _format.IncludeAdvancedSearch ? "0x62520,,0x387e" : "0x42520,,0x387e";
                 }
                 configItem += ",[50,50,1050,900],,,,,,,0";
             }
@@ -317,31 +350,31 @@ namespace Sandcastle.Steps
 
             // 2. We modify the windows styles of the table of contents
             _tocWindowStyle = 0x800000;
-            if (chmFormat.TocHasButtons)
+            if (_format.TocHasButtons)
             {
                 _tocWindowStyle |= TocHasButtons;
             }
-            if (chmFormat.TocHasLines)
+            if (_format.TocHasLines)
             {
                 _tocWindowStyle |= TocHasLines;
             }
-            if (chmFormat.TocLinesAtRoot)
+            if (_format.TocLinesAtRoot)
             {
                 _tocWindowStyle |= TocLinesAtRoot;
             }
-            if (chmFormat.TocShowSelectionAlways)
+            if (_format.TocShowSelectionAlways)
             {
                 _tocWindowStyle |= TocShowSelAlways;
             }
-            if (chmFormat.TocTrackSelect)
+            if (_format.TocTrackSelect)
             {
                 _tocWindowStyle |= TocTrackSelect;
             }
-            if (chmFormat.TocSingleExpand)
+            if (_format.TocSingleExpand)
             {
                 _tocWindowStyle |= TocSingleExpand;
             }
-            if (chmFormat.TocFullrowSelect)
+            if (_format.TocFullrowSelect)
             {
                 _tocWindowStyle |= TocFullrowSelect;
             }
@@ -352,14 +385,13 @@ namespace Sandcastle.Steps
             return buildResult;
         }
 
+        #endregion
+
+        #region PostProcess Method
+
         private bool PostProcess(BuildContext context, BuildLogger logger)
         {
             bool buildResult = false;
-
-            if (_formatIndex < 0)
-            {
-                return buildResult;
-            }
 
             // We modify the encoding of the hhp file to fix a bug...
             string filePath = Path.Combine(this.WorkingDirectory,
@@ -429,6 +461,172 @@ namespace Sandcastle.Steps
 
             return buildResult;
         }
+
+        #endregion
+
+        #region OptimizeStyle Methods
+
+        private void OptimizeStyles(BuildContext context)
+        {
+            if (!_optimizeStyle)
+            {
+                return;
+            }
+
+            BuildSettings settings   = context.Settings;
+            BuildStyleType styleType = settings.Style.StyleType;
+
+            // Currently, only the classic style is available and optimized...
+            if (styleType == BuildStyleType.ClassicWhite ||
+                styleType == BuildStyleType.ClassicBlue)
+            {
+                this.OptimizeClassicStyles(context);
+            }
+        }
+
+        private void OptimizeClassicStyles(BuildContext context)
+        {
+            BuildLogger logger = context.Logger;
+
+            string startMessage = "Started style optimization for Classic Style";
+            string endMessage   = "Completed style optimization for Classic Style";
+
+            logger.WriteLine(startMessage, BuildLoggerLevel.Info);
+
+            BuildSettings settings = context.Settings;
+            string sandassistDir = settings.SandAssistDirectory;
+            if (!Directory.Exists(sandassistDir))
+            {
+                logger.WriteLine("Sandcastle Assist directory does not exists.",
+                    BuildLoggerLevel.Warn);
+
+                logger.WriteLine(endMessage, BuildLoggerLevel.Info);
+                return;
+            }
+
+            string formatDir = Path.Combine(sandassistDir,
+                @"Optimizations\Vs2005\Chm");
+            if (!Directory.Exists(formatDir))
+            {
+                logger.WriteLine("The format directory does not exists.",
+                    BuildLoggerLevel.Warn);
+
+                logger.WriteLine(endMessage, BuildLoggerLevel.Info);
+                return;
+            }
+
+            // 1. For the icons: the directory must exist and not empty...
+            string iconsDir = Path.Combine(formatDir, @"Icons");
+            string targetDir = Path.Combine(_helpSource, "icons");
+            if (Directory.Exists(iconsDir) && Directory.Exists(targetDir) &&
+                !DirectoryUtils.IsDirectoryEmpty(iconsDir))
+            {
+                try
+                {
+                    BuildDirCopier dirCopier = new BuildDirCopier();
+                    dirCopier.Overwrite = true;
+                    dirCopier.Recursive = false;
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine("Replacing stock icons with: " + iconsDir,
+                            BuildLoggerLevel.Info);
+                    }
+
+                    int fileCopies = dirCopier.Copy(iconsDir, targetDir);
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine(String.Format(
+                            "Total of {0} icons or images replaced.", fileCopies),
+                            BuildLoggerLevel.Info);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (logger != null)
+                    {
+                        logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    }
+                }
+            }
+
+            // 2. For the style-sheets: the directory must exist and not empty...
+            string stylesDir = Path.Combine(formatDir, @"Styles");
+            targetDir = Path.Combine(_helpSource, "styles");
+            if (Directory.Exists(stylesDir) && Directory.Exists(targetDir) &&
+                !DirectoryUtils.IsDirectoryEmpty(stylesDir))
+            {
+                try
+                {
+                    BuildDirCopier dirCopier = new BuildDirCopier();
+                    dirCopier.Overwrite = true;
+                    dirCopier.Recursive = false;
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine("Replacing stock styles with: " + stylesDir,
+                            BuildLoggerLevel.Info);
+                    }
+
+                    int fileCopies = dirCopier.Copy(stylesDir, targetDir);
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine(String.Format(
+                            "Total of {0} styles replaced.", fileCopies),
+                            BuildLoggerLevel.Info);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (logger != null)
+                    {
+                        logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    }
+                }
+            }
+
+            // 3. For the scripts: the directory must exist and not empty...
+            string scriptsDir = Path.Combine(formatDir, @"Scripts");
+            targetDir = Path.Combine(_helpSource, "scripts");
+            if (Directory.Exists(scriptsDir) && Directory.Exists(targetDir) &&
+                !DirectoryUtils.IsDirectoryEmpty(scriptsDir))
+            {
+                try
+                {
+                    BuildDirCopier dirCopier = new BuildDirCopier();
+                    dirCopier.Overwrite = true;
+                    dirCopier.Recursive = false;
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine("Replacing stock scripts with: " + scriptsDir,
+                            BuildLoggerLevel.Info);
+                    }
+
+                    int fileCopies = dirCopier.Copy(scriptsDir, targetDir);
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine(String.Format(
+                            "Total of {0} scripts replaced.", fileCopies),
+                            BuildLoggerLevel.Info);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (logger != null)
+                    {
+                        logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    }
+                }
+            }
+
+            logger.WriteLine(endMessage, BuildLoggerLevel.Info);
+        }
+
+        #endregion
 
         #endregion
 

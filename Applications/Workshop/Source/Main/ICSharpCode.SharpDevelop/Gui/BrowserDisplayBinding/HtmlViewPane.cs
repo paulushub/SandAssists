@@ -348,7 +348,15 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			SetUrlBox(comboBox);
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
 			comboBox.Items.Clear();
-			comboBox.Items.AddRange(PropertyService.Get("Browser.URLBoxHistory", new string[0]));
+            StringList urlItems = PropertyService.Get(
+                "Browser.URLBoxHistory", new StringList());
+            if (urlItems != null)
+            {
+                for (int i = 0; i < urlItems.Count; i++)
+                {
+                    comboBox.Items.Add(urlItems[i]);
+                }
+            }
 			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
 			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
 		}

@@ -57,6 +57,21 @@ namespace Sandcastle
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets the unique name of this build logger.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the unique name of this
+        /// build logger implementation. This will always return <c>Sandcastle.Container.Logger</c>.
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return "Sandcastle.Container.Logger";
+            }
+        }
+
         public int Count
         {
             get
@@ -100,9 +115,9 @@ namespace Sandcastle
 
         #region Public Methods
 
-        public override void Initialize()
+        public override void Initialize(string logWorkingDir, string logTitle)
         {
-            base.Initialize();
+            base.Initialize(logWorkingDir, logTitle);
 
             if (_listLoggers != null)
             {
@@ -110,7 +125,7 @@ namespace Sandcastle
                 for (int i = 0; i < itemCount; i++)
                 {
                     BuildLogger logger = _listLoggers[i];
-                    logger.Initialize();
+                    logger.Initialize(logWorkingDir, logTitle);
                 }
             }
         }
@@ -127,8 +142,6 @@ namespace Sandcastle
                     BuildLogger logger = _listLoggers[i];
                     logger.Uninitialize();
                 }
-
-                _listLoggers.Clear();
             }
         }
 

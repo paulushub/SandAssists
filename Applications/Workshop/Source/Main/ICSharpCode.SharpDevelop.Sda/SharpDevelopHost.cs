@@ -18,7 +18,50 @@ namespace ICSharpCode.SharpDevelop.Sda
 	/// AppDomain.
 	/// </summary>
 	public sealed class SharpDevelopHost
-	{
+    {
+        #region Private Fields
+
+        private AppDomain appDomain;
+        private CallHelper helper;
+        private SDInitStatus initStatus;
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        /// <summary>
+		/// Create a new AppDomain to host SharpDevelop.
+		/// </summary>
+		public SharpDevelopHost(StartupSettings startup)
+		{
+			if (startup == null) {
+				throw new ArgumentNullException("startup");
+			}
+			this.appDomain = CreateDomain();
+			helper = (CallHelper)appDomain.CreateInstanceAndUnwrap(SdaAssembly.FullName, typeof(CallHelper).FullName);
+			helper.InitSharpDevelopCore(new CallbackHelper(this), startup);
+			initStatus = SDInitStatus.CoreInitialized;
+		}
+		
+		/// <summary>
+		/// Host SharpDevelop in the existing AppDomain.
+		/// </summary>
+		public SharpDevelopHost(AppDomain appDomain, StartupSettings startup)
+		{
+			if (appDomain == null) {
+				throw new ArgumentNullException("appDomain");
+			}
+			if (startup == null) {
+				throw new ArgumentNullException("startup");
+			}
+			this.appDomain = appDomain;
+			helper = (CallHelper)appDomain.CreateInstanceAndUnwrap(SdaAssembly.FullName, typeof(CallHelper).FullName);
+			helper.InitSharpDevelopCore(new CallbackHelper(this), startup);
+			initStatus = SDInitStatus.CoreInitialized;
+		}
+
+		#endregion
+		
 		#region CreateDomain
 
 		/// <summary>
@@ -61,45 +104,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Busy,
 			AppDomainUnloaded
 		}
-		#endregion
-		
-		AppDomain appDomain;
-		CallHelper helper;
-		SDInitStatus initStatus;
-		
-		#region Constructors
-
-		/// <summary>
-		/// Create a new AppDomain to host SharpDevelop.
-		/// </summary>
-		public SharpDevelopHost(StartupSettings startup)
-		{
-			if (startup == null) {
-				throw new ArgumentNullException("startup");
-			}
-			this.appDomain = CreateDomain();
-			helper = (CallHelper)appDomain.CreateInstanceAndUnwrap(SdaAssembly.FullName, typeof(CallHelper).FullName);
-			helper.InitSharpDevelopCore(new CallbackHelper(this), startup);
-			initStatus = SDInitStatus.CoreInitialized;
-		}
-		
-		/// <summary>
-		/// Host SharpDevelop in the existing AppDomain.
-		/// </summary>
-		public SharpDevelopHost(AppDomain appDomain, StartupSettings startup)
-		{
-			if (appDomain == null) {
-				throw new ArgumentNullException("appDomain");
-			}
-			if (startup == null) {
-				throw new ArgumentNullException("startup");
-			}
-			this.appDomain = appDomain;
-			helper = (CallHelper)appDomain.CreateInstanceAndUnwrap(SdaAssembly.FullName, typeof(CallHelper).FullName);
-			helper.InitSharpDevelopCore(new CallbackHelper(this), startup);
-			initStatus = SDInitStatus.CoreInitialized;
-		}
-
 		#endregion
 		
 		#region Workbench Initialization and startup
@@ -273,6 +277,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#endregion
 		
 		#region Callback Events
+
 		System.ComponentModel.ISynchronizeInvoke invokeTarget;
 		
 		/// <summary>
@@ -423,6 +428,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				if (host.FileSaved != null) host.FileSaved(host, new FileEventArgs(fileName));
 			}
 		}
+
 		#endregion
 	}
 }

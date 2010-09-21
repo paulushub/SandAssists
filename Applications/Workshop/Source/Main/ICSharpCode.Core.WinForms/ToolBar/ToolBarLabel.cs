@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarLabel : ToolStripLabel, IStatusUpdate
+	public sealed class ToolBarLabel : ToolStripLabel, IStatusUpdate
 	{
 		object caller;
 		Codon  codon;
-		ICommand menuCommand = null;
+		ICommand menuCommand;
 		
 		public ToolBarLabel(Codon codon, object caller)
 		{
@@ -61,7 +61,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null)
 			{
@@ -71,7 +71,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
             if (codon == null)
             {

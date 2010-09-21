@@ -286,6 +286,8 @@ namespace Sandcastle.Components.Codes
 
                 _xmlWriter.WriteStartElement("pre");
                 _xmlWriter.WriteAttributeString("class", syntax.Id + " highlighted");
+                // We add this to preserve the whitespace in Help Viewer 1.0...
+                _xmlWriter.WriteAttributeString("xml", "space", String.Empty, "preserve");
 
                 _xmlWriter.WriteStartElement("span");
                 _xmlWriter.WriteAttributeString("class", _classNames[2]);

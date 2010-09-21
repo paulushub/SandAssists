@@ -11,6 +11,8 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Formats
 {
     internal sealed class FormatChmEncoding
@@ -131,7 +133,7 @@ namespace Sandcastle.Formats
         {
             int fileCount = 0;
 
-            IEnumerable<string> fileIterator = BuildDirHandler.FindFiles(
+            IEnumerable<string> fileIterator = PathSearch.FindFiles(
               new DirectoryInfo(workingDir), "*.htm", SearchOption.AllDirectories);
 
             int itemCount = _listEncoders.Count;
@@ -174,6 +176,12 @@ namespace Sandcastle.Formats
                 }
 
                 File.Delete(file);
+                if (File.Exists(file))
+                {
+                    // Have experienced delay file deletion, resulting exception
+                    // in the next renaming step...just sleep.
+                    System.Threading.Thread.Sleep(100);
+                }
                 File.Move(file + ".tmp", file);
 
                 fileCount++;
@@ -280,7 +288,6 @@ namespace Sandcastle.Formats
 
             string ansi = Encoding.GetEncoding(encodingNameForLcid(lcid)).HeaderName;
             
-            //Console.WriteLine("EncodingName: " + ansi);
             if (!String.Equals(ansi, "Windows-1252"))
             {
                 _substPatterns.Add(

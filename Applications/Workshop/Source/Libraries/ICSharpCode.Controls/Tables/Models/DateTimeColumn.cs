@@ -74,7 +74,6 @@ namespace XPTable.Models
 
 		#endregion
 		
-		
 		#region Constructor
 		
 		/// <summary>
@@ -85,7 +84,6 @@ namespace XPTable.Models
 			this.Init();
 		}
 
-
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text
 		/// </summary>
@@ -94,7 +92,6 @@ namespace XPTable.Models
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text and width
@@ -105,7 +102,6 @@ namespace XPTable.Models
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text, width and visibility
@@ -118,7 +114,6 @@ namespace XPTable.Models
 			this.Init();
 		}
 
-
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text and image
 		/// </summary>
@@ -128,7 +123,6 @@ namespace XPTable.Models
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text, image and width
@@ -140,7 +134,6 @@ namespace XPTable.Models
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new DateTimeColumn with the specified header text, image, width and visibility
@@ -154,7 +147,6 @@ namespace XPTable.Models
 			this.Init();
 		}
 
-
 		/// <summary>
 		/// Initializes the DateTimeColumn with default values
 		/// </summary>
@@ -165,7 +157,6 @@ namespace XPTable.Models
 		}
 
 		#endregion
-
 
 		#region Methods
 
@@ -179,7 +170,6 @@ namespace XPTable.Models
 			return "DATETIME";
 		}
 
-
 		/// <summary>
 		/// Gets the Column's default CellRenderer
 		/// </summary>
@@ -188,7 +178,6 @@ namespace XPTable.Models
 		{
 			return new DateTimeCellRenderer();
 		}
-
 
 		/// <summary>
 		/// Gets a string that specifies the name of the Column's default CellEditor
@@ -200,7 +189,6 @@ namespace XPTable.Models
 			return "DATETIME";
 		}
 
-
 		/// <summary>
 		/// Gets the Column's default CellEditor
 		/// </summary>
@@ -211,7 +199,6 @@ namespace XPTable.Models
 		}
 
 		#endregion
-
 
 		#region Properties
 

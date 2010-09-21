@@ -16,6 +16,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Undo;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.TextEditor.Gui
@@ -25,14 +26,15 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         ITextEditorControlProvider, IParseInformationListener, IClipboardHandler,
         IContextHelpProvider, IToolsHost
     {
-        internal readonly CodeEditorControl textEditorControl;
+        private CodeEditorControl textEditorControl;
 
         public CodeEditorViewContent(OpenedFile file)
             : base(file)
         {
             this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
 
-            textEditorControl = CreateSharpDevelopTextAreaControl();
+            textEditorControl = CreateTextAreaControl();
+
             textEditorControl.RightToLeft = RightToLeft.No;
             textEditorControl.Document.DocumentChanged += new DocumentEventHandler(TextAreaChangedEvent);
             textEditorControl.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(CaretModeChanged);
@@ -42,11 +44,33 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             textEditorControl.FileName = file.FileName;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (!this.IsDisposed)
+            {
+                if (this.PrimaryFile.IsUntitled)
+                {
+                    ParserService.ClearParseInformation(this.PrimaryFile.FileName);
+                }
+                textEditorControl.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         public TextEditorControl TextEditorControl
         {
             get
             {
                 return textEditorControl;
+            }
+        }
+
+        public TextArea ActiveTextArea
+        {
+            get
+            {
+                return textEditorControl.ActiveTextAreaControl.TextArea;
             }
         }
 
@@ -69,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
                 return textEditorControl.EnableUndo;
             }
         }
+
         public bool EnableRedo
         {
             get
@@ -80,12 +105,12 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         // ParserUpdateThread uses the text property via IEditable, I had an exception
         // because multiple threads were accessing the GapBufferStrategy at the same time.
 
-        string GetText()
+        private string GetText()
         {
             return textEditorControl.Document.TextContent;
         }
 
-        void SetText(string value)
+        private void SetText(string value)
         {
             textEditorControl.Document.Replace(0, textEditorControl.Document.TextLength, value);
         }
@@ -167,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             this.textEditorControl.Redo();
         }
 
-        private CodeEditorControl CreateSharpDevelopTextAreaControl()
+        private CodeEditorControl CreateTextAreaControl()
         {
             return new CodeEditorControl();
         }
@@ -175,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         public void ShowHelp()
         {
             // Resolve expression at cursor and show help
-            TextArea textArea = textEditorControl.ActiveTextAreaControl.TextArea;
+            TextArea textArea = this.ActiveTextArea;
             ITextDocument doc = textArea.Document;
             IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
             if (expressionFinder == null)
@@ -200,9 +225,19 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             }
         }
 
-        void TextAreaChangedEvent(object sender, DocumentEventArgs e)
+        private void TextAreaChangedEvent(object sender, DocumentEventArgs e)
         {
-            this.PrimaryFile.MakeDirty();
+            ITextDocument document = sender as ITextDocument;
+            if (document != null)
+            {
+                UndoStack undoStack = document.UndoStack;
+                this.PrimaryFile.IsDirty = undoStack.CanUndo;
+            }
+            else
+            {
+                this.PrimaryFile.MakeDirty();
+            }
+
             NavigationService.ContentChanging(this.textEditorControl, e);
         }
 
@@ -210,20 +245,6 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         {
             textEditorControl.OptionsChanged();
             textEditorControl.Refresh();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!this.IsDisposed)
-            {
-                if (this.PrimaryFile.IsUntitled)
-                {
-                    ParserService.ClearParseInformation(this.PrimaryFile.FileName);
-                }
-                textEditorControl.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
 
         public override bool IsReadOnly
@@ -311,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
                     }
                 }
             }
-            textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
+            this.ActiveTextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
 
             //			// insane check for cursor position, may be required for document reload.
             //			int lineNr = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.Document.Caret.Offset);
@@ -330,13 +351,13 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             return new TextNavigationPoint(this.PrimaryFileName, lineNumber, this.Column, txt);
         }
 
-        void CaretUpdate(object sender, EventArgs e)
+        private void CaretUpdate(object sender, EventArgs e)
         {
             CaretChanged(null, null);
             CaretModeChanged(null, null);
         }
 
-        void CaretChanged(object sender, EventArgs e)
+        private void CaretChanged(object sender, EventArgs e)
         {
             TextAreaControl activeTextAreaControl = textEditorControl.ActiveTextAreaControl;
             int line = activeTextAreaControl.Caret.Line;
@@ -345,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             NavigationService.Log(this.BuildNavPoint());
         }
 
-        void CaretModeChanged(object sender, EventArgs e)
+        private void CaretModeChanged(object sender, EventArgs e)
         {
             StatusBarService.SetInsertMode(textEditorControl.ActiveTextAreaControl.Caret.CaretMode == CaretMode.InsertMode);
         }
@@ -380,7 +401,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             SetIcon();
         }
 
-        void SetIcon()
+        private void SetIcon()
         {
             if (this.WorkbenchWindow != null)
             {
@@ -420,7 +441,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
                 delegate
                 {
                     textEditorControl.ActiveTextAreaControl.CenterViewOn(
-                        line, (int)(0.3 * textEditorControl.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
+                        line, (int)(0.3 * this.ActiveTextArea.TextView.VisibleLineCount));
                 });
         }
 
@@ -466,14 +487,14 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             }
         }
 
-        void ParseInformationUpdatedInvoked(ParseInformation parseInfo)
+        private void ParseInformationUpdatedInvoked(ParseInformation parseInfo)
         {
             try
             {
                 textEditorControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
                 UpdateClassMemberBookmarks(parseInfo);
-                textEditorControl.ActiveTextAreaControl.TextArea.Refresh(textEditorControl.ActiveTextAreaControl.TextArea.FoldMargin);
-                textEditorControl.ActiveTextAreaControl.TextArea.Refresh(textEditorControl.ActiveTextAreaControl.TextArea.IconBarMargin);
+                this.ActiveTextArea.Refresh(this.ActiveTextArea.FoldMargin);
+                this.ActiveTextArea.Refresh(this.ActiveTextArea.IconBarMargin);
             }
             catch (Exception ex)
             {
@@ -481,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             }
         }
 
-        void UpdateClassMemberBookmarks(ParseInformation parseInfo)
+        private void UpdateClassMemberBookmarks(ParseInformation parseInfo)
         {
             BookmarkManager bm = textEditorControl.Document.BookmarkManager;
             bm.RemoveMarks(new Predicate<Bookmark>(IsClassMemberBookmark));
@@ -497,7 +518,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             }
         }
 
-        void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
+        private void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
         {
             if (c.IsSynthetic) return;
             if (!c.Region.IsEmpty)
@@ -530,17 +551,18 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
             }
         }
 
-        bool IsClassMemberBookmark(Bookmark b)
+        private bool IsClassMemberBookmark(Bookmark b)
         {
             return b is Bookmarks.ClassMemberBookmark || b is Bookmarks.ClassBookmark;
         }
 
-        #region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+        #region IClipboardHandler Members
+
         public bool EnableCut
         {
             get
             {
-                return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;
+                return !this.IsDisposed && this.ActiveTextArea.ClipboardHandler.EnableCut;
             }
         }
 
@@ -548,7 +570,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         {
             get
             {
-                return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
+                return !this.IsDisposed && this.ActiveTextArea.ClipboardHandler.EnableCopy;
             }
         }
 
@@ -556,7 +578,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         {
             get
             {
-                return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste;
+                return !this.IsDisposed && this.ActiveTextArea.ClipboardHandler.EnablePaste;
             }
         }
 
@@ -564,7 +586,7 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         {
             get
             {
-                return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete;
+                return !this.IsDisposed && this.ActiveTextArea.ClipboardHandler.EnableDelete;
             }
         }
 
@@ -572,33 +594,33 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
         {
             get
             {
-                return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
+                return !this.IsDisposed && this.ActiveTextArea.ClipboardHandler.EnableSelectAll;
             }
         }
 
         public void SelectAll()
         {
-            textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
+            this.ActiveTextArea.ClipboardHandler.SelectAll(null, null);
         }
 
         public void Delete()
         {
-            textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Delete(null, null);
+            this.ActiveTextArea.ClipboardHandler.Delete(null, null);
         }
 
         public void Paste()
         {
-            textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Paste(null, null);
+            this.ActiveTextArea.ClipboardHandler.Paste(null, null);
         }
 
         public void Copy()
         {
-            textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
+            this.ActiveTextArea.ClipboardHandler.Copy(null, null);
         }
 
         public void Cut()
         {
-            textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Cut(null, null);
+            this.ActiveTextArea.ClipboardHandler.Cut(null, null);
         }
         #endregion
 

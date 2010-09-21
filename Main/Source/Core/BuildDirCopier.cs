@@ -4,6 +4,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle
 {
     /// <summary>
@@ -222,7 +224,7 @@ namespace Sandcastle
                 throw new BuildException("The source directory must exist.");
             }            
             if (String.Equals(sourceDir, targetDir, 
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 throw new BuildException(
                     "The source and destination cannot be the same.");
@@ -388,7 +390,7 @@ namespace Sandcastle
             string filePath;
             
             // Handle the copy of each file into it's new directory.
-            foreach (string file in BuildDirHandler.FindFiles(
+            foreach (string file in PathSearch.FindFiles(
                 source, "*.*", SearchOption.TopDirectoryOnly))
             {
                 FileAttributes fileAttr = File.GetAttributes(file);

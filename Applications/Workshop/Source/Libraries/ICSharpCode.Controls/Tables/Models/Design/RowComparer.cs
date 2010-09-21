@@ -27,26 +27,27 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 
 namespace XPTable.Models.Design
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	internal class RowComparer : IComparer
+    internal sealed class RowComparer : IComparer, IComparer<Row>
 	{
+        public RowComparer()
+        {   
+        }
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public int Compare(object x, object y)
+        public int Compare(Row row1, Row row2)
 		{
-			Row row1 = (Row) x;
-			Row row2 = (Row) y;
-			
 			// check for null rows
 			if (row1 == null && row2 == null)
 			{
@@ -71,6 +72,14 @@ namespace XPTable.Models.Design
 			}
 
 			return 0;
+		}
+
+		public int Compare(object x, object y)
+		{
+            Row row1 = x as Row;
+            Row row2 = y as Row;
+
+            return this.Compare(row1, row2);
 		}
 	}
 }

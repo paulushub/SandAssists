@@ -142,7 +142,7 @@ namespace Sandcastle.Utilities
             }
             
             if (String.Equals(sourceDir, targetDir, 
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException();
             }

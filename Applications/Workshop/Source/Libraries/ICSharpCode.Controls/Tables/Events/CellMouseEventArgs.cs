@@ -24,35 +24,21 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 using XPTable.Models;
 
-
 namespace XPTable.Events
 {
-	#region Delegates
-
-	/// <summary>
-	/// Represents the method that will handle the CellMouseEnter, CellMouseLeave, 
-	/// CellMouseDown, CellMouseUp, CellMouseMove and CellMouseHover events of a Table
-	/// </summary>
-	public delegate void CellMouseEventHandler(object sender, CellMouseEventArgs e);
-
-	#endregion
-
-
-
 	#region CellMouseEventArgs
 	
 	/// <summary>
 	/// Provides data for the CellMouseEnter, CellMouseLeave, CellMouseDown, 
 	/// CellMouseUp and CellMouseMove events of a Table
 	/// </summary>
-	public class CellMouseEventArgs : MouseEventArgs
+	public sealed class CellMouseEventArgs : MouseEventArgs
 	{
 		#region Private Fields
 
@@ -82,7 +68,6 @@ namespace XPTable.Events
 		private Rectangle cellRect;
 
 		#endregion
-		
 		
 		#region Constructor
 
@@ -168,7 +153,6 @@ namespace XPTable.Events
 
 		#endregion
 
-
 		#region Properties
 
 		/// <summary>
@@ -182,7 +166,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the Table the Cell belongs to
 		/// </summary>
@@ -193,7 +176,6 @@ namespace XPTable.Events
 				return this.table;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the Row index of the Cell
@@ -206,7 +188,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the Column index of the Cell
 		/// </summary>
@@ -218,7 +199,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the Cells bounding rectangle
 		/// </summary>
@@ -229,7 +209,6 @@ namespace XPTable.Events
 				return this.cellRect;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the position of the Cell

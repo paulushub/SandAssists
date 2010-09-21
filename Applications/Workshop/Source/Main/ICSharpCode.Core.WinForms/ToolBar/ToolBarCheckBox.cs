@@ -10,21 +10,23 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarCheckBox : ToolStripButton , IStatusUpdate
+	public sealed class ToolBarCheckBox : ToolStripButton , IStatusUpdate
 	{
 		object caller;
 		Codon  codon;
-		string description   = String.Empty;
-		ICheckableMenuCommand menuCommand = null;
+		string description;
+		ICheckableMenuCommand menuCommand;
 		
 		public ToolBarCheckBox(string text)
 		{
+            description = String.Empty;
 			this.RightToLeft = RightToLeft.Inherit;
 			Text = text;
 		}
 		
 		public ToolBarCheckBox(Codon codon, object caller)
 		{
+            description = String.Empty;
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller = caller;
 			this.codon  = codon;
@@ -102,7 +104,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
@@ -121,7 +123,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon != null) 
             {

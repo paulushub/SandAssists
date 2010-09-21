@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 using BplusDotNet;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Formats
 {
     public sealed class FormatWebConverter
@@ -72,7 +74,7 @@ namespace Sandcastle.Formats
 
             DirectoryInfo dirInfo = new DirectoryInfo(srcDir);
 
-            IEnumerable<string> fileIterator = BuildDirHandler.FindFiles(
+            IEnumerable<string> fileIterator = PathSearch.FindFiles(
                dirInfo, "*.*", SearchOption.TopDirectoryOnly);
             foreach (string fileName in fileIterator)
             {
@@ -87,7 +89,7 @@ namespace Sandcastle.Formats
                     {
                         ProcessFile(fileName, destFile);
                     }
-                    catch (Exception)
+                    catch
                     {
                         if (_logger != null)
                         {
@@ -117,112 +119,112 @@ namespace Sandcastle.Formats
 
         private void ProcessFile(string srcFile, string destFile)
         {
-            XmlReader reader = XmlReader.Create(srcFile, _readerSettings);
-            XmlWriter writer = XmlWriter.Create(destFile, _writerSettings);
-
             _currentTitle = String.Empty;
             _currentFile = destFile;
 
             _topicCount++;
 
-            while (reader.Read())
+            using (XmlReader reader = XmlReader.Create(srcFile, _readerSettings))
             {
-                if (reader.Name.ToLower() == "xml" &&
-                    reader.NodeType == XmlNodeType.Element)
-                {
-                    //skip xml data island
-                    ReadXmlIsland(reader, writer);
-                    reader.Skip();
-                }
-
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        string elementName = reader.Name.ToLower();
-                        string hrefText = null;
-                        if (elementName == "link")
+                using (XmlWriter writer = XmlWriter.Create(destFile, _writerSettings))
+                {   
+                    while (reader.Read())
+                    {
+                        if (reader.Name.ToLower() == "xml" &&
+                            reader.NodeType == XmlNodeType.Element)
                         {
-                            hrefText = reader.GetAttribute("href");
+                            //skip xml data island
+                            ReadXmlIsland(reader, writer);
+                            reader.Skip();
                         }
 
-                        //skip <mshelp:link> node, 
-                        if (elementName == "mshelp:link")
+                        switch (reader.NodeType)
                         {
-                            writer.WriteStartElement("span");
-                            writer.WriteAttributeString("class", "nolink");
-                            reader.MoveToContent();
-                        }
-                        else if (hrefText != null && hrefText.StartsWith("ms-help:"))
-                        {
-                            // We want to remove the other ms-help leftover too...
-                            //<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
-                            // Move the reader back to the element node.
-                            reader.MoveToElement();
-                        }
-                        else
-                        {
-                            if (!String.IsNullOrEmpty(reader.Prefix))
-                                writer.WriteStartElement(reader.Prefix,
-                                    reader.LocalName, null);
-                            else
-                                writer.WriteStartElement(reader.Name);
+                            case XmlNodeType.Element:
+                                string elementName = reader.Name.ToLower();
+                                string hrefText = null;
+                                if (elementName == "link")
+                                {
+                                    hrefText = reader.GetAttribute("href");
+                                }
 
-                            if (reader.HasAttributes)
-                            {
-                                while (reader.MoveToNextAttribute())
+                                //skip <mshelp:link> node, 
+                                if (elementName == "mshelp:link")
+                                {
+                                    writer.WriteStartElement("span");
+                                    writer.WriteAttributeString("class", "nolink");
+                                    reader.MoveToContent();
+                                }
+                                else if (hrefText != null && hrefText.StartsWith("ms-help:"))
+                                {
+                                    // We want to remove the other ms-help leftover too...
+                                    //<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
+                                    // Move the reader back to the element node.
+                                    reader.MoveToElement();
+                                }
+                                else
                                 {
                                     if (!String.IsNullOrEmpty(reader.Prefix))
-                                        writer.WriteAttributeString(reader.Prefix,
-                                            reader.LocalName, null, reader.Value);
+                                        writer.WriteStartElement(reader.Prefix,
+                                            reader.LocalName, null);
                                     else
-                                        //If we write the following content to output file, we will get xmlexception saying the 2003/5 namespace is redefined. So hard code to skip "xmlns".
-                                        //<pre>My.Computer.FileSystem.RenameFile(<span class="literal" xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5">
-                                        if (!(reader.Depth > 2 && reader.Name.StartsWith("xmlns")))
-                                            writer.WriteAttributeString(reader.Name, reader.Value);
-                                }
-                                // Move the reader back to the element node.
-                                reader.MoveToElement();
-                            }
+                                        writer.WriteStartElement(reader.Name);
 
-                            //read html/head/title, save it to _currentTitle
-                            if (reader.Depth == 2 && elementName == "title")
-                            {
-                                if (!reader.IsEmptyElement) //skip <Title/> node, fix bug 425406
-                                {
-                                    reader.Read();
-                                    if (reader.NodeType == XmlNodeType.Text)
+                                    if (reader.HasAttributes)
                                     {
-                                        _currentTitle = reader.Value;
-                                        writer.WriteRaw(reader.Value);
+                                        while (reader.MoveToNextAttribute())
+                                        {
+                                            if (!String.IsNullOrEmpty(reader.Prefix))
+                                                writer.WriteAttributeString(reader.Prefix,
+                                                    reader.LocalName, null, reader.Value);
+                                            else
+                                                //If we write the following content to output file, we will get xmlexception saying the 2003/5 namespace is redefined. So hard code to skip "xmlns".
+                                                //<pre>My.Computer.FileSystem.RenameFile(<span class="literal" xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5">
+                                                if (!(reader.Depth > 2 && reader.Name.StartsWith("xmlns")))
+                                                    writer.WriteAttributeString(reader.Name, reader.Value);
+                                        }
+                                        // Move the reader back to the element node.
+                                        reader.MoveToElement();
                                     }
+
+                                    //read html/head/title, save it to _currentTitle
+                                    if (reader.Depth == 2 && elementName == "title")
+                                    {
+                                        if (!reader.IsEmptyElement) //skip <Title/> node, fix bug 425406
+                                        {
+                                            reader.Read();
+                                            if (reader.NodeType == XmlNodeType.Text)
+                                            {
+                                                _currentTitle = reader.Value;
+                                                writer.WriteRaw(reader.Value);
+                                            }
+                                        }
+                                    }
+
+                                    if (reader.IsEmptyElement)
+                                        writer.WriteEndElement();
                                 }
-                            }
+                                break;
 
-                            if (reader.IsEmptyElement)
-                                writer.WriteEndElement();
+                            case XmlNodeType.Text:
+                                writer.WriteValue(reader.Value);
+                                break;
+
+                            case XmlNodeType.EndElement:
+                                writer.WriteFullEndElement();
+                                break;
+
+                            case XmlNodeType.Whitespace:
+                            case XmlNodeType.SignificantWhitespace:
+                                writer.WriteWhitespace(reader.Value);
+                                break;
+
+                            default:
+                                break;
                         }
-                        break;
-
-                    case XmlNodeType.Text:
-                        writer.WriteValue(reader.Value);
-                        break;
-
-                    case XmlNodeType.EndElement:
-                        writer.WriteFullEndElement();
-                        break;
-
-                    case XmlNodeType.Whitespace:
-                    case XmlNodeType.SignificantWhitespace:
-                        writer.WriteWhitespace(reader.Value);
-                        break;
-
-                    default:
-                        break;
+                    }
                 }
             }
-
-            writer.Close();
-            reader.Close();
 
             _plusTree[destFile.Substring(destFile.LastIndexOf("\\") + 1)] 
                 = _currentTitle;
@@ -245,14 +247,14 @@ namespace Sandcastle.Formats
                 if (nodeType == XmlNodeType.Element)
                 {
                     if (String.Equals(nodeName, "mshelp:toctitle",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string titleAttr = reader.GetAttribute("Title");
                         if (!String.IsNullOrEmpty(titleAttr))
                             _currentTitle = titleAttr;
                     }    
                     else if (String.Equals(nodeName, "mshelp:keyword",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string indexType = reader.GetAttribute("Index");
                         if (indexType == "K" || indexType == "A")
@@ -369,60 +371,59 @@ namespace Sandcastle.Formats
             settings.ConformanceLevel = ConformanceLevel.Fragment;
             settings.IgnoreWhitespace = false;
             settings.IgnoreComments = true;
-            XmlReader reader = XmlReader.Create(filename, settings);
-
             //Fix TFS bug 289403: search if there is comma in k keyword except those in () or <>. 
             //sample1: "StoredNumber (T1,T2) class, about StoredNumber (T1,T2) class";
             //sample2: "StoredNumber <T1,T2> class, about StoredNumber <T1,T2> class";
 
-            while (reader.Read())
+            using (XmlReader reader = XmlReader.Create(filename, settings))
             {
-                if (reader.IsStartElement())
+                while (reader.Read())
                 {
-                    if (reader.Name.ToLower() == "mshelp:toctitle")
+                    if (reader.IsStartElement())
                     {
-                        string titleAttr = reader.GetAttribute("Title");
-                        if (!String.IsNullOrEmpty(titleAttr))
-                            _currentTitle = titleAttr;
-                    }
-
-                    if (reader.Name.ToLower() == "mshelp:keyword")
-                    {
-                        string indexType = reader.GetAttribute("Index");
-                        if (indexType == "K")
+                        if (reader.Name.ToLower() == "mshelp:toctitle")
                         {
-                            string kkeyword = reader.GetAttribute("Term");
-                            if (!string.IsNullOrEmpty(kkeyword))
-                            {
-                                KKeywordInfo kkwdinfo = new KKeywordInfo();
-                                kkeyword = FormatChmHelper.ReplaceMarks(kkeyword);
-                                Match match = _regEx.Match(kkeyword);
-                                if (match.Success)
-                                {
-                                    kkwdinfo.MainEntry = kkeyword.Substring(0, match.Index);
-                                    kkwdinfo.SubEntry = kkeyword.Substring(match.Index + 1).TrimStart(new char[] { ' ' });
-                                }
-                                else
-                                {
-                                    kkwdinfo.MainEntry = kkeyword;
-                                }
+                            string titleAttr = reader.GetAttribute("Title");
+                            if (!String.IsNullOrEmpty(titleAttr))
+                                _currentTitle = titleAttr;
+                        }
 
-                                kkwdinfo.File = _currentFile;
-                                _kkeywords.Add(kkwdinfo);
+                        if (reader.Name.ToLower() == "mshelp:keyword")
+                        {
+                            string indexType = reader.GetAttribute("Index");
+                            if (indexType == "K")
+                            {
+                                string kkeyword = reader.GetAttribute("Term");
+                                if (!string.IsNullOrEmpty(kkeyword))
+                                {
+                                    KKeywordInfo kkwdinfo = new KKeywordInfo();
+                                    kkeyword = FormatChmHelper.ReplaceMarks(kkeyword);
+                                    Match match = _regEx.Match(kkeyword);
+                                    if (match.Success)
+                                    {
+                                        kkwdinfo.MainEntry = kkeyword.Substring(0, match.Index);
+                                        kkwdinfo.SubEntry = kkeyword.Substring(match.Index + 1).TrimStart(new char[] { ' ' });
+                                    }
+                                    else
+                                    {
+                                        kkwdinfo.MainEntry = kkeyword;
+                                    }
+
+                                    kkwdinfo.File = _currentFile;
+                                    _kkeywords.Add(kkwdinfo);
+                                }
                             }
                         }
                     }
-                }
-                if (reader.NodeType == XmlNodeType.EndElement)
-                {
-                    if (reader.Name == "xml")
+                    if (reader.NodeType == XmlNodeType.EndElement)
                     {
-                        break;
+                        if (reader.Name == "xml")
+                        {
+                            break;
+                        }
                     }
                 }
             }
-
-            reader.Close();
         }
     }
 }

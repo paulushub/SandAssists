@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.Core.WinForms
 {
-    public class ToolBarStrip : ToolStrip
+    public sealed class ToolBarStrip : ToolStrip
     {
         private bool   _implementDropDown;
         private object _stripOwner;

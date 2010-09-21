@@ -37,7 +37,7 @@ namespace Sandcastle.Contents
             _contentsFile = contentsFile;
 
             _outputPath   = "string('media')";
-            _outputLink   = "../media";
+            _outputLink   = "media";
             _outputBase   = @".\Output";
         }
 

@@ -41,9 +41,14 @@ namespace Sandcastle
         /// Indicates the MSDN links, used for linking to targets in the online MSDN 
         /// documentations.
         /// <para>
-        /// This applies to both the HtmlHelp 1.x and HtmlHelp 2.x formats.
+        /// This applies to the HtmlHelp 1.x, HtmlHelp 2.x and HtmlHelp 3.x formats.
         /// </para>
         /// </summary>
-        Msdn         = 5
+        Msdn         = 5,
+        /// <summary>
+        /// Indicates a topic identifier link for links in the same
+        /// documentation of the HtmlHelp 3.x format.
+        /// </summary>
+        Id           = 6
     }
 }

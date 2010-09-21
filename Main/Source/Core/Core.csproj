@@ -20,6 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,15 +63,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildContent.cs" />
+    <Compile Include="BuildCredentials.cs" />
+    <Compile Include="BuildDeployment.cs" />
     <Compile Include="BuildDirCopier.cs" />
-    <Compile Include="BuildDirHandler.cs" />
+    <Compile Include="BuildPrompt.cs" />
+    <Compile Include="BuildPromptButtons.cs" />
+    <Compile Include="BuildPromptIcon.cs" />
+    <Compile Include="BuildPromptResult.cs" />
+    <Compile Include="Utilities\PathSearch.cs" />
     <Compile Include="BuildException.cs" />
     <Compile Include="BuildExceptions.cs" />
+    <Compile Include="BuildIntegrationTarget.cs" />
     <Compile Include="BuildItem.cs" />
     <Compile Include="BuildKeyedList.cs" />
     <Compile Include="BuildLinkTargetType.cs" />
@@ -82,7 +93,10 @@
     <Compile Include="BuildLoggerLevel.cs" />
     <Compile Include="BuildLoggers.cs" />
     <Compile Include="BuildLoggerVerbosity.cs" />
+    <Compile Include="BuildLogoPlacement.cs" />
+    <Compile Include="BuildNotifier.cs" />
     <Compile Include="BuildObject.cs" />
+    <Compile Include="BuildObjectT.cs" />
     <Compile Include="Contents\BibliographyContent.cs" />
     <Compile Include="Contents\BibliographyItem.cs" />
     <Compile Include="Contents\DependencyContent.cs" />
@@ -117,9 +131,12 @@
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="Loggers\FileLogger.cs" />
     <Compile Include="Loggers\HtmlLogger.cs" />
+    <Compile Include="Loggers\NoneLogger.cs" />
+    <Compile Include="Loggers\XamlLogger.cs" />
     <Compile Include="Loggers\XmlLogger.cs" />
     <Compile Include="Utilities\DirectoryUtils.cs" />
     <Compile Include="Utilities\DirectoryCopier.cs" />
+    <Compile Include="Utilities\PathUtils.cs" />
     <Compile Include="Utilities\ProcessEventArgs.cs" />
     <Compile Include="Utilities\ProcessExitedEventArgs.cs" />
     <Compile Include="Utilities\ProcessInfo.cs" />
@@ -176,6 +193,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HtmlLogCss.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HtmlLogJs.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

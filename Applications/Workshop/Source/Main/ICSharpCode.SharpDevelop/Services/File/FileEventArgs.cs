@@ -11,55 +11,64 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class FileEventArgs : EventArgs
 	{
-		string fileName   = null;
+        private bool isDirectory;
+        private string fileName;
+
+        public FileEventArgs(string fileName, bool isDirectory)
+        {
+            this.fileName = fileName;
+            this.isDirectory = isDirectory;
+        }
 		
-		bool   isDirectory;
-		
-		public string FileName {
-			get {
+		public string FileName 
+        {
+			get 
+            {
 				return fileName;
 			}
 		}
 		
-		public bool IsDirectory {
-			get {
+		public bool IsDirectory 
+        {
+			get 
+            {
 				return isDirectory;
 			}
-		}
-		
-		public FileEventArgs(string fileName, bool isDirectory)
-		{
-			this.fileName = fileName;
-			this.isDirectory = isDirectory;
 		}
 	}
 	
 	public class FileCancelEventArgs : FileEventArgs
 	{
-		bool cancel;
+        private bool cancel;
+        private bool operationAlreadyDone;
 
-		public bool Cancel {
-			get {
+        public FileCancelEventArgs(string fileName, bool isDirectory)
+            : base(fileName, isDirectory)
+        {
+        }
+
+		public bool Cancel 
+        {
+			get 
+            {
 				return cancel;
 			}
-			set {
+			set 
+            {
 				cancel = value;
 			}
 		}
 		
-		bool operationAlreadyDone;
-		
-		public bool OperationAlreadyDone {
-			get {
+		public bool OperationAlreadyDone 
+        {
+			get 
+            {
 				return operationAlreadyDone;
 			}
-			set {
+			set 
+            {
 				operationAlreadyDone = value;
 			}
-		}
-		
-		public FileCancelEventArgs(string fileName, bool isDirectory) : base(fileName, isDirectory)
-		{
 		}
 	}
 }

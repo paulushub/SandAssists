@@ -15,6 +15,8 @@ namespace Sandcastle.Components.Maths
     {
         #region Private Fields
 
+        private bool   _transparent;
+
         private string _inputFile;
         private string _outpuFile;
         private string _texArguments;
@@ -76,6 +78,14 @@ namespace Sandcastle.Components.Maths
             }
         }
 
+        public bool Transparent
+        {
+            get
+            {
+                return _transparent;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -100,10 +110,16 @@ namespace Sandcastle.Components.Maths
             _texArguments = String.Format(
                 "-quiet -interaction=nonstopmode -enable-installer \"{0}\"",
                 _inputFile);
-            _dvipngFormats =
-                "-q* -T tight --gamma 2.5 -Q 6 -o {0} {1}";
-            //_dvipngFormats =
-            //    "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o {0} {1}";
+            if (_transparent)
+            {
+                _dvipngFormats =
+                    "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o {0} {1}";
+            }
+            else
+            {
+                _dvipngFormats =
+                    "-q* -T tight --gamma 2.5 -Q 6 -o {0} {1}";
+            }
             //_dvipngFormats =
             //    "-q* -T tight --gamma 2.5 -bg Transparent -Q 6 -o \"{0}\" \"{1}\"";
         }
@@ -150,7 +166,8 @@ namespace Sandcastle.Components.Maths
             base.EndUpdate();
         }
 
-        public override bool Create(string equationText, bool isInline, bool isUser)
+        public override bool Create(string equationText, 
+            bool isInline, bool isUser)
         {
             if (String.IsNullOrEmpty(equationText))
             {
@@ -350,7 +367,8 @@ namespace Sandcastle.Components.Maths
         }
 
         private void Initialize()
-        {   
+        {
+            _transparent = true;
             //_logFile   = "MikTeXFile.log";
             //_otherFile = "MikTeXFile.aux";
             _inputFile = "MikTeXFile.tex";

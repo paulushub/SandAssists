@@ -269,19 +269,31 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
-			try {
+			try 
+            {
 				string file = GetPreferenceFileName(openSolution.FileName);
-				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
-				} else {
-					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
+                IMementoCapable memento = openSolution.Preferences as IMementoCapable;
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) 
+                {
+                    Properties properties = new Properties();
+                    properties.Load(file);
+                    memento.SetMemento(properties);
+				} 
+                else 
+                {
+                    memento.SetMemento(new Properties());
 				}
-			} catch (Exception ex) {
+			} 
+            catch (Exception ex) 
+            {
 				MessageService.ShowError(ex);
 			}
-			try {
+			try 
+            {
 				ApplyConfigurationAndReadPreferences();
-			} catch (Exception ex) {
+			} 
+            catch (Exception ex) 
+            {
 				MessageService.ShowError(ex);
 			}
 			// Create project contents for solution
@@ -294,8 +306,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void ParserServiceCreatedProjectContents()
 		{
-			foreach (string file in AbstractProject.filesToOpenAfterSolutionLoad) {
-				if (File.Exists(file)) {
+			foreach (string file in AbstractProject.filesToOpenAfterSolutionLoad) 
+            {
+				if (File.Exists(file)) 
+                {
 					FileService.OpenFile(file);
 				}
 			}
@@ -305,10 +319,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		static void ApplyConfigurationAndReadPreferences()
 		{
 			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
-			foreach (IProject project in openSolution.Projects) {
+			foreach (IProject project in openSolution.Projects) 
+            {
 				string file = GetPreferenceFileName(project.FileName);
-				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					project.SetMemento(Properties.Load(file));
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) 
+                {
+                    Properties properties = new Properties();
+                    properties.Load(file);
+                    project.SetMemento(properties);
 				}
 			}
 		}

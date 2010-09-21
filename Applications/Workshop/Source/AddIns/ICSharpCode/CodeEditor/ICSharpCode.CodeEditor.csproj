@@ -126,6 +126,9 @@
     <EmbeddedResource Include="OptionPanels\MarkersTextEditorPanel.resx">
       <DependentUpon>MarkersTextEditorPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\FileExplorerNet.resx">
+      <DependentUpon>FileExplorerNet.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Searching\Gui\FindPanel.resx">
       <DependentUpon>FindPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -139,6 +142,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Searching\Gui\SearchDialog.resx">
       <DependentUpon>SearchDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Searching\Gui\SearchFolderSetDialog.resx">
+      <DependentUpon>SearchFolderSetDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Searching\Gui\SearchPanel.resx">
       <DependentUpon>SearchPanel.cs</DependentUpon>
@@ -317,6 +323,12 @@
     </Compile>
     <Compile Include="Searching\Commands\SearchMainMenuCommands.cs" />
     <Compile Include="Searching\Commands\SearchToolbarCommands.cs" />
+    <Compile Include="Searching\Gui\FileExplorerNet.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\FileExplorerNet.designer.cs">
+      <DependentUpon>FileExplorerNet.cs</DependentUpon>
+    </Compile>
     <Compile Include="Searching\Gui\FindPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -344,6 +356,8 @@
     <Compile Include="Searching\Engine\TextIterator\ForwardTextIteratorBuilder.cs" />
     <Compile Include="Searching\Engine\TextIterator\ITextIterator.cs" />
     <Compile Include="Searching\Engine\SearchSelection.cs" />
+    <Compile Include="Searching\Gui\IconHelper.cs" />
+    <Compile Include="Searching\Gui\IconListManager.cs" />
     <Compile Include="Searching\Gui\SearchDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -363,6 +377,13 @@
       <DependentUpon>ReplacePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Searching\Commands\SearchCommands.cs" />
+    <Compile Include="Searching\Gui\SearchFolderSetDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Searching\Gui\SearchFolderSetDialog.Designer.cs">
+      <DependentUpon>SearchFolderSetDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Searching\Gui\ShellContextMenu.cs" />
     <Compile Include="Searching\IncrementalSearch.cs" />
     <Compile Include="Searching\SearchEnums.cs" />
     <Compile Include="Searching\SearchOptions.cs" />

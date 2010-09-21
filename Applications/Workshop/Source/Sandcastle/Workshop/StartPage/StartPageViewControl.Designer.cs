@@ -15,37 +15,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            XPTable.Models.DataSourceColumnBinder dataSourceColumnBinder4 = new XPTable.Models.DataSourceColumnBinder();
-            XPTable.Renderers.DragDropRenderer dragDropRenderer4 = new XPTable.Renderers.DragDropRenderer();
-            this.panelBanner = new System.Windows.Forms.Panel();
+            XPTable.Models.DataSourceColumnBinder dataSourceColumnBinder2 = new XPTable.Models.DataSourceColumnBinder();
+            XPTable.Renderers.DragDropRenderer dragDropRenderer2 = new XPTable.Renderers.DragDropRenderer();
             this.panelOptions = new System.Windows.Forms.Panel();
             this.chkShowOnStartup = new System.Windows.Forms.CheckBox();
             this.chkCloseOnProject = new System.Windows.Forms.CheckBox();
             this.panelMain = new System.Windows.Forms.Panel();
             this.panelRecents = new BSE.Windows.Forms.Panel();
             this.tableRecents = new XPTable.Models.Table();
-            this.panelActions = new System.Windows.Forms.Panel();
-            this.btnProjectNew = new System.Windows.Forms.Button();
-            this.btnProjectOpen = new System.Windows.Forms.Button();
             this.splitterMain = new BSE.Windows.Forms.Splitter();
             this.panelAssistants = new BSE.Windows.Forms.Panel();
+            this.panelBanner = new System.Windows.Forms.Panel();
+            this.borderLabel = new Sandcastle.Workshop.Dialogs.BorderLabel();
+            this.vistaMenuControl = new VistaMenuControl.VistaMenuControl();
             this.panelOptions.SuspendLayout();
             this.panelMain.SuspendLayout();
             this.panelRecents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tableRecents)).BeginInit();
-            this.panelActions.SuspendLayout();
+            this.panelBanner.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // panelBanner
-            // 
-            this.panelBanner.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.panelBanner.BackgroundImage = global::Sandcastle.Workshop.Properties.Resources.Banner;
-            this.panelBanner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.panelBanner.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelBanner.Location = new System.Drawing.Point(3, 3);
-            this.panelBanner.Name = "panelBanner";
-            this.panelBanner.Size = new System.Drawing.Size(608, 52);
-            this.panelBanner.TabIndex = 0;
             // 
             // panelOptions
             // 
@@ -97,7 +85,7 @@
             this.panelRecents.CaptionFont = new System.Drawing.Font("Segoe UI", 11.75F, System.Drawing.FontStyle.Bold);
             this.panelRecents.CaptionHeight = 27;
             this.panelRecents.Controls.Add(this.tableRecents);
-            this.panelRecents.Controls.Add(this.panelActions);
+            this.panelRecents.Controls.Add(this.vistaMenuControl);
             this.panelRecents.CustomColors.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(184)))), ((int)(((byte)(184)))));
             this.panelRecents.CustomColors.CaptionCloseIcon = System.Drawing.SystemColors.ControlText;
             this.panelRecents.CustomColors.CaptionExpandIcon = System.Drawing.SystemColors.ControlText;
@@ -128,55 +116,29 @@
             // 
             // tableRecents
             // 
+            this.tableRecents.AlternatingRowColor = System.Drawing.Color.AliceBlue;
             this.tableRecents.BorderColor = System.Drawing.Color.Black;
             this.tableRecents.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tableRecents.DataMember = null;
-            this.tableRecents.DataSourceColumnBinder = dataSourceColumnBinder4;
+            this.tableRecents.DataSourceColumnBinder = dataSourceColumnBinder2;
             this.tableRecents.Dock = System.Windows.Forms.DockStyle.Fill;
-            dragDropRenderer4.ForeColor = System.Drawing.Color.Red;
-            this.tableRecents.DragDropRenderer = dragDropRenderer4;
+            dragDropRenderer2.ForeColor = System.Drawing.Color.Red;
+            this.tableRecents.DragDropRenderer = dragDropRenderer2;
+            this.tableRecents.EnableToolTips = true;
             this.tableRecents.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tableRecents.FullRowSelect = true;
             this.tableRecents.GridLines = XPTable.Models.GridLines.Both;
             this.tableRecents.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tableRecents.HideSelection = true;
             this.tableRecents.Location = new System.Drawing.Point(1, 28);
             this.tableRecents.Name = "tableRecents";
             this.tableRecents.SelectionStyle = XPTable.Models.SelectionStyle.Grid;
             this.tableRecents.ShowSelectionRectangle = false;
-            this.tableRecents.Size = new System.Drawing.Size(606, 165);
+            this.tableRecents.Size = new System.Drawing.Size(606, 161);
             this.tableRecents.TabIndex = 1;
             this.tableRecents.Text = "table1";
+            this.tableRecents.ToolTipInitialDelay = 500;
             this.tableRecents.UnfocusedBorderColor = System.Drawing.Color.Black;
-            // 
-            // panelActions
-            // 
-            this.panelActions.Controls.Add(this.btnProjectNew);
-            this.panelActions.Controls.Add(this.btnProjectOpen);
-            this.panelActions.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelActions.Location = new System.Drawing.Point(1, 193);
-            this.panelActions.Name = "panelActions";
-            this.panelActions.Size = new System.Drawing.Size(606, 32);
-            this.panelActions.TabIndex = 0;
-            // 
-            // btnProjectNew
-            // 
-            this.btnProjectNew.Location = new System.Drawing.Point(8, 5);
-            this.btnProjectNew.Name = "btnProjectNew";
-            this.btnProjectNew.Size = new System.Drawing.Size(150, 23);
-            this.btnProjectNew.TabIndex = 1;
-            this.btnProjectNew.Text = "New Project...";
-            this.btnProjectNew.UseVisualStyleBackColor = true;
-            this.btnProjectNew.Click += new System.EventHandler(this.OnProjectNew);
-            // 
-            // btnProjectOpen
-            // 
-            this.btnProjectOpen.Location = new System.Drawing.Point(174, 5);
-            this.btnProjectOpen.Name = "btnProjectOpen";
-            this.btnProjectOpen.Size = new System.Drawing.Size(150, 23);
-            this.btnProjectOpen.TabIndex = 0;
-            this.btnProjectOpen.Text = "Open Project...";
-            this.btnProjectOpen.UseVisualStyleBackColor = true;
-            this.btnProjectOpen.Click += new System.EventHandler(this.OnProjectOpen);
             // 
             // splitterMain
             // 
@@ -223,6 +185,63 @@
             this.panelAssistants.ToolTipTextExpandIconPanelCollapsed = null;
             this.panelAssistants.ToolTipTextExpandIconPanelExpanded = null;
             // 
+            // panelBanner
+            // 
+            this.panelBanner.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.panelBanner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.panelBanner.Controls.Add(this.borderLabel);
+            this.panelBanner.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelBanner.Location = new System.Drawing.Point(3, 3);
+            this.panelBanner.Name = "panelBanner";
+            this.panelBanner.Size = new System.Drawing.Size(608, 52);
+            this.panelBanner.TabIndex = 0;
+            // 
+            // borderLabel
+            // 
+            this.borderLabel.BorderColor = System.Drawing.Color.Azure;
+            this.borderLabel.BorderSize = 2F;
+            this.borderLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.borderLabel.Font = new System.Drawing.Font("Tahoma", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.borderLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            this.borderLabel.Location = new System.Drawing.Point(0, 0);
+            this.borderLabel.Name = "borderLabel";
+            this.borderLabel.Padding = new System.Windows.Forms.Padding(3);
+            this.borderLabel.Size = new System.Drawing.Size(608, 52);
+            this.borderLabel.TabIndex = 0;
+            this.borderLabel.Text = "Sandcastle Workshop 2010";
+            this.borderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // vistaMenuControl
+            // 
+            this.vistaMenuControl.BackImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.vistaMenuControl.BackMenuImage = null;
+            this.vistaMenuControl.CheckOnClick = false;
+            this.vistaMenuControl.FlatSeparators = false;
+            this.vistaMenuControl.FlatSeparatorsColor = System.Drawing.Color.Silver;
+            this.vistaMenuControl.ItemHeight = 28;
+            this.vistaMenuControl.ItemWidth = 180;
+            this.vistaMenuControl.Location = new System.Drawing.Point(1, 189);
+            this.vistaMenuControl.MaximumSize = new System.Drawing.Size(300, 400);
+            this.vistaMenuControl.MenuEndColor = System.Drawing.Color.FromArgb(((int)(((byte)(42)))), ((int)(((byte)(42)))), ((int)(((byte)(42)))));
+            this.vistaMenuControl.MenuInnerBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(158)))), ((int)(((byte)(158)))), ((int)(((byte)(158)))));
+            this.vistaMenuControl.MenuOrientation = VistaMenuControl.VistaMenuOrientation.Horizontal;
+            this.vistaMenuControl.MenuOuterBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(29)))), ((int)(((byte)(29)))));
+            this.vistaMenuControl.MenuStartColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
+            this.vistaMenuControl.MinimumSize = new System.Drawing.Size(100, 28);
+            this.vistaMenuControl.Name = "vistaMenuControl";
+            this.vistaMenuControl.RenderSeparators = true;
+            this.vistaMenuControl.SelectedItem = -1;
+            this.vistaMenuControl.SideBar = false;
+            this.vistaMenuControl.SideBarBitmap = null;
+            this.vistaMenuControl.SideBarCaption = "Vista Cool Menu";
+            this.vistaMenuControl.SideBarEndGradient = System.Drawing.Color.FromArgb(((int)(((byte)(42)))), ((int)(((byte)(42)))), ((int)(((byte)(42)))));
+            this.vistaMenuControl.SideBarFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.vistaMenuControl.SideBarFontColor = System.Drawing.Color.White;
+            this.vistaMenuControl.SideBarStartGradient = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(142)))), ((int)(((byte)(142)))));
+            this.vistaMenuControl.Size = new System.Drawing.Size(606, 36);
+            this.vistaMenuControl.TabIndex = 0;
+            this.vistaMenuControl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            // 
             // StartPageViewControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -238,14 +257,13 @@
             this.panelMain.ResumeLayout(false);
             this.panelRecents.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tableRecents)).EndInit();
-            this.panelActions.ResumeLayout(false);
+            this.panelBanner.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panelBanner;
         private System.Windows.Forms.Panel panelOptions;
         private System.Windows.Forms.CheckBox chkCloseOnProject;
         private System.Windows.Forms.CheckBox chkShowOnStartup;
@@ -253,9 +271,9 @@
         private BSE.Windows.Forms.Splitter splitterMain;
         private BSE.Windows.Forms.Panel panelAssistants;
         private BSE.Windows.Forms.Panel panelRecents;
-        private System.Windows.Forms.Panel panelActions;
-        private System.Windows.Forms.Button btnProjectNew;
-        private System.Windows.Forms.Button btnProjectOpen;
         private XPTable.Models.Table tableRecents;
+        private System.Windows.Forms.Panel panelBanner;
+        private Sandcastle.Workshop.Dialogs.BorderLabel borderLabel;
+        private VistaMenuControl.VistaMenuControl vistaMenuControl;
     }
 }

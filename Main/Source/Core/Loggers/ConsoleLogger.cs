@@ -23,6 +23,25 @@ namespace Sandcastle.Loggers
 
         #endregion
 
+        #region Public Properties
+
+        /// <summary>
+        /// Gets the unique name of this build logger.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the unique name of this
+        /// build logger implementation. This will always return <c>Sandcastle.ConsoleLogger</c>.
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return "Sandcastle.ConsoleLogger";
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         public override void WriteLine()

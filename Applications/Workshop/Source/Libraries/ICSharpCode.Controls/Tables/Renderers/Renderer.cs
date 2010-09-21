@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -32,7 +31,6 @@ using System.Windows.Forms;
 
 using XPTable.Models;
 using XPTable.Themes;
-
 
 namespace XPTable.Renderers
 {
@@ -139,7 +137,8 @@ namespace XPTable.Renderers
             int chars;
             int lines;
 
-            graphics.MeasureString(text, this.Font, this.ClientRectangle.Size, this.StringFormat, out chars, out lines);
+            graphics.MeasureString(text, this.Font, this.ClientRectangle.Size, 
+                this.StringFormat, out chars, out lines);
 
             return chars < text.Length;
         }
@@ -155,7 +154,6 @@ namespace XPTable.Renderers
 		{
 			get;
 		}
-
 
 		/// <summary>
 		/// Gets or sets the size and location of the Renderer
@@ -173,7 +171,6 @@ namespace XPTable.Renderers
 				this.bounds = value;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the font of the text displayed by the Renderer
@@ -211,10 +208,9 @@ namespace XPTable.Renderers
 			{
 				return this.backBrush;
 			}
-		}
+        }
 
-
-		/// <summary>
+        /// <summary>
 		/// Gets the brush used to draw the Renderers foreground
 		/// </summary>
 		protected SolidBrush ForeBrush
@@ -224,7 +220,6 @@ namespace XPTable.Renderers
 				return this.foreBrush;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the foreground Color of the Renderer
@@ -244,7 +239,6 @@ namespace XPTable.Renderers
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the background Color of the Renderer
 		/// </summary>
@@ -263,7 +257,6 @@ namespace XPTable.Renderers
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets a StringFormat object that specifies how the Renderers 
 		/// contents are drawn
@@ -279,7 +272,6 @@ namespace XPTable.Renderers
                 this.stringFormat = value;
             }
 		}
-
 
 		/// <summary>
 		/// Gets or sets a StringTrimming enumeration that indicates how text that 
@@ -299,7 +291,6 @@ namespace XPTable.Renderers
 				this.stringFormat.Trimming = value;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets how the Renderers contents are aligned horizontally
@@ -343,7 +334,6 @@ namespace XPTable.Renderers
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets how the Renderers contents are aligned vertically
 		/// </summary>
@@ -385,7 +375,6 @@ namespace XPTable.Renderers
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets whether Visual Styles are enabled for the application

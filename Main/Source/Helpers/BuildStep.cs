@@ -12,30 +12,29 @@ namespace Sandcastle
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The build step derives from <see cref="MarshalByRefObject"/> so that any of its 
-    /// derivative can be instantiated in its own app domain.
-    /// </para>
-    /// <para>
     /// In a build process, all the valid build steps will run except when the
     /// <see cref="BuildStep.Enabled"/> property is set to <see langword="false"/>.
     /// </para>
     /// </remarks>
-    public abstract class BuildStep : MarshalByRefObject, IDisposable
+    public abstract class BuildStep : BuildObject, IDisposable
     {
         #region Private Fields
 
         private bool      _isEnabled;
+        private bool      _logTimeSpan;
         private bool      _isInitialized;
         private bool      _continueOnError;
         private string    _name;
+        private string    _title;
         private string    _message;
         private string    _description;
         private string    _workingDir;
 
         private Stopwatch _stepTimer;
 
-        private BuildStep _preStep;
-        private BuildStep _postStep;
+        private BuildMultiStep _beforeSteps;
+        private BuildMultiStep _replaceSteps;
+        private BuildMultiStep _afterSteps;
         private BuildLoggerVerbosity _verbosity;
         private Dictionary<string, string> _properties;
 
@@ -55,9 +54,10 @@ namespace Sandcastle
         /// </summary>
         protected BuildStep()
         {
-            _isEnabled  = true;
-            _properties = new Dictionary<string, string>(
-                StringComparer.CurrentCultureIgnoreCase);
+            _isEnabled   = true;
+            _logTimeSpan = true;
+            _properties  = new Dictionary<string, string>(
+                StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -91,10 +91,11 @@ namespace Sandcastle
         /// If the <paramref name="name"/> is empty.
         /// </exception>
         protected BuildStep(string name, string workingDir)
-            : this()
+            : this(workingDir)
         {           
             BuildExceptions.NotNullNotEmpty(name, "name");
-            _workingDir = workingDir;
+
+            _name = name;
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Sandcastle
         /// Gets a value specifying the type of this build style.
         /// </summary>
         /// <value>
-        /// An enumeration of the type <see cref="BuildStepType"/> specifyig the type
+        /// An enumeration of the type <see cref="BuildStepType"/> specifying the type
         /// of this build step.
         /// </value>
         public virtual BuildStepType StepType
@@ -180,7 +181,7 @@ namespace Sandcastle
             {
                 return _name;
             }
-            set
+            protected set
             {       
                 if (String.IsNullOrEmpty(value))
                 {
@@ -194,12 +195,34 @@ namespace Sandcastle
         }
 
         /// <summary>
+        /// Gets or sets the title displayed by this build step.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the message displayed by this
+        /// build step.
+        /// </value>
+        public string LogTitle
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                _title = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the message displayed by this build step.
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the message displayed by this
         /// build step.
         /// </value>
+        /// <remarks>
+        /// The message is displayed at the beginning of the build process.
+        /// </remarks>
         public string Message
         {
             get
@@ -350,9 +373,9 @@ namespace Sandcastle
         /// For a build step that can be cancelled, the build process can call the
         /// <see cref="BuildStep.Cancel()"/> method to cancel the task.
         /// <para>
-        /// For build steps thatn cannot be cancelled, the steps are expected to
+        /// For build steps that cannot be cancelled, the steps are expected to
         /// monitor the state of the <see cref="BuildContext.IsCancelled"/> property
-        /// and response automatically (cancelling the task themselves), where possible.
+        /// and response automatically (canceling the task themselves), where possible.
         /// </para>
         /// </remarks>
         /// <seealso cref="BuildStep.Cancel()"/>
@@ -365,54 +388,83 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Gets or sets the pre-build step for this build step, the pre-build step is 
-        /// the build task that will be executed before this build step.
+        /// Gets the pre-build steps for this build step, the pre-build steps are 
+        /// the build tasks that will be executed before this build step.
         /// </summary>
         /// <value>
-        /// An instance of the <see cref="BuildStep"/> class specifying the task that
+        /// A list of the <see cref="BuildStep"/> class specifying the tasks that
         /// must be executed before the task defined by this build step.
         /// </value>
         /// <remarks>
-        /// The pre-build step can be defined using the multi-step, 
-        /// <see cref="BuildMultiStep"/>, if the execution of several pre-build 
-        /// steps is required.
+        /// The pre-build steps are defined using the multi-step, 
+        /// <see cref="BuildMultiStep"/>, allowing the execution of several steps.
         /// </remarks>
-        /// <seealso cref="BuildStep.PostStep"/>
-        public BuildStep PreStep
+        /// <seealso cref="BuildStep.ReplaceSteps"/>
+        /// <seealso cref="BuildStep.AfterSteps"/>
+        public IList<BuildStep> BeforeSteps
         {
             get
             {
-                return _preStep;
-            }
-            set
-            {
-                _preStep = value;
+                if (_beforeSteps == null)
+                {
+                    return null;
+                }
+
+                return _beforeSteps.Steps;
             }
         }
 
         /// <summary>
-        /// Gets or sets the post-build step for this build step, the post-build step 
-        /// defined the build task that will be executed after this build step.
+        /// Gets the replacement steps for this build step, the replacement steps
+        /// defined the build tasks that will be executed instead this build step.
         /// </summary>
         /// <value>
-        /// An instance of the <see cref="BuildStep"/> class specifying the task that
-        /// must be executed after the task defined by this build step.
+        /// A list of the <see cref="BuildStep"/> class specifying the tasks that
+        /// must be executed instead the task defined by this build step.
         /// </value>
         /// <remarks>
-        /// The post-build step can be defined using the multi-step, 
-        /// <see cref="BuildMultiStep"/>, if the execution of several post-build 
-        /// steps is required.
+        /// The replacement steps are defined using the multi-step, 
+        /// <see cref="BuildMultiStep"/>, allowing the execution of several steps.
         /// </remarks>
-        /// <seealso cref="BuildStep.PreStep"/>
-        public BuildStep PostStep
+        /// <seealso cref="BuildStep.BeforeSteps"/>
+        /// <seealso cref="BuildStep.AfterSteps"/>
+        public IList<BuildStep> ReplaceSteps
         {
             get
             {
-                return _postStep;
+                if (_replaceSteps == null)
+                {
+                    return null;
+                }
+
+                return _replaceSteps.Steps;
             }
-            set
+        }
+
+        /// <summary>
+        /// Gets the post-build steps for this build step, the post-build steps 
+        /// defined the build tasks that will be executed after this build step.
+        /// </summary>
+        /// <value>
+        /// A list of the <see cref="BuildStep"/> class specifying the tasks that
+        /// must be executed after the task defined by this build step.
+        /// </value>
+        /// <remarks>
+        /// The post-build steps are defined using the multi-step, 
+        /// <see cref="BuildMultiStep"/>, allowing the execution of several steps.
+        /// </remarks>
+        /// <seealso cref="BuildStep.BeforeSteps"/>
+        /// <seealso cref="BuildStep.ReplaceSteps"/>
+        public IList<BuildStep> AfterSteps
+        {
+            get
             {
-                _postStep = value;
+                if (_afterSteps == null)
+                {
+                    return null;
+                }
+
+                return _afterSteps.Steps;
             }
         }
 
@@ -571,6 +623,27 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the total time taken by this
+        /// build step is written to the logger.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the time span is logged; otherwise,
+        /// it is <see langword="false"/>. The default is <see langword="true"/>,
+        /// for most build steps, except the multi-step and message step.
+        /// </value>
+        public bool LogTimeSpan
+        {
+            get 
+            { 
+                return _logTimeSpan; 
+            }
+            set 
+            { 
+                _logTimeSpan = value; 
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -598,17 +671,17 @@ namespace Sandcastle
             BuildExceptions.NotNull(context, "context");
 
             _isInitialized = false;
-            if (_preStep != null && _preStep.Enabled)
+            if (_beforeSteps != null && _beforeSteps.Enabled)
             {
-                _isInitialized = _preStep.Initialize(context);
+                _isInitialized = _beforeSteps.Initialize(context);
                 if (_isInitialized == false)
                 {
                     return _isInitialized;
                 }
             }
-            if (_postStep != null && _postStep.Enabled)
+            if (_afterSteps != null && _afterSteps.Enabled)
             {
-                _isInitialized = _postStep.Initialize(context);
+                _isInitialized = _afterSteps.Initialize(context);
                 if (_isInitialized == false)
                 {
                     return _isInitialized;
@@ -627,7 +700,8 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// This provides the uninitialization process of this build step.
+        /// This provides un-initialization of the build step, and release any 
+        /// resources created in the initialization process.
         /// </summary>
         /// <remarks>
         /// It provides the build step the way to clean up resources allocated
@@ -637,13 +711,13 @@ namespace Sandcastle
         /// <seealso cref="BuildStep.Initialize(BuildContext)"/>
         public virtual void Uninitialize()
         {
-            if (_preStep != null && _preStep.Enabled)
+            if (_beforeSteps != null && _beforeSteps.Enabled)
             {
-                _preStep.Uninitialize();
+                _beforeSteps.Uninitialize();
             }
-            if (_postStep != null && _postStep.Enabled)
+            if (_afterSteps != null && _afterSteps.Enabled)
             {
-                _postStep.Uninitialize();
+                _afterSteps.Uninitialize();
             }
 
             _context       = null;
@@ -660,7 +734,7 @@ namespace Sandcastle
         /// </returns>
         public bool Execute()
         {
-            if (_isInitialized == false)
+            if (!_isInitialized)
             {
                 throw new BuildException("The build step is not initialized");
             }
@@ -670,62 +744,38 @@ namespace Sandcastle
                     "There is no build context associated with this build step.");
             }
 
-            if (this.PreExecute(_context) == false)
+            if (!this.OnBeforeExecute(_context))
             {
-                if (_preStep.ContinueOnError == false)
+                if (!_beforeSteps.ContinueOnError)
                 {
                     return false;
                 }
             }
 
-            BuildLogger logger = _context.Logger;
-            if (logger != null && String.IsNullOrEmpty(_message) == false)
+            bool mainResult = false;
+
+            // We will replace this current step, if we have a valid replacement...
+            if (_replaceSteps != null && _replaceSteps.Count != 0 &&
+                _replaceSteps.Enabled)
             {
-                logger.WriteLine(_message, BuildLoggerLevel.Started);
+                mainResult = this.OnReplaceExecute(_context);
+            }
+            else
+            {
+                mainResult = this.OnDefaultExecute(_context);
             }
 
-            this.StartTiming();
-
-            bool mainResult = this.MainExecute(_context);
-
-            this.StopTiming();
-
-            if (!this.IsMultiSteps)
+            if (!mainResult)
             {
-                if (mainResult)
-                {
-                    if (logger != null)
-                    {
-                        string timeInfo = String.Format("Successfully Completed in: {0}",
-                            this.TimeElapsed.ToString());
-                        logger.WriteLine(timeInfo, BuildLoggerLevel.Info);
-                    }
-                }
-                else
-                {
-                    if (logger != null)
-                    {
-                        logger.WriteLine("Step failed.", BuildLoggerLevel.Error);
-                    }
-                }
-            }
-
-            if (logger != null && String.IsNullOrEmpty(_message) == false)
-            {
-                logger.WriteLine(_message, BuildLoggerLevel.Ended);
-            }
-
-            if (mainResult == false)
-            {
-                if (this.ContinueOnError == false)
+                if (!this.ContinueOnError)
                 {
                     return false;
                 }
             }
 
-            if (this.PostExecute(_context) == false)
+            if (!this.OnAfterExecute(_context))
             {
-                if (_postStep.ContinueOnError == false)
+                if (!_afterSteps.ContinueOnError)
                 {
                     return false;
                 }
@@ -743,12 +793,46 @@ namespace Sandcastle
         /// is successfully cancelled or stopped; otherwise, it returns 
         /// <see langword="false"/>.
         /// </returns>
-        public virtual bool Cancel()
+        public bool Cancel()
         {
             return false;
         }
 
-        #region Properties Methods
+        public void Insert(BuildStep insertStep, BuildInsertType insertType)
+        {
+            BuildExceptions.NotNull(insertStep, "insertStep");
+
+            switch (insertType)
+            {
+                case BuildInsertType.None:
+                    break;
+                case BuildInsertType.Before:
+                    if (_beforeSteps == null)
+                    {
+                        _beforeSteps = new BuildMultiStep();
+                    }
+                    break;
+                case BuildInsertType.Replace:
+                    if (_replaceSteps == null)
+                    {
+                        _replaceSteps = new BuildMultiStep();
+                    }
+                    break;
+                case BuildInsertType.After:
+                    if (_afterSteps == null)
+                    {
+                        _afterSteps = new BuildMultiStep();
+                    }
+                    break;
+            }
+
+            if (insertType != BuildInsertType.None)
+            {
+                this.OnInsert(insertStep, insertType);
+            }
+        }
+
+        #region Public Properties Methods
 
         /// <summary>
         /// This removes the element with the specified key from the <see cref="BuildSettings"/>.
@@ -860,21 +944,76 @@ namespace Sandcastle
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract bool MainExecute(BuildContext context);
+        protected abstract bool OnExecute(BuildContext context);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual bool PreExecute(BuildContext context)
+        protected virtual bool OnDefaultExecute(BuildContext context)
         {
-            if (_preStep == null || _preStep.Enabled == false)
+            bool mainResult    = false;
+            BuildLogger logger = context.Logger;
+            try
             {
-                return true;
+                this.OnStartTiming();
+
+                if (logger != null)
+                {
+                    if (!String.IsNullOrEmpty(_title))
+                    {
+                        logger.WriteLine(_title, BuildLoggerLevel.Started);
+                    }
+                    if (!String.IsNullOrEmpty(_message))
+                    {
+                        logger.WriteLine(_message, BuildLoggerLevel.Info);
+                    }
+                }
+
+                mainResult = this.OnExecute(_context);
+
+                this.OnStopTiming();
+
+                if (mainResult)
+                {
+                    if (logger != null && _logTimeSpan)
+                    {
+                        string timeInfo = String.Empty;
+                        if (this.IsMultiSteps)
+                        {
+                            logger.WriteLine();
+                            timeInfo = String.Format("All tasks successfully completed in: {0}",
+                                this.TimeElapsed.ToString());
+                        }
+                        else
+                        {
+                            timeInfo = String.Format("Successfully completed in: {0}",
+                                this.TimeElapsed.ToString());
+                        }
+                        logger.WriteLine(timeInfo, BuildLoggerLevel.Info);
+                    }
+                }
+                else
+                {
+                    if (!this.IsMultiSteps)
+                    {
+                        if (logger != null)
+                        {
+                            logger.WriteLine("An error occurred in this build step.", BuildLoggerLevel.Error);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (logger != null && !String.IsNullOrEmpty(_title))
+                {
+                    logger.WriteLine(_title, BuildLoggerLevel.Ended);
+                }
             }
 
-            return _preStep.Execute();
+            return mainResult;
         }
 
         /// <summary>
@@ -882,14 +1021,44 @@ namespace Sandcastle
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected virtual bool PostExecute(BuildContext context)
+        protected virtual bool OnBeforeExecute(BuildContext context)
         {
-            if (_postStep == null || _postStep.Enabled == false)
+            if (_beforeSteps == null || _beforeSteps.Enabled == false)
             {
                 return true;
             }
 
-            return _postStep.Execute();
+            return _beforeSteps.Execute();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool OnReplaceExecute(BuildContext context)
+        {
+            if (_replaceSteps == null || _replaceSteps.Enabled == false)
+            {
+                return true;
+            }
+
+            return _replaceSteps.Execute();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool OnAfterExecute(BuildContext context)
+        {
+            if (_afterSteps == null || _afterSteps.Enabled == false)
+            {
+                return true;
+            }
+
+            return _afterSteps.Execute();
         }
 
         /// <summary>
@@ -915,7 +1084,7 @@ namespace Sandcastle
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void StartTiming()
+        protected virtual void OnStartTiming()
         {
             if (_stepTimer == null)
             {
@@ -932,7 +1101,7 @@ namespace Sandcastle
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void StopTiming()
+        protected virtual void OnStopTiming()
         {
             if (_stepTimer == null)
             {
@@ -940,6 +1109,39 @@ namespace Sandcastle
             }
 
             _stepTimer.Stop();
+        }
+
+        protected virtual void OnInsert(BuildStep insertStep, 
+            BuildInsertType insertType)
+        {
+            if (insertStep == null || insertType == BuildInsertType.None)
+            {
+                return;
+            }
+
+            switch (insertType)
+            {
+                case BuildInsertType.None:
+                    break;
+                case BuildInsertType.Before:
+                    if (_beforeSteps != null)
+                    {
+                        _beforeSteps.Add(insertStep);
+                    }
+                    break;
+                case BuildInsertType.Replace:
+                    if (_replaceSteps != null)
+                    {
+                        _replaceSteps.Add(insertStep);
+                    }
+                    break;
+                case BuildInsertType.After:
+                    if (_afterSteps != null)
+                    {
+                        _afterSteps.Add(insertStep);
+                    }
+                    break;
+            }
         }
 
         #endregion

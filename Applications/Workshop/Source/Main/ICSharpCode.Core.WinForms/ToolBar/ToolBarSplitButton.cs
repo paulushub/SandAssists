@@ -12,18 +12,25 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarSplitButton : ToolStripSplitButton , IStatusUpdate
+	public sealed class ToolBarSplitButton : ToolStripSplitButton , IStatusUpdate
 	{
 		object caller;
 		Codon codon;
 		ArrayList subItems;
-		ICommand menuCommand = null;
-		Image imgButtonEnabled = null;
-		Image imgButtonDisabled = null;
-		bool buttonEnabled = true;
-		bool dropDownEnabled = true;
+		ICommand menuCommand;
+		Image imgButtonEnabled;
+		Image imgButtonDisabled;
+		bool buttonEnabled;
+		bool dropDownEnabled;
+
+        private ToolBarSplitButton()
+        {
+            buttonEnabled = true;
+            dropDownEnabled = true;
+        }
 		
 		public ToolBarSplitButton(Codon codon, object caller, ArrayList subItems)
+            : this()
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
@@ -155,7 +162,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
@@ -175,7 +182,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon != null) 
             {

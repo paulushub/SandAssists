@@ -110,7 +110,7 @@ namespace Sandcastle.Components.Maths
             if (isInline)
             {
                 //if (equationText.StartsWith("\\textstyle",
-                //    StringComparison.CurrentCultureIgnoreCase) == false)
+                //    StringComparison.OrdinalIgnoreCase) == false)
                 //{
                 //    mathText = "\\textstyle " + equationText;
                 //}
@@ -128,7 +128,7 @@ namespace Sandcastle.Components.Maths
             else
             {
                 //if (equationText.StartsWith("\\displaystyle",
-                //    StringComparison.CurrentCultureIgnoreCase) == false)
+                //    StringComparison.OrdinalIgnoreCase) == false)
                 //{
                 //    mathText = "\\displaystyle " + equationText;
                 //}

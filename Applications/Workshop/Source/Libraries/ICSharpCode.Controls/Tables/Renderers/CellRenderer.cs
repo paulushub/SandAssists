@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -33,7 +32,6 @@ using XPTable.Editors;
 using XPTable.Events;
 using XPTable.Models;
 using XPTable.Themes;
-
 
 namespace XPTable.Renderers
 {
@@ -63,6 +61,8 @@ namespace XPTable.Renderers
 		/// The amount of padding for the cell being rendered
 		/// </summary>
 		private CellPadding padding;
+
+        private Cursor _enterCursor;
 		
 		#endregion
 
@@ -74,7 +74,7 @@ namespace XPTable.Renderers
 		protected CellRenderer() : base()
 		{
 			this.format = "";
-            this.formatProvider = System.Globalization.CultureInfo.CurrentUICulture;
+            this.formatProvider = System.Globalization.CultureInfo.CurrentCulture;
 
 			this.grayTextBrush = new SolidBrush(SystemColors.GrayText);
 			this.padding = CellPadding.Empty;
@@ -183,7 +183,6 @@ namespace XPTable.Renderers
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the string that specifies how a Cells contents are formatted
 		/// </summary>
@@ -210,7 +209,6 @@ namespace XPTable.Renderers
 			get { return this.grayTextBrush; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the amount of padding around the Cell being rendered
 		/// </summary>
@@ -226,6 +224,18 @@ namespace XPTable.Renderers
 				this.padding = value;
 			}
 		}
+
+        public Cursor Cursor
+        {
+            get
+            {
+                return _enterCursor;
+            }
+            set
+            {
+                _enterCursor = value;
+            }
+        }
 
 		#endregion
 
@@ -335,17 +345,23 @@ namespace XPTable.Renderers
 
                     // Even if this tooltip has been cancelled we need to get rid of the old tooltip
                     if (args.Cancel)
-                        e.Table.ToolTip.SetToolTip(e.Table, string.Empty);
+                        e.Table.ToolTip.SetToolTip(e.Table, String.Empty);
                     else
                         e.Table.ToolTip.SetToolTip(e.Table, args.ToolTipText);
                 }
                 else
                 {
-                    e.Table.ToolTip.SetToolTip(e.Table, string.Empty);
+                    e.Table.ToolTip.SetToolTip(e.Table, String.Empty);
                 }
 				e.Table.ToolTip.Active = true;
 			}
+
+            if (_enterCursor != null)
+            {
+                e.Table.Cursor = _enterCursor;
+            }
 		}
+
 		#endregion
 
 		#region MouseLeave
@@ -366,6 +382,11 @@ namespace XPTable.Renderers
 			{
 				this.Padding = e.Cell.Padding;
 			}
+
+            if (_enterCursor != null)
+            {
+                e.Table.Cursor = Cursors.Default;
+            }
 		}
 
 		#endregion

@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -34,7 +33,6 @@ using XPTable.Events;
 using XPTable.Models.Design;
 using XPTable.Renderers;
 using XPTable.Sorting;
-
 
 namespace XPTable.Models
 {
@@ -74,17 +72,16 @@ namespace XPTable.Models
 			this.Init();
 		}
 
-
 		/// <summary>
 		/// Creates a new ImageColumn with the specified header text and width
 		/// </summary>
 		/// <param name="text">The text displayed in the column's header</param>
 		/// <param name="width">The column's width</param>
-		public ImageColumn(string text, int width) : base(text, width)
+		public ImageColumn(string text, int width) 
+            : base(text, width)
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new ImageColumn with the specified header text, width and visibility
@@ -92,11 +89,11 @@ namespace XPTable.Models
 		/// <param name="text">The text displayed in the column's header</param>
 		/// <param name="width">The column's width</param>
 		/// <param name="visible">Specifies whether the column is visible</param>
-		public ImageColumn(string text, int width, bool visible) : base(text, width, visible)
+		public ImageColumn(string text, int width, bool visible) 
+            : base(text, width, visible)
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new ImageColumn with the specified header text and image
@@ -108,18 +105,17 @@ namespace XPTable.Models
 			this.Init();
 		}
 
-
 		/// <summary>
 		/// Creates a new ImageColumn with the specified header text, image and width
 		/// </summary>
 		/// <param name="text">The text displayed in the column's header</param>
 		/// <param name="image">The image displayed on the column's header</param>
 		/// <param name="width">The column's width</param>
-		public ImageColumn(string text, Image image, int width) : base(text, image, width)
+		public ImageColumn(string text, Image image, int width) 
+            : base(text, image, width)
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Creates a new ImageColumn with the specified header text, image, width 
@@ -129,11 +125,11 @@ namespace XPTable.Models
 		/// <param name="image">The image displayed on the column's header</param>
 		/// <param name="width">The column's width</param>
 		/// <param name="visible">Specifies whether the column is visible</param>
-		public ImageColumn(string text, Image image, int width, bool visible) : base(text, image, width, visible)
+		public ImageColumn(string text, Image image, int width, bool visible) 
+            : base(text, image, width, visible)
 		{
 			this.Init();
 		}
-
 
 		/// <summary>
 		/// Initializes the ImageColumn with default values

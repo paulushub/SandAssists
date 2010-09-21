@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepTocMerge : BuildStep
+    public sealed class StepTocMerge : BuildStep
     {
         #region Private Fields
 
@@ -24,7 +24,7 @@ namespace Sandcastle.Steps
         {
             _refStartIndex = -1;
             _listToc = new List<string>();
-            this.Message = "Merging Table of Contents";
+            this.LogTitle = "Merging Table of Contents";
         }
 
         public StepTocMerge(string workingDir)
@@ -32,7 +32,7 @@ namespace Sandcastle.Steps
         {
             _refStartIndex = -1;
             _listToc = new List<string>();
-            this.Message = "Merging Table of Contents";
+            this.LogTitle = "Merging Table of Contents";
         }
 
         public StepTocMerge(string workingDir, BuildToc helpToc)
@@ -43,7 +43,7 @@ namespace Sandcastle.Steps
             _refStartIndex = -1;
             _listToc       = new List<string>();
             _helpToc       = helpToc;
-            this.Message   = "Merging Table of Contents";
+            this.LogTitle   = "Merging Table of Contents";
         }
 
         public StepTocMerge(string workingDir, string mergedToc)
@@ -65,7 +65,7 @@ namespace Sandcastle.Steps
                 _listToc.Add(apiToc);
             }
             _mergedToc   = mergedToc;
-            this.Message = "Merging Table of Contents";
+            this.LogTitle = "Merging Table of Contents";
         }
 
         #endregion
@@ -163,8 +163,48 @@ namespace Sandcastle.Steps
         #endregion
 
         #region Protected Methods
+        
+        protected override bool OnExecute(BuildContext context)
+        {
+            if (this.ProcessToc(context) && File.Exists(_mergedToc))
+            {
+                // For a successful merge, get the "root/first" topic...
+                try
+                {
+                    using (XmlReader reader = XmlReader.Create(_mergedToc))
+                    {   
+                        while (reader.Read())
+                        {
+                            if (reader.NodeType == XmlNodeType.Element && 
+                                String.Equals(reader.Name, "topic", 
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                context["$HelpTocRoot"] = reader.GetAttribute("id");
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BuildLogger logger = context.Logger;
+                    if (logger != null)
+                    {
+                        logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    }
+                }
 
-        protected override bool MainExecute(BuildContext context)
+                return true;
+            }
+
+            return false;
+        } 
+
+        #endregion
+
+        #region Private Methods
+
+        private bool ProcessToc(BuildContext context)
         {               
             if (_helpToc != null && _helpToc.IsEmpty == false)
             {
@@ -197,10 +237,6 @@ namespace Sandcastle.Steps
                 }   
             }
         }
-
-        #endregion
-
-        #region Private Methods
 
         private bool RenameToc(BuildLogger logger, string mergedToc)
         {
@@ -246,8 +282,8 @@ namespace Sandcastle.Steps
                     File.Delete(mergedToc);
                 }
 
-                XmlWriterSettings writerSettings = new XmlWriterSettings();
-                writerSettings.Indent = true;
+                XmlWriterSettings writerSettings  = new XmlWriterSettings();
+                writerSettings.Indent             = true;
                 writerSettings.OmitXmlDeclaration = false;
                 xmlWriter = XmlWriter.Create(mergedToc, writerSettings);
 
@@ -311,7 +347,7 @@ namespace Sandcastle.Steps
                     while (xmlReader.EOF == false)
                     {
                         if (xmlReader.Read() && String.Equals(xmlReader.Name, 
-                            "topic", StringComparison.CurrentCultureIgnoreCase))
+                            "topic", StringComparison.OrdinalIgnoreCase))
                         {
                             xmlWriter.WriteNode(xmlReader, true);
                         }

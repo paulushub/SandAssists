@@ -65,29 +65,50 @@ namespace Sandcastle.Formats
                 return dir;
         }
 
-        public void Run(BuildContext context)
+        public bool Run(BuildContext context)
         {
             _context = context;
             _logger = context.Logger;
 
             BuildSettings settings = context.Settings;
 
-            string workingDir = _options.WorkingDirectory;
-            string treeFileName = Path.Combine(workingDir, "webTreeFile.dat");
+            string workingDir    = _options.WorkingDirectory;
+            string treeFileName  = Path.Combine(workingDir, "webTreeFile.dat");
             string blockFileName = Path.Combine(workingDir, "webBlockFile.dat");
 
-            _plusTree = BplusTree.Initialize(treeFileName, blockFileName,
-                context.ApiNamingMethod > 1 ? 128 : 42);
-
-            WriteHtmls();
-            WriteHhk();
-            WriteToc();
-
-            if (_plusTree != null)
+            try
             {
-                //_plusTree.Commit();
-                _plusTree.Shutdown();
+                _plusTree = hBplusTree.Initialize(treeFileName, blockFileName, 64);
+
+                WriteHtmls();
+                if (!WriteHhk())
+                {
+                    return false;
+                }
+                if (!WriteToc())
+                {
+                    return false;
+                }
+
+                return true;
             }
+            catch (Exception ex)
+            {      
+             	if (_logger != null)
+                {
+                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
+                }
+
+                return false;
+            }
+            finally
+            {   
+                if (_plusTree != null)
+                {
+                    //_plusTree.Commit();
+                    _plusTree.Shutdown();
+                }
+            }  
         }
 
         private static int CompareKeyword(KKeywordInfo x, KKeywordInfo y)
@@ -129,7 +150,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        private void WriteToc()
+        private bool WriteToc()
         {
             string curDir = _options.OutputDirectory;
 
@@ -143,6 +164,8 @@ namespace Sandcastle.Formats
 
             XmlReaderSettings readerSettings = new XmlReaderSettings();
             readerSettings.ProhibitDtd = false;
+            readerSettings.XmlResolver = null;
+
             XmlReader xmlReader = null;
 
             try
@@ -163,13 +186,13 @@ namespace Sandcastle.Formats
                         if (nodeType == XmlNodeType.Element)
                         {
                             if (String.Equals(nodeName, "html",
-                                StringComparison.CurrentCultureIgnoreCase))
+                                StringComparison.OrdinalIgnoreCase))
                             {
                                 xmlWriter.WriteStartElement("html",
                                     "http://www.w3.org/1999/xhtml");
                             }
                             else if (String.Equals(nodeName, "head",
-                                StringComparison.CurrentCultureIgnoreCase))
+                                StringComparison.OrdinalIgnoreCase))
                             {
                                 xmlWriter.WriteStartElement("head"); //head
 
@@ -181,7 +204,7 @@ namespace Sandcastle.Formats
                                     if (nodeType == XmlNodeType.Element)
                                     {   
                                         if (String.Equals(nodeName, "title",
-                                           StringComparison.CurrentCultureIgnoreCase))
+                                           StringComparison.OrdinalIgnoreCase))
                                         {
                                             xmlReader.MoveToContent();
 
@@ -198,7 +221,7 @@ namespace Sandcastle.Formats
                                     else if (nodeType == XmlNodeType.EndElement)
                                     {                   
                                         if (String.Equals(nodeName, "head",
-                                            StringComparison.CurrentCultureIgnoreCase))
+                                            StringComparison.OrdinalIgnoreCase))
                                         {
                                             xmlReader.Skip();
 
@@ -209,7 +232,7 @@ namespace Sandcastle.Formats
                                 }
                             }
                             else if (String.Equals(nodeName, "body",
-                                StringComparison.CurrentCultureIgnoreCase))
+                                StringComparison.OrdinalIgnoreCase))
                             {
                                 xmlReader.Skip();
 
@@ -248,6 +271,8 @@ namespace Sandcastle.Formats
                     xmlReader.Close();
                     xmlReader = null;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -267,6 +292,8 @@ namespace Sandcastle.Formats
                 {
                     _logger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
+
+                return false;
             }
         }
 
@@ -398,12 +425,12 @@ namespace Sandcastle.Formats
             writer.WriteEndElement();    //div
         }
 
-        private void WriteToc(XmlWriter writer)
+        private bool WriteToc(XmlWriter writer)
         {
             String tocFile = _options.HelpTocFile;
             if (String.IsNullOrEmpty(tocFile) || !File.Exists(tocFile))
             {
-                return;
+                return false;
             }
 
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -461,6 +488,8 @@ namespace Sandcastle.Formats
 
                 reader.Close();
                 reader = null;
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -474,6 +503,8 @@ namespace Sandcastle.Formats
                 {
                     _logger.WriteLine(ex, BuildLoggerLevel.Ended);
                 }
+
+                return false;
             }
         }
 
@@ -481,11 +512,10 @@ namespace Sandcastle.Formats
         {
         }
 
-        private void WriteHhk()
+        private bool WriteHhk()
         {
             int iPrefix = _options.OutputDirectory.Length + 1;
             bool isIndent = false;
-
 
             InsertSeealsoIndice();
             using (StreamWriter sw = new StreamWriter(String.Format("{0}\\{1}.hhk",
@@ -534,6 +564,8 @@ namespace Sandcastle.Formats
                 sw.WriteLine("  </body>");
                 sw.WriteLine("</html>");
             }
+
+            return true;
         }
 
         private void WriteHtmls()

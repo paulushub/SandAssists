@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Components.Indexed.IndexedDocument" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Indexed\IndexedDocument.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.DatabaseIndexedDocument" Collapsed="true">
+    <Position X="1.25" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAABgCAAAQAAAAAAEAAAgCAAAEEABAA=</HashCode>
+      <FileName>Indexed\DatabaseIndexedDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.MemoryIndexedDocument" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAQAAAAEAAAABCAAAAABAAA=</HashCode>
+      <FileName>Indexed\MemoryIndexedDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.IndexedDocumentSource" Collapsed="true">
+    <Position X="3.25" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAACAAAAAAAQQAAAAAACAAABAAACBABAAgBBA=</HashCode>
+      <FileName>Indexed\IndexedDocumentSource.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.DatabaseIndexedDocumentSource" Collapsed="true">
+    <Position X="1.25" Y="4.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAOAAAAABAAAAAAAAAAAAAAACACAAAAEABAA=</HashCode>
+      <FileName>Indexed\DatabaseIndexedDocumentSource.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Cache" />
+      <Property Name="Document" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.IndexedDocumentSources" Collapsed="true">
+    <Position X="3" Y="5.25" Width="2.25" />
+    <AssociationLine Name="MemorySource" Type="Sandcastle.Components.Indexed.MemoryIndexedDocumentSource" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="5.565" />
+        <Point X="5.875" Y="5.565" />
+        <Point X="5.875" Y="4.88" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="DatabaseSource" Type="Sandcastle.Components.Indexed.DatabaseIndexedDocumentSource" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3" Y="5.565" />
+        <Point X="2.25" Y="5.565" />
+        <Point X="2.25" Y="4.88" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AACAQAAAACAQAAAAAAAAAAAAAAAAAAAAACAAEAAABAA=</HashCode>
+      <FileName>Indexed\IndexedDocumentSources.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MemorySource" />
+      <Property Name="DatabaseSource" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.MemoryIndexedDocumentSource" Collapsed="true">
+    <Position X="4.5" Y="4.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAgQAQAAAAAAAAAAAQAAAAgAAAAACgAgAAABAA=</HashCode>
+      <FileName>Indexed\MemoryIndexedDocumentSource.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Cache" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.MemoryIndexedDocumentCache" Collapsed="true">
+    <Position X="5.25" Y="3" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAIAAAAAAAAAAAAACAAgAAQgBAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Indexed\MemoryIndexedDocumentCache.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.IndexedDocumentController" Collapsed="true">
+    <Position X="3" Y="6.25" Width="2.25" />
+    <AssociationLine Name="Sources" Type="Sandcastle.Components.Indexed.IndexedDocumentSources" FixedToPoint="true">
+      <Path>
+        <Point X="4.125" Y="6.25" />
+        <Point X="4.125" Y="5.88" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAQAAAACQAAAAAAAAAQABAAAABABAAAABA=</HashCode>
+      <FileName>Indexed\IndexedDocumentController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Sources" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="1.325" />
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.DatabaseIndexedDocumentCache" Collapsed="true">
+    <Position X="0.5" Y="3" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAIAAAAAAAAAAAAACAAAAAQgBAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Indexed\DatabaseIndexedDocumentCache.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

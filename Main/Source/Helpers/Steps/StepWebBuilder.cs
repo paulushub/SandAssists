@@ -6,8 +6,7 @@ using Sandcastle.Formats;
 
 namespace Sandcastle.Steps
 {
-    [Serializable]
-    public class StepWebBuilder : BuildStep
+    public sealed class StepWebBuilder : BuildStep
     {
         #region Private Fields
 
@@ -23,7 +22,7 @@ namespace Sandcastle.Steps
         {
             _options = options;
 
-            this.Message = "WebHelp Builder - Processing WebHelp Files";
+            this.LogTitle = "WebHelp Builder - Processing WebHelp Files";
         }
 
         #endregion
@@ -58,7 +57,7 @@ namespace Sandcastle.Steps
 
         #region Public Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             if (_options == null || String.IsNullOrEmpty(_helpDir))
             {
@@ -67,9 +66,7 @@ namespace Sandcastle.Steps
 
             FormatWebHelper helper = new FormatWebHelper(_options);
 
-            helper.Run(context);
-
-            return true;
+            return helper.Run(context);
         }
 
         #endregion

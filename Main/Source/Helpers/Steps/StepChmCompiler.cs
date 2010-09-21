@@ -4,9 +4,11 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Steps
 {
-    public class StepChmCompiler : StepProcess
+    public sealed class StepChmCompiler : StepProcess
     {
         #region Private Fields
 
@@ -106,7 +108,7 @@ namespace Sandcastle.Steps
 
         #region MainExecute Method
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
             if (logger != null)
@@ -117,7 +119,7 @@ namespace Sandcastle.Steps
             string appName = Path.GetFileName(this.Application);
 
             if (String.Equals(appName, "hhc.exe", 
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {   
                 // hhc.exe is different, returns 0 if an error occurs
                 this.ExpectedExitCode = 1;
@@ -128,7 +130,7 @@ namespace Sandcastle.Steps
                 this.ExpectedExitCode = 0;
             }
 
-            bool buildResult = base.MainExecute(context);
+            bool buildResult = base.OnExecute(context);
             // If the build is successful, we will need to handle the output...
             if (!buildResult || String.IsNullOrEmpty(_helpDirectory) ||
                 String.IsNullOrEmpty(_helpFolder))
@@ -149,8 +151,8 @@ namespace Sandcastle.Steps
                 }      
                 string outputDir = Path.Combine(_helpDirectory, _helpFolder);
                 if (Directory.Exists(outputDir))
-                {
-                    BuildDirHandler.DeleteDirectory(outputDir, true);
+                {                       
+                    DirectoryUtils.DeleteDirectory(outputDir, true);
                 }
                 Directory.Move(compiledDir, outputDir);
             }

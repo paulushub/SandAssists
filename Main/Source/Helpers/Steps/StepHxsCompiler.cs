@@ -8,11 +8,12 @@ using System.Collections.Generic;
 
 using Sandcastle.Formats;
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 using Sandcastle.MSHelpCompiler;
 
 namespace Sandcastle.Steps
 {
-    public class StepHxsCompiler : StepProcess
+    public sealed class StepHxsCompiler : StepProcess
     {
         #region Private Fields
 
@@ -227,7 +228,7 @@ namespace Sandcastle.Steps
 
         #region MainExecute Method
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             bool processResult = false;
 
@@ -312,7 +313,7 @@ namespace Sandcastle.Steps
                 string outputDir = Path.Combine(_helpDirectory, _helpFolder);
                 if (Directory.Exists(outputDir))
                 {
-                    BuildDirHandler.DeleteDirectory(outputDir, true);
+                    DirectoryUtils.DeleteDirectory(outputDir, true);
                 }
                 Directory.Move(compiledDir, outputDir);
             }

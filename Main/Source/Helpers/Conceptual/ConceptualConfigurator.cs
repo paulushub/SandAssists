@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Sandcastle.Contents;
-using Sandcastle.Configurations;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.Conceptual
 {
@@ -27,7 +27,7 @@ namespace Sandcastle.Conceptual
         private ConceptualGroup     _group;
 
         private BuildFormat        _singleFormat;
-        private BuildConfiguration _configuration;
+        private IncludeContentList _configuration;
         private IList<BuildFormat> _listFormats;
 
         #endregion
@@ -55,7 +55,7 @@ namespace Sandcastle.Conceptual
                 }
 
                 IncludeContent content = _configuration.GetContent(
-                    BuildConfiguration.IncludeDefault);
+                    IncludeContentList.IncludeDefault);
 
                 if (content != null && content.Count > 0)
                 {
@@ -63,7 +63,7 @@ namespace Sandcastle.Conceptual
                 }
 
                 content = _configuration.GetContent(
-                    BuildConfiguration.IncludeConceptual);
+                    IncludeContentList.IncludeConceptual);
 
                 if (content != null && content.Count > 0)
                 {
@@ -196,7 +196,7 @@ namespace Sandcastle.Conceptual
             }
             else
             {
-                item = _configuration[BuildConfiguration.IncludeConceptual, key];
+                item = _configuration[IncludeContentList.IncludeConceptual, key];
                 if (item != null)
                 {
                     isFound = true;
@@ -240,40 +240,31 @@ namespace Sandcastle.Conceptual
         protected virtual void RegisterItemHandlers()
         {
             // 1. The conceptual skeleton templeate...
-            this.RegisterConfigurationItem(ConfigurationKeywords.Skeleton,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.Skeleton,
                 new ConfigurationItemHandler(OnSkeletonItem));
             // 2. The conceptual topics contents...
-            this.RegisterConfigurationItem(ConfigurationKeywords.TopicsContents,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.TopicsContents,
                 new ConfigurationItemHandler(OnTopicsContentsItem));
             // 3. The conceptual tokens...
-            this.RegisterConfigurationItem(ConfigurationKeywords.Tokens,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.Tokens,
                 new ConfigurationItemHandler(OnTokensItem));
             // 4. The conceptual metadata keyword...
-            this.RegisterConfigurationItem(ConfigurationKeywords.MetadataKeywords,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataKeywords,
                 new ConfigurationItemHandler(OnMetadataKeywordsItem));
             // 5. The conceptual metadata attributes...
-            this.RegisterConfigurationItem(ConfigurationKeywords.MetadataAttributes,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataAttributes,
                 new ConfigurationItemHandler(OnMetadataAttributesItem));
             // 6. The conceptual metadata settings...
-            this.RegisterConfigurationItem(ConfigurationKeywords.MetadataVersion,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataVersion,
                 new ConfigurationItemHandler(OnMetadataVersionItem));
             // 7. The conceptual metadata settings...
-            this.RegisterConfigurationItem(ConfigurationKeywords.MetadataSettings,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataSettings,
                 new ConfigurationItemHandler(OnMetadataSettingsItem));
             // 8. The conceptual transform...
-            this.RegisterConfigurationItem(ConfigurationKeywords.Transforms,
+            this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
                 new ConfigurationItemHandler(OnTransformsItem));
-            // 9. The conceptual media links...
-            this.RegisterConfigurationItem(ConfigurationKeywords.MediaLinks,
-                new ConfigurationItemHandler(OnMediaLinksItem));
-            // 10. The conceptual shared contents...
-            this.RegisterConfigurationItem(ConfigurationKeywords.SharedContents,
-                new ConfigurationItemHandler(OnSharedContentsItem));
-            //// 11. The conceptual topics links...
-            //this.RegisterItem(ConfigItems.TopicsLinks,
-            //    new ConfigItemHandler(OnTopicsLinksItem));
-            // 12. The conceptual code snippets...
-            this.RegisterConfigurationItem(ConfigurationKeywords.CodeSnippets,
+            // 9. The conceptual code snippets...
+            this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
                 new ConfigurationItemHandler(OnCodeSnippetsItem));
             //// . The conceptual ...
             //this.RegisterItem(ConfigItems,
@@ -306,23 +297,23 @@ namespace Sandcastle.Conceptual
             }
 
             // Handle the case of output formats only for now...
-            if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.CloneComponent",
-                StringComparison.CurrentCultureIgnoreCase))
+            if (String.Equals(configKeyword, "Sandcastle.Components.CloneComponent",
+                StringComparison.OrdinalIgnoreCase))
             {
                 this.OnClonedInclude(args);
             }
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.IntellisenseComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnIntellisenseInclude(args);
             //}
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.ExampleComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnExampleInclude(args);
             //}
             //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.HxfGeneratorComponent",
-            //    StringComparison.CurrentCultureIgnoreCase))
+            //    StringComparison.OrdinalIgnoreCase))
             //{
             //    this.OnHxfGeneratorInclude(args);
             //}
@@ -363,7 +354,7 @@ namespace Sandcastle.Conceptual
             xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
             xmlWriter.WriteAttributeString("input", 
                 String.Format(@"%DXROOT%\Presentation\{0}\Seed.HxF", 
-                _style.StyleType.ToString()));
+                BuildStyleUtils.StyleFolder(_style.StyleType)));
             xmlWriter.WriteAttributeString("output", 
                 String.Format(@".\Output\{0}.HxF", _settings.HelpName));
             xmlWriter.WriteEndElement();
@@ -533,31 +524,45 @@ namespace Sandcastle.Conceptual
 
                 int itemCount = _listFormats.Count;
 
-                //<component type="Microsoft.Ddue.Tools.CloneComponent"
+                //<component type="Sandcastle.Components.CloneComponent"
                 //         assembly="%DXROOT%\ProductionTools\BuildComponents.dll">
                 //  <branch>
                 //  </branch>
                 //</component>
 
-                string componentAssembly = this.GetComponents("SandcastleComponent");
+                string componentAssembly = this.GetComponents("SandAssistComponent");
                 if (String.IsNullOrEmpty(componentAssembly))
                 {
                     return;
                 }
 
                 xmlWriter.WriteStartElement("component");  // start - component
-                xmlWriter.WriteAttributeString("type", 
-                    "Microsoft.Ddue.Tools.CloneComponent");
+                xmlWriter.WriteAttributeString("type",
+                    "Sandcastle.Components.CloneComponent");
                 xmlWriter.WriteAttributeString("assembly", componentAssembly);
-                for (int i = 0; i < itemCount; i++)
+
+                for (int i = 0; i < itemCount - 1; i++)
                 {
                     BuildFormat format = _listFormats[i];
                     if (format != null)
-                    {   
+                    {
+                        xmlWriter.WriteComment(String.Format(
+                            " For the help format: {0} ", format.FormatName));
                         xmlWriter.WriteStartElement("branch");  // start - branch
                         format.WriteAssembler(_context, _group, xmlWriter);
                         xmlWriter.WriteEndElement();            // end - branch
                     }
+                }
+
+                // For the default branch...
+                BuildFormat formatDefault = _listFormats[itemCount - 1];
+                if (formatDefault != null)
+                {
+                    xmlWriter.WriteComment(String.Format(
+                        " For the help format: {0} ", formatDefault.FormatName));
+                    xmlWriter.WriteStartElement("default");  // start - default
+                    formatDefault.WriteAssembler(_context, _group, xmlWriter);
+                    xmlWriter.WriteEndElement();             // end - default
                 }
 
                 xmlWriter.WriteEndElement();               // end - component
@@ -882,339 +887,6 @@ namespace Sandcastle.Conceptual
             }
             
             xmlWriter.WriteEndElement();                // end - transform
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnMediaLinksItem Method
-
-        /// <summary>
-        /// This specifies the media links content used in the conceptual help topics.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnMediaLinksItem(object sender, ConfigurationItemEventArgs args)
-        {
-            if (_group == null)
-            {
-                throw new BuildException(
-                    "There is not build group to provide the media/arts contents.");
-            }
-
-            XPathNavigator navigator = args.Navigator;
-
-            IList<MediaContent> listMedia = _group.MediaContents;
-            if (listMedia == null || listMedia.Count == 0)
-            {
-                navigator.DeleteSelf();
-                return;
-            }
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            //<targets input="..\TestLibrary\Media" baseOutput=".\Output" 
-            //       outputPath="string('media')" link="../media" 
-            //       map="..\TestLibrary\Media\MediaContent.xml" />
-            int contentCount = listMedia.Count;
-            for (int i = 0; i < contentCount; i++)
-            {
-                MediaContent mediaContent = listMedia[i];
-                if (mediaContent == null || mediaContent.IsEmpty)
-                {
-                    continue;
-                }
-                string mediaDir = mediaContent.ContentsPath;
-                if (String.IsNullOrEmpty(mediaDir))
-                {
-                    mediaDir = Path.GetExtension(mediaContent.ContentsFile);
-                }
-                xmlWriter.WriteStartElement("targets");
-                xmlWriter.WriteAttributeString("input", mediaDir);
-                xmlWriter.WriteAttributeString("baseOutput", mediaContent.OutputBase);
-                xmlWriter.WriteAttributeString("outputPath", mediaContent.OutputPath);
-                xmlWriter.WriteAttributeString("link", mediaContent.OutputLink);
-                xmlWriter.WriteAttributeString("map", mediaContent.ContentsFile);
-                xmlWriter.WriteEndElement();
-            }
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnSharedContentsItem Method
-
-        /// <summary>
-        /// This specifies the shared items used in the conceptual topics, both the
-        /// Sandcastle style defaults and the user-defined items.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnSharedContentsItem(object sender, ConfigurationItemEventArgs args)
-        {
-            IList<string> sharedContents = _style.GetSharedContents(
-                BuildEngineType.Conceptual);
-            if (sharedContents == null || sharedContents.Count == 0)
-            {
-                throw new BuildException(
-                    "A document shared content is required.");
-            }
-            string workingDir = _context.WorkingDirectory;
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                throw new BuildException(
-                    "The working directory is required, it is not specified.");
-            }
-
-            XPathNavigator navigator = args.Navigator;
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            //<content file="%DXROOT%\Presentation\Vs2005\content\conceptual_content.xml" />
-
-            int itemCount = sharedContents.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                string sharedContent = sharedContents[i];
-                if (String.IsNullOrEmpty(sharedContent) == false)
-                {
-                    xmlWriter.WriteStartElement("content");
-                    xmlWriter.WriteAttributeString("file", sharedContent);
-                    xmlWriter.WriteEndElement();
-                }
-            }
-
-            //<!-- Overrides the contents to customize it -->
-            //<content file=".\SharedContent.xml" />
-            sharedContents = null;
-            string path = _settings.ContentsDirectory;
-            if (String.IsNullOrEmpty(path) == false &&
-                System.IO.Directory.Exists(path) == true)
-            {
-                sharedContents = _style.GetSharedContents();
-            }
-
-            if (sharedContents != null && sharedContents.Count != 0)
-            {
-                SharedContentConfigurator configurator = 
-                    new SharedContentConfigurator();
-                configurator.Initialize(_context, BuildEngineType.Conceptual);
-
-                IList<SharedItem> listShared = _group.PrepareShared();
-                if (listShared != null && listShared.Count > 0)
-                {
-                    configurator.Contents.Add(listShared);
-                }
-
-                xmlWriter.WriteComment(" Overrides the contents to customize it... ");
-                itemCount = sharedContents.Count;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    string sharedContent = sharedContents[i];
-                    if (String.IsNullOrEmpty(sharedContent))
-                    {
-                        continue;
-                    }
-
-                    string sharedFile = Path.Combine(path, sharedContent);
-
-                    if (!File.Exists(sharedFile))
-                    {
-                        continue;
-                    }
-
-                    string fileName = _group["$SharedContentFile"];
-                    if (itemCount > 1)  // not yet the case....
-                    {
-                        fileName = fileName.Replace(".", i.ToString() + ".");
-                    }
-                    string finalSharedFile = Path.Combine(workingDir, fileName);
-
-                    configurator.Configure(sharedFile, finalSharedFile);
-
-                    xmlWriter.WriteStartElement("content");
-                    xmlWriter.WriteAttributeString("file", fileName);
-                    xmlWriter.WriteEndElement();
-                }
-
-                configurator.Uninitialize();
-            }
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnTopicsLinksItem Method
-
-        /// <summary>
-        /// This specifies the types of topics links within a conceptual help.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnTopicsLinksItem(object sender, ConfigurationItemEventArgs args)
-        {
-            if (_singleFormat == null)
-            {
-                return;
-            }
-
-            string linkType = _singleFormat.LinkType.ToString();
-            XPathNavigator navigator = args.Navigator;
-
-            // <targets base=".\XmlComp" type="local" />
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("targets");
-            xmlWriter.WriteAttributeString("base", @".\XmlComp");
-            xmlWriter.WriteAttributeString("type", linkType.ToLower());
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnReferenceLinksItem Method
-
-        /// <summary>
-        /// This specifies the to links to reference items, both the local help build
-        /// and the SDK/MSDN help. 
-        /// <note type="important">
-        /// This is currently not used by the default build process, instead the various
-        /// formats create this content, using <see cref="OutputFormat.ConfigureAssembler"/>
-        /// </note>
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnReferenceLinksItem(object sender, ConfigurationItemEventArgs args)
-        {
-            if (_group == null)
-            {
-                throw new BuildException(
-                    "There is not build group to provide the media/arts contents.");
-            }
-
-            if (_singleFormat == null)
-            {
-                return;
-            }
-            XPathNavigator navigator = args.Navigator;
-
-            //<targets base="%DXROOT%\Data\Reflection\" recurse="true"  
-            //   files="*.xml" type="msdn" />
-            //<targets base=".\" recurse="false"  
-            //   files=".\reflection.xml" type="local" />        
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("targets");
-            xmlWriter.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
-            xmlWriter.WriteAttributeString("recurse", "true");
-            xmlWriter.WriteAttributeString("files", "*.xml");
-            xmlWriter.WriteAttributeString("type", 
-                _singleFormat.ExternalLinkType.ToString());
-            xmlWriter.WriteEndElement();
-
-            IList<LinkContent> listTokens = _group.LinkContents;
-            if (listTokens != null && listTokens.Count != 0)
-            {
-                int contentCount = listTokens.Count;
-                for (int i = 0; i < contentCount; i++)
-                {
-                    LinkContent content = listTokens[i];
-                    if (content == null || content.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    int itemCount = content.Count;
-                    for (int j = 0; j < itemCount; j++)
-                    {
-                        LinkItem item = content[j];
-                        if (item == null || item.IsEmpty)
-                        {
-                            continue;
-                        }
-
-                        xmlWriter.WriteStartElement("targets");
-
-                        if (item.IsDirectory)
-                        {
-                            xmlWriter.WriteAttributeString("base", item.LinkDirectory);
-                            xmlWriter.WriteAttributeString("recurse", 
-                                item.Recursive.ToString());
-                            xmlWriter.WriteAttributeString("files", @"*.xml");
-                        }
-                        else
-                        {
-                            string linkFile = item.LinkFile;
-                            string linkDir = Path.GetDirectoryName(linkFile);
-                            if (String.IsNullOrEmpty(linkDir))
-                            {
-                                linkDir = @".\";
-                            }
-                            else
-                            {
-                                linkFile = Path.GetFileName(linkFile);
-                            }
-                            xmlWriter.WriteAttributeString("base", linkDir);
-                            xmlWriter.WriteAttributeString("recurse", "false");
-                            xmlWriter.WriteAttributeString("files", linkFile);
-                        }
-                        
-                        xmlWriter.WriteAttributeString("type",
-                            _singleFormat.LinkType.ToString());
-                        xmlWriter.WriteEndElement();                        
-                    }
-                }
-            }
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnSaveResultsItem Method
-
-        /// <summary>
-        /// This specifies what, where and how the compiled conceptual help is saved.
-        /// <note type="important">
-        /// This is currently not used by the default build process, instead the various
-        /// formats create this content, using <see cref="OutputFormat.ConfigureAssembler"/>
-        /// </note>
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnSaveResultsItem(object sender, ConfigurationItemEventArgs args)
-        {
-            if (_singleFormat == null)
-            {
-                return;
-            }
-            XPathNavigator navigator = args.Navigator;
-
-            //<save base=".\Output\html" path="concat($key,'.htm')" 
-            //    indent="true" omit-xml-declaration="true" />
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("save");
-            xmlWriter.WriteAttributeString("base", @".\Output\html");
-            string outputExt = _singleFormat.OutputExtension;
-            if (String.IsNullOrEmpty(outputExt))
-            {
-                outputExt = ".htm";
-            }
-            xmlWriter.WriteAttributeString("path", 
-                String.Format("concat($key,'{0}')", outputExt));
-            xmlWriter.WriteAttributeString("indent", _singleFormat.Indent.ToString());
-            xmlWriter.WriteAttributeString("omit-xml-declaration", 
-                _singleFormat.OmitXmlDeclaration.ToString());
-            xmlWriter.WriteEndElement();
 
             xmlWriter.Close();
             navigator.DeleteSelf();

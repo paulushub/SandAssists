@@ -40,10 +40,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             protected override void OnRefreshChanges()
             {
-                if (DockPaneCaption.TextColor != ForeColor)
+                if (DockPaneCaption.DockPane.DockPanel != null)
                 {
-                    ForeColor = DockPaneCaption.TextColor;
-                    Invalidate();
+                    if (DockPaneCaption.TextColor != ForeColor)
+                    {
+                        ForeColor = DockPaneCaption.TextColor;
+                        Invalidate();
+                    }
                 }
             }
         }
@@ -315,7 +318,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private Color TextColor
         {
-            get { return DockPane.IsActivated ? ActiveTextColor : InactiveTextColor; }
+            get
+            {
+                if (DockPane.IsActivated)
+                    return DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.TextColor;
+                else
+                    return DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.TextColor;
+            }
         }
 
 		private static TextFormatFlags _textFormat =
@@ -355,23 +364,44 @@ namespace WeifenLuo.WinFormsUI.Docking
             if (rectClient.Width == 0 || rectClient.Height == 0)
                 return;
 
+            //if (DockPane.IsActivated)
+            //{
+            //    using (LinearGradientBrush brush = new LinearGradientBrush(rectClient, 
+            //        ActiveBackColorGradientBegin, ActiveBackColorGradientEnd, LinearGradientMode.Vertical))
+            //    {
+            //        brush.Blend = ActiveBackColorGradientBlend;
+            //        g.FillRectangle(brush, rectClient);
+            //    }
+            //}
+            //else
+            //{
+            //    using (SolidBrush brush = new SolidBrush(InactiveBackColor))
+            //    {
+            //        g.FillRectangle(brush, rectClient);
+            //    }
+            //    g.DrawRectangle(SystemPens.ControlDark,
+            //        new Rectangle(0, 0, this.ClientSize.Width - 1, this.ClientSize.Height - 1));
+            //}
             if (DockPane.IsActivated)
             {
-                using (LinearGradientBrush brush = new LinearGradientBrush(rectClient, 
-                    ActiveBackColorGradientBegin, ActiveBackColorGradientEnd, LinearGradientMode.Vertical))
+                Color startColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.StartColor;
+                Color endColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.EndColor;
+                LinearGradientMode gradientMode = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.LinearGradientMode;
+                using (LinearGradientBrush brush = new LinearGradientBrush(ClientRectangle, startColor, endColor, gradientMode))
                 {
                     brush.Blend = ActiveBackColorGradientBlend;
-                    g.FillRectangle(brush, rectClient);
+                    g.FillRectangle(brush, ClientRectangle);
                 }
             }
             else
             {
-                using (SolidBrush brush = new SolidBrush(InactiveBackColor))
+                Color startColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.StartColor;
+                Color endColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.EndColor;
+                LinearGradientMode gradientMode = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.LinearGradientMode;
+                using (LinearGradientBrush brush = new LinearGradientBrush(ClientRectangle, startColor, endColor, gradientMode))
                 {
-                    g.FillRectangle(brush, rectClient);
+                    g.FillRectangle(brush, ClientRectangle);
                 }
-                g.DrawRectangle(SystemPens.ControlDark,
-                    new Rectangle(0, 0, this.ClientSize.Width - 1, this.ClientSize.Height - 1));
             }
 
             Rectangle rectCaption = rectClient;
@@ -387,8 +417,14 @@ namespace WeifenLuo.WinFormsUI.Docking
 			rectCaptionText.Y += TextGapTop;
 			rectCaptionText.Height -= TextGapTop + TextGapBottom;
 
-            TextRenderer.DrawText(g, DockPane.CaptionText, TextFont, 
-                DrawHelper.RtlTransform(this, rectCaptionText), TextColor, TextFormat);
+            Color colorText;
+            if (DockPane.IsActivated)
+                colorText = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.TextColor;
+            else
+                colorText = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.TextColor;
+
+            TextRenderer.DrawText(g, DockPane.CaptionText, TextFont,
+                DrawHelper.RtlTransform(this, rectCaptionText), colorText, TextFormat);
 		}
 
 		protected override void OnLayout(LayoutEventArgs levent)
@@ -408,6 +444,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get	{	return (DockPane.ActiveContent != null)? DockPane.ActiveContent.DockHandler.CloseButton : false;	}
 		}
 
+        /// <summary>
+        /// Determines whether the close button is visible on the content
+        /// </summary>
+        private bool CloseButtonVisible
+        {
+            get { return (DockPane.ActiveContent != null) ? 
+                DockPane.ActiveContent.DockHandler.CloseButtonVisible : false; }
+        }
+
 		private bool ShouldShowAutoHideButton
 		{
 			get	{	return !DockPane.IsFloat;	}
@@ -416,7 +461,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 		private void SetButtons()
 		{
 			ButtonClose.Enabled = CloseButtonEnabled;
-			ButtonAutoHide.Visible = ShouldShowAutoHideButton;
+            ButtonClose.Visible = CloseButtonVisible;
+            ButtonAutoHide.Visible = ShouldShowAutoHideButton;
             ButtonOptions.Visible = HasTabPageContextMenu;
             ButtonClose.RefreshChanges();
             ButtonAutoHide.RefreshChanges();
@@ -442,11 +488,23 @@ namespace WeifenLuo.WinFormsUI.Docking
 			int y = rectCaption.Y + ButtonGapTop;
 			Point point = new Point(x, y);
             ButtonClose.Bounds = DrawHelper.RtlTransform(this, new Rectangle(point, buttonSize));
-			point.Offset(-(buttonWidth + ButtonGapBetween), 0);
+
+            // If the close button is not visible draw the auto hide button overtop.
+            // Otherwise it is drawn to the left of the close button.
+            if (CloseButtonVisible)
+                point.Offset(-(buttonWidth + ButtonGapBetween), 0);
+			
+            //point.Offset(-(buttonWidth + ButtonGapBetween), 0);
+            
             ButtonAutoHide.Bounds = DrawHelper.RtlTransform(this, new Rectangle(point, buttonSize));
             if (ShouldShowAutoHideButton)
                 point.Offset(-(buttonWidth + ButtonGapBetween), 0);
             ButtonOptions.Bounds = DrawHelper.RtlTransform(this, new Rectangle(point, buttonSize));
+
+            if (ButtonOptions.Visible)
+            {
+                this.PerformLayout();
+            }
 		}
 
 		private void Close_Click(object sender, EventArgs e)

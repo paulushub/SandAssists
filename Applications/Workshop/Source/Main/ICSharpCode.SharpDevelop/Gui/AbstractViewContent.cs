@@ -190,6 +190,14 @@ namespace ICSharpCode.SharpDevelop.Gui
             return null;
         }
 
+        public virtual void ViewLoad()
+        {   
+        }
+
+        public virtual void ViewUnload()
+        {   
+        }
+
         #endregion
 
         #region Protected Methods

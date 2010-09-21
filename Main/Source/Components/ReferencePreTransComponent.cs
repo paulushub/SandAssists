@@ -26,9 +26,16 @@ namespace Sandcastle.Components
         public ReferencePreTransComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _explicitInterface = true;
-            _explicitSelector = XPathExpression.Compile(
-                "//element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]");
+            try
+            {
+                _explicitInterface = true;
+                _explicitSelector  = XPathExpression.Compile(
+                    "//element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]");
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
         }
 
         #endregion
@@ -49,12 +56,19 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            base.Apply(document, key);
-
-            // 1. Filter out the explicit interface documentations...
-            if (_explicitInterface)
+            try
             {
-                ApplyExplicitInterface(document, key);
+                base.Apply(document, key);
+
+                // 1. Filter out the explicit interface documentations...
+                if (_explicitInterface)
+                {
+                    ApplyExplicitInterface(document, key);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 

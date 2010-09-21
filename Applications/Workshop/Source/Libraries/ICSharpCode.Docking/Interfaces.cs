@@ -7,7 +7,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 	public interface IDockContent
 	{
 		DockContentHandler DockHandler	{	get;	}
-		bool IsDisposed { get; }
+        void OnActivated(EventArgs e);
+        void OnDeactivate(EventArgs e);
+        bool IsDisposed { get; }
 	}
 
 	public interface INestedPanesContainer

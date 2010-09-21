@@ -5,7 +5,7 @@ using Sandcastle.Components.Others;
 
 namespace Sandcastle.Components
 {
-    public class BuildComponentController : MarshalByRefObject
+    public sealed class BuildComponentController : MarshalByRefObject
     {
         private static BuildComponentController _buildController;
 
@@ -15,7 +15,7 @@ namespace Sandcastle.Components
         public BuildComponentController()
         {
             _versionInfo     = new Dictionary<string, VersionInfo>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
             _currentVersions = new List<VersionInfo>();
         }
 

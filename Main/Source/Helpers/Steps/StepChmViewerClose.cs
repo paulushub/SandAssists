@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepChmViewerClose : BuildStep
+    public sealed class StepChmViewerClose : BuildStep
     {
         #region Private Fields
 
@@ -19,16 +19,22 @@ namespace Sandcastle.Steps
 
         public StepChmViewerClose()
         {
-            this.Message   = "Closing the HtmlHelp Viewer";
+            this.ConstructorDefaults();
         }
 
         public StepChmViewerClose(string workingDir, string htmlHelpFile,
             string htmlHelpTitle)
             : base(workingDir)
         {
+            this.ConstructorDefaults();
+
             _htmlHelpFile  = htmlHelpFile;
             _htmlHelpTitle = htmlHelpTitle;
-            this.Message   = "Closing the HtmlHelp Viewer";
+        }
+
+        private void ConstructorDefaults()
+        {
+            this.LogTitle = "Closing the HtmlHelp 1.x Viewer";
         }
 
         #endregion
@@ -69,7 +75,7 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
@@ -133,6 +139,29 @@ namespace Sandcastle.Steps
             }
             catch (IOException ex)
             {
+                bool isDone = this.KillIt();
+                if (isDone)
+                {
+                    return true;
+                }  
+
+                if (logger != null)
+                {
+                    logger.WriteLine(ex, BuildLoggerLevel.Error);
+
+                    logger.WriteLine(
+                        "Please close the Help file, and try again.",
+                        BuildLoggerLevel.Error);
+                }
+
+                return false;
+            }
+        }
+
+        private bool KillIt()
+        {
+            try
+            {
                 bool isFound  = false;
                 bool isClosed = false;
                 Process[] hhProcesses = Process.GetProcessesByName("hh");
@@ -146,11 +175,22 @@ namespace Sandcastle.Steps
                         // In a typical GUI we could tell what the title of the help window,
                         // and compare it with that of the process.
                         if (String.Equals(compiledHelp.MainWindowTitle, _htmlHelpTitle,
-                            StringComparison.CurrentCultureIgnoreCase))
+                            StringComparison.OrdinalIgnoreCase))
                         {
                             isClosed = compiledHelp.CloseMainWindow();
-                            compiledHelp.WaitForExit();  // must wait!
-                            compiledHelp.Close();
+                            if (isClosed)
+                            {
+                                compiledHelp.WaitForExit();  // must wait!
+                                isClosed = compiledHelp.HasExited;
+                                compiledHelp.Close();
+                            }
+                            else
+                            {
+                                compiledHelp.Kill();
+                                compiledHelp.WaitForExit();  // must wait!
+                                isClosed = compiledHelp.HasExited;
+                                compiledHelp.Close();
+                            }
 
                             isFound = true;
                         }
@@ -162,23 +202,17 @@ namespace Sandcastle.Steps
                     return true;
                 }
 
-                if (logger != null)
+                if (isFound)
                 {
-                    logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    return false;
                 }
 
-                if (!isFound)
-                {
-                    if (logger != null)
-                    {
-                        logger.WriteLine(
-                            "Please close the Help file, and try again.",
-                            BuildLoggerLevel.Error);
-                    }
-                }
+                return true;
             }
-
-            return false;
+            catch
+            {
+                return false;
+            }
         }
 
         #endregion

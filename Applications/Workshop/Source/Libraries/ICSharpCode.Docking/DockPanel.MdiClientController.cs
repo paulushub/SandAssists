@@ -13,14 +13,16 @@ namespace WeifenLuo.WinFormsUI.Docking
         //  http://www.codeproject.com/cs/miscctrl/mdiclientcontroller.asp
         private class MdiClientController : NativeWindow, IComponent, IDisposable
         {
-            private bool m_autoScroll = true;
-            private BorderStyle m_borderStyle = BorderStyle.Fixed3D;
-            private MdiClient m_mdiClient = null;
-            private Form m_parentForm = null;
-            private ISite m_site = null;
+            private bool m_autoScroll;
+            private BorderStyle m_borderStyle;
+            private MdiClient m_mdiClient;
+            private Form m_parentForm;
+            private ISite m_site;
 
             public MdiClientController()
             {
+                m_autoScroll = true;
+                m_borderStyle = BorderStyle.Fixed3D;
             }
 
             public void Dispose()
@@ -330,7 +332,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
-        private MdiClientController m_mdiClientController = null;
+        private MdiClientController m_mdiClientController;
         private MdiClientController GetMdiClientController()
         {
             if (m_mdiClientController == null)
@@ -367,22 +369,34 @@ namespace WeifenLuo.WinFormsUI.Docking
             GetMdiClientController().MdiClient.Bounds = bounds;
         }
 
+        private int _suspendLayout = 0;
         private void SuspendMdiClientLayout()
         {
             if (GetMdiClientController().MdiClient != null)
-                GetMdiClientController().MdiClient.PerformLayout();
+            {
+                GetMdiClientController().MdiClient.SuspendLayout();
+                //GetMdiClientController().MdiClient.PerformLayout();
+
+                _suspendLayout++;
+            }
         }
 
         private void ResumeMdiClientLayout(bool perform)
         {
             if (GetMdiClientController().MdiClient != null)
+            {
                 GetMdiClientController().MdiClient.ResumeLayout(perform);
+
+                _suspendLayout--;
+            }
         }
 
         private void PerformMdiClientLayout()
         {
             if (GetMdiClientController().MdiClient != null)
+            {
                 GetMdiClientController().MdiClient.PerformLayout();
+            }
         }
 
         // Called when:

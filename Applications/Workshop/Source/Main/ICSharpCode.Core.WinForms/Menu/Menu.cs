@@ -52,7 +52,8 @@ namespace ICSharpCode.Core.WinForms
 					}
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					DropDownItems.AddRange(submenuBuilder.BuildSubmenu(codon, caller));
+                    ToolStripItem[] menuItems = submenuBuilder.BuildSubmenu(codon, caller);
+					DropDownItems.AddRange(menuItems);
 				}
 			}
 		}

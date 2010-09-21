@@ -3,9 +3,11 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Steps
 {
-    public class StepDirectoryCopy : BuildStep
+    public sealed class StepDirectoryCopy : BuildStep
     {
         #region Private Fields
 
@@ -25,7 +27,7 @@ namespace Sandcastle.Steps
             _listDestDir   = new List<string>();
             _listSourceDir = new List<string>();
 
-            this.Message   = "Copying directories";
+            this.LogTitle   = "Copying directories";
         }
 
         public StepDirectoryCopy(string workingDir)
@@ -35,12 +37,29 @@ namespace Sandcastle.Steps
             _listDestDir   = new List<string>();
             _listSourceDir = new List<string>();
 
-            this.Message   = "Copying directories";
+            this.LogTitle   = "Copying directories";
         }
 
         #endregion
 
         #region Public Properties
+
+        public bool IsValid
+        {
+            get
+            {
+                if (_listSourceDir == null || _listSourceDir.Count == 0)
+                {
+                    return false;
+                }
+                if (_listDestDir == null || _listDestDir.Count == 0)
+                {
+                    return false;
+                }
+
+                return (_listSourceDir.Count == _listDestDir.Count);
+            }
+        }
 
         public bool Overwrite
         {
@@ -116,18 +135,31 @@ namespace Sandcastle.Steps
             }
         }
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
+            int itemCount = _listSourceDir.Count;
+            if (itemCount == 0)
+            {
+                if (logger != null)
+                {
+                    logger.WriteLine("There is no directory specified to copy.",
+                        BuildLoggerLevel.Warn);
+                }
+
+                return true;
+            }
+
             try
             {
+                int dirCopied = 0;
+
                 BuildDirCopier dirCopier = new BuildDirCopier();
                 dirCopier.Overwrite = _isOverwrite;
                 dirCopier.Recursive = _isRecursive;
 
-                int itemCount = _listSourceDir.Count;
-                int dirCopied  = 0;
+                string baseDir = context.BaseDirectory;
 
                 for (int i = 0; i < itemCount; i++)
                 {
@@ -143,7 +175,31 @@ namespace Sandcastle.Steps
 
                     if (logger != null)
                     {
-                        logger.WriteLine("Copying:..." + dirSource,
+                        StringBuilder builder = new StringBuilder();
+                        builder.Append("Copying - ");
+                        if (dirSource.StartsWith(baseDir,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            builder.Append(PathUtils.GetRelativePath(
+                                baseDir, dirSource));
+                        }
+                        else
+                        {
+                            builder.Append(dirSource);
+                        }
+                        builder.Append(" -> ");
+                        if (dirDest.StartsWith(baseDir,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            builder.Append(PathUtils.GetRelativePath(
+                                baseDir, dirDest)); 
+                        }
+                        else
+                        {
+                            builder.Append(PathUtils.GetRelativePath(
+                                dirSource, dirDest));
+                        }
+                        logger.WriteLine(builder.ToString(),
                             BuildLoggerLevel.Info);
                     }
 
@@ -152,7 +208,7 @@ namespace Sandcastle.Steps
                     if (logger != null)
                     {
                         logger.WriteLine(String.Format(
-                            "Total of {0} files copied.", fileCopies),
+                            "Completed Copying - Total of {0} files copied.", fileCopies),
                             BuildLoggerLevel.Info);
                     }
 

@@ -101,7 +101,7 @@ namespace ICSharpCode.Core
 						while (reader.Read()){
 							if (reader.IsStartElement()) {
 								if (reader.LocalName == propertyXmlRootNodeName) {
-									properties.ReadProperties(reader, propertyXmlRootNodeName);
+                                    properties.ReadXml(reader, propertyXmlRootNodeName);
 									return true;
 								}
 							}
@@ -123,7 +123,7 @@ namespace ICSharpCode.Core
                 XmlWriter writer = XmlWriter.Create(ms, settings);
 				//writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement(propertyXmlRootNodeName);
-				properties.WriteProperties(writer);
+                properties.WriteXml(writer);
 				writer.WriteEndElement();
 				writer.Flush();
 				

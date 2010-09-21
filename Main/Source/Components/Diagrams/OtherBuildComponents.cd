@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Components.BuildComponentEx" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAQAAgACIAAAAAAYAAAAAQACAAAABAAABAAAEAAAA=</HashCode>
+      <FileName>BuildComponentEx.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.Ddue.Tools.BuildComponent" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.Components.PauseComponent" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAEAAAAAAAAARQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PauseComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.FileDisplayComponent" Collapsed="true">
+    <Position X="2.25" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAABAAAAAAQCAAAIAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>FileDisplayComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.CloneComponent" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CloneComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.BuildComponentController" Collapsed="true">
+    <Position X="0.5" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAAAQAAAAEQAAAAAAAAAAgAAAkAAABAAAAEAAA=</HashCode>
+      <FileName>BuildComponentController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.BuildComponentException" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BuildComponentException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.BuildComponentExceptions" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQBAAAAAAAAAAAAAAAAAAAAAACAAABAAAAA=</HashCode>
+      <FileName>BuildComponentExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.CopyFromIndexComponent" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="2.25" />
+    <Members>
+      <Field Name="_copyCommands" Hidden="true" />
+      <Field Name="_documentController" Hidden="true" />
+    </Members>
+    <AssociationLine Name="CopyCommands" Type="Sandcastle.Components.CopyFromIndexCommand" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="2.062" />
+        <Point X="7.25" Y="2.062" />
+        <Point X="7.25" Y="1.009" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAABAAATAABAAgAAAAAAAAAAAAABAAAAAQAAAAAAA=</HashCode>
+      <FileName>CopyFromIndexComponent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_copyCommands" />
+      <Field Name="_documentController" />
+      <Property Name="Controller" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="CopyCommands" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.Components.CopyFromIndexCommand" Collapsed="true">
+    <Position X="6" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ASAAQAEAAgECAAYFIgAEACAAAAAAAAAAAAEAAAAAAEQ=</HashCode>
+      <FileName>CopyFromIndexCommand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.Indexed.IndexedDocumentController" Collapsed="true">
+    <Position X="4.75" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAQAAAACQAAAAAAAAAQABAAAABABAAAABA=</HashCode>
+      <FileName>Indexed\IndexedDocumentController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.554" />
+  </Class>
+  <Class Name="Sandcastle.Components.MshcComponent" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABJAAAAAIAABAABGAAAAAIAAAEAAIEAAAAAA=</HashCode>
+      <FileName>MshcComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

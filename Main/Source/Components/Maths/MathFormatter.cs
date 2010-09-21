@@ -101,7 +101,7 @@ namespace Sandcastle.Components.Maths
                     }
 
                     if (String.Equals(attribute, "inline",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         attribute = navigator.GetAttribute("baseSize", 
                             String.Empty);
@@ -127,7 +127,7 @@ namespace Sandcastle.Components.Maths
                         }
                     }
                     else if (String.Equals(attribute, "displayed",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         attribute = navigator.GetAttribute("baseSize", 
                             String.Empty);

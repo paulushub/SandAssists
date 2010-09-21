@@ -10,15 +10,16 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarComboBox : ToolStripComboBox, IStatusUpdate
+	public sealed class ToolBarComboBox : ToolStripComboBox, IStatusUpdate
 	{
-		object caller;
-		Codon  codon;
-		string description   = String.Empty;
-		IComboBoxCommand menuCommand = null;
+		private object caller;
+		private Codon  codon;
+		private string description;
+		private IComboBoxCommand menuCommand;
 		
 		public ToolBarComboBox(Codon codon, object caller)
 		{
+            description = String.Empty;
 			this.RightToLeft = RightToLeft.Inherit;
 			ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			ComboBox.SelectionChangeCommitted += new EventHandler(selectionChanged);
@@ -107,7 +108,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			bool isVisible = base.Visible;
 			if (codon != null) {
@@ -119,7 +120,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon.Properties.Contains("label")) {
 				Text = StringParser.Parse(codon.Properties["label"]);

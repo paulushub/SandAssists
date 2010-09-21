@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepWebViewerStart : BuildStep
+    public sealed class StepWebViewerStart : BuildStep
     {
         #region Private Fields
 
-        private string _htmlHelpFile;
+        private string _webHelpFile;
 
         #endregion
 
@@ -18,12 +18,14 @@ namespace Sandcastle.Steps
 
         public StepWebViewerStart()
         {
+            this.ContinueOnError = true;
         }
 
-        public StepWebViewerStart(string workingDir, string htmlHelpFile)
+        public StepWebViewerStart(string workingDir, string webHelpFile)
             : base(workingDir)
         {
-            _htmlHelpFile = htmlHelpFile;
+            _webHelpFile         = webHelpFile;
+            this.ContinueOnError = true;
         }
 
         #endregion
@@ -34,18 +36,11 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
-            if (logger != null)
-            {
-                logger.WriteLine("Opening compiled HtmlHelp file...",
-                    BuildLoggerLevel.Started);
-            }
-
-            if (String.IsNullOrEmpty(_htmlHelpFile) ||
-                File.Exists(_htmlHelpFile) == false)
+            if (String.IsNullOrEmpty(_webHelpFile) || !File.Exists(_webHelpFile))
             {
                 if (logger != null)
                 {
@@ -58,15 +53,20 @@ namespace Sandcastle.Steps
 
             if (logger != null)
             {
-                logger.WriteLine("Help File: " + _htmlHelpFile, BuildLoggerLevel.Info);
+                logger.WriteLine("Opening: " + _webHelpFile, BuildLoggerLevel.Info);
             }
 
-            bool isStarted = false;
             try
             {
-                Process process = Process.Start(_htmlHelpFile);
+                Process process = Process.Start(_webHelpFile);
+                // The return could be null, if no process resource is started 
+                // (for example, if an existing process is reused as in browsers).
+                if (process != null)
+                {
+                    process.Close();
+                }
 
-                isStarted = (process != null);
+                return true;
             }
             catch (Exception ex)
             {
@@ -74,15 +74,9 @@ namespace Sandcastle.Steps
                 {
                     logger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
-            }
 
-            if (logger != null)
-            {
-                logger.WriteLine("Opening compiled HtmlHelp file.",
-                    BuildLoggerLevel.Ended);
+                return true;
             }
-
-            return isStarted;
         }
 
         #endregion

@@ -110,6 +110,7 @@
     <Compile Include="Services\ResourceService\ResourceService.cs" />
     <Compile Include="Services\ServiceManager.cs" />
     <Compile Include="Services\StringParser\IStringTagProvider.cs" />
+    <Compile Include="Services\StringParser\StringList.cs" />
     <Compile Include="Services\StringParser\StringParser.cs" />
     <Compile Include="Services\StringParser\StringTagProvider.cs" />
     <Compile Include="Util\AbstractCommand.cs" />

@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-    public class ToolBarCommand : ToolStripButton, IStatusUpdate
+    public sealed class ToolBarCommand : ToolStripButton, IStatusUpdate
 	{
 		private object caller;
         private Codon codon;
@@ -124,7 +124,7 @@ namespace ICSharpCode.Core.WinForms
             }
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null) 
             {
@@ -149,7 +149,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon != null) 
             {

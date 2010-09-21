@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 
 using BplusDotNet;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Formats
 {
     /// <summary>
@@ -95,7 +97,7 @@ namespace Sandcastle.Formats
 
             DirectoryInfo dirInfo = new DirectoryInfo(srcDir);
 
-            IEnumerable<string> fileIterator = BuildDirHandler.FindFiles(
+            IEnumerable<string> fileIterator = PathSearch.FindFiles(
                dirInfo, "*.*", SearchOption.TopDirectoryOnly);
             foreach (string fileName in fileIterator)
             {
@@ -269,14 +271,14 @@ namespace Sandcastle.Formats
                 if (nodeType == XmlNodeType.Element)
                 {
                     if (String.Equals(nodeName, "mshelp:toctitle",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string titleAttr = reader.GetAttribute("Title");
                         if (!String.IsNullOrEmpty(titleAttr))
                             _currentTitle = titleAttr;
                     }    
                     else if (String.Equals(nodeName, "mshelp:keyword",
-                        StringComparison.CurrentCultureIgnoreCase))
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string indexType = reader.GetAttribute("Index");
                         if (indexType == "K" || indexType == "A")

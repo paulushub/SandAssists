@@ -357,7 +357,7 @@ namespace Sandcastle.References
                     fileName = Path.Combine(commentsDir, fileName);
                     if (commentsFile.Length != fileName.Length ||
                         String.Equals(commentsFile, fileName,
-                        StringComparison.CurrentCultureIgnoreCase) == false)
+                        StringComparison.OrdinalIgnoreCase) == false)
                     {
                         File.Copy(commentsFile, fileName, true);
                         File.SetAttributes(fileName, FileAttributes.Normal);
@@ -371,7 +371,7 @@ namespace Sandcastle.References
                     fileName = Path.Combine(assemblyDir, fileName);
                     if (assemblyFile.Length != fileName.Length ||
                         String.Equals(assemblyFile, fileName,
-                        StringComparison.CurrentCultureIgnoreCase) == false)
+                        StringComparison.OrdinalIgnoreCase) == false)
                     {
                         File.Copy(assemblyFile, fileName, true);
                         File.SetAttributes(fileName, FileAttributes.Normal);
@@ -421,7 +421,7 @@ namespace Sandcastle.References
                     fileName = Path.Combine(dependencyDir, fileName);
                     if (dependencyFile.Length != fileName.Length ||
                         String.Equals(dependencyFile, fileName,
-                        StringComparison.CurrentCultureIgnoreCase) == false)
+                        StringComparison.OrdinalIgnoreCase) == false)
                     {
                         File.Copy(dependencyFile, fileName, true);
                         File.SetAttributes(fileName, FileAttributes.Normal);

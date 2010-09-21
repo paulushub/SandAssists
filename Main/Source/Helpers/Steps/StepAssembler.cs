@@ -24,22 +24,26 @@ namespace Sandcastle.Steps
 
         public StepAssembler()
         {
-            _lastLevel = BuildLoggerLevel.None;
-            _verbosity = BuildLoggerVerbosity.None;
+            this.ConstructorDefaults();
         }
 
         public StepAssembler(string workingDir, string arguments)
             : base(workingDir, arguments)
         {
-            _lastLevel = BuildLoggerLevel.None;
-            _verbosity = BuildLoggerVerbosity.None;
+            this.ConstructorDefaults();
         }
 
         public StepAssembler(string workingDir, string fileName, string arguments)
             : base(workingDir, fileName, arguments)
         {
-            _lastLevel = BuildLoggerLevel.None;
-            _verbosity = BuildLoggerVerbosity.None;
+            this.ConstructorDefaults();
+        }
+
+        private void ConstructorDefaults()
+        {
+            _lastLevel    = BuildLoggerLevel.None;
+            _verbosity    = BuildLoggerVerbosity.None;
+            this.LogTitle = "Assembling a documentation.";
         }
 
         #endregion
@@ -64,7 +68,7 @@ namespace Sandcastle.Steps
 
         #region MainExecute Method
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
             if (logger != null)
@@ -93,7 +97,7 @@ namespace Sandcastle.Steps
                 }
             }
 
-            bool buildResult = base.MainExecute(context);
+            bool buildResult = base.OnExecute(context);
 
             if (buildResult && _logger != null && !String.IsNullOrEmpty(_lastMessage))
             {
@@ -164,7 +168,7 @@ namespace Sandcastle.Steps
             }
             else
             {
-                _logger.WriteLine(_lastMessage, BuildLoggerLevel.None);
+                _logger.WriteLine(textData, BuildLoggerLevel.None);
                 _lastLevel = BuildLoggerLevel.None;
             }
         }
@@ -204,13 +208,13 @@ namespace Sandcastle.Steps
 
             string configFile      = String.Empty;
             string finalConfigFile = String.Empty;
-            if (String.IsNullOrEmpty(configDir) == false && 
-                Directory.Exists(configDir))
+            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
             {
-                configFile = Path.Combine(configDir, styleType.ToString() + ".config");
+                configFile = Path.Combine(configDir, 
+                    BuildStyleUtils.StyleFolder(styleType) + ".config");
                 finalConfigFile = Path.Combine(workingDir, group["$ConfigurationFile"]);
             }
-            if (File.Exists(configFile) == false)
+            if (!File.Exists(configFile))
             {
                 configFile = String.Empty;
             }
@@ -273,7 +277,7 @@ namespace Sandcastle.Steps
                     configFile  = Path.Combine(configDir,  "Conceptual.config");
                     finalConfig = Path.Combine(workingDir, group["$ConfigurationFile"]);
                 }
-                if (File.Exists(configFile) == false)
+                if (!File.Exists(configFile))
                 {
                     configFile = String.Empty;
                 }

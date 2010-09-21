@@ -75,7 +75,6 @@ namespace XPTable.Models
 
 		#endregion
 		
-		
 		#region Constructor
 		
 		/// <summary>
@@ -174,7 +173,6 @@ namespace XPTable.Models
 
 		#endregion
 
-
 		#region Methods
 
 		/// <summary>
@@ -187,7 +185,6 @@ namespace XPTable.Models
 			return "NUMBER";
 		}
 
-
 		/// <summary>
 		/// Gets the Column's default CellRenderer
 		/// </summary>
@@ -196,7 +193,6 @@ namespace XPTable.Models
 		{
 			return new NumberCellRenderer();
 		}
-
 
 		/// <summary>
 		/// Gets a string that specifies the name of the Column's default CellEditor
@@ -208,7 +204,6 @@ namespace XPTable.Models
 			return "NUMBER";
 		}
 
-
 		/// <summary>
 		/// Gets the Column's default CellEditor
 		/// </summary>
@@ -219,7 +214,6 @@ namespace XPTable.Models
 		}
 
 		#endregion
-
 
 		#region Properties
 
@@ -298,7 +292,6 @@ namespace XPTable.Models
 			return this.minimum != (decimal) 0;
 		}
 
-
 		/// <summary>
 		/// Gets or sets the value to increment or decrement a Cell when its up or down 
 		/// buttons are clicked
@@ -323,7 +316,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the Increment property should be serialized at 
 		/// design time
@@ -334,7 +326,6 @@ namespace XPTable.Models
 		{
 			return this.increment != (decimal) 1;
 		}
-
 
 		/// <summary>
 		/// Gets or sets whether the Column's Cells should draw up and down buttons
@@ -359,7 +350,6 @@ namespace XPTable.Models
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the alignment of the up and down buttons in the Column
@@ -391,7 +381,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the string that specifies how a Column's Cell contents 
 		/// are formatted
@@ -412,7 +401,6 @@ namespace XPTable.Models
 				base.Format = value;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the Type of the Comparer used to compare the Column's Cells when 

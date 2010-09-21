@@ -10,17 +10,17 @@ namespace Sandcastle.Steps
     {
         #region Private Fields
 
-        private int _processExitCode;
-        private int _expectedExitCode;
-        internal int _copyright;
-        internal int _messageCount;
-        private bool   _shellExecute;
-        private bool   _ignoreExitCode;
-        internal bool _ignoreWhitespace;
-        private bool   _redirectOutput;
-        private bool   _redirectError;
-        private string _application;
-        private string _arguments;
+        private int      _processExitCode;
+        private int      _expectedExitCode;
+        internal int     _copyright;
+        internal int     _messageCount;
+        private bool     _shellExecute;
+        private bool     _ignoreExitCode;
+        internal bool    _ignoreWhitespace;
+        private bool     _redirectOutput;
+        private bool     _redirectError;
+        private string   _application;
+        private string   _arguments;
         private Encoding _encoding;
 
         [NonSerialized]
@@ -201,7 +201,7 @@ namespace Sandcastle.Steps
 
         #region MainExecute Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
             bool processResult = false;
@@ -251,7 +251,7 @@ namespace Sandcastle.Steps
                 if (_encoding != null)
                 {
                     startInfo.StandardOutputEncoding = _encoding;
-                    startInfo.StandardErrorEncoding = _encoding;
+                    startInfo.StandardErrorEncoding  = _encoding;
                 }
 
                 // Add the event handler to receive the console output...

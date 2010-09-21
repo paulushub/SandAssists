@@ -3,21 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers.csproj", "{048F177F-802E-494D-89E0-CD4074F8A33C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpersTestLibrary", "..\HelpersTestLibrary\HelpersTestLibrary.csproj", "{0009470D-BB30-4147-B373-356A4EE11441}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "..\..\Samples\Helpers\ConsoleSample\ConsoleSample.csproj", "{9275708E-047E-42AB-A5E4-545DC80539ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpersConsoleTest", "..\HelpersConsoleTest\HelpersConsoleTest.csproj", "{9275708E-047E-42AB-A5E4-545DC80539ED}"
-	ProjectSection(ProjectDependencies) = postProject
-		{0009470D-BB30-4147-B373-356A4EE11441} = {0009470D-BB30-4147-B373-356A4EE11441}
-		{048F177F-802E-494D-89E0-CD4074F8A33C} = {048F177F-802E-494D-89E0-CD4074F8A33C}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibrary", "..\..\Samples\Helpers\SampleLibrary\SampleLibrary.csproj", "{0009470D-BB30-4147-B373-356A4EE11441}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpRegisterTopics", "..\HelpRegisterTopics\HelpRegisterTopics.csproj", "{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleRegisterTopics", "..\..\Samples\Helpers\SampleRegisterTopics\SampleRegisterTopics.csproj", "{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpTestTopics", "..\HelpTestTopics\HelpTestTopics.csproj", "{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTopics", "..\..\Samples\Helpers\SampleTopics\SampleTopics.csproj", "{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\Core\Core.csproj", "{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 1
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccProjectUniqueName0 = Helpers.csproj
@@ -25,6 +23,31 @@ Global
 		SccAuxPath0 = https://tfs06.codeplex.com
 		SccLocalPath0 = .
 		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = ..\\..\\Samples\\Helpers\\ConsoleSample\\ConsoleSample.csproj
+		SccProjectName1 = ../../Samples/Helpers/ConsoleSample
+		SccAuxPath1 = https://tfs06.codeplex.com
+		SccLocalPath1 = ..\\..\\Samples\\Helpers\\ConsoleSample
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = ..\\..\\Samples\\Helpers\\SampleLibrary\\SampleLibrary.csproj
+		SccProjectName2 = ../../Samples/Helpers/SampleLibrary
+		SccAuxPath2 = https://tfs06.codeplex.com
+		SccLocalPath2 = ..\\..\\Samples\\Helpers\\SampleLibrary
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName3 = ..\\..\\Samples\\Helpers\\SampleRegisterTopics\\SampleRegisterTopics.csproj
+		SccProjectName3 = ../../Samples/Helpers/SampleRegisterTopics
+		SccAuxPath3 = https://tfs06.codeplex.com
+		SccLocalPath3 = ..\\..\\Samples\\Helpers\\SampleRegisterTopics
+		SccProvider3 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName4 = ..\\..\\Samples\\Helpers\\SampleTopics\\SampleTopics.csproj
+		SccProjectName4 = ../../Samples/Helpers/SampleTopics
+		SccAuxPath4 = https://tfs06.codeplex.com
+		SccLocalPath4 = ..\\..\\Samples\\Helpers\\SampleTopics
+		SccProvider4 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName5 = ..\\Core\\Core.csproj
+		SccProjectName5 = ../Core
+		SccAuxPath5 = https://tfs06.codeplex.com
+		SccLocalPath5 = ..\\Core
+		SccProvider5 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -41,14 +64,6 @@ Global
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Analysis|Any CPU.Build.0 = Release|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Analysis|Any CPU.Build.0 = Release|Any CPU
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -57,6 +72,14 @@ Global
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9275708E-047E-42AB-A5E4-545DC80539ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Analysis|Any CPU.Build.0 = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0009470D-BB30-4147-B373-356A4EE11441}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
 		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Analysis|Any CPU.Build.0 = Release|Any CPU
 		{B6F1A073-21BE-4E6E-BFD2-B9A41B00E831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -73,6 +96,14 @@ Global
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

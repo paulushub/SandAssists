@@ -11,7 +11,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 {
 	public abstract class DockPaneStripBase : Control
 	{
-        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]        
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         protected internal class Tab : IDisposable
         {
             private IDockContent m_content;
@@ -19,6 +19,11 @@ namespace WeifenLuo.WinFormsUI.Docking
             public Tab(IDockContent content)
             {
                 m_content = content;
+            }
+
+            ~Tab()
+            {
+                Dispose(false);
             }
 
             public IDockContent Content
@@ -31,7 +36,13 @@ namespace WeifenLuo.WinFormsUI.Docking
                 get { return m_content as Form; }
             }
 
-            public virtual void Dispose()
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
             {
             }
         }
@@ -219,7 +230,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 				}
 
 				return;
-			} else if (m.Msg == (int)Win32.Msgs.WM_MBUTTONUP) {
+			} 
+            else if (m.Msg == (int)Win32.Msgs.WM_MBUTTONUP) 
+            {
 				base.WndProc(ref m);
 				int index = HitTest();
 				if (index != -1) {

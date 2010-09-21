@@ -402,7 +402,7 @@ namespace XPTable.Editors
 		{
 			try
 			{
-				this.Value = this.Constrain(decimal.Parse(this.Control.Text));
+				this.Value = this.Constrain(Decimal.Parse(this.Control.Text));
 			}
 			catch (Exception)
 			{

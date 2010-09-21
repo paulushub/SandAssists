@@ -166,7 +166,6 @@ namespace XPTable.Models
 			this.data = value;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text 
 		/// and check value
@@ -181,7 +180,6 @@ namespace XPTable.Models
 			this.Checked = check;
 		}
 		
-		
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text 
 		/// and Image value
@@ -195,7 +193,6 @@ namespace XPTable.Models
 			this.text = text;
 			this.Image = image;
 		}
-		
 		
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
@@ -215,7 +212,6 @@ namespace XPTable.Models
 			this.Font = font;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text 
 		/// and CellStyle
@@ -230,7 +226,6 @@ namespace XPTable.Models
 			this.text = text;
 			this.cellStyle = cellStyle;
 		}
-		
 		
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified object, 
@@ -250,7 +245,6 @@ namespace XPTable.Models
 			this.Font = font;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text 
 		/// and CellStyle
@@ -265,7 +259,6 @@ namespace XPTable.Models
 			this.data = value;
 			this.cellStyle = cellStyle;
 		}
-
 
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
@@ -287,7 +280,6 @@ namespace XPTable.Models
 			this.Font = font;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
 		/// object and CellStyle
@@ -304,7 +296,6 @@ namespace XPTable.Models
 			this.data = value;
 			this.cellStyle = cellStyle;
 		}
-
 
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
@@ -326,7 +317,6 @@ namespace XPTable.Models
 			this.Font = font;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
 		/// check value and CellStyle
@@ -343,7 +333,6 @@ namespace XPTable.Models
 			this.Checked = check;
 			this.cellStyle = cellStyle;
 		}
-		
 		
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
@@ -365,7 +354,6 @@ namespace XPTable.Models
 			this.Font = font;
 		}
 		
-		
 		/// <summary>
 		/// Initializes a new instance of the Cell class with the specified text, 
 		/// Image and CellStyle
@@ -383,22 +371,21 @@ namespace XPTable.Models
 			this.cellStyle = cellStyle;
 		}
 
-
 		/// <summary>
 		/// Initialize default values
 		/// </summary>
 		private void Init()
 		{
-			this.text = null;
-			this.data = null;
-			this.rendererData = null;
-			this.tag = null;
-			this.row = null;
+            //this.text = null;
+            //this.data = null;
+			//this.rendererData = null;
+			//this.tag = null;
+			//this.row = null;
 			this.index = -1;
-			this.cellStyle = null;
-			this.checkStyle = null;
-			this.imageStyle = null;
-			this.tooltipText = null;
+			//this.cellStyle = null;
+			//this.checkStyle = null;
+			//this.imageStyle = null;
+			//this.tooltipText = null;
             this.colspan = 1;
 
 			this.state = (byte) (STATE_EDITABLE | STATE_ENABLED);
@@ -429,7 +416,6 @@ namespace XPTable.Models
 			{
 				return this.text;
 			}
-
 			set
 			{
 				if (this.text == null || !this.text.Equals(value))
@@ -445,7 +431,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the Cells non-text data
 		/// </summary>
@@ -459,7 +444,6 @@ namespace XPTable.Models
 			{
 				return this.data;
 			}
-
 			set
 			{
 				if (this.data != value)
@@ -474,7 +458,6 @@ namespace XPTable.Models
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the object that contains data about the Cell
@@ -496,7 +479,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the CellStyle used by the Cell
 		/// </summary>
@@ -508,7 +490,6 @@ namespace XPTable.Models
 			{
 				return this.cellStyle;
 			}
-
 			set
 			{
 				if (this.cellStyle != value)
@@ -522,7 +503,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets whether the Cell is selected
 		/// </summary>
@@ -534,7 +514,6 @@ namespace XPTable.Models
 				return this.GetState(STATE_SELECTED);
 			}
 		}
-
 
 		/// <summary>
 		/// Sets whether the Cell is selected
@@ -564,7 +543,6 @@ namespace XPTable.Models
                     return this.CellStyle.WordWrap;
                 }
             }
-
             set
             {
                 if (this.CellStyle == null)
@@ -619,7 +597,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the BackColor property should be serialized at 
 		/// design time
@@ -630,7 +607,6 @@ namespace XPTable.Models
 		{
 			return (this.cellStyle != null && this.cellStyle.BackColor != Color.Empty);
 		}
-
 
 		/// <summary>
 		/// Gets or sets the foreground Color for the Cell
@@ -663,7 +639,6 @@ namespace XPTable.Models
 					return this.CellStyle.ForeColor;
 				}
 			}
-
 			set
 			{
 				if (this.CellStyle == null)
@@ -682,7 +657,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the ForeColor property should be serialized at 
 		/// design time
@@ -693,7 +667,6 @@ namespace XPTable.Models
 		{
 			return (this.cellStyle != null && this.cellStyle.ForeColor != Color.Empty);
 		}
-
 
 		/// <summary>
 		/// Gets or sets the Font used by the Cell
@@ -726,7 +699,6 @@ namespace XPTable.Models
 					return this.CellStyle.Font;
 				}
 			}
-
 			set
 			{
 				if (this.CellStyle == null)
@@ -745,7 +717,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the Font property should be serialized at 
 		/// design time
@@ -756,7 +727,6 @@ namespace XPTable.Models
 		{
 			return (this.cellStyle != null && this.cellStyle.Font != null);
 		}
-
 
 		/// <summary>
 		/// Gets or sets the amount of space between the Cells Border and its contents
@@ -774,7 +744,6 @@ namespace XPTable.Models
 				
 				return this.CellStyle.Padding;
 			}
-
 			set
 			{
 				if (this.CellStyle == null)
@@ -793,7 +762,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the Padding property should be serialized at 
 		/// design time
@@ -804,7 +772,6 @@ namespace XPTable.Models
 		{
 			return this.Padding != CellPadding.Empty;
 		}
-
 
 		/// <summary>
 		/// Gets or sets whether the Cell is in the checked state
@@ -825,7 +792,6 @@ namespace XPTable.Models
 				
 				return this.checkStyle.Checked;
 			}
-
 			set
 			{
 				if (this.checkStyle == null)
@@ -843,7 +809,6 @@ namespace XPTable.Models
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the state of the Cells check box
@@ -863,7 +828,6 @@ namespace XPTable.Models
 				
 				return this.checkStyle.CheckState;
 			}
-
 			set
 			{
 				if (!Enum.IsDefined(typeof(CheckState), value))
@@ -887,7 +851,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets a value indicating whether the Cells check box 
 		/// will allow three check states rather than two
@@ -907,7 +870,6 @@ namespace XPTable.Models
 				
 				return this.checkStyle.ThreeState;
 			}
-
 			set
 			{
 				if (this.checkStyle == null)
@@ -926,7 +888,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the image that is displayed in the Cell
 		/// </summary>
@@ -944,7 +905,6 @@ namespace XPTable.Models
 				
 				return this.imageStyle.Image;
 			}
-
 			set
 			{
 				if (this.imageStyle == null)
@@ -963,7 +923,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets how the Cells image is sized within the Cell
 		/// </summary>
@@ -981,7 +940,6 @@ namespace XPTable.Models
 				
 				return this.imageStyle.ImageSizeMode;
 			}
-
 			set
 			{
 				if (this.imageStyle == null)
@@ -999,7 +957,6 @@ namespace XPTable.Models
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the Cells contents are able 
@@ -1023,7 +980,6 @@ namespace XPTable.Models
 
 				return this.Enabled && this.Row.Editable;
 			}
-
 			set
 			{
 				bool editable = this.Editable;
@@ -1037,7 +993,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the Editable property should be serialized at 
 		/// design time
@@ -1048,7 +1003,6 @@ namespace XPTable.Models
 		{
 			return !this.GetState(STATE_EDITABLE);
 		}
-
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the Cell 
@@ -1072,7 +1026,6 @@ namespace XPTable.Models
 
 				return this.Row.Enabled;
 			}
-
 			set
 			{
 				bool enabled = this.Enabled;
@@ -1086,7 +1039,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Specifies whether the Enabled property should be serialized at 
 		/// design time
@@ -1097,7 +1049,6 @@ namespace XPTable.Models
 		{
 			return !this.GetState(STATE_ENABLED);
 		}
-
 
 		/// <summary>
 		/// Gets or sets the text displayed in the Cells tooltip
@@ -1111,7 +1062,6 @@ namespace XPTable.Models
 			{
 				return this.tooltipText;
 			}
-
 			set
 			{
 				if (this.tooltipText != value)
@@ -1128,7 +1078,7 @@ namespace XPTable.Models
         /// <summary>
         /// Indicates whether the text has all been shown when rendered.
         /// </summary>
-        private bool _isTextTrimmed = false;
+        private bool _isTextTrimmed;
 
         /// <summary>
         /// Gets or sets a value that indicates whether the text has all been shown when rendered.
@@ -1164,7 +1114,7 @@ namespace XPTable.Models
             }
         }
 
-        private bool _widthSet = false;
+        private bool _widthSet;
 
         /// <summary>
         /// Returns true if the cells width property has been assigned.
@@ -1194,7 +1144,6 @@ namespace XPTable.Models
             }
         }
 
-
 		/// <summary>
 		/// Gets or sets the information used by CellRenderers to record the current 
 		/// state of the Cell
@@ -1212,7 +1161,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the Row that the Cell belongs to
 		/// </summary>
@@ -1224,7 +1172,6 @@ namespace XPTable.Models
 				return this.row;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the Row that the Cell belongs to
@@ -1242,7 +1189,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the index of the Cell within its Row
 		/// </summary>
@@ -1254,7 +1200,6 @@ namespace XPTable.Models
 				return this.index;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the index of the Cell within its Row
@@ -1271,7 +1216,6 @@ namespace XPTable.Models
 				this.index = value;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell is able to raise events

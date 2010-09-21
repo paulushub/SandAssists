@@ -5,14 +5,14 @@ using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Loggers;
-using Sandcastle.Configurations;
+using Sandcastle.Configurators;
 
 namespace Sandcastle
 {
     /// <summary>
     /// 
     /// </summary>
-    public abstract class BuildEngine : MarshalByRefObject, IDisposable
+    public abstract class BuildEngine : BuildObject, IDisposable
     {
         #region Private Fields
 
@@ -22,8 +22,8 @@ namespace Sandcastle
         private BuildContext  _context;
         private BuildSettings _settings;
 
-        private BuildConfiguration   _configuration;
-        private ConfigurationContent _configContent;
+        private IncludeContentList   _configuration;
+        private ConfiguratorContent _configContent;
 
         #endregion
 
@@ -67,7 +67,7 @@ namespace Sandcastle
         /// <param name="context"></param>
         /// <param name="configuration"></param>
         protected BuildEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context, BuildConfiguration configuration)
+            BuildContext context, IncludeContentList configuration)
         {
             _settings      = settings;
             _logger        = logger;
@@ -92,10 +92,10 @@ namespace Sandcastle
 
             if (_configuration == null)
             {
-                _configuration = new BuildConfiguration();
+                _configuration = new IncludeContentList();
             }
 
-            _configContent = new ConfigurationContent();
+            _configContent = new ConfiguratorContent();
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Sandcastle
             }
         }
 
-        public ConfigurationItem this[int itemIndex]
+        public ConfiguratorItem this[int itemIndex]
         {
             get
             {
@@ -169,7 +169,7 @@ namespace Sandcastle
             }
         }
 
-        public ConfigurationContent Handlers
+        public ConfiguratorContent Handlers
         {
             get
             {
@@ -177,11 +177,22 @@ namespace Sandcastle
             }
         }
 
-        public BuildConfiguration Configuration
+        public IncludeContentList Configuration
         {
             get
             {
                 return _configuration;
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of the folders created or are use by this build engine.
+        /// </summary>
+        public virtual IList<string> Folders
+        {
+            get
+            {
+                return null;
             }
         }
 
@@ -191,7 +202,8 @@ namespace Sandcastle
 
         #region CreateSteps Method
 
-        public abstract BuildStep CreateSteps(BuildGroup group);
+        public abstract BuildStep CreateInitialSteps(BuildGroup group);
+        public abstract BuildStep CreateFinalSteps(BuildGroup group);
 
         #endregion
 
@@ -226,7 +238,7 @@ namespace Sandcastle
 
             if (_logger.IsInitialize == false)
             {
-                _logger.Initialize();
+                _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
 
             _settings         = settings;
@@ -281,16 +293,16 @@ namespace Sandcastle
 
         public void AddHandler(string keyword, ConfigurationItemHandler handler)
         {
-            ConfigurationItem item = new ConfigurationItem(keyword, handler);
+            ConfiguratorItem item = new ConfiguratorItem(keyword, handler);
             _configContent.Add(item);
         }
 
-        public void AddHandler(ConfigurationItem item)
+        public void AddHandler(ConfiguratorItem item)
         {
             _configContent.Add(item);
         }
 
-        public void AddHandlers(IList<ConfigurationItem> items)
+        public void AddHandlers(IList<ConfiguratorItem> items)
         {
             _configContent.Add(items);
         }
@@ -300,12 +312,12 @@ namespace Sandcastle
             _configContent.Remove(index);
         }
 
-        public void RemoveHandler(ConfigurationItem item)
+        public void RemoveHandler(ConfiguratorItem item)
         {
             _configContent.Remove(item);
         }
 
-        public bool ContainsHandler(ConfigurationItem item)
+        public bool ContainsHandler(ConfiguratorItem item)
         {
             return _configContent.Contains(item);
         }
@@ -393,11 +405,13 @@ namespace Sandcastle
 
                     if (buildStep.Execute() == false)
                     {
-                        _logger.WriteLine(
-                            "An error occurred in the step = " + i.ToString(),
-                            BuildLoggerLevel.Error);
+                        //_logger.WriteLine(
+                        //    "An error occurred in the step = " + i.ToString(),
+                        //    BuildLoggerLevel.Error);
 
                         _context.StepError(buildStep);
+
+                        _logger.WriteLine();
 
                         buildResult = false;
                         break;
@@ -443,7 +457,7 @@ namespace Sandcastle
             IList<string> listFolders)
         {
             Dictionary<string, bool> dicFolders = new Dictionary<string, bool>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
 
             if (_settings == null)
             {

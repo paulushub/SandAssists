@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -19,7 +20,7 @@ namespace XPTable.Models
     /// <summary>
     /// Encapsulates drag drop functionality for Table.
     /// </summary>
-    class DragDropHelper
+    sealed class DragDropHelper
     {
         #region Members
         Table _table;
@@ -55,9 +56,11 @@ namespace XPTable.Models
         #region Drag drop events
         void table_DragDrop(object sender, DragEventArgs drgevent)
         {
-            if (!drgevent.Data.GetDataPresent(typeof(DragItemData).ToString())
-                || ((DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString())).table == null
-                || ((DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString())).DragItems.Count == 0)
+            string dragItemDataName = typeof(DragItemData).ToString();
+
+            if (!drgevent.Data.GetDataPresent(dragItemDataName)
+                || ((DragItemData)drgevent.Data.GetData(dragItemDataName)).table == null
+                || ((DragItemData)drgevent.Data.GetData(dragItemDataName)).DragItems.Count == 0)
             {
                 _isStartDrag = false;
                 _isMouseDown = false;
@@ -65,7 +68,7 @@ namespace XPTable.Models
                 return;
             }
 
-            DragItemData data = (DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString());
+            DragItemData data = (DragItemData)drgevent.Data.GetData(dragItemDataName);
 
             Point point = _table.PointToClient(new Point(drgevent.X, drgevent.Y));
             int nRow = _table.TableModel.RowIndexAt(point.Y);
@@ -90,7 +93,7 @@ namespace XPTable.Models
             {
                 for (int i = 0; i < data.DragItems.Count; i++)
                 {
-                    Row newItem = (Row)data.DragItems[i];
+                    Row newItem = data.DragItems[i];
                     _table.TableModel.Rows.Add(newItem);
                 }
             }
@@ -98,7 +101,7 @@ namespace XPTable.Models
             {
                 for (int i = data.DragItems.Count - 1; i >= 0; i--)
                 {
-                    Row newItem = (Row)data.DragItems[i];
+                    Row newItem = data.DragItems[i];
 
                     if (nRow < 0)
                         _table.TableModel.Rows.Add(newItem);
@@ -192,30 +195,30 @@ namespace XPTable.Models
             return data;
         }
 
-        private class DragItemData
+        private sealed class DragItemData
         {
             private Table m_Table;
-            private ArrayList m_DragItems;
+            private List<Row> m_DragItems;
+
+            public DragItemData(Table table)
+            {
+                m_Table     = table;
+                m_DragItems = new List<Row>();
+            }
 
             public Table table
             {
                 get { return m_Table; }
             }
 
-            public ArrayList DragItems
+            public IList<Row> DragItems
             {
                 get { return m_DragItems; }
-            }
-
-            public DragItemData(Table table)
-            {
-                m_Table = table;
-                m_DragItems = new ArrayList();
             }
         }
         #endregion
 
-        void Reset()
+        private void Reset()
         {
             _isMouseDown = false;
             _isStartDrag = false;

@@ -10,14 +10,23 @@ namespace Sandcastle
     /// </summary>
     /// <remarks>
     /// The feedback allows the user of the documentation to send comments or 
-    /// suggestions to the developer team, and where applicable, rating the content of
-    /// the help page.
+    /// suggestions to the developer team, and where applicable, rating the 
+    /// content of the help page.
     /// </remarks>
     /// <seealso cref="BuildFeedbackType"/>
     [Serializable]
     public sealed class BuildFeedback : BuildObject<BuildFeedback>
     {
         #region Private Fields
+
+        private int    _logoWidth;
+        private int    _logoHeight;
+        private int    _logoPadding;
+        private bool   _logoInHeader;
+        private string _logoImage;
+        private string _logoLink;
+        private string _logoText;
+        private BuildLogoPlacement _logoPlacement;
 
         private string _copyrightText;
         private string _copyrightLink;
@@ -32,8 +41,17 @@ namespace Sandcastle
 
         #region Constructor and Destructor
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildFeedback"/> class
+        /// with the default parameters.
+        /// </summary>
         public BuildFeedback()
         {
+            _logoImage     = String.Empty;
+            _logoLink      = String.Empty;
+            _logoText      = String.Empty;
+            _logoPlacement = BuildLogoPlacement.Right;
+
             _copyrightLink = String.Empty;
             _copyrightText = String.Empty; //"Copyright (C) " + DateTime.Now.Year;
             _productName   = "Product";
@@ -160,6 +178,102 @@ namespace Sandcastle
                     value = String.Empty;
                 }
                 _copyrightLink = value;
+            }
+        }
+
+        public bool LogoInHeader
+        {
+            get
+            {                   
+                return _logoInHeader;
+            }
+            set
+            {
+                _logoInHeader = value;
+            }
+        }
+
+        public int LogoWidth
+        {
+            get 
+            { 
+                return _logoWidth; 
+            }
+            set 
+            { 
+                _logoWidth = value; 
+            }
+        }
+
+        public int LogoHeight
+        {
+            get 
+            { 
+                return _logoHeight; 
+            }
+            set 
+            { 
+                _logoHeight = value; 
+            }
+        }
+
+        public int LogoPadding
+        {
+            get 
+            { 
+                return _logoPadding; 
+            }
+            set 
+            { 
+                _logoPadding = value; 
+            }
+        }
+
+        public string LogoImage
+        {
+            get 
+            { 
+                return _logoImage; 
+            }
+            set 
+            { 
+                _logoImage = value; 
+            }
+        }
+
+        public string LogoLink
+        {
+            get 
+            { 
+                return _logoLink; 
+            }
+            set 
+            { 
+                _logoLink = value; 
+            }
+        }
+
+        public string LogoText
+        {
+            get 
+            { 
+                return _logoText; 
+            }
+            set 
+            { 
+                _logoText = value; 
+            }
+        }
+
+        public BuildLogoPlacement LogoPlacement
+        {
+            get 
+            { 
+                return _logoPlacement; 
+            }
+            set 
+            { 
+                _logoPlacement = value; 
             }
         }
 

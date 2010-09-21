@@ -10,15 +10,17 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarTextBox : ToolStripTextBox, IStatusUpdate
+	public sealed class ToolBarTextBox : ToolStripTextBox, IStatusUpdate
 	{
 		object caller;
 		Codon  codon;
-		string description   = String.Empty;
-		ITextBoxCommand menuCommand = null;
+		string description;
+		ITextBoxCommand menuCommand;
 
 		public ToolBarTextBox(Codon codon, object caller)
 		{
+            description = String.Empty;
+
 			this.RightToLeft = RightToLeft.Inherit;			
 			this.caller  = caller;
 			this.codon   = codon;
@@ -95,7 +97,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			bool isVisible = base.Visible;
 			if (codon != null) {
@@ -107,7 +109,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 			if (codon.Properties.Contains("label")) {
 				Text = StringParser.Parse(codon.Properties["label"]);

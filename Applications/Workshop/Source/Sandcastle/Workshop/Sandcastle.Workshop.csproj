@@ -197,6 +197,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Banner.png" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

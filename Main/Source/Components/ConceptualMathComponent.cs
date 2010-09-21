@@ -12,7 +12,7 @@ using Sandcastle.Components.Maths;
 
 namespace Sandcastle.Components
 {
-    public class ConceptualMathComponent : MathComponent
+    public sealed class ConceptualMathComponent : MathComponent
     {
         #region Private Fields
 
@@ -25,18 +25,25 @@ namespace Sandcastle.Components
         public ConceptualMathComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration, true)
         {
-            if (_latexFormatter != null)
+            try
             {
-                _xsltContext = new CustomContext();
-                _xsltContext.AddNamespace("ddue",
-                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
+                if (_latexFormatter != null)
+                {
+                    _xsltContext = new CustomContext();
+                    _xsltContext.AddNamespace("ddue",
+                        "http://ddue.schemas.microsoft.com/authoring/2003/5");
 
-                _xpathSelector = XPathExpression.Compile(
-                    "//ddue:math[starts-with(@address, 'Math')]");
-                _xpathSelector.SetContext(_xsltContext);
+                    _xpathSelector = XPathExpression.Compile(
+                        "//ddue:math[starts-with(@address, 'Math')]");
+                    _xpathSelector.SetContext(_xsltContext);
 
-                MathController.Create("conceptual", _numberShow, 
-                    _numberIncludesPage, _numberByPage, _numberFormat);
+                    MathController.Create("conceptual", _numberShow, 
+                        _numberIncludesPage, _numberByPage, _numberFormat);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
@@ -46,6 +53,13 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
+            // If there is no LaTeX installed, we do no process the math, as this
+            // will throw exceptions...
+            if (!_isLaTeXInstalled)
+            {
+                return;
+            }
+
             if (_latexFormatter == null)
             {
                 return;
@@ -55,83 +69,79 @@ namespace Sandcastle.Components
             {
                 _mathNumber = 1;
             }
-            XPathNavigator docNavigator = document.CreateNavigator();
-
-            XPathNodeIterator iterator = docNavigator.Select(_xpathSelector);
-            XPathNavigator navigator   = null;
-            XPathNavigator[] arrNavigator = 
-                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
-
-            if (arrNavigator == null)
+            try
             {
-                return;
-            }
+                XPathNavigator docNavigator = document.CreateNavigator();
 
-            int itemCount = arrNavigator.Length;
-            for (int i = 0; i < itemCount; i++)
-            {
-                navigator = arrNavigator[i];
-                if (navigator == null)
+                XPathNodeIterator iterator = docNavigator.Select(_xpathSelector);
+                XPathNavigator navigator   = null;
+                XPathNavigator[] arrNavigator = 
+                    BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
+
+                if (arrNavigator == null)
                 {
-                    continue;
+                    return;
                 }
 
-                string mathInfo = navigator.GetAttribute("address", String.Empty);
-                //if (String.IsNullOrEmpty(mathInfo))
-                //{
-                //    // default to mimeTex
-                //    mathInfo = "MathTeX." + _mathNumber.ToString();
-                //}
-                string mathText = navigator.Value;
-                if (String.IsNullOrEmpty(mathText))
+                int itemCount = arrNavigator.Length;
+                for (int i = 0; i < itemCount; i++)
                 {
-                    continue;
-                }
-                mathText = mathText.Trim();
-
-                _isNumbered = true;
-
-                // We dynamically create the mediaLink element
-                //<mediaLink>
-                //    <image xlink:href=""/>
-                //</mediaLink>
-                string mediaFormat = FormatEquation(mathInfo, mathText);
-                if (String.IsNullOrEmpty(mediaFormat) == false)
-                {
-                    XmlWriter xmlWriter = navigator.InsertAfter();
-                    xmlWriter.WriteStartElement("mediaLink");  // start - mediaLink
-                    xmlWriter.WriteStartElement("image");  // start - image
-                    xmlWriter.WriteAttributeString("xlink", "href", null, mediaFormat);
-                    xmlWriter.WriteEndElement();               // end - image
-                    xmlWriter.WriteEndElement();               // end - mediaLink
-                    xmlWriter.Close();
-
-                    if (_isNumbered)
+                    navigator = arrNavigator[i];
+                    if (navigator == null)
                     {
-                        _mathNumber++;
+                        continue;
                     }
 
-                    navigator.DeleteSelf();
-                }
-                else
-                {
-                    this.WriteMessage(MessageLevel.Warn,
-                        String.Format("Math item not valid - {0}", mathInfo));
+                    string mathInfo = navigator.GetAttribute("address", String.Empty);
+                    //if (String.IsNullOrEmpty(mathInfo))
+                    //{
+                    //    // default to mimeTex
+                    //    mathInfo = "MathTeX." + _mathNumber.ToString();
+                    //}
+                    string mathText = navigator.Value;
+                    if (String.IsNullOrEmpty(mathText))
+                    {
+                        continue;
+                    }
+                    mathText = mathText.Trim();
 
-                    //navigator.DeleteSelf();
+                    _isNumbered = true;
+
+                    // We dynamically create the mediaLink element
+                    //<mediaLink>
+                    //    <image xlink:href=""/>
+                    //</mediaLink>
+                    string mediaFormat = FormatEquation(mathInfo, mathText);
+                    if (String.IsNullOrEmpty(mediaFormat) == false)
+                    {
+                        XmlWriter xmlWriter = navigator.InsertAfter();
+                        xmlWriter.WriteStartElement("mediaLink");  // start - mediaLink
+                        xmlWriter.WriteStartElement("image");  // start - image
+                        xmlWriter.WriteAttributeString("xlink", "href", null, mediaFormat);
+                        xmlWriter.WriteEndElement();               // end - image
+                        xmlWriter.WriteEndElement();               // end - mediaLink
+                        xmlWriter.Close();
+
+                        if (_isNumbered)
+                        {
+                            _mathNumber++;
+                        }
+
+                        navigator.DeleteSelf();
+                    }
+                    else
+                    {
+                        this.WriteMessage(MessageLevel.Warn,
+                            String.Format("Math item not valid - {0}", mathInfo));
+
+                        //navigator.DeleteSelf();
+                    }
                 }
             }
-        }
-
-        public override void Dispose()
-        {
-            if (_latexFormatter != null)
+            catch (System.Exception ex)
             {
-                _latexFormatter.Dispose();
-                _latexFormatter = null;
+                this.WriteMessage(MessageLevel.Error, ex);
             }
-
-            base.Dispose();
         }
 
         #endregion
@@ -162,7 +172,7 @@ namespace Sandcastle.Components
                 }
 
                 if (String.Equals(mathFormat, "MathNone",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     separator = mathText.IndexOf(':');
                     if (separator <= 0 || separator == (mathText.Length - 1))
@@ -182,10 +192,9 @@ namespace Sandcastle.Components
                     return String.Format("Equation|{0}:../{1}", mathClass, mathFile);
                 } 
                 else if (String.Equals(mathFormat, "MathTeX",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_latexFormatter != null && 
-                        _latexFormatter.Create(mathText, false, false))
+                    if (_latexFormatter.Create(mathText, false, false))
                     {
                         string mathClass = MathController.MathImage;
                         string mathFile  = _latexFormatter.ImageFile;
@@ -193,17 +202,18 @@ namespace Sandcastle.Components
                         string outputFile = Path.Combine(_outputPath, mathFile);
                         File.Move(_latexFormatter.ImagePath, outputFile);
 
-                        return String.Format("Equation|{0}|{1}:{2}{3}",
-                            mathClass, equationNumber, _linkPath, mathFile);
+                        //return String.Format("Equation|{0}|{1}:{2}{3}",
+                        //    mathClass, equationNumber, _linkPath, mathFile);
+                        return String.Format("Equation|{0}|{1}:{2}",
+                            mathClass, equationNumber, mathFile);
                     }
 
                     return null;
                 }
                 else if (String.Equals(mathFormat, "MathTeXUser",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_latexFormatter != null &&
-                        _latexFormatter.Create(mathText, false, true))
+                    if (_latexFormatter.Create(mathText, false, true))
                     {
                         string mathClass = MathController.MathImage;
                         string mathFile  = _latexFormatter.ImageFile;
@@ -211,17 +221,18 @@ namespace Sandcastle.Components
                         string outputFile = Path.Combine(_outputPath, mathFile);
                         File.Move(_latexFormatter.ImagePath, outputFile);
 
-                        return String.Format("Equation|{0}|{1}:{2}{3}",
-                            mathClass, equationNumber, _linkPath, mathFile);
+                        //return String.Format("Equation|{0}|{1}:{2}{3}",
+                        //    mathClass, equationNumber, _linkPath, mathFile);
+                        return String.Format("Equation|{0}|{1}:{2}",
+                            mathClass, equationNumber, mathFile);
                     }
 
                     return null;
                 }
                 else if (String.Equals(mathFormat, "MathTeXInline",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_latexFormatter != null && 
-                        _latexFormatter.Create(mathText, true, false))
+                    if (_latexFormatter.Create(mathText, true, false))
                     {
                         string mathClass = MathController.MathInline;
                         string mathFile  = _latexFormatter.ImageFile;
@@ -230,8 +241,10 @@ namespace Sandcastle.Components
                         File.Move(_latexFormatter.ImagePath, outputFile);
 
                         _isNumbered = false;
-                        return String.Format("Equation|{0}|{1}:{2}{3}",
-                            mathClass, 0, _linkPath, mathFile);
+                        //return String.Format("Equation|{0}|{1}:{2}{3}",
+                        //    mathClass, 0, _linkPath, mathFile);
+                        return String.Format("Equation|{0}|{1}:{2}",
+                            mathClass, 0, mathFile);
                     }
 
                     return null;
@@ -245,6 +258,17 @@ namespace Sandcastle.Components
 
                 return null;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_latexFormatter != null)
+            {
+                _latexFormatter.Dispose();
+                _latexFormatter = null;
+            }
+
+            base.Dispose(disposing);
         }
 
         #endregion

@@ -24,11 +24,9 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
-
 
 namespace XPTable.Models
 {
@@ -102,7 +100,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the background color for the Cell
 		/// </summary>
@@ -121,7 +118,6 @@ namespace XPTable.Models
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets the foreground color for the Cell
 		/// </summary>
@@ -139,7 +135,6 @@ namespace XPTable.Models
 				this.foreColor = value;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets the amount of space between the Cells Border and its contents

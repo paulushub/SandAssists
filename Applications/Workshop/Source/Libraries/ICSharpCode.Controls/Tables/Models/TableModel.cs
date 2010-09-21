@@ -26,7 +26,7 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -34,7 +34,6 @@ using System.Drawing.Design;
 
 using XPTable.Events;
 using XPTable.Models.Design;
-
 
 namespace XPTable.Models
 {
@@ -591,7 +590,7 @@ namespace XPTable.Models
 			/// <summary>
 			/// The list of Rows that have selected Cells
 			/// </summary>
-			private ArrayList rows;
+			private List<Row> rows;
 
 			/// <summary>
 			/// The starting cell of a selection that uses the shift key
@@ -621,10 +620,10 @@ namespace XPTable.Models
 				}
 				
 				this.owner = owner;
-				this.rows = new ArrayList();
+				this.rows = new List<Row>();
 
 				this.shiftSelectStart = CellPos.Empty;
-				this.shiftSelectEnd = CellPos.Empty;
+				this.shiftSelectEnd   = CellPos.Empty;
 			}
 
 			#endregion
@@ -645,7 +644,7 @@ namespace XPTable.Models
 				// is already selected
 				if (this.rows.Count == 1)
 				{
-					Row r = (Row) this.rows[0];
+					Row r = this.rows[0];
 					
 					if (r.InternalIndex == row && r.SelectedCellCount == 1)
 					{
@@ -947,7 +946,7 @@ namespace XPTable.Models
 				{
 					for (int i=0; i<this.rows.Count; i++)
 					{
-						((Row) this.rows[i]).ClearSelection();
+						this.rows[i].ClearSelection();
 					}
 					
 					this.rows.Clear();
@@ -1200,7 +1199,7 @@ namespace XPTable.Models
 
 					this.rows.Sort(new RowComparer());
 
-					return (Row[]) this.rows.ToArray(typeof(Row));
+					return this.rows.ToArray();
 				}
 			}
 
@@ -1221,7 +1220,7 @@ namespace XPTable.Models
 
 					for (int i=0; i<this.rows.Count; i++)
 					{
-						indicies[i] = ((Row) this.rows[i]).InternalIndex;
+						indicies[i] = this.rows[i].InternalIndex;
 					}
 
 					return indicies;
@@ -1230,7 +1229,7 @@ namespace XPTable.Models
 
 
 			/// <summary>
-			/// Returns a Rectange that bounds the currently selected Rows
+			/// Returns a Rectangle that bounds the currently selected Rows
 			/// </summary>
 			public Rectangle SelectionBounds
 			{
@@ -1247,7 +1246,7 @@ namespace XPTable.Models
 
 
 			/// <summary>
-            /// Returns a Rectange that bounds the currently selected Rows
+            /// Returns a Rectangle that bounds the currently selected Rows
 			/// </summary>
 			/// <param name="start">First row index</param>
             /// <param name="end">Last row index</param>

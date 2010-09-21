@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Sda
             this.closeButton.Size = new System.Drawing.Size(209, 23);
             this.closeButton.TabIndex = 5;
             this.closeButton.Text = "${res:ICSharpCode.SharpDevelop.ExceptionBox.ExitSharpDevelop}";
-            this.closeButton.Click += new System.EventHandler(this.CloseButtonClick);
+            this.closeButton.Click += new System.EventHandler(this.OnCloseApplicationClick);
             // 
             // label3
             // 
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Sda
             this.continueButton.Size = new System.Drawing.Size(209, 23);
             this.continueButton.TabIndex = 6;
             this.continueButton.Text = "${res:ICSharpCode.SharpDevelop.ExceptionBox.Continue}";
-            this.continueButton.Click += new System.EventHandler(this.continueButtonClick);
+            this.continueButton.Click += new System.EventHandler(this.OnContinueApplicationClick);
             // 
             // reportButton
             // 
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Sda
             this.reportButton.Size = new System.Drawing.Size(209, 23);
             this.reportButton.TabIndex = 4;
             this.reportButton.Text = "${res:ICSharpCode.SharpDevelop.ExceptionBox.ReportError}";
-            this.reportButton.Click += new System.EventHandler(this.buttonClick);
+            this.reportButton.Click += new System.EventHandler(this.OnReportApplicationClick);
             // 
             // copyErrorCheckBox
             // 

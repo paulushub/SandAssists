@@ -82,6 +82,7 @@ namespace Sandcastle.Formats
 
             this.AddProperty("CollectionPrefix", "Coll");
             this.AddProperty("RegistrationLevel", "Basic");
+            this.AddProperty("SharedContentSuffix", "Hxs");
         }
 
         public FormatHxs(FormatHxs source)
@@ -531,20 +532,30 @@ namespace Sandcastle.Formats
                 }
                 
                 BuildMultiStep listSteps = new BuildMultiStep();
-                // 1. Prepare the help html files, and create the html project
+                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTimeSpan = true;
+
+                // Prepare the help html files, and create the html project
+                // 1. Move the output html files to the help folder for compilation...
+                StepDirectoryMove dirMove = new StepDirectoryMove(workingDir);
+                dirMove.LogTitle = String.Empty;
+                dirMove.Message  = "Moving the output html files to the help folder for compilation";
+                dirMove.Add(@"Output\" + this.FormatFolder, helpFolder + @"\html");
+
+                listSteps.Add(dirMove); 
+
+                // 2. Creating the project file...
                 string tocTopics = context["$HelpTocFile"];
                 StepHxsBuilder hxsBuilder  = new StepHxsBuilder(workingDir);
+                hxsBuilder.LogTitle = String.Empty;
+                hxsBuilder.Message         = "Creating project, content and configuration files.";
                 hxsBuilder.HelpFolder      = helpFolder;
                 hxsBuilder.HelpToc         = tocTopics;
                 hxsBuilder.HelpName        = helpName;
                 hxsBuilder.HelpTitleId     = _helpTitleId;
                 hxsBuilder.HelpCultureInfo = culture;
-                listSteps.Add(hxsBuilder); 
 
-                // 2. Move the output html files to the help folder for compilation...
-                StepDirectoryMove dirMove = new StepDirectoryMove(workingDir);
-                dirMove.Add(@"Output\" + this.FormatFolder, helpFolder + @"\html");
-                listSteps.Add(dirMove); 
+                listSteps.Add(hxsBuilder); 
 
                 // 3. Compile the Html help files hxcomp.exe -p Help\Manual.hxc
                 string application = this.Compiler;
@@ -552,8 +563,9 @@ namespace Sandcastle.Formats
                     @"-p {0}\{1}.HxC -n Output\{1}.log", helpFolder, helpName);
                 StepHxsCompiler hxsCompiler = new StepHxsCompiler(workingDir, 
                     application, arguments);
-                hxsCompiler.Message = "HxComp Tool";
-                hxsCompiler.LogFile = Path.Combine(workingDir,
+                hxsCompiler.Message  = "Compiling the help file (HxComp Tool)";
+                hxsCompiler.LogTitle = String.Empty;
+                hxsCompiler.LogFile  = Path.Combine(workingDir,
                     String.Format(@"Output\{0}.log", helpName));
                 hxsCompiler.ProjectFile = Path.Combine(workingDir,
                     String.Format(@"{0}\{1}.HxC", helpFolder, helpName));
@@ -564,6 +576,7 @@ namespace Sandcastle.Formats
                 hxsCompiler.HelpTitleId     = _helpTitleId;
                 hxsCompiler.HelpDirectory   = helpDirectory;
                 hxsCompiler.HelpCultureInfo = culture;
+
                 listSteps.Add(hxsCompiler);
 
                 return listSteps;
@@ -582,9 +595,11 @@ namespace Sandcastle.Formats
         {
             base.Reset();
 
-            this.FormatFolder     = "html2";
-            this.OutputFolder     = "MsdnHelp";
-            this.ExternalLinkType = BuildLinkType.Index;
+            this.FormatFolder      = "html2";
+            this.OutputFolder      = "MsdnHelp";
+            this.ExternalLinkType  = BuildLinkType.Index;
+
+            base.IntegrationTarget = BuildIntegrationTarget.VS2008;
         }
 
         #endregion

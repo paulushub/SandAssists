@@ -1,5 +1,39 @@
 <content xml:space="preserve" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
 
+    <!-- paths -->
+    <ItemRule name ="ContentPaths">
+        <If value ="Mshc">
+            <!-- Start: The MSHC paths content here -->             
+	        <item id="iconPath">icons/{0}</item>            
+	        <item id="scriptPath">scripts/{0}</item>            
+	        <item id="artPath">art/{0}</item>                   
+	        <item id="stylePath">styles/{0}</item>
+            
+	        <item id="imagePath">images/{0}</item>              
+	        <item id="mathPath">maths/{0}</item>
+            <!-- End: The MSHC paths content here -->
+        </If>    
+        <Else>
+            <!-- Start: The default paths content here -->             
+	        <item id="imagePath">../images/{0}</item>
+	        <item id="mathPath">../maths/{0}</item>
+            <!-- End: The default paths content here -->
+        </Else>    
+    </ItemRule>	    
+
+    <!-- help viewer options -->
+    <ItemRule name ="HelpViewer">
+        <If value ="Mshc">
+            <!-- Start: The MSHC specific content here -->
+            <item id="VisualBasicDeclaration"><include item="VisualBasic"/> (Declaration)</item>
+            <!-- End: The MSHC specific content here -->
+        </If>    
+        <Else>
+            <!-- Start: The other viewers content here -->             
+            <!-- End: The other viewers content here -->
+        </Else>    
+    </ItemRule>	    
+    
 	<item id="locale"><IncludeItem item="helpLocale"/></item>
     
     <item id="rootTopicTitle"><IncludeItem item="rootTopicTitle"/></item>

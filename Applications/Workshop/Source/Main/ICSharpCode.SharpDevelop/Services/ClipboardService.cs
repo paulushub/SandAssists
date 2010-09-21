@@ -2,15 +2,17 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <author name="Daniel Grunwald"/>
-//     <version>$Revision: 3892 $</version>
+//     <version>$Revision: 5731 $</version>
 // </file>
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
+using Microsoft.Win32.SafeHandles;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -52,8 +54,26 @@ namespace ICSharpCode.SharpDevelop
 			return clipboardContainsText;
 		}
 
-		static void UpdateClipboardContainsText()
-		{
+        //static void UpdateClipboardContainsText()
+        //{
+        //    if (currentWorker != null && !currentWorker.IsCompleted)
+        //        return;
+        //    if (workerThread == null)
+        //    {
+        //        workerThread = new WorkerThread();
+        //        Thread t = new Thread(new ThreadStart(workerThread.RunLoop));
+        //        t.SetApartmentState(ApartmentState.STA);
+        //        t.IsBackground = true;
+        //        t.Name = "clipboard access";
+        //        t.Start();
+        //    }
+        //    currentWorker = workerThread.Enqueue(DoUpdate);
+        //    // wait a few ms in case the clipboard can be accessed without problems
+        //    currentWorker.AsyncWaitHandle.WaitOne(50);
+        //}
+
+        static void UpdateClipboardContainsText()
+        {
             if (currentWorker != null && !currentWorker.IsCompleted)
                 return;
             if (workerThread == null)
@@ -67,8 +87,15 @@ namespace ICSharpCode.SharpDevelop
             }
             currentWorker = workerThread.Enqueue(DoUpdate);
             // wait a few ms in case the clipboard can be accessed without problems
-            currentWorker.AsyncWaitHandle.WaitOne(50);
+            WaitForSingleObject(currentWorker.AsyncWaitHandle.SafeWaitHandle, 50);
+            // Using WaitHandle.WaitOne() pumps some Win32 messages.
+            // To avoid unintended reentrancy, we need to avoid pumping messages,
+            // so we directly call the Win32 WaitForSingleObject function.
+            // See SD2-1638 for details.
         }
+
+        [DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
+        static extern Int32 WaitForSingleObject(SafeWaitHandle handle, Int32 milliseconds);
 		
 		static void DoUpdate()
 		{

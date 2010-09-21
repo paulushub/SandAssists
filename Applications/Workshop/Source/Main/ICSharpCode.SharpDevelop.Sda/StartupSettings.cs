@@ -15,21 +15,43 @@ namespace ICSharpCode.SharpDevelop.Sda
 	/// </summary>
 	[Serializable]
 	public sealed class StartupSettings
-	{
-		bool useSharpDevelopErrorHandler = true;
-        string applicationName = "SandcastleWorkshop";
-		string applicationRootPath;
-		bool allowAddInConfigurationAndExternalAddIns = true;
-		bool allowUserAddIns;
-		string propertiesName;
-		string configDirectory;
-		string dataDirectory;
-		string domPersistencePath;
-        string resourceAssemblyName = "SandcastleWorkshop";
-		internal List<string> addInDirectories = new List<string>();
-		internal List<string> addInFiles = new List<string>();
-		
-		/// <summary>
+    {
+        #region Private Fields
+
+        private bool useSharpDevelopErrorHandler;
+        private string applicationName;
+        private string applicationRootPath;
+        private bool allowAddInConfigurationAndExternalAddIns;
+        private bool allowUserAddIns;
+        private string propertiesName;
+        private string configDirectory;
+        private string dataDirectory;
+        private string domPersistencePath;
+        private string resourceAssemblyName;
+
+		internal List<string> addInDirectories;
+		internal List<string> addInFiles;
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        public StartupSettings()
+        {
+            useSharpDevelopErrorHandler = true;
+
+            applicationName = "SandcastleWorkshop";
+            allowAddInConfigurationAndExternalAddIns = true;
+            resourceAssemblyName = "SandcastleWorkshop";
+            addInDirectories = new List<string>();
+            addInFiles = new List<string>();
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
 		/// Gets/Sets the name of the assembly to load the BitmapResources
 		/// and English StringResources from.
 		/// </summary>
@@ -128,9 +150,13 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public string DomPersistencePath {
 			get { return domPersistencePath; }
 			set { domPersistencePath = value; }
-		}
-		
-		/// <summary>
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
 		/// Find AddIns by searching all .addin files recursively in <paramref name="addInDir"/>.
 		/// </summary>
 		public void AddAddInsFromDirectory(string addInDir)
@@ -148,6 +174,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (addInFile == null)
 				throw new ArgumentNullException("addInFile");
 			addInFiles.Add(addInFile);
-		}
-	}
+        }
+
+        #endregion
+    }
 }

@@ -7,7 +7,11 @@
 
 using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 using System.Text;
+using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -20,89 +24,252 @@ namespace ICSharpCode.SharpDevelop
 	/// it checks, if the files exists at every creation, and if not it doesn't list them in the 
 	/// recent files, and they'll not be saved during the next option save.
 	/// </summary>
-	public sealed class RecentOpen
-	{
-		/// <summary>
-		/// This variable is the maximal length of lastfile/lastopen entries
+	public sealed class RecentOpen : IXmlSerializable
+    {
+        #region Public Const Fields
+
+        /// <summary>
+		/// This variable is the maximal length of last file/open entries
 		/// must be > 0
 		/// </summary>
-		int MAX_LENGTH = 10;
-		
-		List<string> lastfile    = new List<string>();
-		List<string> lastproject = new List<string>();
-		
-		public event EventHandler RecentFileChanged;
+		public const int MaxDisplayedSize      = 32;
+        public const int MaxRecentOpenSize     = 36;
+
+        public const string XmlTagName         = "recentOpen";
+        public const string FileCategory       = "RecentFiles";
+        public const string ProjectCategory    = "RecentProjects";
+        public const string RecentOpenFileName = "RecentOpen.xml";
+
+        #endregion
+
+        #region Private Fields
+
+        private int _maximumLength;
+        private RecentOpenList _recentFiles;
+        private RecentOpenList _recentProjects;
+
+        #endregion
+
+        #region Private Interop
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
+        private static extern bool PathCompactPathEx([Out] StringBuilder pszOut, 
+            string szPath, int cchMax, int dwFlags);
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        public RecentOpen()
+        {
+            _maximumLength  = 64;
+            _recentFiles    = new RecentOpenList(FileCategory);
+            _recentProjects = new RecentOpenList(ProjectCategory);
+        }
+
+        public RecentOpen(Properties p)
+            : this()
+        {
+            if (p.Contains("Files"))
+            {
+                string[] files = p["Files"].Split(',');
+                foreach (string file in files)
+                {
+                    if (File.Exists(file))
+                    {
+                        _recentFiles.Add(new RecentOpenItem(false, file));
+                    }
+                }
+            }
+
+            if (p.Contains("Projects"))
+            {
+                string[] projects = p["Projects"].Split(',');
+                foreach (string file in projects)
+                {
+                    if (File.Exists(file))
+                    {
+                        _recentProjects.Add(new RecentOpenItem(false, file));
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler RecentFileChanged;
 		public event EventHandler RecentProjectChanged;
-		
-		public IList<string> RecentFile {
-			get {
-				System.Diagnostics.Debug.Assert(lastfile != null, "RecentOpen : set string[] LastFile (value == null)");
-				return lastfile;
-			}
+
+        #endregion
+
+        #region Public Properties
+
+        public int MaximumLength
+        {
+            get
+            {
+                return _maximumLength;
+            }   
+            set
+            {
+                if (value > 16 && value < 256)
+                {
+                    _maximumLength = value;
+                }
+            }
+        }
+
+        public int DisplayableFiles
+        {
+            get
+            {
+                if (_recentFiles != null)
+                {
+                    return _recentFiles.Displayable;
+                }
+
+                return 10;
+            }
+            set
+            {
+                if (_recentFiles != null && value >= 0)
+                {
+                    _recentFiles.Displayable = value;
+                }
+            }
+        }
+
+        public int DisplayableProjects
+        {
+            get
+            {
+                if (_recentProjects != null)
+                {
+                    return _recentProjects.Displayable;
+                }
+
+                return 10;
+            }
+            set
+            {
+                if (_recentProjects != null && value >= 0)
+                {
+                    _recentProjects.Displayable = value;
+                }
+            }
+        }
+
+        public IList<RecentOpenItem> RecentFiles
+        {
+			get 
+            {
+				Debug.Assert(_recentFiles != null, 
+                    "RecentOpen : set string[] LastFile (value == null)");
+				return _recentFiles;
+            }
 		}
 
-		public IList<string> RecentProject {
-			get {
-				System.Diagnostics.Debug.Assert(lastproject != null, "RecentOpen : set string[] LastProject (value == null)");
-				return lastproject;
+        public IList<RecentOpenItem> RecentProjects 
+        {
+			get 
+            {
+				Debug.Assert(_recentProjects != null, 
+                    "RecentOpen : set string[] LastProject (value == null)");
+				return _recentProjects;
 			}
-		}
-		
-		void OnRecentFileChange()
-		{
-			if (RecentFileChanged != null) {
-				RecentFileChanged(this, null);
-			}
-		}
-		
-		void OnRecentProjectChange()
-		{
-			if (RecentProjectChanged != null) {
-				RecentProjectChanged(this, null);
-			}
+        }
+
+        public IList<RecentOpenItem> RecentDisplayableProjects
+        {
+            get
+            {
+                Debug.Assert(_recentProjects != null,
+                    "RecentOpen : set string[] LastProject (value == null)");
+
+                return this.GetDisplayableProjects();
+            }
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        private IList<string> RecentFilePaths 
+        {
+			get 
+            {
+				Debug.Assert(_recentFiles != null, 
+                    "RecentOpen : set string[] LastFile (value == null)");
+
+                List<string> recentFiles = new List<string>(
+                    _recentFiles.Count);
+                for (int i = 0; i < _recentFiles.Count; i++)
+                {
+                    recentFiles.Add(_recentFiles[i].FullPath);
+                }
+
+                return recentFiles;
+            }
 		}
 
-		public RecentOpen()
+		private IList<string> RecentProjectPaths 
+        {
+			get 
+            {
+				Debug.Assert(_recentProjects != null, 
+                    "RecentOpen : set string[] LastProject (value == null)");
+
+                List<string> recentProject = new List<string>(
+                    _recentProjects.Count);
+                for (int i = 0; i < _recentProjects.Count; i++)
+                {
+                    recentProject.Add(_recentProjects[i].FullPath);
+                }
+
+                return recentProject;
+			}
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void AddLastFile(string name)
 		{
-		}
-		
-		public RecentOpen(Properties p)
-		{
-			if (p.Contains("Files")) {
-				string[] files    = p["Files"].Split(',');
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						lastfile.Add(file);
-					}
+            RecentOpenItem lastItem = null;
+			for (int i = 0; i < _recentFiles.Count; ++i) 
+            {
+                RecentOpenItem recentItem = _recentFiles[i];
+				if (String.Equals(recentItem.FullPath, name, 
+                    StringComparison.OrdinalIgnoreCase)) 
+                {
+					_recentFiles.RemoveAt(i);
+                    lastItem = recentItem;
+
+                    break;
 				}
 			}
-			
-			if (p.Contains("Projects")) {
-				string[] projects = p["Projects"].Split(',');
-				foreach (string file in projects) {
-					if (File.Exists(file)) {
-						lastproject.Add(file);
-					}
-				}
+
+            while (_recentFiles.Count >= MaxRecentOpenSize) 
+            {
+				_recentFiles.RemoveAt(_recentFiles.Count - 1);
 			}
-		}
-		
-		public void AddLastFile(string name)
-		{
-			for (int i = 0; i < lastfile.Count; ++i) {
-				if (lastfile[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
-					lastfile.RemoveAt(i);
-				}
-			}
+
+            bool isPinned = false;
+            if (lastItem != null)
+            {
+                isPinned = lastItem.Pinned;
+            }
 			
-			while (lastfile.Count >= MAX_LENGTH) {
-				lastfile.RemoveAt(lastfile.Count - 1);
-			}
-			
-			if (lastfile.Count > 0) {
-				lastfile.Insert(0, name);
-			} else {
-				lastfile.Add(name);
+			if (_recentFiles.Count > 0) 
+            {
+                _recentFiles.Insert(0, new RecentOpenItem(isPinned, name));
+			} 
+            else 
+            {
+                _recentFiles.Add(new RecentOpenItem(isPinned, name));
 			}
 			
 			OnRecentFileChange();
@@ -110,80 +277,197 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void ClearRecentFiles()
 		{
-			lastfile.Clear();
+			_recentFiles.Clear();
 			
 			OnRecentFileChange();
 		}
 		
 		public void ClearRecentProjects()
 		{
-			lastproject.Clear();
+			_recentProjects.Clear();
 			
 			OnRecentProjectChange();
 		}
 		
 		public void AddLastProject(string name)
 		{
-			for (int i = 0; i < lastproject.Count; ++i) {
-				if (lastproject[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
-					lastproject.RemoveAt(i);
+            RecentOpenItem lastItem = null;
+            for (int i = 0; i < _recentProjects.Count; ++i) 
+            {
+                RecentOpenItem recentItem = _recentProjects[i];
+                if (String.Equals(recentItem.FullPath, name, 
+                    StringComparison.OrdinalIgnoreCase)) 
+                {
+					_recentProjects.RemoveAt(i);
+
+                    lastItem = recentItem;
+                    break;
 				}
 			}
-			
-			while (lastproject.Count >= MAX_LENGTH) {
-				lastproject.RemoveAt(lastproject.Count - 1);
+
+            while (_recentProjects.Count >= MaxRecentOpenSize) 
+            {
+                int removeAt = _recentProjects.Count - 1;
+                RecentOpenItem removeItem = _recentProjects[removeAt];
+                // Try looking to an unpinned recent project item...
+                while (removeItem.Pinned && removeAt > 0)
+                {
+                    removeAt--;
+                    if (removeAt > 0)
+                    {
+                        removeItem = _recentProjects[removeAt];
+                    }
+                }
+                if (!removeItem.Pinned && removeAt > 0)
+                {
+                    _recentProjects.RemoveAt(removeAt);
+                }
+                else
+                {
+                    // Most likely, no unpinned is found, just remove the last...
+                    _recentProjects.RemoveAt(_recentProjects.Count - 1);
+                }
 			}
+
+            bool isPinned = false;
+            if (lastItem != null)
+            {
+                isPinned = lastItem.Pinned;
+            }
 			
-			if (lastproject.Count > 0) {
-				lastproject.Insert(0, name);
-			} else {
-				lastproject.Add(name);			
+			if (_recentProjects.Count > 0) 
+            {
+                _recentProjects.Insert(0, new RecentOpenItem(isPinned, name));
+			} 
+            else 
+            {
+                _recentProjects.Add(new RecentOpenItem(isPinned, name));			
 			}
 			OnRecentProjectChange();
 		}
-		
-		public static RecentOpen FromXmlElement(Properties properties)
-		{
-			return new RecentOpen(properties);
-		}
-		
-		public Properties ToProperties()
-		{
-			Properties p = new Properties();
-			p["Files"]    = String.Join(",", lastfile.ToArray());
-			p["Projects"] = String.Join(",", lastproject.ToArray());
-			return p;
-		}
-		
-		internal void FileRemoved(object sender, FileEventArgs e)
-		{
-			for (int i = 0; i < lastfile.Count; ++i) {
-				string file = lastfile[i].ToString();
-				if (String.Equals(e.FileName, file, 
-                    StringComparison.OrdinalIgnoreCase)) {
-					lastfile.RemoveAt(i);
-					OnRecentFileChange();
-					break;
-				}
-			}
-		}
-		
-		internal void FileRenamed(object sender, FileRenameEventArgs e)
-		{
-			for (int i = 0; i < lastfile.Count; ++i) {
-				string file = lastfile[i].ToString();
-				if (String.Equals(e.SourceFile, file, 
-                    StringComparison.OrdinalIgnoreCase)) {
-					lastfile.RemoveAt(i);
-					lastfile.Insert(i, e.TargetFile);
-					OnRecentFileChange();
-					break;
-				}
-			}
-		}
 
-        [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
-        static extern bool PathCompactPathEx([Out] StringBuilder pszOut, string szPath, int cchMax, int dwFlags);
+        public void UpdateFilesPinnedState()
+        {
+            if (_recentFiles != null)
+            {
+                _recentFiles.UpdatePinnedState();
+            }
+        }
+
+        public void UpdateProjectsPinnedState()
+        {
+            if (_recentProjects != null)
+            {
+                _recentProjects.UpdatePinnedState();
+            }
+        }
+
+        public void RemoveFile(string fileName)
+        {
+            bool isSuccessful = false;
+
+            for (int i = 0; i < _recentFiles.Count; ++i)
+            {
+                RecentOpenItem recentItem = _recentFiles[i];
+                if (String.Equals(fileName, recentItem.FullPath,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _recentFiles.RemoveAt(i);
+
+                    isSuccessful = true;
+                    break;
+                }
+            }
+
+            if (isSuccessful)
+            {
+                OnRecentFileChange();
+            }
+        }
+
+        public void RenameFile(string sourceFile, string targetFile)
+        {
+            bool isSuccessful = false;
+
+            for (int i = 0; i < _recentFiles.Count; ++i)
+            {
+                RecentOpenItem recentItem = _recentFiles[i];
+                string file = recentItem.FullPath;
+                if (String.Equals(sourceFile, file,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _recentFiles.RemoveAt(i);
+                    _recentFiles.Insert(i, 
+                        new RecentOpenItem(recentItem.Pinned, targetFile));
+
+                    isSuccessful = true;
+                    break;
+                }
+            }
+
+            if (isSuccessful)
+            {
+                OnRecentFileChange();
+            }
+        }
+
+        public void RemoveProject(string projectName)
+        {
+            bool isSuccessful = false;
+
+            for (int i = 0; i < _recentProjects.Count; ++i)
+            {
+                RecentOpenItem recentItem = _recentProjects[i];
+                if (String.Equals(projectName, recentItem.FullPath,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _recentProjects.RemoveAt(i);
+
+                    isSuccessful = true;
+                    break;
+                }
+            }
+
+            if (isSuccessful)
+            {
+                OnRecentProjectChange();
+            }
+        }
+
+        public void RenameProject(string sourceProject, string targetProject)
+        {
+            bool isSuccessful = false;
+
+            for (int i = 0; i < _recentProjects.Count; ++i)
+            {
+                RecentOpenItem recentItem = _recentProjects[i];
+                string file = recentItem.FullPath;
+                if (String.Equals(sourceProject, file,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _recentProjects.RemoveAt(i);
+                    _recentProjects.Insert(i, 
+                        new RecentOpenItem(recentItem.Pinned, targetProject));
+
+                    isSuccessful = true;
+                    break;
+                }
+            }
+
+            if (isSuccessful)
+            {
+                OnRecentProjectChange();
+            }
+        }
+
+        public Properties ToProperties()
+        {
+            Properties p  = new Properties();
+            p["Files"]    = String.Join(",", this.RecentFilePaths.ToArray());
+            p["Projects"] = String.Join(",", this.RecentProjectPaths.ToArray());
+
+            return p;
+        }
 
         public static string CompactPath(string longPathName, int wantedLength)
         {
@@ -195,5 +479,232 @@ namespace ICSharpCode.SharpDevelop
 
             return longPathName;
         }
-	}
+
+        #endregion
+
+        #region Private Methods
+
+        private void OnRecentFileChange()
+        {
+            if (this.RecentFileChanged != null)
+            {
+                this.RecentFileChanged(this, null);
+            }
+        }
+
+        private void OnRecentProjectChange()
+        {
+            if (this.RecentProjectChanged != null)
+            {
+                this.RecentProjectChanged(this, null);
+            }
+        }
+
+        private RecentOpenList GetDisplayableProjects()
+        {
+            int displayable = _recentProjects.Displayable;
+            if (displayable == 0)
+            {
+                return new RecentOpenList();
+            }
+
+            int itemCount   = _recentProjects.Count;  
+            if (itemCount == 0 || itemCount <= displayable)
+            {
+                return _recentProjects;
+            }
+            int pinnedCount = _recentProjects.Pinned;
+            if (pinnedCount == 0 || pinnedCount == itemCount)
+            {
+                RecentOpenList projectItems = new RecentOpenList();
+                projectItems.Displayable = displayable;
+
+                int listCount = Math.Min(displayable, itemCount);
+
+                for (int i = 0; i < listCount; i++)
+                {
+                    projectItems.Add(_recentProjects[i]);
+                }
+
+                return projectItems;
+            }
+            else if (pinnedCount >= displayable)
+            {
+                RecentOpenList projectItems = new RecentOpenList();
+                projectItems.Displayable = displayable;
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    RecentOpenItem recentItem = _recentProjects[i];
+                    if (recentItem.Pinned)
+                    {
+                        projectItems.Add(recentItem);
+                    }
+
+                    if (projectItems.Count >= displayable)
+                    {
+                        break;
+                    }
+                }
+
+                return projectItems;
+            }
+            else if (pinnedCount < displayable)
+            {
+                RecentOpenList projectItems = new RecentOpenList();
+                projectItems.Displayable = displayable;
+
+                int unpinnedCount = displayable - pinnedCount;
+                for (int i = 0; i < itemCount; i++)
+                {
+                    RecentOpenItem recentItem = _recentProjects[i];
+                    if (recentItem.Pinned)
+                    {
+                        if (pinnedCount > 0)
+                        {
+                            projectItems.Add(recentItem);
+                            pinnedCount--;
+                        }
+                    }
+                    else
+                    {
+                        if (unpinnedCount > 0)
+                        {
+                            projectItems.Add(recentItem);
+                            unpinnedCount--;
+                        }
+                    }
+                                      
+                    if (projectItems.Count >= displayable)
+                    {
+                        break;
+                    }
+                }
+
+                return projectItems;
+            }
+
+            return _recentProjects;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        public bool LoadXml(string fileName)
+        {   
+            if (String.IsNullOrEmpty(fileName) || !File.Exists(fileName))
+            {
+                return false;
+            }
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;
+            settings.IgnoreWhitespace = true;
+            settings.IgnoreProcessingInstructions = true;
+
+            using (XmlReader reader = XmlReader.Create(fileName, settings))
+            {
+                this.ReadXml(reader);
+            }
+
+            return true;
+        }
+
+        public bool SaveXml(string fileName)
+        {
+            if (String.IsNullOrEmpty(fileName))
+            {
+                return false;
+            }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent   = true;
+            settings.Encoding = Encoding.UTF8;
+
+            using (XmlWriter writer = XmlWriter.Create(fileName, settings))
+            {
+                this.WriteXml(writer);
+            }
+
+            return true;
+        }
+
+        public System.Xml.Schema.XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            if (reader == null)
+            {
+                return;
+            }
+
+            XmlNodeType nodeType = XmlNodeType.None;
+            while (reader.Read())
+            {
+                nodeType = reader.NodeType;
+                if (nodeType == XmlNodeType.Element)
+                {   
+                    if (String.Equals(reader.Name, RecentOpenList.XmlTagName))
+                    {
+                        string category = reader.GetAttribute("category");
+                        if (!String.IsNullOrEmpty(category))
+                        {
+                            if (String.Equals(category, FileCategory))
+                            {
+                                if (_recentFiles == null || _recentFiles.Count != 0)
+                                {
+                                    _recentFiles = new RecentOpenList(FileCategory);
+                                }
+
+                                _recentFiles.ReadXml(reader);
+                            }
+                            else if (String.Equals(category, ProjectCategory))
+                            {
+                                if (_recentProjects == null || _recentProjects.Count != 0)
+                                {
+                                    _recentProjects = new RecentOpenList(ProjectCategory);
+                                }
+
+                                _recentProjects.ReadXml(reader);
+                            }
+                        }
+                    }
+                }
+                else if (nodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, XmlTagName))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            if (writer == null)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(XmlTagName);
+
+            if (_recentFiles != null)
+            {
+                _recentFiles.WriteXml(writer);
+            }
+            if (_recentProjects != null)
+            {
+                _recentProjects.WriteXml(writer);
+            }
+
+            writer.WriteEndElement();  
+        }
+
+        #endregion
+    }
 }

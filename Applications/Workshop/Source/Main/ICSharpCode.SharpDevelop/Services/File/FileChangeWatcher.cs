@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
-	internal sealed class FileChangeWatcher : IDisposable
+	public sealed class FileChangeWatcher : IDisposable
 	{
 		static HashSet<FileChangeWatcher> activeWatchers = new HashSet<FileChangeWatcher>();
 
@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop
 			if (file == null)
 				throw new ArgumentNullException("file");
 			this.file = file;
-			WorkbenchSingleton.MainForm.Activated += MainForm_Activated;
+			WorkbenchSingleton.MainForm.Activated += OnMainFormActivated;
 			file.FileNameChanged += file_FileNameChanged;
 			activeWatchers.Add(this);
 			SetWatcher();
@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.AssertMainThread();
 			activeWatchers.Remove(this);
 			if (file != null) {
-				WorkbenchSingleton.MainForm.Activated -= MainForm_Activated;
+				WorkbenchSingleton.MainForm.Activated -= OnMainFormActivated;
 				file.FileNameChanged -= file_FileNameChanged;
 				file = null;
 			}
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;
 				}
-				watcher.Path = Path.GetDirectoryName(fileName);
+				watcher.Path   = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
 				watcher.EnableRaisingEvents = true;
 			} catch (PlatformNotSupportedException) {
@@ -154,22 +154,25 @@ namespace ICSharpCode.SharpDevelop
 			if (file == null)
 				return;
 			LoggingService.Debug("File " + file.FileName + " was changed externally: " + e.ChangeType);
-			if (!wasChangedExternally) {
+			if (!wasChangedExternally) 
+            {
 				wasChangedExternally = true;
-				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+				if (WorkbenchSingleton.Workbench.IsActiveWindow) 
+                {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
 					WorkbenchSingleton.CallLater(
 						500,
-						delegate { MainForm_Activated(this, EventArgs.Empty); } );
+						delegate { OnMainFormActivated(this, EventArgs.Empty); } );
 				}
 			}
 		}
 		
-		void MainForm_Activated(object sender, EventArgs e)
+		void OnMainFormActivated(object sender, EventArgs e)
 		{
-			if (wasChangedExternally) {
+			if (wasChangedExternally) 
+            {
 				wasChangedExternally = false;
 				
 				if (file == null)
@@ -187,10 +190,13 @@ namespace ICSharpCode.SharpDevelop
 				                       MessageBoxButtons.YesNo,
 				                       MessageBoxIcon.Question) == DialogResult.Yes)
 				{
-					if (File.Exists(fileName)) {
+					if (File.Exists(fileName)) 
+                    {
 						file.ReloadFromDisk();
 					}
-				} else {
+				} 
+                else 
+                {
 					file.MakeDirty();
 				}
 			}

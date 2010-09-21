@@ -1,17 +1,21 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Conceptual;
 using Sandcastle.References;
-using Sandcastle.Configurations;
+using Sandcastle.Configurators;
 
 namespace Sandcastle
 {
-    public class BuildProject : MarshalByRefObject, IDisposable
+    public class BuildProject : BuildObject, IDisposable
     {
         #region Private Fields
+
+        private DateTime        _startTime;
+        private DateTime        _endTime;
 
         private bool            _isInitialized;
         //private string          _logFile;
@@ -90,18 +94,36 @@ namespace Sandcastle
 
         public virtual bool Initialize()
         {
-            if (_isInitialized)
-            {
-                _logger.WriteLine("The project is already initialized", 
-                    BuildLoggerLevel.Warn);
+            DateTime startTime = DateTime.Now;
 
-                return _isInitialized;
-            }
+            _startTime = startTime;
+
+            // 1. Prepare all the build directories...
+            _documenter.BeginDocumentation(_context);
 
             _settings = _documenter.Settings;
 
+            // 2. Initialize the logger...
+            if (!_logger.IsInitialize)
+            {
+                _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
+            }
+
             try
             {
+                _logger.WriteLine("Initialization of the documentation.",
+                    BuildLoggerLevel.Started);
+                _logger.WriteLine("Build started at: " +
+                    startTime.ToString(), BuildLoggerLevel.Info);
+
+                if (_isInitialized)
+                {
+                    _logger.WriteLine("The project is already initialized",
+                        BuildLoggerLevel.Warn);
+
+                    return _isInitialized;
+                }
+
                 if (!_documenter.Initialize(_context, _logger))
                 {
                     _isInitialized = false;
@@ -118,6 +140,22 @@ namespace Sandcastle
             {
                 _isInitialized = false;
                 _logger.WriteLine(ex, BuildLoggerLevel.Error);
+            }
+            finally
+            {
+                if (_isInitialized)
+                {
+                    DateTime endTime = DateTime.Now;
+                    TimeSpan timeElapsed = endTime - startTime;
+
+                    _logger.WriteLine("Successfully completed in: "
+                        + timeElapsed.ToString(), BuildLoggerLevel.Info);
+                }
+
+                _logger.WriteLine("Initialization of the documentation.",
+                    BuildLoggerLevel.Ended);
+
+                _logger.WriteLine();
             }
 
             return _isInitialized;
@@ -139,11 +177,6 @@ namespace Sandcastle
                 return buildResult;
             }
 
-            if (!_logger.IsInitialize)
-            {
-                _logger.Initialize();
-            }
-
             buildResult = _documenter.Build();
 
             return buildResult;
@@ -155,21 +188,54 @@ namespace Sandcastle
 
         public virtual void Uninitialize()
         {
+            DateTime startTime = DateTime.Now;
+
+            _logger.WriteLine("Completion of the documentation.",
+                BuildLoggerLevel.Started);
+
+            _documenter.EndDocumentation(_context);
+
             try
             {
                 _documenter.Uninitialize();
+                DateTime endTime = DateTime.Now;
+                _endTime = endTime;
+
+                TimeSpan timeElapsed = endTime - startTime;
+
+                _logger.WriteLine("Successfully completed in: " + 
+                    timeElapsed.ToString(), BuildLoggerLevel.Info);
+
+                _logger.WriteLine("Build completed at: " +
+                    _endTime.ToString(), BuildLoggerLevel.Info);
+
+                timeElapsed = _endTime - _startTime;
+
+                _logger.WriteLine("Total time of completion: " +
+                    timeElapsed.ToString(), BuildLoggerLevel.Info);
             }
             catch (Exception ex)
             {
                 _logger.WriteLine(ex, BuildLoggerLevel.Error);
             }
-
-            _logger.Uninitialize();
-
-            if (_settings == null)
+            finally
             {
-                return;
+                _logger.WriteLine("Completion of the documentation.",
+                    BuildLoggerLevel.Ended);
+            } 
+
+            try
+            {
+                _logger.Uninitialize();
             }
+            catch
+            {              	
+            }
+
+            //if (_settings == null)
+            //{
+            //    return;
+            //}
 
             // Move the log file to the output directory...
             //if (!String.IsNullOrEmpty(_logFile) && File.Exists(_logFile))
@@ -206,6 +272,10 @@ namespace Sandcastle
         }
 
         #endregion
+
+        #endregion
+
+        #region Private Methods
 
         #endregion
 

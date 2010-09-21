@@ -311,7 +311,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 		private string m_tabText = null;
 		public string TabText
 		{
-			get	{	return m_tabText==null ? Form.Text : m_tabText;	}
+			get	{	return String.IsNullOrEmpty(m_tabText) ? Form.Text : m_tabText;	}
 			set
 			{
 				if (m_tabText == value)
@@ -522,10 +522,12 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 			if (Pane != null && DockState == Pane.DockState)
 			{
-				if ((Pane != oldPane) ||
-					(Pane == oldPane && oldDockState != oldPane.DockState))
-					RefreshDockPane(Pane);
-			}
+                if ((Pane != oldPane) ||
+                    (Pane == oldPane && oldDockState != oldPane.DockState))
+                    // Avoid early refresh of hidden AutoHide panes
+                    if ((Pane.DockWindow == null || Pane.DockWindow.Visible || Pane.IsHidden) && !Pane.IsAutoHide)
+                        RefreshDockPane(Pane);
+            }
 
             if (oldDockState != DockState)
             {
@@ -704,11 +706,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 			else
 				visible = Form.Visible;
 
-			// when Form.Parent.Visible==false, Form.Visible cannot be read correctly (but returns always false),
-			// so we have to always assign the new visibility in those cases
-			if (Form.Visible != visible || (Form.Parent != null && !Form.Parent.Visible))
+            if (Form.Visible != visible)
                 Form.Visible = visible;
-		}
+        }
 
 		private void SetParent(Control value)
 		{
@@ -720,17 +720,18 @@ namespace WeifenLuo.WinFormsUI.Docking
             // Change the parent of a control with focus may result in the first
             // MDI child form get activated. 
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//            bool bRestoreFocus = false;
-//            if (Form.ContainsFocus)
-//            {
-//                if (value == null)
-//                    DockPanel.ContentFocusManager.GiveUpFocus(this.Content);
-//                else
-//                {
-//                    DockPanel.SaveFocus();
-//                    bRestoreFocus = true;
-//                }
-//            }
+            bool bRestoreFocus = false;
+            if (Form.ContainsFocus)
+            {
+                //Suggested as a fix for a memory leak by bugreports
+                if (value == null && !IsFloat)
+                    DockPanel.ContentFocusManager.GiveUpFocus(this.Content);
+                else
+                {
+                    DockPanel.SaveFocus();
+                    bRestoreFocus = true;
+                }
+            }
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             Form.Parent = value;
@@ -740,27 +741,8 @@ namespace WeifenLuo.WinFormsUI.Docking
             // Change the parent of a control with focus may result in the first
             // MDI child form get activated. 
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-/*          Workaround disabled: in SharpDevelop, the Activate() call causes an exception on layout changes
-                                 iff no document is open and a pad has the focus.
-            I don't think we need this workaround because we don't use MDI.
-            
-System.InvalidOperationException: Invalid Content: ActiveContent must be one ofthe visible contents, or null if there is no visible content.
-	at WeifenLuo.WinFormsUI.Docking.DockPane.set_ActiveContent(IDockContent value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPane.cs:line 162
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.Activate() in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 618
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetParent(Control value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 728
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetPane(DockPane pane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 674
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetPaneAndVisible(DockPane pane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 651
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetDockState(Boolean isHidden, DockState visibleState, DockPane oldPane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 504
-	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.set_PanelPane(DockPane value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 388
-	at WeifenLuo.WinFormsUI.Docking.DockPanel.Persistor.LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent, Boolean closeStream) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 614
-	at WeifenLuo.WinFormsUI.Docking.DockPanel.Persistor.LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 378
-	at WeifenLuo.WinFormsUI.Docking.DockPanel.LoadFromXml(Stream stream, DeserializeDockContent deserializeContent) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 772
-	at ICSharpCode.SharpDevelop.Gui.SdiWorkbenchLayout.LoadDockPanelLayout(String fileName) in d:\SD\3.0\SharpDevelop\src\Main\Base\Project\Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs:line 213
-	at ICSharpCode.SharpDevelop.Gui.SdiWorkbenchLayout.LoadLayoutConfiguration()in d:\SD\3.0\SharpDevelop\src\Main\Base\Project\Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs:line 190
-
             if (bRestoreFocus)
                 Activate();
-            */
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 
@@ -779,8 +761,8 @@ System.InvalidOperationException: Invalid Content: ActiveContent must be one oft
 
 			if (DockState == DockState.Unknown)
 				Show(dockPanel, DefaultShowState);
-			else if (Pane == null)
-				Show(dockPanel, DockState == DockState.Hidden ? DefaultShowState : DockState);
+            else if (Pane == null)
+                Show(dockPanel, DockState == DockState.Hidden ? DefaultShowState : DockState);
 			else			
 				Activate();
 		}
@@ -816,10 +798,12 @@ System.InvalidOperationException: Invalid Content: ActiveContent must be one oft
 			}
 
 			DockState = dockState;
-			Activate();
+            //Activate();
 
-            dockPanel.ResumeLayout(true, true);
-		}
+            //dockPanel.ResumeLayout(true, true);
+            dockPanel.ResumeLayout(true, true); //we'll resume the layout before activating to ensure that the position
+            Activate();                         //and size of the form are finally processed before the form is shown
+        }
 
         [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters")]
 		public void Show(DockPanel dockPanel, Rectangle floatWindowBounds)
@@ -991,9 +975,14 @@ System.InvalidOperationException: Invalid Content: ActiveContent must be one oft
                 size = floatPane.FloatWindow.Size;
 
             Point location;
-			Rectangle rectPane = Pane.ClientRectangle;
+            Rectangle rectPane = Pane.ClientRectangle;
             if (DockState == DockState.Document)
-                location = new Point(rectPane.Left, rectPane.Top);
+            {
+                if (Pane.DockPanel.DocumentTabStripLocation == DocumentTabStripLocation.Bottom)
+                    location = new Point(rectPane.Left, rectPane.Bottom - size.Height);
+                else
+                    location = new Point(rectPane.Left, rectPane.Top);
+            }
             else
             {
                 location = new Point(rectPane.Left, rectPane.Bottom);

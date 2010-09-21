@@ -20,12 +20,23 @@ namespace WeifenLuo.WinFormsUI.Docking
                 m_content = content;
             }
 
+            ~Tab()
+            {
+                Dispose(false);
+            }
+
             public IDockContent Content
             {
                 get { return m_content; }
             }
 
-            public virtual void Dispose()
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
             {
             }
         }
@@ -115,6 +126,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                 m_dockPane = dockPane;
             }
 
+            ~Pane()
+            {
+                this.Dispose(false);
+            }
+
             public DockPane DockPane
             {
                 get { return m_dockPane; }
@@ -130,7 +146,13 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
-            public virtual void Dispose()
+            public void Dispose()
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
             {
             }
         }
@@ -474,7 +496,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		internal void RefreshChanges()
 		{
-            if (IsDisposed)
+            if (this.IsDisposed)
                 return;
 
 			SetRegion();

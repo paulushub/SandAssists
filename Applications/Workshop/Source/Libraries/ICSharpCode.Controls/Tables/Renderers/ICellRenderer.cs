@@ -24,13 +24,11 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.Windows.Forms;
 
 using XPTable.Models;
 using XPTable.Events;
-
 
 namespace XPTable.Renderers
 {
@@ -45,13 +43,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A PaintCellEventArgs that contains the event data</param>
 		void OnPaintCell(PaintCellEventArgs e);
 
-
 		/// <summary>
 		/// Raises the GotFocus event
 		/// </summary>
 		/// <param name="e">A CellFocusEventArgs that contains the event data</param>
 		void OnGotFocus(CellFocusEventArgs e);
-
 
 		/// <summary>
 		/// Raises the LostFocus event
@@ -59,13 +55,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A CellFocusEventArgs that contains the event data</param>
 		void OnLostFocus(CellFocusEventArgs e);
 
-
 		/// <summary>
 		/// Raises the KeyDown event
 		/// </summary>
 		/// <param name="e">A CellKeyEventArgs that contains the event data</param>
 		void OnKeyDown(CellKeyEventArgs e);
-
 
 		/// <summary>
 		/// Raises the KeyUp event
@@ -73,13 +67,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A CellKeyEventArgs that contains the event data</param>
 		void OnKeyUp(CellKeyEventArgs e);
 
-
 		/// <summary>
 		/// Raises the MouseEnter event
 		/// </summary>
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnMouseEnter(CellMouseEventArgs e);
-
 
 		/// <summary>
 		/// Raises the MouseLeave event
@@ -87,13 +79,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnMouseLeave(CellMouseEventArgs e);
 
-
 		/// <summary>
 		/// Raises the MouseUp event
 		/// </summary>
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnMouseUp(CellMouseEventArgs e);
-
 
 		/// <summary>
 		/// Raises the MouseDown event
@@ -101,13 +91,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnMouseDown(CellMouseEventArgs e);
 
-
 		/// <summary>
 		/// Raises the MouseMove event
 		/// </summary>
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnMouseMove(CellMouseEventArgs e);
-
 
 		/// <summary>
 		/// Raises the Click event
@@ -115,13 +103,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnClick(CellMouseEventArgs e);
 
-
 		/// <summary>
 		/// Raises the DoubleClick event
 		/// </summary>
 		/// <param name="e">A CellMouseEventArgs that contains the event data</param>
 		void OnDoubleClick(CellMouseEventArgs e);
-
 
         /// <summary>
         /// Returns the height that is required to render this cell. If zero is returned then the default row height is used.

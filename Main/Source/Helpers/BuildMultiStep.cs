@@ -8,10 +8,11 @@ namespace Sandcastle
     /// This is a build step, which acts as a container for other build steps.
     /// It provides a means of grouping related or consecutive build steps.
     /// </summary>
-    public class BuildMultiStep : BuildStep
+    public class BuildMultiStep : BuildStep, ICollection<BuildStep>
     {
         #region Private Fields
 
+        private List<string>    _listMessages;
         private List<BuildStep> _listSteps;
 
         #endregion
@@ -27,7 +28,8 @@ namespace Sandcastle
         /// </summary>
         public BuildMultiStep()
         {
-            _listSteps = new List<BuildStep>();
+            _listSteps       = new List<BuildStep>();
+            this.LogTimeSpan = false;
         }
 
         /// <summary>
@@ -40,6 +42,8 @@ namespace Sandcastle
         public BuildMultiStep(string workingDir)
             : base(workingDir)
         {
+            _listSteps       = new List<BuildStep>();
+            this.LogTimeSpan = false;
         }
 
         /// <summary>
@@ -62,6 +66,8 @@ namespace Sandcastle
         public BuildMultiStep(string name, string workingDir)
             : base(name, workingDir)
         {
+            _listSteps       = new List<BuildStep>();
+            this.LogTimeSpan = false;
         }
 
         /// <summary>
@@ -82,11 +88,38 @@ namespace Sandcastle
             {
                 _listSteps = new List<BuildStep>();
             }
+            this.LogTimeSpan = false;
         }
 
         #endregion
 
         #region Public Properties
+
+        public int Count
+        {
+            get
+            {
+                if (_listSteps != null)
+                {
+                    return _listSteps.Count;
+                }
+
+                return 0;
+            }
+        }
+
+        public BuildStep this[int index]
+        {
+            get
+            {
+                if (_listSteps != null && index >= 0 && index < _listSteps.Count)
+                {
+                    return _listSteps[index];
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this build step is a multi-step task.
@@ -129,6 +162,19 @@ namespace Sandcastle
             }
         }
 
+        public IList<string> Messages
+        {
+            get
+            {
+                if (_listMessages != null)
+                {
+                    return _listMessages.AsReadOnly();
+                }
+
+                return null;
+            }
+        }
+
         #endregion
 
         #region Public Methdods
@@ -143,6 +189,22 @@ namespace Sandcastle
             }
 
             _listSteps.Add(step);
+        }
+
+        public void Add(BuildStep step, string message)
+        {
+            this.Add(step);
+            if (message == null)
+            {
+                message = String.Empty;
+            }
+
+            if (_listMessages == null)
+            {
+                _listMessages = new List<string>();
+            }
+
+            _listMessages.Add(message);
         }
 
         public void Add(IList<BuildStep> steps)
@@ -174,16 +236,16 @@ namespace Sandcastle
             _listSteps.RemoveAt(index);
         }
 
-        public void Remove(BuildStep step)
+        public bool Remove(BuildStep step)
         {
             BuildExceptions.NotNull(step, "step");
 
             if (_listSteps == null || _listSteps.Count == 0)
             {
-                return;
+                return false;
             }
 
-            _listSteps.Remove(step);
+            return _listSteps.Remove(step);
         }
 
         public bool Contains(BuildStep step)
@@ -282,14 +344,19 @@ namespace Sandcastle
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
-            bool buildResult = false;
+            bool buildResult = true;
 
-            if (context == null || _listSteps == null || _listSteps.Count == 0)
+            if (_listSteps == null || _listSteps.Count == 0)
             {
+                if (logger != null)
+                {
+                    logger.WriteLine("This multi-step contains no build step.", 
+                        BuildLoggerLevel.Warn);
+                }
                 return buildResult;
             }
 
@@ -297,8 +364,6 @@ namespace Sandcastle
 
             try
             {
-                buildResult = true;
-
                 for (int i = 0; i < stepCount; i++)
                 {
                     BuildStep buildStep = _listSteps[i];
@@ -311,8 +376,16 @@ namespace Sandcastle
                     {
                         continue;
                     }
-                    
-                    if (buildStep.Execute() == false)
+
+                    if (_listMessages != null && _listMessages.Count == stepCount)
+                    {
+                        if (logger != null)
+                        {
+                            logger.WriteLine(_listMessages[i], BuildLoggerLevel.Info);
+                        }
+                    }
+
+                    if (!buildStep.Execute())
                     {
                         if (logger != null)
                         {
@@ -322,8 +395,11 @@ namespace Sandcastle
                         }
                         context.StepError(buildStep);
 
-                        buildResult = false;
-                        break;
+                        if (!buildStep.ContinueOnError)
+                        {
+                            buildResult = false;
+                            break;
+                        }
                     }
                     
                     context.StepEnds(buildStep);
@@ -383,6 +459,54 @@ namespace Sandcastle
             _listSteps = null;
 
             base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region ICollection<BuildStep> Members 
+
+        public void CopyTo(BuildStep[] array, int arrayIndex)
+        {
+            if (_listSteps != null)
+            {
+                _listSteps.CopyTo(array, arrayIndex);
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get 
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region IEnumerable<BuildStep> Members
+
+        public IEnumerator<BuildStep> GetEnumerator()
+        {
+            if (_listSteps != null)
+            {
+                return _listSteps.GetEnumerator();
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            if (_listSteps != null)
+            {
+                return _listSteps.GetEnumerator();
+            }
+
+            return null;
         }
 
         #endregion

@@ -440,7 +440,13 @@ namespace ICSharpCode.SharpDevelop
 				WorkbenchSingleton.SafeThreadCall(
 					delegate {
 						try {
-							activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+                            IWorkbench workbench = WorkbenchSingleton.Workbench;
+                            if (workbench == null || workbench.IsDisposed)
+                            {
+                                return;
+                            }
+
+							activeViewContent = workbench.ActiveViewContent;
                             if (activeViewContent == null || activeViewContent.IsDisposed)
                             {
                                 return;
@@ -750,8 +756,24 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return null;
 		}
-		
-		public static readonly string[] DefaultTaskListTokens = {"HACK", "TODO", "UNDONE", "FIXME"};
+
+        private static StringList defaultTaskListTokens;
+        public static StringList DefaultTaskListTokens 
+        { 
+            get
+            {
+                if (defaultTaskListTokens == null)
+                {
+                    defaultTaskListTokens = new StringList();
+                    defaultTaskListTokens.Add("HACK");
+                    defaultTaskListTokens.Add("TODO");
+                    defaultTaskListTokens.Add("UNDONE");
+                    defaultTaskListTokens.Add("FIXME"); 
+                }
+
+                return defaultTaskListTokens;
+            }
+        }
 		
 		public static IParser GetParser(string fileName)
 		{

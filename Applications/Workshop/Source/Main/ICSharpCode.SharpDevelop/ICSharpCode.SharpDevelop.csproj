@@ -402,6 +402,8 @@
     <Compile Include="Services\File\FileChangeWatcher.cs" />
     <Compile Include="Services\File\OpenedFile.cs" />
     <Compile Include="Services\File\RecentOpen.cs" />
+    <Compile Include="Services\File\RecentOpenItem.cs" />
+    <Compile Include="Services\File\RecentOpenList.cs" />
     <Compile Include="Services\Language\LanguageService.cs" />
     <Compile Include="Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
     <Compile Include="Internal\Doozers\DefaultDialogPanelDescriptor.cs" />

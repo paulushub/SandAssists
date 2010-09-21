@@ -43,41 +43,48 @@ namespace Sandcastle.Components
             XPathNavigator configuration)
             : base(assembler, configuration)
         {
-            MathController mathFormatters = MathController.GetInstance("conceptual");
-            if (mathFormatters != null)
+            try
             {
-                _mathApply          = true;
-                _mathNumber         = mathFormatters.ShowNumber;
-                _mathNumFormat      = mathFormatters.NumberFormat;
-                _mathNumIncludePage = mathFormatters.NumberIncludesPage;
-
-                _mathSelector = XPathExpression.Compile(
-                    "//artLink[starts-with(@target, 'Equation|')]");
-
-                if (String.IsNullOrEmpty(_mathNumFormat))
+                MathController mathFormatters = MathController.GetInstance("conceptual");
+                if (mathFormatters != null)
                 {
-                    if (_mathNumIncludePage)
+                    _mathApply          = true;
+                    _mathNumber         = mathFormatters.ShowNumber;
+                    _mathNumFormat      = mathFormatters.NumberFormat;
+                    _mathNumIncludePage = mathFormatters.NumberIncludesPage;
+
+                    _mathSelector = XPathExpression.Compile(
+                        "//artLink[starts-with(@target, 'Equation|')]");
+
+                    if (String.IsNullOrEmpty(_mathNumFormat))
                     {
-                        _mathNumFormat = "({0}.{1})";
-                    }
-                    else
-                    {
-                        _mathNumFormat = "({0})";
+                        if (_mathNumIncludePage)
+                        {
+                            _mathNumFormat = "({0}.{1})";
+                        }
+                        else
+                        {
+                            _mathNumFormat = "({0})";
+                        }
                     }
                 }
+
+                CodeController codeController = CodeController.GetInstance("conceptual");
+                if (codeController != null)
+                {
+                    _codeApply    = true;
+
+                    // This works for Vs2005...
+                    _codeSelector = XPathExpression.Compile(
+                      "//pre/span[@name='SandAssist' and @class='tgtSentence']");
+
+                    _spanSelector = XPathExpression.Compile(
+                        "span[@name='SandAssist' and @class='tgtSentence']");
+                }
             }
-
-            CodeController codeController = CodeController.GetInstance("conceptual");
-            if (codeController != null)
+            catch (Exception ex)
             {
-                _codeApply    = true;
-
-                // This works for Vs2005...
-                _codeSelector = XPathExpression.Compile(
-                  "//pre/span[@name='SandAssist' and @class='tgtSentence']");
-
-                _spanSelector = XPathExpression.Compile(
-                    "span[@name='SandAssist' and @class='tgtSentence']");
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
@@ -87,51 +94,58 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            XPathNavigator docNavigator = document.CreateNavigator();
-
-            base.Apply(document, docNavigator, key);
-
-            _pageCount++;
-
-            BuildComponentStyle style = this.Style;
-
-            // 1. Apply the math...
-            if (_mathApply)
+            try
             {
-                ApplyMath(docNavigator);
-            }
+                XPathNavigator docNavigator = document.CreateNavigator();
 
-            // 2. Apply the codes...
-            if (_codeApply)
+                base.Apply(document, docNavigator, key);
+
+                _pageCount++;
+
+                BuildComponentStyle style = this.Style;
+
+                // 1. Apply the math...
+                if (_mathApply)
+                {
+                    ApplyMath(docNavigator);
+                }
+
+                // 2. Apply the codes...
+                if (_codeApply)
+                {
+                    if (style == BuildComponentStyle.Vs2005)
+                    {
+                        ApplyCode(docNavigator);
+                    }
+                    else if (style == BuildComponentStyle.Hana)
+                    {
+                        if (_codeHanaSelector == null)
+                        {   
+                            _codeHanaSelector = XPathExpression.Compile(
+                                "//div[@class='code']//*/pre");
+                        }
+
+                        ApplyCode(docNavigator, _codeHanaSelector);
+                    }
+                    else if (style == BuildComponentStyle.Prototype)
+                    {
+                        if (_codeProtoSelector == null)
+                        {   
+                            _codeProtoSelector = XPathExpression.Compile(
+                                "//div[@class='code']//pre");
+                        }
+
+                        ApplyCode(docNavigator, _codeProtoSelector);
+                    }
+                }
+
+                // 3. Apply the header for logo and others
+                ApplyHeader(docNavigator);
+            }
+            catch (Exception ex)
             {
-                if (style == BuildComponentStyle.Vs2005)
-                {
-                    ApplyCode(docNavigator);
-                }
-                else if (style == BuildComponentStyle.Hana)
-                {
-                    if (_codeHanaSelector == null)
-                    {   
-                        _codeHanaSelector = XPathExpression.Compile(
-                            "//div[@class='code']//*/pre");
-                    }
-
-                    ApplyCode(docNavigator, _codeHanaSelector);
-                }
-                else if (style == BuildComponentStyle.Prototype)
-                {
-                    if (_codeProtoSelector == null)
-                    {   
-                        _codeProtoSelector = XPathExpression.Compile(
-                            "//div[@class='code']//pre");
-                    }
-
-                    ApplyCode(docNavigator, _codeProtoSelector);
-                }
+                this.WriteMessage(MessageLevel.Error, ex);
             }
-
-            // 3. Apply the header for logo and others
-            ApplyHeader(docNavigator);
         }
 
         #endregion
@@ -209,7 +223,6 @@ namespace Sandcastle.Components
                 int formatCount = formatLines.Length;
                 if (formatCount == 2)
                 {
-                    //navigator.MoveToParent();
                     navigator.MoveToParent();
                     XmlWriter xmlWriter = navigator.InsertAfter();
 
@@ -219,8 +232,11 @@ namespace Sandcastle.Components
 
                     xmlWriter.WriteStartElement("img");
                     xmlWriter.WriteAttributeString("class", formatLines[1]);
-                    xmlWriter.WriteAttributeString("src", mathFile);
                     xmlWriter.WriteAttributeString("alt", String.Empty);
+                    //xmlWriter.WriteAttributeString("src", mathFile);
+
+                    this.WriteIncludeAttribute(xmlWriter, "src", "mathPath", mathFile);
+                    
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteEndElement();
@@ -231,24 +247,29 @@ namespace Sandcastle.Components
                 }
                 else if (formatCount == 3)
                 {
-                    //navigator.MoveToParent();
-                    navigator.MoveToParent();
-                    XmlWriter xmlWriter = navigator.InsertAfter();
-
+                    XmlWriter xmlWriter = null;
                     int equationNum = Convert.ToInt32(formatLines[2]);
 
                     if (equationNum == 0) // for inline-equations
                     {
+                        xmlWriter = navigator.InsertAfter();
+
                         xmlWriter.WriteStartElement("span");  // start - span
                         xmlWriter.WriteAttributeString("class", formatLines[1]);
                         xmlWriter.WriteStartElement("img");   // start - img
-                        xmlWriter.WriteAttributeString("src", mathFile);
                         xmlWriter.WriteAttributeString("alt", String.Empty);
+                        //xmlWriter.WriteAttributeString("src", mathFile);
+
+                        this.WriteIncludeAttribute(xmlWriter, "src", "mathPath", mathFile);
+
                         xmlWriter.WriteEndElement();          // end - img
                         xmlWriter.WriteEndElement();          // end - span
                     }
                     else
-                    {   
+                    {
+                        navigator.MoveToParent();
+                        xmlWriter = navigator.InsertAfter();
+
                         xmlWriter.WriteStartElement("div");  // start - div
                         //xmlWriter.WriteAttributeString("align", "center");
                         xmlWriter.WriteAttributeString("class", 
@@ -267,11 +288,16 @@ namespace Sandcastle.Components
                             xmlWriter.WriteStartElement("td");  // start - td
                             xmlWriter.WriteAttributeString("class", 
                                 MathController.MathLeft);
+                            xmlWriter.WriteAttributeString("style",
+                                "background-color:white;border:0");
                             
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", formatLines[1]);
-                            xmlWriter.WriteAttributeString("src", mathFile);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
+                            //xmlWriter.WriteAttributeString("src", mathFile);
+
+                            this.WriteIncludeAttribute(xmlWriter, "src", "mathPath", mathFile);
+
                             xmlWriter.WriteEndElement();
                             
                             xmlWriter.WriteEndElement();        // end - tr
@@ -279,6 +305,8 @@ namespace Sandcastle.Components
                             xmlWriter.WriteStartElement("td");  // start - td
                             xmlWriter.WriteAttributeString("class", 
                                 MathController.MathRight);
+                            xmlWriter.WriteAttributeString("style",
+                                "background-color:white;border:0");
                             if (_mathNumIncludePage)
                             {
                                 xmlWriter.WriteString(String.Format(_mathNumFormat,
@@ -304,8 +332,11 @@ namespace Sandcastle.Components
                             }
                             xmlWriter.WriteStartElement("img");
                             xmlWriter.WriteAttributeString("class", formatLines[1]);
-                            xmlWriter.WriteAttributeString("src", mathFile);
                             xmlWriter.WriteAttributeString("alt", String.Empty);
+                            //xmlWriter.WriteAttributeString("src", mathFile);
+
+                            this.WriteIncludeAttribute(xmlWriter, "src", "mathPath", mathFile);
+
                             xmlWriter.WriteEndElement();
 
                             if (builderStyle == BuildComponentStyle.Hana)
@@ -318,8 +349,11 @@ namespace Sandcastle.Components
                         xmlWriter.WriteEndElement();   // end - div
                     }
 
-                    xmlWriter.Close();
-                    navigator.DeleteSelf();
+                    if (xmlWriter != null)
+                    {
+                        xmlWriter.Close();
+                        navigator.DeleteSelf();
+                    }
                 }
                 else
                 {
@@ -389,11 +423,13 @@ namespace Sandcastle.Components
                     if (arrSnipNavigator == null || arrSnipNavigator.Length == 0)
                     {
                         string codeText = navigator.Value;
-                        if (String.IsNullOrEmpty(codeText) == false)
+                        if (!String.IsNullOrEmpty(codeText))
                         {
+                            codeText = codeText.Trim();
+
+                            XmlWriter xmlWriter = navigator.InsertAfter();
                             if (highlighter != null)
                             {
-                                XmlWriter xmlWriter = navigator.InsertAfter();
                                 StringReader textReader = new StringReader(codeText);
                                 highlighter.Highlight(textReader, xmlWriter);
 
@@ -401,11 +437,15 @@ namespace Sandcastle.Components
                                 // since this process delete the last extra line.
                                 xmlWriter.WriteStartElement("br"); // start - br
                                 xmlWriter.WriteEndElement();       // end -  br
-                                
-                                xmlWriter.Close();
-
-                                navigator.DeleteSelf();
                             }
+                            else
+                            {
+                                xmlWriter.WriteString(codeText);
+                            }
+
+                            xmlWriter.Close();
+
+                            navigator.DeleteSelf();
                         }
                     }
                     else
@@ -425,8 +465,10 @@ namespace Sandcastle.Components
                             SnippetItem item = codeController[snipIndex];
 
                             string codeText = item.Text;
-                            if (String.IsNullOrEmpty(codeText) == false)
+                            if (!String.IsNullOrEmpty(codeText))
                             {
+                                codeText = codeText.Trim();
+
                                 XmlWriter xmlWriter = snipNavigator.InsertAfter();
                                 if (highlighter != null)
                                 {
@@ -524,11 +566,13 @@ namespace Sandcastle.Components
                 if (nodeCount == 1)
                 {
                     string codeText = navigator.Value;
-                    if (String.IsNullOrEmpty(codeText) == false)
+                    if (!String.IsNullOrEmpty(codeText))
                     {
+                        codeText = codeText.Trim();
+
+                        XmlWriter xmlWriter = navigator.InsertAfter();
                         if (highlighter != null)
                         {
-                            XmlWriter xmlWriter = navigator.InsertAfter();
                             StringReader textReader = new StringReader(codeText);
                             highlighter.Highlight(textReader, xmlWriter);
 
@@ -536,11 +580,15 @@ namespace Sandcastle.Components
                             // since this process delete the last extra line.
                             xmlWriter.WriteStartElement("br"); // start - br
                             xmlWriter.WriteEndElement();       // end -  br
-                            
-                            xmlWriter.Close();
-
-                            navigator.DeleteSelf();
                         }
+                        else
+                        {
+                            xmlWriter.WriteString(codeText);
+                        }
+
+                        xmlWriter.Close();
+
+                        navigator.DeleteSelf();
                     }
                 }
                 else
@@ -569,8 +617,10 @@ namespace Sandcastle.Components
                         SnippetItem item = codeController[snipIndex];
 
                         string codeText = item.Text;
-                        if (String.IsNullOrEmpty(codeText) == false)
+                        if (!String.IsNullOrEmpty(codeText))
                         {
+                            codeText = codeText.Trim();
+
                             XmlWriter xmlWriter = snipNavigator.InsertAfter();
                             if (highlighter != null)
                             {

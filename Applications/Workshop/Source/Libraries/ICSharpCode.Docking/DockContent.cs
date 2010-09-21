@@ -17,7 +17,16 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             m_dockHandler = new DockContentHandler(this, new GetPersistStringCallback(GetPersistString));
 			m_dockHandler.DockStateChanged += new EventHandler(DockHandler_DockStateChanged);
-		}
+            //Suggested as a fix by bensty regarding form resize
+            this.ParentChanged += new EventHandler(DockContent_ParentChanged);
+        }
+
+        //Suggested as a fix by bensty regarding form resize
+        private void DockContent_ParentChanged(object Sender, EventArgs e)
+        {
+            if (this.Parent != null)
+                this.Font = this.Parent.Font;
+        }
 
 		private DockContentHandler m_dockHandler;
 		[Browsable(false)]
@@ -57,14 +66,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 		[LocalizedCategory("Category_Docking")]
 		[LocalizedDescription("DockContent_TabText_Description")]
 		[DefaultValue(null)]
-		public string TabText
+        private string m_tabText = null;
+        public string TabText
 		{
-			get	{	return DockHandler.TabText;	}
-			set	{	DockHandler.TabText = value;	}
+            get { return m_tabText; }
+            set { DockHandler.TabText = m_tabText = value; }
 		}
 		private bool ShouldSerializeTabText()
 		{
-			return (DockHandler.TabText != null);
+            return (m_tabText != null);
 		}
 
 		[LocalizedCategory("Category_Docking")]
@@ -75,6 +85,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 			get	{	return DockHandler.CloseButton;	}
 			set	{	DockHandler.CloseButton = value;	}
 		}
+
+        [LocalizedCategory("Category_Docking")]
+        [LocalizedDescription("DockContent_CloseButtonVisible_Description")]
+        [DefaultValue(true)]
+        public bool CloseButtonVisible
+        {
+            get { return DockHandler.CloseButtonVisible; }
+            set { DockHandler.CloseButtonVisible = value; }
+        }
 		
 		[Browsable(false)]
 		public DockPanel DockPanel
@@ -251,6 +270,20 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             DockHandler.DockTo(panel, dockStyle);
         }
+
+        #region IDockContent Members
+
+        void IDockContent.OnActivated(EventArgs e)
+        {
+            this.OnActivated(e);
+        }
+
+        void IDockContent.OnDeactivate(EventArgs e)
+        {
+            this.OnDeactivate(e);
+        }
+        
+        #endregion
 
         protected override void OnPaint(PaintEventArgs e)
         {

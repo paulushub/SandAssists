@@ -22,6 +22,7 @@ namespace Sandcastle.Components
         private bool         _codeApply;
 
         private XPathExpression _codeSelector;
+        private XPathExpression _mathSelector;
 
         #endregion
 
@@ -31,12 +32,21 @@ namespace Sandcastle.Components
             XPathNavigator configuration)
             : base(assembler, configuration)
         {
-            CodeController codeController = CodeController.GetInstance("reference");
-            if (codeController != null)
+            try
             {
-                _codeApply    = true;
-                _codeSelector = XPathExpression.Compile(
-                    "//pre/span[@name='SandAssist' and @class='tgtSentence']");
+                CodeController codeController = CodeController.GetInstance("reference");
+                if (codeController != null)
+                {
+                    _codeApply    = true;
+                    _codeSelector = XPathExpression.Compile(
+                        "//pre/span[@name='SandAssist' and @class='tgtSentence']");
+                    _mathSelector = XPathExpression.Compile(
+                        "//img/span[@name='SandMath' and @class='tgtSentence']");
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
@@ -46,23 +56,74 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            XPathNavigator docNavigator = document.CreateNavigator();
-
-            base.Apply(document, docNavigator, key);
-
-            // 1. Apply the codes...
-            if (_codeApply)
+            try
             {
-                ApplyCode(docNavigator);
-            }
+                XPathNavigator docNavigator = document.CreateNavigator();
 
-            // 2. Apply the header for logo and others
-            ApplyHeader(docNavigator);
+                base.Apply(document, docNavigator, key);
+
+                // 1. Apply the math images...
+                ApplyMath(docNavigator);
+
+                // 2. Apply the codes...
+                if (_codeApply)
+                {
+                    ApplyCode(docNavigator);
+                }
+
+                // 2. Apply the header for logo and others
+                ApplyHeader(docNavigator);
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
         }
 
         #endregion
 
         #region Private Methods
+
+        #region ApplyMath Method
+
+        private void ApplyMath(XPathNavigator docNavigator)
+        {
+            XPathNodeIterator iterator = docNavigator.Select(_mathSelector);
+            if (iterator == null || iterator.Count == 0)
+            {
+                return;
+            }
+
+            XPathNavigator navigator = null;
+            XPathNavigator[] arrNavigator =
+                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
+
+            int itemCount = arrNavigator.Length;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                navigator = arrNavigator[i];
+                if (navigator == null)
+                {
+                    continue;
+                }
+
+                string mathFile = navigator.Value;
+                if (String.IsNullOrEmpty(mathFile) == false)
+                {
+                    XmlWriter xmlWriter = navigator.InsertAfter();
+
+                    this.WriteIncludeAttribute(xmlWriter, "src",
+                        "mathPath", mathFile);
+
+                    xmlWriter.Close();
+
+                    navigator.DeleteSelf();
+                }
+            }
+        }
+
+        #endregion
 
         #region ApplyCode Method
 

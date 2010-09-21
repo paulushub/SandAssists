@@ -24,19 +24,17 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 
 namespace XPTable.Models
 {
 	/// <summary>
 	/// Stores Image related properties for a Cell
 	/// </summary>
-	internal class CellImageStyle
+    public sealed class CellImageStyle
 	{
 		#region Private Fields
 
@@ -52,7 +50,6 @@ namespace XPTable.Models
 
 		#endregion
 
-
 		#region Constructor
 
 		/// <summary>
@@ -65,7 +62,6 @@ namespace XPTable.Models
 		}
 
 		#endregion
-
 
 		#region Properties
 

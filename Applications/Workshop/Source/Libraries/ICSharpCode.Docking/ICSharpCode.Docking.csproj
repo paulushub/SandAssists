@@ -7,7 +7,7 @@
     <ProjectGuid>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
+    <RootNamespace>WeifenLuo.WinFormsUI.Docking</RootNamespace>
     <AssemblyName>ICSharpCode.Docking</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
@@ -53,12 +53,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DockPanel.Designer.cs">
+      <DependentUpon>DockPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="DockPanel.SplitterDragHandler.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DockPanel.DragHandler.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DockPanelSkin.cs" />
     <Compile Include="DragForm.cs">
       <SubType>Form</SubType>
     </Compile>

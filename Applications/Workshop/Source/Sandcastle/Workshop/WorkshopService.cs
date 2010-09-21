@@ -12,8 +12,8 @@ namespace Sandcastle.Workshop
         public const string WorkshopOptions        = "Workshop.Options";
 
         public const string ShowStartPageName      = "ShowStartPage";
-        public const string ExpandStartPageAssistantName = "CloseOnProjectLoad";
         public const string CloseOnProjectLoadName = "CloseOnProjectLoad";
+        public const string ExpandStartPageAssistantName = "ExpandStartPageAssistant";
 
         #endregion
 

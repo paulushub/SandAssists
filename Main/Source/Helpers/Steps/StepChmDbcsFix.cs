@@ -6,7 +6,7 @@ using Sandcastle.Formats;
 
 namespace Sandcastle.Steps
 {
-    public class StepChmDbcsFix : StepProcess
+    public sealed class StepChmDbcsFix : StepProcess
     {
         #region Private Fields
 
@@ -50,7 +50,7 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             if (_options != null)
             {
@@ -59,7 +59,7 @@ namespace Sandcastle.Steps
                 return chmEncoding.Run(context);
             }
 
-            return base.MainExecute(context);
+            return base.OnExecute(context);
         }
 
         #endregion

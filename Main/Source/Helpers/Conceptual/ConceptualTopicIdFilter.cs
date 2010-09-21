@@ -20,14 +20,14 @@ namespace Sandcastle.Conceptual
         public ConceptualTopicIdFilter()
         {
             _dicTopicId = new Dictionary<string, bool>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
         }
 
         public ConceptualTopicIdFilter(string name)
             : base(name)
         {
             _dicTopicId = new Dictionary<string, bool>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
         }
 
         public ConceptualTopicIdFilter(ConceptualTopicIdFilter source)

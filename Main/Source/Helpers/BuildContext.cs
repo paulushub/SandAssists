@@ -3,10 +3,13 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 
 using Sandcastle.Loggers;
+using Sandcastle.Utilities;
+using Sandcastle.Configurators;
 
 namespace Sandcastle
 {
@@ -15,11 +18,17 @@ namespace Sandcastle
     /// build process, and can be used to store object or data that is used by various
     /// objects in the build process.
     /// </summary>
-    public class BuildContext : MarshalByRefObject, IDisposable
+    public class BuildContext : BuildObject, IDisposable
     {
+        #region Public Fields
+
+        public const string WorkingFolder = "_HelpBuild";
+        public static readonly Version SandcastleVersion = new Version("2.6.10621.1");
+
+        #endregion
+
         #region Private Fields
 
-        private int             _apiNamingMethod;
         private bool            _isInitialized;
         private bool            _isBuildSuccess;
 
@@ -34,7 +43,7 @@ namespace Sandcastle
         private BuildLogger     _logger;
         private BuildSystem     _buildSystem;
         private BuildSettings   _settings;
-        private BuildConfiguration _configuration;
+        private IncludeContentList _configuration;
 
         private EventWaitHandle _waitHandle;
         private Dictionary<string, string> _properties;
@@ -62,7 +71,10 @@ namespace Sandcastle
             _buildSystem = system;
             _waitHandle  = new ManualResetEvent(false);
             _properties  = new Dictionary<string, string>(
-               StringComparer.CurrentCultureIgnoreCase);
+               StringComparer.OrdinalIgnoreCase);
+
+            // Reset to the default properties
+            this.Reset();
         }
 
         /// <summary>
@@ -198,7 +210,7 @@ namespace Sandcastle
             }
         }
 
-        public BuildConfiguration Configuration
+        public IncludeContentList Configuration
         {
             get
             {
@@ -288,17 +300,103 @@ namespace Sandcastle
 
         #endregion
 
-        #region Internal Properties
+        #region Public Methods
 
-        internal int ApiNamingMethod
+        public void BeginDirectories(BuildSettings settings)
         {
-            get { return _apiNamingMethod; }
-            set { _apiNamingMethod = value; }
+            // Prepare the working directory...
+            string workingDir = settings.WorkingDirectory;
+            if (String.IsNullOrEmpty(workingDir))
+            {
+                workingDir = Environment.CurrentDirectory;
+            }
+            else
+            {
+                workingDir = Environment.ExpandEnvironmentVariables(workingDir);
+                workingDir = Path.GetFullPath(workingDir);
+            }
+            if (String.IsNullOrEmpty(workingDir))
+            {
+                return;
+            }
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+            _baseWorkingDir = workingDir;
+            workingDir = Path.Combine(workingDir, BuildContext.WorkingFolder);
+            if (Directory.Exists(workingDir))
+            {
+                try
+                {                       
+                    DirectoryUtils.DeleteDirectory(workingDir, true);
+                }
+                catch
+                {  
+                    // Mostly, the usual Windows - another process is using the
+                    // folder issue...
+                    // If the folder is empty, we just ignore the error
+                    // and continue...
+                	if (!DirectoryUtils.IsDirectoryEmpty(workingDir))
+                    {
+                        throw;
+                    }
+                }
+            }
+            Directory.CreateDirectory(workingDir);
+            _workingDir = workingDir;
+
+            // Prepare the output directory...
+            string outputDir = settings.OutputDirectory;
+            if (String.IsNullOrEmpty(outputDir))
+            {
+                outputDir = _baseWorkingDir;
+            }
+            else
+            {
+                outputDir = Environment.ExpandEnvironmentVariables(outputDir);
+                outputDir = Path.GetFullPath(outputDir);
+            }
+            if (String.IsNullOrEmpty(outputDir))
+            {
+                return;
+            }
+            if (!Directory.Exists(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+            this.OutputDirectory = outputDir;
         }
 
-        #endregion
-
-        #region Public Methods
+        public void EndDirectories(BuildSettings settings)
+        {
+            if (_isBuildSuccess &&
+                settings != null && settings.CleanIntermediate)
+            {
+                if (!String.IsNullOrEmpty(_workingDir) &&
+                    Directory.Exists(_workingDir))
+                {
+                    try
+                    {
+                        DirectoryUtils.DeleteDirectory(_workingDir, true);
+                    }
+                    catch //(Exception ex)
+                    {
+                        //if (_logger != null)
+                        //{
+                        //    _logger.WriteLine(ex);
+                        //    foreach (DictionaryEntry de in ex.Data)
+                        //    {
+                        //        String message = String.Format(
+                        //            "The key is '{0}' and the value is: {1}",
+                        //            de.Key, de.Value);
+                        //        _logger.WriteLine(message, BuildLoggerLevel.Info);
+                        //    }
+                        //}
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 
@@ -309,7 +407,7 @@ namespace Sandcastle
         /// <seealso cref="BuildContext.IsInitialized"/>
         /// <seealso cref="BuildContext.Uninitialize()"/>
         public virtual void Initialize(BuildSettings settings, BuildLogger logger,
-            BuildConfiguration configuration)
+            IncludeContentList configuration)
         {
             if (_isInitialized)
             {
@@ -353,11 +451,11 @@ namespace Sandcastle
             }
             else
             {
-                _sandcastleDir = sandPath;
+                _sandcastleDir      = sandPath;
                 _sandcastleToolsDir = Path.Combine(sandPath, "ProductionTools");
                 if (!Directory.Exists(_sandcastleToolsDir))
                 {
-                    _sandcastleDir = String.Empty;
+                    _sandcastleDir      = String.Empty;
                     _sandcastleToolsDir = String.Empty;
 
                     _logger.WriteLine(
@@ -366,58 +464,8 @@ namespace Sandcastle
 
                     return;
                 }
-                _logger.WriteLine("The sandcastle installed: " + sandPath,
-                    BuildLoggerLevel.Info);
+                _isInitialized = this.ValidateSandcastle();
             }
-
-            // Prepare the working directory...
-            string workingDir   = _settings.WorkingDirectory;
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = Environment.CurrentDirectory;
-            }
-            else
-            {
-                workingDir = Environment.ExpandEnvironmentVariables(workingDir);
-                workingDir = Path.GetFullPath(workingDir);
-            }
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                return;
-            }
-            if (!Directory.Exists(workingDir))
-            {
-                Directory.CreateDirectory(workingDir);
-            }
-            _baseWorkingDir = workingDir;
-            workingDir = Path.Combine(workingDir, "HelpBuild");
-            if (Directory.Exists(workingDir))
-            {
-                BuildDirHandler.DeleteDirectory(workingDir, true);
-            }
-            Directory.CreateDirectory(workingDir);
-            _workingDir     = workingDir;
-
-            // Prepare the output directory...
-            string outputDir = _settings.OutputDirectory;
-            if (String.IsNullOrEmpty(outputDir))
-            {
-                outputDir = _baseWorkingDir;
-            }
-            else
-            {
-                outputDir = Environment.ExpandEnvironmentVariables(outputDir);
-                outputDir = Path.GetFullPath(outputDir);
-            }
-            if (String.IsNullOrEmpty(outputDir))
-            {
-                return;
-            }
-            if (!Directory.Exists(outputDir))
-            {
-                Directory.CreateDirectory(outputDir);
-            }
-            this.OutputDirectory = outputDir;
 
             _isInitialized = true;
         }
@@ -429,45 +477,6 @@ namespace Sandcastle
         /// <seealso cref="BuildContext.Initialize(BuildContext)"/>
         public virtual void Uninitialize()
         {
-            if (_isBuildSuccess && 
-                _settings != null && _settings.CleanIntermediate)
-            {
-                if (!String.IsNullOrEmpty(_workingDir) &&
-                    Directory.Exists(_workingDir))
-                {
-                    try
-                    {
-                        BuildDirHandler.DeleteDirectory(_workingDir, true);
-                        //try
-                        //{
-                        //}
-                        //catch (IOException)
-                        //{
-                        //    // The common error is:
-                        //    // The process cannot access the file '...' because it is
-                        //    // being used by another process. 
-                        //    // We sleep and try again...
-                        //    Thread.Sleep(2000);   
-                        //    BuildDirHandler.DeleteDirectory(_workingDir, true);
-                        //}
-                    }
-                    catch (Exception ex)
-                    {      
-                    	if (_logger != null)
-                        {
-                            _logger.WriteLine(ex);
-                            foreach (DictionaryEntry de in ex.Data)
-                            {
-                                String message = String.Format(
-                                    "The key is '{0}' and the value is: {1}",
-                                    de.Key, de.Value);
-                                _logger.WriteLine(message, BuildLoggerLevel.Info);
-                            }
-                        }
-                    }
-                }
-            }
-
             _logger        = null;
             _settings      = null;
             _configuration = null;
@@ -533,7 +542,9 @@ namespace Sandcastle
 
         public virtual BuildLogger CreateLogger(BuildSettings settings)
         {
-            string workingDir = _baseWorkingDir;
+            string workingDir  = _baseWorkingDir;
+            string logFileName = settings.LogFileName;
+
             if (String.IsNullOrEmpty(workingDir))
             {
                 workingDir = _workingDir;
@@ -541,32 +552,35 @@ namespace Sandcastle
                 {
                     workingDir = settings.WorkingDirectory;
                 }
-                if (String.IsNullOrEmpty(workingDir) || !Directory.Exists(workingDir))
-                {
-                    return null;
-                }
             }
-            string logFile = Path.Combine(workingDir, settings.LogFile);
 
-            try
+            if (!String.IsNullOrEmpty(logFileName))
             {
-                if (File.Exists(logFile))
+                if (!String.IsNullOrEmpty(workingDir) && Directory.Exists(workingDir))
                 {
-                    File.SetAttributes(logFile, FileAttributes.Normal);
-                    File.Delete(logFile);
+                    string logFullPath = Path.Combine(workingDir, logFileName);
+
+                    try
+                    {
+                        if (File.Exists(logFullPath))
+                        {
+                            File.SetAttributes(logFullPath, FileAttributes.Normal);
+                            File.Delete(logFullPath);
+                        }
+                    }
+                    catch
+                    {
+                        return null;
+                    }
                 }
-            }
-            catch
-            {
-                return null;
             }
 
             if (String.IsNullOrEmpty(workingDir) || 
                 _buildSystem == BuildSystem.Console)
             {
-                if (String.IsNullOrEmpty(logFile) == false || settings.UseLogFile)
+                if (String.IsNullOrEmpty(logFileName) == false || settings.UseLogFile)
                 {
-                    ConsoleLogger logger = new ConsoleLogger(logFile);
+                    ConsoleLogger logger = new ConsoleLogger(logFileName);
                     logger.KeepLog = settings.KeepLogFile;
                     
                     return logger;
@@ -578,9 +592,9 @@ namespace Sandcastle
             }
             else
             {
-                if (String.IsNullOrEmpty(logFile) == false || settings.UseLogFile)
+                if (String.IsNullOrEmpty(logFileName) == false || settings.UseLogFile)
                 {
-                    FileLogger logger = new FileLogger(logFile);
+                    FileLogger logger = new FileLogger(logFileName);
                     logger.KeepLog = settings.KeepLogFile;
 
                     return logger;
@@ -588,6 +602,40 @@ namespace Sandcastle
             }
 
             return null;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Reset()
+        {
+            _properties["$ApiNamingMethod"] = "1";
+        }
+
+        private bool ValidateSandcastle()
+        {
+            if (String.IsNullOrEmpty(_sandcastleDir) ||
+                String.IsNullOrEmpty(_sandcastleToolsDir))
+            {
+                throw new InvalidOperationException("The validation requires Sandcastle installed paths.");
+            }
+            _logger.WriteLine("Sandcastle Directory: " + _sandcastleDir,
+                BuildLoggerLevel.Info);
+
+            string sampleTool = Path.Combine(_sandcastleToolsDir,
+                "BuildAssembler.exe");
+            if (!File.Exists(sampleTool))
+            {
+                return false;
+            }
+            FileVersionInfo sandcastleVersionInfo =
+                FileVersionInfo.GetVersionInfo(sampleTool);
+
+            _logger.WriteLine("Sandcastle Version: " +
+                sandcastleVersionInfo.FileVersion, BuildLoggerLevel.Info);
+
+            return true;
         }
 
         #endregion

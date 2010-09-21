@@ -7,6 +7,8 @@ using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools;
 
+using Sandcastle.Components.Indexed;
+
 namespace Sandcastle.Components.Copiers
 {
     public abstract class CopyComponentEx : CopyComponent, IDisposable
@@ -23,11 +25,11 @@ namespace Sandcastle.Components.Copiers
         protected CopyComponentEx(XPathNavigator configuration, Dictionary<string, object> data)
             : base(configuration, data)
         {
-            IndexedDocumentCache cached = null;
+            IndexedDocumentController cached = null;
 
             foreach (KeyValuePair<string, object> item in data)
             {
-                cached = item.Value as IndexedDocumentCache;
+                cached = item.Value as IndexedDocumentController;
                 if (cached != null)
                 {
                     break;

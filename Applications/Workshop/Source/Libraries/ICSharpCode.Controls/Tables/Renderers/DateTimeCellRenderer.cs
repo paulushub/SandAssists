@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -33,7 +32,6 @@ using System.Windows.Forms;
 using XPTable.Events;
 using XPTable.Models;
 using XPTable.Themes;
-
 
 namespace XPTable.Renderers
 {
@@ -51,7 +49,6 @@ namespace XPTable.Renderers
 
 		#endregion
 		
-		
 		#region Constructor
 		
 		/// <summary>
@@ -65,7 +62,6 @@ namespace XPTable.Renderers
 		}
 
 		#endregion
-
 
 		#region Properties
 
@@ -92,7 +88,6 @@ namespace XPTable.Renderers
 
 		#endregion
 
-
 		#region Events
 
 		#region Paint
@@ -103,10 +98,11 @@ namespace XPTable.Renderers
 		/// <param name="e">A PaintCellEventArgs that contains the event data</param>
 		public override void OnPaintCell(PaintCellEventArgs e)
 		{
-			if (e.Table.ColumnModel.Columns[e.Column] is DateTimeColumn)
-			{
-				DateTimeColumn column = (DateTimeColumn) e.Table.ColumnModel.Columns[e.Column];
+            DateTimeColumn column = 
+                e.Table.ColumnModel.Columns[e.Column] as DateTimeColumn;
 
+            if (column != null)
+			{
 				this.DateTimeFormat = column.DateTimeFormat;
 				this.Format = column.CustomDateTimeFormat;
 			}
@@ -133,7 +129,7 @@ namespace XPTable.Renderers
 				return;
 
 			Rectangle buttonRect = this.CalcDropDownButtonBounds();
-			Rectangle textRect = this.ClientRectangle;
+			Rectangle textRect   = this.ClientRectangle;
 			
 			if (this.ShowDropDownButton)
 				textRect.Width -= buttonRect.Width - 1;
@@ -177,7 +173,7 @@ namespace XPTable.Renderers
 
             // if a custom format hasn't been defined, use 
             // one of the default formats
-            if (format.Length == 0)
+            if (String.IsNullOrEmpty(format))
             {
                 switch (this.DateTimeFormat)
                 {

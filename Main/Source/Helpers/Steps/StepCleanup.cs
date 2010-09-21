@@ -3,9 +3,11 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Steps
 {
-    public class StepCleanup : BuildStep
+    public sealed class StepCleanup : BuildStep
     {
         #region Private Fields
 
@@ -92,7 +94,7 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             if (_listPaths == null || _listPaths.Count == 0)
             {
@@ -134,7 +136,7 @@ namespace Sandcastle.Steps
                     else if (Directory.Exists(pathItem))
                     {
                         // It is a directory...
-                        BuildDirHandler.DeleteDirectory(pathItem, true);
+                        DirectoryUtils.DeleteDirectory(pathItem, true);
 
                         if (logger != null)
                         {

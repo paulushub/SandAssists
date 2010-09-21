@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepHxsViewerClose : BuildStep
+    public sealed class StepHxsViewerClose : BuildStep
     {
         #region Private Fields
 
@@ -19,7 +19,7 @@ namespace Sandcastle.Steps
 
         public StepHxsViewerClose()
         {
-            this.Message = "Closing the Document Explorer";
+            this.LogTitle = "Closing the Document Explorer";
         }
 
         public StepHxsViewerClose(string workingDir, string htmlHelpFile,
@@ -28,7 +28,7 @@ namespace Sandcastle.Steps
         {
             _htmlHelpFile  = htmlHelpFile;
             _htmlHelpTitle = htmlHelpTitle;
-            this.Message   = "Closing the Document Explorer";
+            this.LogTitle   = "Closing the Document Explorer";
         }
 
         #endregion
@@ -69,23 +69,11 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
-            //if (logger != null)
-            //{
-            //    logger.WriteLine("Closing the Document Explorer...",
-            //        BuildLoggerLevel.Started);
-            //}
-
             bool closeResult = CloseIt(logger);
-
-            //if (logger != null)
-            //{
-            //    logger.WriteLine("Closing the Document Explorer.",
-            //        BuildLoggerLevel.Ended);
-            //}
 
             return closeResult;
         }
@@ -133,7 +121,30 @@ namespace Sandcastle.Steps
             }
             catch (IOException ex)
             {
-                bool isFound  = false;
+                bool isDone = this.KillIt();
+                if (isDone)
+                {
+                    return true;
+                }
+
+                if (logger != null)
+                {
+                    logger.WriteLine(ex, BuildLoggerLevel.Error);
+
+                    logger.WriteLine(
+                        "Please close the Help file, and try again.",
+                        BuildLoggerLevel.Error);
+                }
+
+                return false;
+            }
+        }
+
+        private bool KillIt()
+        {
+            try
+            {
+                bool isFound = false;
                 bool isClosed = false;
                 Process[] hhProcesses = Process.GetProcessesByName("dexplore");
                 if (hhProcesses != null && hhProcesses.Length != 0)
@@ -147,11 +158,22 @@ namespace Sandcastle.Steps
                         // and compare it with that of the process.
                         string windowTitle = compiledHelp.MainWindowTitle;
                         if (windowTitle.IndexOf(_htmlHelpTitle,
-                            StringComparison.CurrentCultureIgnoreCase) >= 0)
+                            StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             isClosed = compiledHelp.CloseMainWindow();
-                            compiledHelp.WaitForExit();  // must wait!
-                            compiledHelp.Close();
+                            if (isClosed)
+                            {
+                                compiledHelp.WaitForExit();  // must wait!
+                                isClosed = compiledHelp.HasExited;
+                                compiledHelp.Close();
+                            }
+                            else
+                            {
+                                compiledHelp.Kill();
+                                compiledHelp.WaitForExit();  // must wait!
+                                isClosed = compiledHelp.HasExited;
+                                compiledHelp.Close();
+                            }
 
                             isFound = true;
                         }
@@ -163,24 +185,18 @@ namespace Sandcastle.Steps
                     return true;
                 }
 
-                if (logger != null)
+                if (isFound)
                 {
-                    logger.WriteLine(ex, BuildLoggerLevel.Error);
+                    return false;
                 }
 
-                if (!isFound)
-                {
-                    if (logger != null)
-                    {
-                        logger.WriteLine(
-                            "Please close the Help file, and try again.",
-                            BuildLoggerLevel.Error);
-                    }
-                }
+                return true;
             }
-
-            return false;
-        }
+            catch
+            {
+                return false;
+            }
+        }        
 
         #endregion
 

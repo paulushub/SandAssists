@@ -28,35 +28,42 @@ namespace Sandcastle.Components
         protected CodeComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _tabSize       = 4; // this is our default
-            _highlightMode = CodeHighlightMode.IndirectIris;
-
-            // <options mode="snippets" tabSize="4" 
-            //    numberLines="false" outlining="false"/>
-            XPathNavigator navigator = configuration.SelectSingleNode("options");
-            if (navigator != null)
+            try
             {
-                string attribute = navigator.GetAttribute("mode", String.Empty);
-                if (String.IsNullOrEmpty(attribute) == false)
+                _tabSize       = 4; // this is our default
+                _highlightMode = CodeHighlightMode.IndirectIris;
+
+                // <options mode="snippets" tabSize="4" 
+                //    numberLines="false" outlining="false"/>
+                XPathNavigator navigator = configuration.SelectSingleNode("options");
+                if (navigator != null)
                 {
-                    _highlightMode = (CodeHighlightMode)Enum.Parse(
-                        typeof(CodeHighlightMode), attribute, true);
+                    string attribute = navigator.GetAttribute("mode", String.Empty);
+                    if (String.IsNullOrEmpty(attribute) == false)
+                    {
+                        _highlightMode = (CodeHighlightMode)Enum.Parse(
+                            typeof(CodeHighlightMode), attribute, true);
+                    }
+                    attribute = navigator.GetAttribute("tabSize", String.Empty);
+                    if (String.IsNullOrEmpty(attribute) == false)
+                    {
+                        _tabSize = Convert.ToInt32(attribute);
+                    }
+                    attribute = navigator.GetAttribute("numberLines", String.Empty);
+                    if (String.IsNullOrEmpty(attribute) == false)
+                    {
+                        _numberLines = Convert.ToBoolean(attribute);
+                    }
+                    attribute = navigator.GetAttribute("outlining", String.Empty);
+                    if (String.IsNullOrEmpty(attribute) == false)
+                    {
+                        _outlining = Convert.ToBoolean(attribute);
+                    }
                 }
-                attribute = navigator.GetAttribute("tabSize", String.Empty);
-                if (String.IsNullOrEmpty(attribute) == false)
-                {
-                    _tabSize = Convert.ToInt32(attribute);
-                }
-                attribute = navigator.GetAttribute("numberLines", String.Empty);
-                if (String.IsNullOrEmpty(attribute) == false)
-                {
-                    _numberLines = Convert.ToBoolean(attribute);
-                }
-                attribute = navigator.GetAttribute("outlining", String.Empty);
-                if (String.IsNullOrEmpty(attribute) == false)
-                {
-                    _outlining = Convert.ToBoolean(attribute);
-                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);            	
             }
         }
 

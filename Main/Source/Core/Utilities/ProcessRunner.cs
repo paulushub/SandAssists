@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Utilities
 {
-    public class ProcessRunner : MarshalByRefObject, IDisposable
+    public class ProcessRunner : BuildObject, IDisposable
     {
         #region Private Fields
 
@@ -198,6 +198,22 @@ namespace Sandcastle.Utilities
 
                 return false;
             }
+        }
+
+        public static bool IsProcessOpen(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            Process[] localByName = Process.GetProcessesByName(name);
+            if (localByName != null && localByName.Length != 0)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

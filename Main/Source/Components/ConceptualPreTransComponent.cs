@@ -27,29 +27,36 @@ namespace Sandcastle.Components
             XPathNavigator configuration)
             : base(assembler, configuration)
         {
-            _autoOutlineDepth = 0;
-            _autoOutline = false;
-            XPathNavigator navigator = configuration.SelectSingleNode("autoOutline");
-            if (navigator != null)
+            try
             {
-                string outlineText = navigator.GetAttribute("value", String.Empty);
-                if (String.IsNullOrEmpty(outlineText) == false)
+                _autoOutlineDepth = 0;
+                _autoOutline = false;
+                XPathNavigator navigator = configuration.SelectSingleNode("autoOutline");
+                if (navigator != null)
                 {
-                    _autoOutline = Convert.ToBoolean(outlineText);
+                    string outlineText = navigator.GetAttribute("value", String.Empty);
+                    if (String.IsNullOrEmpty(outlineText) == false)
+                    {
+                        _autoOutline = Convert.ToBoolean(outlineText);
+                    }
+                    outlineText = navigator.GetAttribute("depth", String.Empty);
+                    if (String.IsNullOrEmpty(outlineText) == false)
+                    {
+                        _autoOutlineDepth = Convert.ToInt32(outlineText);
+                    }
                 }
-                outlineText = navigator.GetAttribute("depth", String.Empty);
-                if (String.IsNullOrEmpty(outlineText) == false)
-                {
-                    _autoOutlineDepth = Convert.ToInt32(outlineText);
-                }
+
+                _xsltContext = new CustomContext();
+                _xsltContext.AddNamespace("ddue",
+                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
+
+                _xpathSelector = XPathExpression.Compile("/*//ddue:token[text()='autoOutline']");
+                _xpathSelector.SetContext(_xsltContext);
             }
-
-            _xsltContext = new CustomContext();
-            _xsltContext.AddNamespace("ddue",
-                "http://ddue.schemas.microsoft.com/authoring/2003/5");
-
-            _xpathSelector = XPathExpression.Compile("/*//ddue:token[text()='autoOutline']");
-            _xpathSelector.SetContext(_xsltContext);
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
+            }
         }
 
         #endregion
@@ -58,11 +65,18 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            base.Apply(document, key);
-
-            if (_autoOutline)
+            try
             {
-                ApplyAutoOutline(document);
+                base.Apply(document, key);
+
+                if (_autoOutline)
+                {
+                    ApplyAutoOutline(document);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 

@@ -40,7 +40,7 @@ namespace Sandcastle
         public BuildKeyedList()
         {
             _dicItems = new Dictionary<string, int>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -229,7 +229,7 @@ namespace Sandcastle
             T replaced = Items[index];
             string replacedName = replaced.Name;
             if (!String.Equals(replacedName, itemName, 
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _dicItems.Remove(replacedName); // remove the current first
             }

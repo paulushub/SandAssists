@@ -3,9 +3,11 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Steps
 {
-    public class StepDirectoryMove : BuildStep
+    public sealed class StepDirectoryMove : BuildStep
     {
         #region Private Fields
 
@@ -24,7 +26,7 @@ namespace Sandcastle.Steps
             _listDestDir   = new List<string>();
             _listSourceDir = new List<string>();
 
-            this.Message   = "Moving directories";
+            this.LogTitle   = "Moving directories";
         }
 
         public StepDirectoryMove(string workingDir)
@@ -34,7 +36,7 @@ namespace Sandcastle.Steps
             _listDestDir   = new List<string>();
             _listSourceDir = new List<string>();
 
-            this.Message   = "Moving directories";
+            this.LogTitle   = "Moving directories";
         }
 
         #endregion
@@ -102,7 +104,7 @@ namespace Sandcastle.Steps
             }
         }
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
 
@@ -111,12 +113,7 @@ namespace Sandcastle.Steps
                 int itemCount = _listSourceDir.Count;
                 int dirMoved  = 0;
 
-                //if (logger != null)
-                //{
-                //    logger.WriteLine("Moving directories...", 
-                //        BuildLoggerLevel.Started);
-                //}
-
+                string baseDir = context.BaseDirectory;
                 for (int i = 0; i < itemCount; i++)
                 {
                     string dirSource = _listSourceDir[i];
@@ -126,12 +123,31 @@ namespace Sandcastle.Steps
                     {
                         if (String.IsNullOrEmpty(dirSource) == false)
                         {
-                            logger.WriteLine("Moving From:..." + dirSource,
-                                BuildLoggerLevel.Info);
-                        }
-                        if (String.IsNullOrEmpty(dirDest) == false)
-                        {
-                            logger.WriteLine("Moving To:..." + dirDest,
+                            StringBuilder builder = new StringBuilder();
+                            builder.Append("Moving - ");
+                            if (dirSource.StartsWith(baseDir,
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                builder.Append(PathUtils.GetRelativePath(
+                                    baseDir, dirSource));
+                            }
+                            else
+                            {
+                                builder.Append(dirSource);
+                            }
+                            builder.Append(" -> ");
+                            if (dirDest.StartsWith(baseDir, 
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                builder.Append(PathUtils.GetRelativePath(
+                                    baseDir, dirDest));
+                            }
+                            else
+                            {
+                                builder.Append(PathUtils.GetRelativePath(
+                                    dirSource, dirDest));
+                            }
+                            logger.WriteLine(builder.ToString(),
                                 BuildLoggerLevel.Info);
                         }
                     }
@@ -152,7 +168,7 @@ namespace Sandcastle.Steps
                     {
                         if (_isOverride)
                         {
-                            BuildDirHandler.DeleteDirectory(dirDest, true);
+                            DirectoryUtils.DeleteDirectory(dirDest, true);
                         }
                         else
                         {
@@ -167,6 +183,12 @@ namespace Sandcastle.Steps
                     }
 
                     Directory.Move(dirSource, dirDest);
+
+                    //if (logger != null && String.IsNullOrEmpty(dirDest) == false)
+                    //{
+                    //    logger.WriteLine("Moved To - " + dirDest,
+                    //        BuildLoggerLevel.Info);
+                    //}
 
                     dirMoved++;
                 }

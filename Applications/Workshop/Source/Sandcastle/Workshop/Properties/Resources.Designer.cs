@@ -59,12 +59,5 @@ namespace Sandcastle.Workshop.Properties {
                 resourceCulture = value;
             }
         }
-        
-        internal static System.Drawing.Bitmap Banner {
-            get {
-                object obj = ResourceManager.GetObject("Banner", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

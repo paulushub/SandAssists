@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using ICSharpCode.SharpDevelop;
+
 namespace Sandcastle.Workshop.StartPage
 {
     public sealed class StartPageItem : IEquatable<StartPageItem>
@@ -11,6 +13,8 @@ namespace Sandcastle.Workshop.StartPage
         private string   _solutionPath;
         private string   _solutionName;
         private DateTime _solutionLastWrite;
+
+        private RecentOpenItem _recentItem;
 
         #endregion
 
@@ -32,6 +36,35 @@ namespace Sandcastle.Workshop.StartPage
             {
                 _solutionLastWrite = File.GetLastWriteTime(_solutionPath);
             }
+
+            _recentItem = new RecentOpenItem(false, _solutionPath);
+        }
+
+        public StartPageItem(int index, RecentOpenItem recentItem)
+        {
+            if (recentItem == null)
+            {
+                throw new ArgumentNullException("recentItem",
+                    "The parameter recentItem cannot be null (or Nothing).");
+            }
+
+            string solution = recentItem.FullPath;
+            if (String.IsNullOrEmpty(solution))
+            {   
+                throw new ArgumentException("solution");
+            }
+
+            _solutionIndex     = index;
+            _solutionPath      = Path.GetFullPath(solution);
+            _solutionName      = Path.GetFileNameWithoutExtension(_solutionPath);
+            _solutionLastWrite = DateTime.MinValue;
+
+            if (File.Exists(_solutionPath))
+            {
+                _solutionLastWrite = File.GetLastWriteTime(_solutionPath);
+            }
+
+            _recentItem = recentItem;
         }
 
         #endregion
@@ -83,9 +116,12 @@ namespace Sandcastle.Workshop.StartPage
             }
         }
 
-        public string[] CreateCells()
+        public RecentOpenItem RecentItem
         {
-            return new string[] { this.Index.ToString(), this.Name, this.LastModified, this.FullPath };
+            get
+            {
+                return _recentItem;
+            }
         }
 
         #endregion

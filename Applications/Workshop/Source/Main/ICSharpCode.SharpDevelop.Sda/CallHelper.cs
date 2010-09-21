@@ -235,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		bool CloseWorkbenchInternal(bool force)
 		{
 			if (force) {
-                foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray())
+                foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection)
                 {
                     window.CloseWindow(true);
 				}

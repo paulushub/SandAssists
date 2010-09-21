@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.References
 {
-    public class ReferenceDocument : MarshalByRefObject, IDisposable
+    public class ReferenceDocument : BuildObject, IDisposable
     {
         #region Private Fields
 

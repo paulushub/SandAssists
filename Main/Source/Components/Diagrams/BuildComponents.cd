@@ -215,25 +215,11 @@
       <FileName>ReferenceLinkComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Components.BuildComponentController" Collapsed="true">
-    <Position X="2.75" Y="11.25" Width="2" />
-    <TypeIdentifier>
-      <HashCode>ACACAAAAAQAAAAEQAAAAAAAAAAgAAAkAAABAAAAEAAA=</HashCode>
-      <FileName>BuildComponentController.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Sandcastle.Components.BuildComponentEx" Collapsed="true">
     <Position X="3" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACAAAAgACAAAAAAAYAAAAAAACAAAABAAABAAAAAAAA=</HashCode>
       <FileName>BuildComponentEx.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Components.BuildComponentException" Collapsed="true">
-    <Position X="5.25" Y="5.25" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>BuildComponentException.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

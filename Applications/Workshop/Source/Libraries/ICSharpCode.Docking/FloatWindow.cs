@@ -273,15 +273,18 @@ namespace WeifenLuo.WinFormsUI.Docking
 					if (content.DockHandler.DockState != DockState.Float)
 						continue;
 
-					if (content.DockHandler.CloseButton)
+                    if (content.DockHandler.CloseButton && content.DockHandler.CloseButtonVisible)
 					{
 						ControlBox = true;
 						return;
 					}
 				}
 			}
-			ControlBox = false;
-		}
+            //Only if there is a ControlBox do we turn it off
+            //old code caused a flash of the window.
+            if (ControlBox)
+                ControlBox = false;
+        }
 
 		public virtual Rectangle DisplayingRectangle
 		{
@@ -353,6 +356,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                         c.DockHandler.Pane = pane;
                         if (contentIndex != -1)
                             pane.SetContentIndex(c, contentIndex);
+                        c.DockHandler.Activate();
                     }
                 }
             }

@@ -1,6 +1,6 @@
 ﻿// <copyright>
 // Portions of this class are based on the sources of Sandcastle shared content 
-// component in the SharedContentComponent.cs and BuildComponentUtilities.cs files.
+// component in the SharedContentComponent.cs, BuildComponentUtilities.cs and BuildContext.cs files.
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // <copyright>
 
@@ -25,7 +25,7 @@ namespace Sandcastle
     /// The configurators provide an extensible framework for creating and/or modifying
     /// the various Sandcastle configuration files, using XML-based processing methods.
     /// </remarks>
-    public abstract class BuildConfigurator : MarshalByRefObject, IDisposable
+    public abstract class BuildConfigurator : BuildObject, IDisposable
     {
         #region Private Fields
 
@@ -216,7 +216,7 @@ namespace Sandcastle
             if (_dicContents == null)
             {
                 _dicContents = new Dictionary<string, string>(
-                    StringComparer.CurrentCultureIgnoreCase);
+                    StringComparer.OrdinalIgnoreCase);
             }
 
             _dicContents[itemName] = itemValue;
@@ -227,7 +227,7 @@ namespace Sandcastle
             if (_dicContents != null)
             {
                 _dicContents = new Dictionary<string, string>(
-                    StringComparer.CurrentCultureIgnoreCase);
+                    StringComparer.OrdinalIgnoreCase);
             }
         }
 
@@ -294,7 +294,7 @@ namespace Sandcastle
             if (_dicContents == null)
             {
                 _dicContents = new Dictionary<string, string>(
-                    StringComparer.CurrentCultureIgnoreCase);
+                    StringComparer.OrdinalIgnoreCase);
             }
 
             LogMessage(BuildLoggerLevel.Info, String.Format(
@@ -579,6 +579,7 @@ namespace Sandcastle
 
             // create appropriate settings for the output writer
             XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
             settings.ConformanceLevel = ConformanceLevel.Fragment;
             settings.OmitXmlDeclaration = true;
 
@@ -630,5 +631,109 @@ namespace Sandcastle
         }
 
         #endregion
-    }
+    }    
+
+    public sealed class CustomContext : XsltContext
+    {            
+        // variable control
+        private Dictionary<string, IXsltContextVariable> variables = new Dictionary<string, IXsltContextVariable>();
+
+        public CustomContext() 
+            : base() 
+        { 
+        }
+
+        public string this[string variable]
+        {
+            get
+            {
+                return (variables[variable].Evaluate(this).ToString());
+            }
+            set
+            {
+                variables[variable] = new CustomVariable(value);
+            }
+        }
+
+        public bool ClearVariable(string name)
+        {
+            return (variables.Remove(name));
+        }
+
+        public void ClearVariables()
+        {
+            variables.Clear();
+        }
+
+        // Implementation of XsltContext methods
+
+        public override IXsltContextVariable ResolveVariable(
+            string prefix, string name)
+        {
+            return (variables[name]);
+        }
+
+        public override IXsltContextFunction ResolveFunction(
+            string prefix, string name, XPathResultType[] argumentTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int CompareDocument(string baseUri, string nextBaseUri)
+        {
+            return (0);
+        }
+
+        public override bool Whitespace
+        {
+            get
+            {
+                return (true);
+            }
+        }
+
+        public override bool PreserveWhitespace(XPathNavigator node)
+        {
+            return (true);
+        } 
+    }        
+
+    internal sealed class CustomVariable : IXsltContextVariable
+    {
+        private string value;
+
+        public CustomVariable(string value)
+        {
+            this.value = value;
+        }
+
+        public bool IsLocal
+        {
+            get
+            {
+                return (false);
+            }
+        }
+
+        public bool IsParam
+        {
+            get
+            {
+                return (false);
+            }
+        }
+
+        public XPathResultType VariableType
+        {
+            get
+            {
+                return (XPathResultType.String);
+            }
+        }
+
+        public Object Evaluate(XsltContext context)
+        {
+            return (value);
+        }  
+    }      
 }

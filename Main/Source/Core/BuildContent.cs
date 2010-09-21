@@ -14,7 +14,7 @@ namespace Sandcastle
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="U"></typeparam>
     [Serializable]
-    public abstract class BuildContent<T, U> : ICloneable, IXmlSerializable
+    public abstract class BuildContent<T, U> : BuildObject, ICloneable, IXmlSerializable
         where T : BuildItem<T>
         where U : BuildContent<T, U>        
     {

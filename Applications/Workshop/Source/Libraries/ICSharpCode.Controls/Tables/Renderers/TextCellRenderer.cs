@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -55,6 +54,8 @@ namespace XPTable.Renderers
 
 		#endregion
 
+        #region Public Methods
+
         /// <summary>
         /// Returns the height that is required to render this cell. If zero is returned then the default row height is used.
         /// </summary>
@@ -69,28 +70,18 @@ namespace XPTable.Renderers
             {
                 this.Font = cell.Font;
                 // Need to set this.Bounds before we access Client rectangle
-                SizeF size = graphics.MeasureString(cell.Text, this.Font, this.ClientRectangle.Width, StringFormat);
+                SizeF size = graphics.MeasureString(cell.Text, 
+                    this.Font, this.ClientRectangle.Width, StringFormat);
                 return (int)Math.Ceiling(size.Height);
             }
-            else
-                return 0;
+
+            return 0;
         }
 
-        /// <summary>
-        /// Returns the width required to fully display this text.
-        /// </summary>
-        /// <param name="graphics"></param>
-        /// <param name="cell"></param>
-        /// <returns></returns>
-        private int GetCellWidth(Graphics graphics, Cell cell)
-        {
-            SizeF size = graphics.MeasureString(cell.Text, this.Font);
-            return (int)Math.Ceiling(size.Width);
-        }
+        #endregion
 
-		#region Events
+        #region Protecte Methods
 
-		#region Paint
         /// <summary>
 		/// Raises the Paint event
 		/// </summary>
@@ -134,8 +125,23 @@ namespace XPTable.Renderers
 				ControlPaint.DrawFocusRectangle(e.Graphics, this.ClientRectangle);
 			}
 		}
-		#endregion
 
 		#endregion
+
+		#region Private Methods
+
+        /// <summary>
+        /// Returns the width required to fully display this text.
+        /// </summary>
+        /// <param name="graphics"></param>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private int GetCellWidth(Graphics graphics, Cell cell)
+        {
+            SizeF size = graphics.MeasureString(cell.Text, this.Font);
+            return (int)Math.Ceiling(size.Width);
+        }
+
+        #endregion
 	}
 }

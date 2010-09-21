@@ -227,7 +227,6 @@ namespace XPTable.Models
             }
         }
 
-
 		/// <summary>
 		/// Initializes a new instance of the Row class with an array of strings 
 		/// representing Cells and the foreground color, background color, and font 

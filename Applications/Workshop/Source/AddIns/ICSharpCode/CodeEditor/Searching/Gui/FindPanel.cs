@@ -64,6 +64,11 @@ namespace ICSharpCode.TextEditor.Searching
             findComboBox.DropDown      += new EventHandler(OnComboDropDown);
             lookInComboBox.DropDown    += new EventHandler(OnComboDropDown);
             fileTypesComboBox.DropDown += new EventHandler(OnComboDropDown);
+
+            pathComboBox.MaxDropDownItems      = 20;
+            findComboBox.MaxDropDownItems      = 20;
+            lookInComboBox.MaxDropDownItems    = 20;
+            fileTypesComboBox.MaxDropDownItems = 20;
         }
 
         /// <summary> 
@@ -82,6 +87,7 @@ namespace ICSharpCode.TextEditor.Searching
                     components = null;
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -113,6 +119,26 @@ namespace ICSharpCode.TextEditor.Searching
             set
             {
                 parentPanel = value;
+            }
+        }
+
+        private bool IsSelectionSearch
+        {
+            get
+            {
+                return (this.DocumentType == DocumentIteratorType.CurrentSelection);
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the string entered in the find or replace text box
+        /// is not an empty string.
+        /// </summary>
+        private bool HasFindPattern
+        {
+            get
+            {
+                return findComboBox.Text.Length != 0;
             }
         }
 
@@ -300,8 +326,8 @@ namespace ICSharpCode.TextEditor.Searching
         private void SetOptions()
         {
             findComboBox.Items.Clear();
-            string[] searchPatterns = SearchOptions.FindPatterns;
-            int itemCount = searchPatterns == null ? 0 : searchPatterns.Length;
+            IList<string> searchPatterns = SearchOptions.FindPatterns;
+            int itemCount = searchPatterns == null ? 0 : searchPatterns.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 findComboBox.Items.Add(searchPatterns[i]);
@@ -390,8 +416,8 @@ namespace ICSharpCode.TextEditor.Searching
 
             pathComboBox.Items.Clear();
 
-            string[] lookInDirs = SearchOptions.LookInDirs;
-            itemCount = lookInDirs == null ? 0 : lookInDirs.Length;
+            IList<string> lookInDirs = SearchOptions.LookInDirs;
+            itemCount = lookInDirs == null ? 0 : lookInDirs.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 pathComboBox.Items.Add(lookInDirs[i]);
@@ -400,8 +426,8 @@ namespace ICSharpCode.TextEditor.Searching
 
             fileTypesComboBox.Items.Clear();
 
-            string[] filterList = SearchOptions.LookInFiletypes;
-            itemCount = filterList == null ? 0 : filterList.Length;
+            IList<string> filterList = SearchOptions.LookInFiletypes;
+            itemCount = filterList == null ? 0 : filterList.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 fileTypesComboBox.Items.Add(filterList[i]);
@@ -465,8 +491,8 @@ namespace ICSharpCode.TextEditor.Searching
             {
                 // Reinitialize the find patterns to reflect current stored values...
                 findComboBox.Items.Clear();
-                string[] searchPatterns = SearchOptions.FindPatterns;
-                int itemCount = searchPatterns == null ? 0 : searchPatterns.Length;
+                IList<string> searchPatterns = SearchOptions.FindPatterns;
+                int itemCount = searchPatterns == null ? 0 : searchPatterns.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
                     findComboBox.Items.Add(searchPatterns[i]);
@@ -509,14 +535,6 @@ namespace ICSharpCode.TextEditor.Searching
             SearchOptions.MatchWholeWord        = matchWholeWordCheckBox.Checked;
             SearchOptions.IncludeSubdirectories = includeSubFolderCheckBox.Checked;
             SearchOptions.DocumentIteratorType  = this.DocumentType;
-        }
-
-        private bool IsSelectionSearch
-        {
-            get
-            {
-                return (this.DocumentType == DocumentIteratorType.CurrentSelection);
-            }
         }
 
         /// <summary>
@@ -757,18 +775,6 @@ namespace ICSharpCode.TextEditor.Searching
         }
 
         /// <summary>
-        /// Returns true if the string entered in the find or replace text box
-        /// is not an empty string.
-        /// </summary>
-        private bool HasFindPattern
-        {
-            get
-            {
-                return findComboBox.Text.Length != 0;
-            }
-        }
-
-        /// <summary>
         /// Updates the enabled/disabled state of the search and replace buttons
         /// after the search or replace text has changed.
         /// </summary>
@@ -789,8 +795,8 @@ namespace ICSharpCode.TextEditor.Searching
             {
                 bool isFound = false;
                 SearchOptions.LookInFiletype = curText;
-                string[] fileTypes = SearchOptions.LookInFiletypes;
-                int itemCount = fileTypes == null ? 0 : fileTypes.Length;
+                IList<string> fileTypes = SearchOptions.LookInFiletypes;
+                int itemCount = fileTypes == null ? 0 : fileTypes.Count;
                 for (int i = 0; i < itemCount; i++)
                 {   
                     if (String.Equals(fileTypes[i], curText, 
@@ -803,9 +809,9 @@ namespace ICSharpCode.TextEditor.Searching
                 if (!isFound)
                 {
                     fileTypesComboBox.Items.Insert(0, curText);
-                    string[] updatedFileTypes = new string[itemCount + 1];
-                    updatedFileTypes[0] = curText;
-                    Array.Copy(fileTypes, 0, updatedFileTypes, 1, itemCount);
+                    List<string> updatedFileTypes = new List<string>(itemCount + 1);
+                    updatedFileTypes.Add(curText);
+                    updatedFileTypes.AddRange(fileTypes);
 
                     SearchOptions.LookInFiletypes = updatedFileTypes;
                 }
@@ -846,7 +852,7 @@ namespace ICSharpCode.TextEditor.Searching
                 //Loop through list items and check size of each items.
                 //set the width of the drop down list to the width of the largest item.
 
-                int newWidth;
+                int newWidth = 0;
                 if (senderComboBox == lookInComboBox)
                 {
                     foreach (SearchScope s in senderComboBox.Items)

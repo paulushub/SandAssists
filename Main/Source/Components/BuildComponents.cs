@@ -116,14 +116,21 @@ namespace Sandcastle.Components
                 return;
             }
 
-            int itemCount = _listItems.Count;
-            for (int i = 0; i < itemCount; i++)
+            try
             {
-                BuildComponent component = _listItems[i];
-                if (component != null)
+                int itemCount = _listItems.Count;
+                for (int i = 0; i < itemCount; i++)
                 {
-                    component.Apply(document, key);
+                    BuildComponent component = _listItems[i];
+                    if (component != null)
+                    {
+                        component.Apply(document, key);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);            	
             }
         }
 

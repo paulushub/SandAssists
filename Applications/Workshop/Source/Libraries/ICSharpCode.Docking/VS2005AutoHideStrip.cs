@@ -60,7 +60,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 					_stringFormatTabHorizontal.Alignment = StringAlignment.Near;
 					_stringFormatTabHorizontal.LineAlignment = StringAlignment.Center;
 					_stringFormatTabHorizontal.FormatFlags = StringFormatFlags.NoWrap;
-				}
+                    _stringFormatTabHorizontal.Trimming = StringTrimming.None;
+                }
 
                 if (RightToLeft == RightToLeft.Yes)
                     _stringFormatTabHorizontal.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
@@ -82,7 +83,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 					_stringFormatTabVertical.Alignment = StringAlignment.Near;
 					_stringFormatTabVertical.LineAlignment = StringAlignment.Center;
 					_stringFormatTabVertical.FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.DirectionVertical;
-				}
+                    _stringFormatTabHorizontal.Trimming = StringTrimming.None;
+                }
                 if (RightToLeft == RightToLeft.Yes)
                     _stringFormatTabVertical.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
                 else
@@ -212,7 +214,17 @@ namespace WeifenLuo.WinFormsUI.Docking
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			DrawTabStrip(g);
+
+            Color startColor = DockPanel.Skin.AutoHideStripSkin.DockStripGradient.StartColor;
+            Color endColor = DockPanel.Skin.AutoHideStripSkin.DockStripGradient.EndColor;
+            LinearGradientMode gradientMode = DockPanel.Skin.AutoHideStripSkin.DockStripGradient.LinearGradientMode;
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                ClientRectangle, startColor, endColor, gradientMode))
+            {
+                g.FillRectangle(brush, ClientRectangle);
+            }
+
+            DrawTabStrip(g);
 		}
 
 		protected override void OnLayout(LayoutEventArgs levent)
@@ -320,7 +332,11 @@ namespace WeifenLuo.WinFormsUI.Docking
 			IDockContent content = tab.Content;
 
             GraphicsPath path = GetTabOutline(tab, false, true);
-            g.FillPath(BrushTabBackground, path);
+            Color startColor = DockPanel.Skin.AutoHideStripSkin.TabGradient.StartColor;
+            Color endColor = DockPanel.Skin.AutoHideStripSkin.TabGradient.EndColor;
+            LinearGradientMode gradientMode = DockPanel.Skin.AutoHideStripSkin.TabGradient.LinearGradientMode;
+            g.FillPath(new LinearGradientBrush(rectTabOrigin, startColor, endColor, gradientMode), path);
+            //g.FillPath(BrushTabBackground, path);
             g.DrawPath(PenTabBorder, path);
 
             // Set no rotate for drawing icon and text
@@ -345,10 +361,17 @@ namespace WeifenLuo.WinFormsUI.Docking
 			rectText.X += ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
 			rectText.Width -= ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
 			rectText = RtlTransform(GetTransformedRectangle(dockState, rectText), dockState);
-			if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
-				g.DrawString(content.DockHandler.TabText, TextFont, BrushTabText, rectText, StringFormatTabVertical);
-			else
-				g.DrawString(content.DockHandler.TabText, TextFont, BrushTabText, rectText, StringFormatTabHorizontal);
+            
+            Color textColor = DockPanel.Skin.AutoHideStripSkin.TabGradient.TextColor;
+
+            //if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
+            //    g.DrawString(content.DockHandler.TabText, TextFont, BrushTabText, rectText, StringFormatTabVertical);
+            //else
+            //    g.DrawString(content.DockHandler.TabText, TextFont, BrushTabText, rectText, StringFormatTabHorizontal);
+            if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
+                g.DrawString(content.DockHandler.TabText, TextFont, new SolidBrush(textColor), rectText, StringFormatTabVertical);
+            else
+                g.DrawString(content.DockHandler.TabText, TextFont, new SolidBrush(textColor), rectText, StringFormatTabHorizontal);
 
 			// Set rotate back
 			g.Transform = matrixRotate;

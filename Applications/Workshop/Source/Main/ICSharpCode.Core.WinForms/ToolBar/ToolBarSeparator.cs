@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarSeparator : ToolStripSeparator, IStatusUpdate
+	public sealed class ToolBarSeparator : ToolStripSeparator, IStatusUpdate
 	{
 		object caller;
 		Codon codon;
@@ -43,7 +43,7 @@ namespace ICSharpCode.Core.WinForms
             }
         }
 		
-		public virtual void UpdateStatus()
+		public void UpdateStatus()
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
@@ -52,7 +52,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public virtual void UpdateText()
+		public void UpdateText()
 		{
 		}
 	}

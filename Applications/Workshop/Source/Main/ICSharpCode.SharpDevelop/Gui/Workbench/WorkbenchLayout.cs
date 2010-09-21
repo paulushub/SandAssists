@@ -56,16 +56,21 @@ namespace ICSharpCode.SharpDevelop.Gui
                 StringComparer.OrdinalIgnoreCase);
         }
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow {
-			get {
-				if (dockPanel == null)  {
+		public IWorkbenchWindow ActiveWorkbenchWindow 
+        {
+			get 
+            {
+				if (dockPanel == null)  
+                {
 					return null;
 				}
 				
 				// TODO: Debug statements only, remove me
 				#if DEBUG
-				if (dockPanel.ActiveDocument != null && !(dockPanel.ActiveDocument is IWorkbenchWindow)) {
-					if (firstTimeError) {
+				if (dockPanel.ActiveDocument != null && !(dockPanel.ActiveDocument is IWorkbenchWindow)) 
+                {
+					if (firstTimeError) 
+                    {
 						MessageBox.Show("ActiveDocument was " + dockPanel.ActiveDocument.GetType().FullName);
 						firstTimeError = false;
 					}
@@ -73,19 +78,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				#endif
 				
 				IWorkbenchWindow window = dockPanel.ActiveDocument as IWorkbenchWindow;
-				if (window == null || window.IsDisposed) {
+				if (window == null || window.IsDisposed) 
+                {
 					return null;
 				}
 				return window;
 			}
 		}
 		
-		public object ActiveContent {
-			get {
+		public object ActiveContent 
+        {
+			get 
+            {
 				IDockContent activeContent;
-				if (dockPanel == null)  {
+				if (dockPanel == null)  
+                {
 					activeContent = lastActiveContent;
-				} else {
+				}
+                else 
+                {
 					activeContent = dockPanel.ActiveContent ?? lastActiveContent;
 				}
 				if (activeContent != null && activeContent.IsDisposed)
@@ -104,9 +115,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Attach(IWorkbench workbench)
 		{
+            if (workbench == null)
+            {
+                throw new ArgumentNullException();
+            }
+
 			wbForm = (Workbench)workbench;
 			wbForm.SuspendLayout();
-			wbForm.Controls.Clear();
 			
 			mainMenuContainer = new AutoHideMenuStripContainer(wbForm.TopMenu);
 			mainMenuContainer.Dock = DockStyle.Top;
@@ -130,20 +145,28 @@ namespace ICSharpCode.SharpDevelop.Gui
             leftStripPanel.Dock   = DockStyle.Left;
             bottomStripPanel.Dock = DockStyle.Bottom;
             rightStripPanel.Dock  = DockStyle.Right;
-			
-			dockPanel = new DockPanel();
-			dockPanel.Dock = DockStyle.Fill;
-			dockPanel.RightToLeftLayout = true;
 
-			dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
-			
-			wbForm.Controls.Add(dockPanel);
+            dockPanel = wbForm.Panel;
+
+            if (dockPanel == null)
+            {
+                wbForm.Controls.Clear();
+                dockPanel = new DockPanel();
+                dockPanel.Dock = DockStyle.Fill;
+                dockPanel.RightToLeftLayout = true;
+
+                dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
+
+                wbForm.Controls.Add(dockPanel);
+            }
+
 			wbForm.Controls.Add(topStripPanel);
             wbForm.Controls.Add(leftStripPanel);
             wbForm.Controls.Add(bottomStripPanel);
             wbForm.Controls.Add(rightStripPanel);
 			wbForm.Controls.Add(mainMenuContainer);
 			wbForm.Controls.Add(statusStripContainer);
+
 			wbForm.MainMenuStrip = wbForm.TopMenu;
 
             // dock panel has to be added to the form before LoadLayoutConfiguration is called to fix SD2-463
@@ -165,8 +188,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
 			dockPanel.ActiveContentChanged += new EventHandler(ActiveContentChanged);
 			ActiveMdiChanged(this, EventArgs.Empty);
-			
-			wbForm.ResumeLayout(false);
+
+            wbForm.ResumeLayout(false);
 			
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
 			fullscreenProperties.PropertyChanged += TrackFullscreenPropertyChanges;
@@ -207,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Gui
             menuItems.Sort(new MenuItemComparer());
 
             _panelStripMenu.Items.AddRange(menuItems.ToArray());
-		}
+        }
 
         private void OnToggleToolStripMenuOpening(object sender, CancelEventArgs e)
         {
@@ -248,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui
             menuItem.Checked = toolStrip.Visible;
         }
 
-        void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgsEx e)
+        private void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgsEx e)
 		{
 			if (!Boolean.Equals(e.OldValue, e.NewValue) && wbForm.FullScreen) {
 				switch (e.Key) {
@@ -270,8 +293,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		
-		void ShowPads()
+
+        private void ShowPads()
 		{
 			foreach (PadDescriptor content in WorkbenchSingleton.Workbench.PadContentCollection) {
 				if (!contentHash.ContainsKey(content.Class)) {
@@ -285,14 +308,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
-		void ShowViewContents()
+        private void ShowViewContents()
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.PrimaryViewContents) {
 				ShowView(content, true);
 			}
 		}
-		
-		void LoadLayoutConfiguration()
+
+        private void LoadLayoutConfiguration()
 		{
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
@@ -305,28 +328,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// ignore errors loading configuration
 			}
 		}
-		
-		void LoadDefaultLayoutConfiguration()
+
+        private void LoadDefaultLayoutConfiguration()
 		{
-			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
+			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) 
+            {
 				LoadDockPanelLayout(LayoutConfiguration.CurrentLayoutTemplateFileName);
 			}
 		}
-		
-		void LoadDockPanelLayout(string fileName)
+
+        private void LoadDockPanelLayout(string fileName)
 		{
-			// LoadFromXml(fileName, ...) locks the file against simultanous read access
+			// LoadFromXml(fileName, ...) locks the file against simultaneous read access
 			// -> we would loose the layout when starting two SharpDevelop instances
 			//    at the same time => open stream with shared read access.
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
 				dockPanel.LoadFromXml(fs, new DeserializeDockContent(GetContent));
 			}
 		}
-		
-		DockContent GetContent(string padTypeName)
+
+        private DockContent GetContent(string padTypeName)
 		{
-			foreach (PadDescriptor content in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (content.Class == padTypeName) {
+			foreach (PadDescriptor content in WorkbenchSingleton.Workbench.PadContentCollection) 
+            {
+				if (content.Class == padTypeName) 
+                {
 					return CreateContent(content);
 				}
 			}
@@ -377,8 +403,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageService.ShowError(e);
 			}
 		}
-		
-		void DetachPadContents(bool dispose)
+
+        private void DetachPadContents(bool dispose)
 		{
 			foreach (PadContentWrapper padContentWrapper in contentHash.Values) {
 				padContentWrapper.allowInitialize = false;
@@ -397,8 +423,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				contentHash.Clear();
 			}
 		}
-		
-		void DetachViewContents(bool dispose)
+
+        private void DetachViewContents(bool dispose)
 		{
 			foreach (WorkbenchWindow f in WorkbenchSingleton.Workbench.WorkbenchWindowCollection) {
 				try {
@@ -541,7 +567,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         #endregion
 
-        PadContentWrapper CreateContent(PadDescriptor content)
+        private PadContentWrapper CreateContent(PadDescriptor content)
 		{
 			if (contentHash.ContainsKey(content.Class)) {
 				return contentHash[content.Class];
@@ -607,13 +633,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				//contentHash[padContent.Class].ActivateContent();
 				contentHash[padContent.Class].Show();
 			}
-		}
-		public void ActivatePad(string fullyQualifiedTypeName)
+        }
+
+        public void ActivatePad(string fullyQualifiedTypeName)
 		{
 			//contentHash[fullyQualifiedTypeName].ActivateContent();
 			contentHash[fullyQualifiedTypeName].Show();
 		}
-		
 		
 		public void RedrawAllComponents()
 		{
@@ -629,8 +655,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RedrawToolbars();
 			RedrawStatusBar();
 		}
-		
-		void RedrawMainMenu()
+
+        private void RedrawMainMenu()
 		{
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
 			bool hideInFullscreen = fullscreenProperties.Get("HideMainMenu", false);
@@ -640,8 +666,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			mainMenuContainer.ShowOnMouseDown = true;
 			mainMenuContainer.ShowOnMouseMove = showOnMouseMove;
 		}
-		
-		void RedrawToolbars()
+
+        private void RedrawToolbars()
 		{
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
 			bool hideInFullscreen = fullscreenProperties.Get("HideToolbars", true);
@@ -654,8 +680,8 @@ namespace ICSharpCode.SharpDevelop.Gui
             bottomStripPanel.Visible = barIsVisible;
             rightStripPanel.Visible = barIsVisible;
 		}
-		
-		void RedrawStatusBar()
+
+        private void RedrawStatusBar()
 		{
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
 			bool hideInFullscreen = fullscreenProperties.Get("HideStatusBar", true);
@@ -667,8 +693,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			statusStripContainer.ShowOnMouseMove = showOnMouseMove;
 			statusStripContainer.Visible = statusBarVisible;
 		}
-		
-		void CloseWindowEvent(object sender, EventArgs e)
+
+        private void CloseWindowEvent(object sender, EventArgs e)
 		{
 			WorkbenchWindow f = (WorkbenchWindow)sender;
 			f.WindowClosed -= CloseWindowEvent;
@@ -709,8 +735,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			return sdiWorkspaceWindow;
 		}
-		
-		void AddWindowToDockPanelWithoutSwitching(WorkbenchWindow sdiWorkspaceWindow)
+
+        private void AddWindowToDockPanelWithoutSwitching(WorkbenchWindow sdiWorkspaceWindow)
 		{
 			sdiWorkspaceWindow.DockPanel = dockPanel;
 			WorkbenchWindow otherWindow = dockPanel.ActiveContent as WorkbenchWindow;
@@ -722,13 +748,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			sdiWorkspaceWindow.DockState = DockState.Document;
 		}
-		
-		void ActiveMdiChanged(object sender, EventArgs e)
+
+        private void ActiveMdiChanged(object sender, EventArgs e)
 		{
 			OnActiveWorkbenchWindowChanged(e);
 		}
-		
-		void ActiveContentChanged(object sender, EventArgs e)
+
+        private void ActiveContentChanged(object sender, EventArgs e)
 		{
 			OnActiveWorkbenchWindowChanged(e);
 		}
@@ -762,7 +788,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         public void SuspendLayout()
         {
-            //wbForm.SuspendLayout();
             topStripPanel.SuspendLayout();
             leftStripPanel.SuspendLayout();
             bottomStripPanel.SuspendLayout();
@@ -775,7 +800,6 @@ namespace ICSharpCode.SharpDevelop.Gui
             leftStripPanel.PerformLayout();
             bottomStripPanel.PerformLayout();
             rightStripPanel.PerformLayout();
-            //wbForm.PerformLayout();
         }
 
         public void ResumeLayout(bool performLayout)
@@ -784,7 +808,6 @@ namespace ICSharpCode.SharpDevelop.Gui
             leftStripPanel.ResumeLayout(performLayout);
             bottomStripPanel.ResumeLayout(performLayout);
             rightStripPanel.ResumeLayout(performLayout);
-            //wbForm.ResumeLayout(performLayout);
         }
 	}
 }

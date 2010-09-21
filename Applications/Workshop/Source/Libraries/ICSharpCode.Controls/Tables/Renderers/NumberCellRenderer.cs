@@ -73,7 +73,6 @@ namespace XPTable.Renderers
 
 		#endregion
 
-
 		#region Constructor
 		
 		/// <summary>
@@ -92,7 +91,6 @@ namespace XPTable.Renderers
 		}
 
 		#endregion
-
 
 		#region Methods
 
@@ -188,7 +186,6 @@ namespace XPTable.Renderers
 		}
 
 		#endregion
-
 
 		#region Properties
 
@@ -292,7 +289,6 @@ namespace XPTable.Renderers
 		}
 
 		#endregion
-
 
 		#region Events
 
@@ -640,7 +636,7 @@ namespace XPTable.Renderers
 			base.OnPaint(e);
 
 			// don't bother if the Cell is null
-			if (e.Cell == null)
+            if (e.Cell == null || e.Cell.Data == null)
 			{
 				return;
 			}
@@ -648,13 +644,21 @@ namespace XPTable.Renderers
 			// get the Cells value
 			decimal decimalVal = decimal.MinValue;
 
-            if (e.Cell.Data != null && 
-				(e.Cell.Data is uint || e.Cell.Data is UInt16 || e.Cell.Data is UInt32 || e.Cell.Data is UInt64 || 
-				e.Cell.Data is int || e.Cell.Data is Int16 || e.Cell.Data is Int32 || e.Cell.Data is Int64 || 
-				e.Cell.Data is double || e.Cell.Data is float || e.Cell.Data is decimal))
-			{
-				decimalVal = Convert.ToDecimal(e.Cell.Data);
-			}
+            //if (e.Cell.Data != null && 
+            //    (e.Cell.Data is uint || e.Cell.Data is UInt16 || e.Cell.Data is UInt32 || e.Cell.Data is UInt64 || 
+            //    e.Cell.Data is int || e.Cell.Data is Int16 || e.Cell.Data is Int32 || e.Cell.Data is Int64 || 
+            //    e.Cell.Data is double || e.Cell.Data is float || e.Cell.Data is decimal))
+            //{
+            //    decimalVal = Convert.ToDecimal(e.Cell.Data);
+            //}
+            try
+            {
+                decimalVal = Convert.ToDecimal(e.Cell.Data);
+            }
+            catch
+            {
+                return;
+            }
 
 			// draw the value
 			if (decimalVal != decimal.MinValue)

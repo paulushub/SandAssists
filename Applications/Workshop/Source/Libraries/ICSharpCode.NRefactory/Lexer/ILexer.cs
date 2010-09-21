@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Special comment tags are tags like TODO, HACK or UNDONE which are read by the lexer and stored in <see cref="TagComments"/>.
 		/// </summary>
-		string[] SpecialCommentTags {
+        IList<string> SpecialCommentTags
+        {
 			get;
 			set;
 		}

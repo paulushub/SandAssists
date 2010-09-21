@@ -29,6 +29,8 @@ namespace Sandcastle.Formats
         {
             _theme     = "Smoothness";
             _framework = "JQuery";
+
+            this.AddProperty("SharedContentSuffix", "Web");
         }
 
         public FormatWeb(FormatWeb source)
@@ -143,15 +145,19 @@ namespace Sandcastle.Formats
                 helpTitle = helpName;
             }
             string helpFolder = this.OutputFolder;
-            string helpPath = Path.Combine(helpDirectory,
+            string helpPath   = Path.Combine(helpDirectory,
                 String.Format(@"{0}\index.htm", helpFolder));
 
-            // Case 2: Starting the HtmlHelp 2.x viewer...
+            // Case 2: Starting the default browser viewer...
             if (stage == BuildStage.StartViewer)
             {
+                StepWebViewerStart viewerStart = new StepWebViewerStart(
+                    helpDirectory, helpPath);
+
+                return viewerStart;
             }
 
-            // Case 3: Compiling the HtmlHelp 2.x help file...
+            // Case 3: Compiling the WebHelp help file...
             if (stage == BuildStage.Compilation)
             {
                 string sandassistDir = settings.SandAssistDirectory;
@@ -168,10 +174,16 @@ namespace Sandcastle.Formats
                 string webHelpDir = Path.Combine(helpDirectory, helpFolder);
 
                 BuildMultiStep listSteps = new BuildMultiStep();
+                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTimeSpan = true;
+
                 StepDirectoryCopy dirCopy = new StepDirectoryCopy();
 
+                dirCopy.LogTitle  = String.Empty;
+                dirCopy.Message   = "Copying the format files to the help folder.";
                 dirCopy.Recursive = true;
                 dirCopy.Add(webStyle, Path.Combine(tempOutputDir, "webtheme"));
+
                 listSteps.Add(dirCopy);
 
                 FormatWebOptions options = new FormatWebOptions();
@@ -184,13 +196,18 @@ namespace Sandcastle.Formats
                 options.OutputDirectory = tempOutputDir;
 
                 StepWebBuilder webBuilder = new StepWebBuilder(options, workingDir);
+                webBuilder.LogTitle      = String.Empty;
+                webBuilder.Message       = "Creating the WebHelp files.";
                 webBuilder.HelpDirectory = webHelpDir;
 
                 listSteps.Add(webBuilder);
 
-                // 3. Move the output html files to the help folder for compilation...
+                // 3. Move the output html files to the help folder...
                 StepDirectoryMove dirMove = new StepDirectoryMove(workingDir);
+                dirMove.LogTitle = String.Empty;
+                dirMove.Message  = "Moving the output html files to the help folder.";
                 dirMove.Add(options.OutputDirectory, webHelpDir);
+
                 listSteps.Add(dirMove);
 
                 return listSteps;
@@ -208,6 +225,8 @@ namespace Sandcastle.Formats
         public override void Reset()
         {
             base.Reset();
+
+            base.CloseViewerBeforeBuild = false;
         }
 
         #endregion

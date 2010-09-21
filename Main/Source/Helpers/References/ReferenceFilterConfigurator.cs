@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
 
-using Sandcastle.Configurations;
+using Sandcastle.Configurators;
 
 namespace Sandcastle.References
 {
@@ -33,7 +33,7 @@ namespace Sandcastle.References
         private BuildContext    _context;
         private ReferenceGroup  _group;
 
-        private ConfigurationContent _configContent;
+        private ConfiguratorContent _configContent;
 
         #endregion
 
@@ -44,14 +44,14 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceFilterConfigurator()
         {
-            _configContent = new ConfigurationContent();
+            _configContent = new ConfiguratorContent();
         }
 
         #endregion
 
         #region Public Properties
 
-        public ConfigurationContent Handlers
+        public ConfiguratorContent Handlers
         {
             get
             {
@@ -167,7 +167,7 @@ namespace Sandcastle.References
             }
 
             string configKeyword = null;
-            ConfigurationItem configItem = null;
+            ConfiguratorItem configItem = null;
             for (int i = 0; i < nodeCount; i++)
             {
                 XPathNavigator nodeNavigator = nodeNavigators[i];
@@ -194,7 +194,7 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public ConfigurationItem GetItem(string keyword)
+        public ConfiguratorItem GetItem(string keyword)
         {
             if (_configContent == null || String.IsNullOrEmpty(keyword))
             {
@@ -212,7 +212,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            _configContent.Add(new ConfigurationItem(keyword, handler));
+            _configContent.Add(new ConfiguratorItem(keyword, handler));
         }
 
         #endregion

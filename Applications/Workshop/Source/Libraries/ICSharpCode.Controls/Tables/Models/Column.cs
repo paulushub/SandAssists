@@ -368,7 +368,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Gets or sets the string that specifies how a Column's Cell contents 
         /// are formatted
@@ -402,7 +401,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Gets or sets the horizontal alignment of the Column's Cell contents
         /// </summary>
@@ -435,7 +433,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Gets or sets the width of the Column
         /// </summary>
@@ -463,7 +460,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Specifies whether the Width property should be serialized at 
         /// design time
@@ -478,7 +474,7 @@ namespace XPTable.Models
         /// <summary>
         /// Indicates whether the text has all been shown when rendered.
         /// </summary>
-        private bool _isTextTrimmed = false;
+        private bool _isTextTrimmed;
 
         /// <summary>
         /// Gets or sets a value that indicates whether the text has all been shown when rendered.
@@ -508,7 +504,7 @@ namespace XPTable.Models
             }
         }
 
-        private bool _internalWidthSet = false;
+        private bool _internalWidthSet;
 
         /// <summary>
         /// Returns true if the cells width property has been assigned.
@@ -547,7 +543,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Gets or sets whether the Image displayed on the Column's header should 
         /// be draw on the right hand side of the Column
@@ -573,7 +568,6 @@ namespace XPTable.Models
                 }
             }
         }
-
 
         /// <summary>
         /// Gets the state of the Column
@@ -696,7 +690,6 @@ namespace XPTable.Models
             }
         }
 
-
         /// <summary>
         /// Gets or sets the user specified ICellRenderer that is used to draw the 
         /// Column's Cells
@@ -779,7 +772,6 @@ namespace XPTable.Models
             get;
         }
 
-
         /// <summary>
         /// Gets the current SortOrder of the Column
         /// </summary>
@@ -791,7 +783,6 @@ namespace XPTable.Models
                 return this.sortOrder;
             }
         }
-
 
         /// <summary>
         /// Gets or sets the current SortOrder of the Column
@@ -822,7 +813,6 @@ namespace XPTable.Models
                 }
             }
         }
-
 
         /// <summary>
         /// Gets or sets a value indicating whether the Column's Cells contents 

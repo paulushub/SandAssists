@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
@@ -18,9 +20,10 @@ namespace VBNetBinding.Parser
 	public class TParser : IParser
 	{
 		///<summary>IParser Interface</summary>
-		string[] lexerTags;
-		
-		public string[] LexerTags {
+        IList<string> lexerTags;
+
+        public IList<string> LexerTags
+        {
 			get {
 				return lexerTags;
 			}

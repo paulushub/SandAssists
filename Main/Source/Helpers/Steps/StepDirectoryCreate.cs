@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepDirectoryCreate : BuildStep
+    public sealed class StepDirectoryCreate : BuildStep
     {
         #region Private Fields
 
@@ -18,7 +18,7 @@ namespace Sandcastle.Steps
         public StepDirectoryCreate()
         {
             _listDirs    = new List<string>();
-            this.Message = "Creating directories";
+            this.LogTitle = "Creating directories";
         }
 
         public StepDirectoryCreate(string workingDir)
@@ -36,7 +36,7 @@ namespace Sandcastle.Steps
 
                 _listDirs.Add(createDir);
             }
-            this.Message = "Creating directories";
+            this.LogTitle = "Creating directories";
         }
 
         #endregion
@@ -74,7 +74,7 @@ namespace Sandcastle.Steps
             }
         }
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             if (_listDirs == null || _listDirs.Count == 0)
             {

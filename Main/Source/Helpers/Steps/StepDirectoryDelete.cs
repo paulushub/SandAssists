@@ -3,9 +3,11 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Steps
 {
-    public class StepDirectoryDelete : BuildStep
+    public sealed class StepDirectoryDelete : BuildStep
     {
         #region Private Fields
 
@@ -20,7 +22,7 @@ namespace Sandcastle.Steps
         {
             _isRecursive = true;
             _listDirs    = new List<string>();   
-            this.Message = "Deleting directories";
+            this.LogTitle = "Deleting directories";
         }
 
         public StepDirectoryDelete(string workingDir)
@@ -39,7 +41,7 @@ namespace Sandcastle.Steps
 
                 _listDirs.Add(deleteDir);
             }
-            this.Message = "Deleting directories";
+            this.LogTitle = "Deleting directories";
         }
 
         #endregion
@@ -90,7 +92,7 @@ namespace Sandcastle.Steps
             }
         }
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             if (_listDirs == null || _listDirs.Count == 0)
             {
@@ -128,7 +130,7 @@ namespace Sandcastle.Steps
                         {
                             // One possible cause of this is read-only file, so first
                             // try another method of deleting the directory...
-                            foreach (string file in BuildDirHandler.FindFiles(
+                            foreach (string file in PathSearch.FindFiles(
                                 dirInfo, "*.*", SearchOption.AllDirectories))
                             {
                                 File.SetAttributes(file, FileAttributes.Normal);

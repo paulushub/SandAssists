@@ -79,7 +79,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView);
 		
-		
 		void LoadConfiguration();
 		void StoreConfiguration();
 		

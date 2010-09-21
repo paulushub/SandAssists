@@ -30,8 +30,12 @@ namespace ICSharpCode.SharpDevelop
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
 			displayBindingServiceProperties = PropertyService.Get("DisplayBindingService", new Properties());
-			foreach (ExternalProcessDisplayBinding binding in displayBindingServiceProperties.Get("ExternalProcesses", new ExternalProcessDisplayBinding[0])) {
-				if (binding != null) {
+			foreach (ExternalProcessDisplayBinding binding in 
+                displayBindingServiceProperties.Get("ExternalProcesses", 
+                new ExternalProcessDisplayBinding[0])) 
+            {
+				if (binding != null) 
+                {
 					AddExternalProcessDisplayBindingInternal(binding);
 				}
 			}

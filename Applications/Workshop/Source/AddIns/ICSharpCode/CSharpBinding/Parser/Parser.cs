@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
@@ -18,13 +20,16 @@ namespace CSharpBinding.Parser
     public sealed class TParser : IParser
 	{
 		///<summary>IParser Interface</summary>
-		string[] lexerTags;
-		
-		public string[] LexerTags {
-			get {
+		IList<string> lexerTags;
+
+        public IList<string> LexerTags
+        {
+			get 
+            {
 				return lexerTags;
 			}
-			set {
+			set 
+            {
 				lexerTags = value;
 			}
 		}

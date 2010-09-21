@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------------------------
-// <copyright file="InheritDocCopyComponent.cs" company="Microsoft">
+// <copyright file="InheritDocumentationComponent.cs" company="Microsoft">
 //      Copyright © Microsoft Corporation.
 //      This source file is subject to the Microsoft Permissive License.
 //      See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
@@ -21,14 +21,17 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Configuration;
 using System.Globalization;
+
 using Microsoft.Ddue.Tools;
+
+using Sandcastle.Components.Indexed;
 
 namespace Sandcastle.Components.Copiers
 {
     /// <summary>       
     /// InheritDocCopyComponent class.
     /// </summary>
-    public class InheritDocCopyComponent : CopyComponentEx
+    public sealed class InheritDocCopyComponent : CopyComponentEx
     {
         #region Private Fields
 
@@ -95,12 +98,12 @@ namespace Sandcastle.Components.Copiers
         /// <summary>
         /// A cache for comment files.
         /// </summary>
-        private IndexedDocumentCache index;
+        private IndexedDocumentSource index;
 
         /// <summary>
         /// A cache for reflection files.
         /// </summary>
-        private IndexedDocumentCache reflectionIndex;
+        private IndexedDocumentSource reflectionIndex;
 
         #endregion
 
@@ -131,9 +134,13 @@ namespace Sandcastle.Components.Copiers
                 {
                     throw new ConfigurationErrorsException("Each copy command must specify an index to get reflection information from.");
                 }
-                               
-                this.index = (IndexedDocumentCache)data[source_name];
-                this.reflectionIndex = (IndexedDocumentCache)data[reflection_name];
+
+                IndexedDocumentController indexController = (IndexedDocumentController)data[source_name];
+                this.index = indexController[source_name];
+
+                IndexedDocumentController reflectController = 
+                    (IndexedDocumentController)data[reflection_name];
+                this.reflectionIndex = reflectController[reflection_name];
              }
 
             this.WriteMessage(MessageLevel.Info, "Initialized.");
@@ -158,14 +165,14 @@ namespace Sandcastle.Components.Copiers
 
         #endregion
 
-        #region Protected Methods
+        #region Private Methods
 
         /// <summary>
         /// Deletes the specified node and logs the message.
         /// </summary>
         /// <param name="inheritDocNodeNavigator">navigator for inheritdoc node</param>
         /// <param name="key">Id of the topic specified</param>
-        protected void DeleteNode(XPathNavigator inheritDocNodeNavigator, string key)
+        private void DeleteNode(XPathNavigator inheritDocNodeNavigator, string key)
         {
             this.WriteMessage(MessageLevel.Info, String.Format(
                 CultureInfo.InvariantCulture, "Comments are not found for topic:{0}", key));
@@ -176,7 +183,7 @@ namespace Sandcastle.Components.Copiers
         /// Inherit the documentation.
         /// </summary>
         /// <param name="key">Id of the topic specified</param>
-        protected void InheritDocumentation(string key)
+        private void InheritDocumentation(string key)
         {
             XPathNavigator docNavigator          = this.sourceDocument.CreateNavigator();
             XPathNodeIterator inheritDocIterator = docNavigator.Select(inheritDocExpression);
@@ -338,7 +345,7 @@ namespace Sandcastle.Components.Copiers
         /// </summary>
         /// <param name="inheritDocNodeNavigator">Navigator for inheritdoc node</param>
         /// <param name="contentNodeNavigator">Navigator for content</param>
-        protected void UpdateNode(XPathNavigator inheritDocNodeNavigator, XPathNavigator contentNodeNavigator)
+        private void UpdateNode(XPathNavigator inheritDocNodeNavigator, XPathNavigator contentNodeNavigator)
         {
             // retrieve the selection filter if specified.
             string selectValue = inheritDocNodeNavigator.GetAttribute("select", String.Empty);
@@ -401,7 +408,7 @@ namespace Sandcastle.Components.Copiers
         /// </summary>
         /// <param name="iterator">Iterator for API information</param>
         /// <param name="inheritDocNodeNavigator">Navigator for inheritdoc node</param>
-        protected void GetComments(XPathNodeIterator iterator, XPathNavigator inheritDocNodeNavigator)
+        private void GetComments(XPathNodeIterator iterator, XPathNavigator inheritDocNodeNavigator)
         {
             foreach (XPathNavigator navigator in iterator)
             {

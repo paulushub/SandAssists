@@ -108,10 +108,10 @@ namespace Sandcastle
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildStyle"/> class
         /// to the default properties or values, defaulting to the 
-        /// <see cref="BuildStyleType.Vs2005"/> style type.
+        /// <see cref="BuildStyleType.ClassicWhite"/> style type.
         /// </summary>
         public BuildStyle()
-            : this(BuildStyleType.Vs2005)
+            : this(BuildStyleType.ClassicWhite)
         {
         }
 
@@ -349,7 +349,7 @@ namespace Sandcastle
         {
             get
             {
-                SharedContent content = this.GetContent(contentName);
+                SharedContent content = this.GetSharedContent(contentName);
                 if (content != null)
                 {
                     return content[itemIndex];
@@ -371,7 +371,7 @@ namespace Sandcastle
         {
             get
             {
-                SharedContent content = this.GetContent(contentName);
+                SharedContent content = this.GetSharedContent(contentName);
                 if (content != null)
                 {
                     return content[itemName];
@@ -482,24 +482,24 @@ namespace Sandcastle
 
         #region SharedContent Methods
 
-        public SharedContent GetContent(string contentName)
+        public SharedContent GetSharedContent(string contentName)
         {
             if (String.IsNullOrEmpty(contentName))
             {
                 return _default;
             }
             if (String.Equals(contentName, SharedDefault,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _default;
             }
             if (String.Equals(contentName, SharedConceptual,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _conceptual;
             }
             if (String.Equals(contentName, SharedReferences,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _references;
             }
@@ -507,14 +507,14 @@ namespace Sandcastle
             return null;
         }
 
-        public void Add(SharedItem item)
+        public void AddShared(SharedItem item)
         {
             _default.Add(item);
         }
 
-        public void Add(string contentName, SharedItem item)
+        public void AddShared(string contentName, SharedItem item)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null)
             {
@@ -522,14 +522,14 @@ namespace Sandcastle
             }
         }
 
-        public void Add(IList<SharedItem> items)
+        public void AddShared(IList<SharedItem> items)
         {
             _default.Add(items);
         }
 
-        public void Add(string contentName, IList<SharedItem> items)
+        public void AddShared(string contentName, IList<SharedItem> items)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null)
             {
@@ -542,9 +542,9 @@ namespace Sandcastle
             _default.Remove(index);
         }
 
-        public void Remove(string contentName, int index)
+        public void RemoveShared(string contentName, int index)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null)
             {
@@ -552,14 +552,14 @@ namespace Sandcastle
             }
         }
 
-        public void Remove(SharedItem item)
+        public void RemoveShared(SharedItem item)
         {
             _default.Remove(item);
         }
 
-        public void Remove(string contentName, SharedItem item)
+        public void RemoveShared(string contentName, SharedItem item)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null)
             {
@@ -567,14 +567,14 @@ namespace Sandcastle
             }
         }
 
-        public bool Contains(SharedItem item)
+        public bool ContainsShared(SharedItem item)
         {
             return _default.Contains(item);
         }
 
-        public bool Contains(string contentName, SharedItem item)
+        public bool ContainsShared(string contentName, SharedItem item)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null)
             {
@@ -584,7 +584,7 @@ namespace Sandcastle
             return false;
         }
 
-        public void Clear()
+        public void ClearShared()
         {
             if (_default.Count == 0)
             {
@@ -594,9 +594,9 @@ namespace Sandcastle
             _default.Clear();
         }
 
-        public void Clear(string contentName)
+        public void ClearShared(string contentName)
         {
-            SharedContent content = this.GetContent(contentName);
+            SharedContent content = this.GetSharedContent(contentName);
 
             if (content != null && content.Count != 0)
             {
@@ -604,7 +604,7 @@ namespace Sandcastle
             }
         }
 
-        public void ClearAll()
+        public void ClearSharedAll()
         {
             if (_default.Count != 0)
             {
@@ -648,14 +648,9 @@ namespace Sandcastle
             {
                 return null;
             }
-            BuildStyleType styleType = _styleType;
-            if (styleType == BuildStyleType.Whidbey)
-            {
-                styleType = BuildStyleType.Vs2005;
-            }
 
-            return path + String.Format(@"{0}\Transforms\{1}", 
-                styleType.ToString(), skeleton);
+            return path + String.Format(@"{0}\Transforms\{1}",
+                BuildStyleUtils.StyleFolder(_styleType), skeleton);
         }
 
         #endregion
@@ -686,14 +681,9 @@ namespace Sandcastle
             {
                 return null;
             }
-            BuildStyleType styleType = _styleType;
-            if (styleType == BuildStyleType.Whidbey)
-            {
-                styleType = BuildStyleType.Vs2005;
-            }
 
             return path + String.Format(@"{0}\Transforms\{1}",
-                styleType.ToString(), transform);
+                BuildStyleUtils.StyleFolder(_styleType), transform);
         }
 
         #endregion
@@ -705,13 +695,7 @@ namespace Sandcastle
             //TODO: Must be reviewed later for a more optimized code...
             List<string> sharedContents = new List<string>();
 
-            BuildStyleType styleType = _styleType;
-            if (styleType == BuildStyleType.Whidbey)
-            {
-                styleType = BuildStyleType.Vs2005;
-            }
-
-            string contentFile = styleType.ToString() + ".xml";
+            string contentFile = BuildStyleUtils.StyleFolder(_styleType) + ".xml";
             sharedContents.Add(contentFile);
 
             return sharedContents;
@@ -730,8 +714,8 @@ namespace Sandcastle
 
             if (engineType == BuildEngineType.Conceptual)
             {   
-                if (_styleType == BuildStyleType.Vs2005 ||
-                    _styleType == BuildStyleType.Whidbey)
+                if (_styleType == BuildStyleType.ClassicWhite ||
+                    _styleType == BuildStyleType.ClassicBlue)
                 {   
                     //<content file="%DXROOT%\Presentation\Vs2005\content\shared_content.xml" />
                     //<content file="%DXROOT%\Presentation\VS2005\content\feedBack_content.xml" />
@@ -744,31 +728,17 @@ namespace Sandcastle
                     sharedContents.Add(Path.Combine(path,
                         @"Vs2005\Content\conceptual_content.xml"));
                 }
-                else if (_styleType == BuildStyleType.Hana)
+                else if (_styleType == BuildStyleType.Lightweight)
                 {   
-                    //<content file="%DXROOT%\Presentation\Hana\content\shared_content.xml" />
-                    //<content file="%DXROOT%\Presentation\Hana\content\conceptual_content.xml" />
-                    
-                    sharedContents.Add(Path.Combine(path,
-                        @"Hana\Content\shared_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Hana\Content\conceptual_content.xml"));
                 }
-                else if (_styleType == BuildStyleType.Prototype)
+                else if (_styleType == BuildStyleType.ScriptFree)
                 {
-                    //<content file="%DXROOT%\Presentation\Prototype\content\shared_content.xml" />
-                    //<content file="%DXROOT%\Presentation\Prototype\content\conceptual_content.xml" />
-
-                    sharedContents.Add(Path.Combine(path,
-                        @"Prototype\Content\shared_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Prototype\Content\conceptual_content.xml"));
                 }
             }
             else if (engineType == BuildEngineType.Reference)
             {
-                if (_styleType == BuildStyleType.Vs2005 ||
-                    _styleType == BuildStyleType.Whidbey)
+                if (_styleType == BuildStyleType.ClassicWhite ||
+                    _styleType == BuildStyleType.ClassicBlue)
                 {
                     //<content file="%DXROOT%\Presentation\vs2005\content\shared_content.xml" />
                     //<content file="%DXROOT%\Presentation\vs2005\content\reference_content.xml" />
@@ -784,31 +754,11 @@ namespace Sandcastle
                     sharedContents.Add(Path.Combine(path,
                         @"Vs2005\Content\feedBack_content.xml"));
                 }
-                else if (_styleType == BuildStyleType.Hana)
+                else if (_styleType == BuildStyleType.Lightweight)
                 {
-                    //<content file="%DXROOT%\Presentation\hana\content\shared_content.xml" />
-                    //<content file="%DXROOT%\Presentation\hana\content\reference_content.xml" />
-                    //<content file="%DXROOT%\Presentation\shared\content\syntax_content.xml" />
-
-                    sharedContents.Add(Path.Combine(path,
-                        @"Hana\Content\shared_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Hana\Content\reference_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Shared\Content\syntax_content.xml"));
                 }
-                else if (_styleType == BuildStyleType.Prototype)
+                else if (_styleType == BuildStyleType.ScriptFree)
                 {
-                    //<content file="%DXROOT%\Presentation\Prototype\content\shared_content.xml" />
-                    //<content file="%DXROOT%\Presentation\Prototype\content\reference_content.xml" />
-                    //<content file="%DXROOT%\Presentation\Shared\content\syntax_content.xml" />
-
-                    sharedContents.Add(Path.Combine(path,
-                        @"Prototype\Content\shared_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Prototype\Content\reference_content.xml"));
-                    sharedContents.Add(Path.Combine(path,
-                        @"Shared\Content\syntax_content.xml"));
                 }
             }
 

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 //using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -17,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public interface IParser
 	{
-		string[] LexerTags {
+		IList<string> LexerTags {
 			get;
 			set;
 		}

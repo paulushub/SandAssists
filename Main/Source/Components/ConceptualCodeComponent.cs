@@ -148,15 +148,26 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            ApplyCodes(document, key);
-
-            if (_codeRefProcess)
+            try
             {
-                ApplyCodeRefs(document, key);
+                ApplyCodes(document, key);
+
+                if (_codeRefProcess)
+                {
+                    ApplyCodeRefs(document, key);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.WriteMessage(MessageLevel.Error, ex);
             }
         }
 
-        public override void Dispose()
+        #endregion
+
+        #region Protected Methods
+
+        protected override void Dispose(bool disposing)
         {
             if (_codeRefProvider != null)
             {
@@ -164,7 +175,7 @@ namespace Sandcastle.Components
                 _codeRefProvider = null;
             }
 
-            base.Dispose();
+            base.Dispose(disposing);
         }
 
         #endregion

@@ -134,7 +134,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			contentPanel.Controls.Add(taskView);
 			
-			string[] tokens = PropertyService.Get<string[]>("SharpDevelop.TaskListTokens", ParserService.DefaultTaskListTokens);
+			IList<string> tokens = PropertyService.Get<StringList>(
+                "SharpDevelop.TaskListTokens", ParserService.DefaultTaskListTokens);
 			
 			foreach (string token in tokens)
 			{

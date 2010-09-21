@@ -20,6 +20,7 @@
     <SccProvider>SAK</SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,14 +63,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Sandcastle.BTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6c2bf89a8baa2754, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandcastle.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=26d176bb73235da5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildConfiguration.cs" />
+    <Compile Include="BuildConfigurationCoverage.cs" />
+    <Compile Include="BuildConfigurationList.cs" />
+    <Compile Include="BuildConfigurationType.cs" />
+    <Compile Include="BuildInsertType.cs" />
+    <Compile Include="BuildStyleUtils.cs" />
+    <Compile Include="Configurators\IncludeContentList.cs" />
     <Compile Include="BuildConverter.cs" />
     <Compile Include="BuildDocumenter.cs" />
     <Compile Include="BuildErrorEventArgs.cs" />
@@ -78,6 +93,7 @@
     <Compile Include="BuildFeedbackType.cs" />
     <Compile Include="BuildFinishedEventArgs.cs" />
     <Compile Include="BuildFormat.cs" />
+    <Compile Include="BuildFormatAssembler.cs" />
     <Compile Include="BuildFormatType.cs" />
     <Compile Include="BuildFramework.cs" />
     <Compile Include="BuildGroup.cs" />
@@ -95,11 +111,12 @@
     <Compile Include="BuildSystem.cs" />
     <Compile Include="BuildType.cs" />
     <Compile Include="BuildVisitor.cs" />
+    <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
     <Compile Include="Conceptual\ConceptualTocFilter.cs" />
-    <Compile Include="Configurations\ConfigurationContent.cs" />
-    <Compile Include="Configurations\ConfigurationItem.cs" />
-    <Compile Include="Configurations\ConfigurationItemEvents.cs" />
-    <Compile Include="Configurations\AssemblerConfigurator.cs" />
+    <Compile Include="Configurators\ConfiguratorContent.cs" />
+    <Compile Include="Configurators\ConfiguratorItem.cs" />
+    <Compile Include="Configurators\ConfiguratorItemEvents.cs" />
+    <Compile Include="Configurators\AssemblerConfigurator.cs" />
     <Compile Include="BuildConfigurator.cs" />
     <Compile Include="BuildContext.cs" />
     <Compile Include="BuildEngineType.cs" />
@@ -123,11 +140,11 @@
     <Compile Include="Conceptual\ConceptualBuildManifest.cs" />
     <Compile Include="Conceptual\ConceptualMetadataContent.cs" />
     <Compile Include="Conceptual\ConceptualMetadataItem.cs" />
-    <Compile Include="Configurations\ConfigurationKeywords.cs" />
-    <Compile Include="Configurations\GenericConfigurator.cs" />
-    <Compile Include="Configurations\IncludeConfigurator.cs" />
-    <Compile Include="Configurations\IncludeContent.cs" />
-    <Compile Include="Configurations\IncludeItem.cs" />
+    <Compile Include="Configurators\ConfiguratorKeywords.cs" />
+    <Compile Include="Configurators\GenericConfigurator.cs" />
+    <Compile Include="Configurators\IncludeConfigurator.cs" />
+    <Compile Include="Configurators\IncludeContent.cs" />
+    <Compile Include="Configurators\IncludeItem.cs" />
     <Compile Include="Formats\FormatChmConverter.cs" />
     <Compile Include="Formats\FormatChmEncoding.cs" />
     <Compile Include="Formats\FormatChmHelper.cs">
@@ -157,6 +174,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="References\ReferenceFilterType.cs" />
+    <Compile Include="References\ReferenceFormatAssembler.cs" />
     <Compile Include="References\ReferenceMemberFilter.cs" />
     <Compile Include="References\ReferenceRootFilter.cs" />
     <Compile Include="References\ReferenceNamer.cs" />
@@ -169,8 +187,15 @@
     <Compile Include="References\ReferenceTocVisitor.cs" />
     <Compile Include="References\ReferenceNamespaceFilter.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
+    <Compile Include="Reflections\ReflectionIndexedBuilder.cs" />
+    <Compile Include="Reflections\ReflectionIndexedDocument.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
+    <Compile Include="Steps\StepSleep.cs" />
+    <Compile Include="Steps\StepMessage.cs" />
+    <Compile Include="Steps\StepMhvBuilder.cs" />
+    <Compile Include="Steps\StepMhvViewerStart.cs" />
+    <Compile Include="Steps\StepSignTool.cs" />
     <Compile Include="Steps\StepWebBuilder.cs" />
     <Compile Include="Steps\StepChmCompiler.cs" />
     <Compile Include="Steps\StepWebViewerStart.cs" />
@@ -182,7 +207,7 @@
     <Compile Include="Steps\StepXslTransform.cs" />
     <Compile Include="Conceptual\ConceptualTopicIdFilter.cs" />
     <Compile Include="Conceptual\ConceptualUtils.cs" />
-    <Compile Include="Configurations\SharedContentConfigurator.cs" />
+    <Compile Include="Configurators\SharedContentConfigurator.cs" />
     <Compile Include="Formats\FormatChm.cs" />
     <Compile Include="Formats\FormatHtm.cs" />
     <Compile Include="Conceptual\ConceptualSettingsLoc.cs" />
@@ -248,6 +273,11 @@
       <Name>Resources</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+    <Folder Include="Deployments\" />
+    <Folder Include="Notifiers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -150,16 +151,44 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			RecentOpen recentOpen = FileService.RecentOpen;
-			
-			if (recentOpen.RecentFile.Count > 0) {
-				MenuCommand[] items = new MenuCommand[recentOpen.RecentFile.Count];
-				
-				for (int i = 0; i < recentOpen.RecentFile.Count; ++i) {
-					string accelaratorKeyPrefix = i < 10 ? "&" + ((i + 1) % 10) + " " : "";
-                    string recentPath = recentOpen.RecentFile[i];
+
+            IList<RecentOpenItem> recentItems = recentOpen.RecentFiles;
+            int itemCount = Math.Min(recentItems.Count, recentOpen.DisplayableFiles);
+
+            if (itemCount > 0) 
+            {
+                List<MenuCommand> items = new List<MenuCommand>(itemCount);
+
+                int letterA = Convert.ToInt32('A');
+                string accelaratorKeyPrefix = null;
+
+                int iExists = 0;
+                int wantedLength = recentOpen.MaximumLength;
+
+                for (int i = 0; i < itemCount; ++i) 
+                {
+                    //string accelaratorKeyPrefix = i < 10 ? "&" + ((i + 1) % 10) + " " : "";
+
+                    RecentOpenItem recentItem = recentItems[i];
+                    string recentPath = recentItem.FullPath;
+                    if (!File.Exists(recentPath))
+                    {
+                        continue;
+                    }
+                    iExists++;
+
+                    if (iExists < 10)
+                    {
+                        accelaratorKeyPrefix = "&" + iExists + "    ";
+                    }
+                    else
+                    {
+                        accelaratorKeyPrefix = "&" + Convert.ToChar(letterA) + "    ";
+                        letterA++;
+                    }
 
                     MenuCommand menuItem = new MenuCommand(accelaratorKeyPrefix +
-                        RecentOpen.CompactPath(recentPath, 64), 
+                        RecentOpen.CompactPath(recentPath, wantedLength), 
                         new EventHandler(LoadRecentFile));
                     menuItem.Tag = recentPath;
                     menuItem.Description = StringParser.Parse(ResourceService.GetString(
@@ -171,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Commands
                     //menuItem.Enabled = !isOpened;
                     menuItem.ToolTipText = recentPath;
 
-                    items[i] = menuItem;
+                    items.Add(menuItem);
 				}
 
-				return items;
+				return items.ToArray();
 			}
 			
 			MenuCommand defaultMenu = new MenuCommand(
@@ -204,14 +233,37 @@ namespace ICSharpCode.SharpDevelop.Commands
             {
                 openedSolutionPath = ProjectService.OpenSolution.FileName;
             }
-			
-			if (recentOpen.RecentProject.Count > 0) {
-				MenuCommand[] items = new MenuCommand[recentOpen.RecentProject.Count];
-				for (int i = 0; i < recentOpen.RecentProject.Count; ++i) {
-					string accelaratorKeyPrefix = i < 10 ? "&" + ((i + 1) % 10) + " " : "";
-                    string recentProject = recentOpen.RecentProject[i];
+
+            IList<RecentOpenItem> recentItems = 
+                recentOpen.RecentDisplayableProjects;
+
+            int itemCount = (recentItems == null) ? 0 : recentItems.Count;
+
+            itemCount = Math.Min(itemCount, recentOpen.DisplayableProjects);
+            if (itemCount > 0)
+            {
+                int letterA = Convert.ToInt32('A');
+                string accelaratorKeyPrefix = null;
+                int wantedLength = recentOpen.MaximumLength;
+
+                MenuCommand[] items = new MenuCommand[itemCount];
+                for (int i = 0; i < itemCount; ++i)
+                {
+                    RecentOpenItem recentItem = recentItems[i];
+
+                    if (i < 9)
+                    {
+                        accelaratorKeyPrefix = "&" + (i + 1) + "    ";
+                    }
+                    else
+                    {
+                        accelaratorKeyPrefix = "&" + Convert.ToChar(letterA) + "    ";
+                        letterA++;
+                    }
+
+                    string recentProject = recentItem.FullPath;
                     MenuCommand menuItem = new MenuCommand(accelaratorKeyPrefix +
-                        RecentOpen.CompactPath(recentProject, 64), 
+                        RecentOpen.CompactPath(recentProject, wantedLength), 
                         new EventHandler(LoadRecentProject));
                     menuItem.Tag = recentProject;
                     menuItem.Description = StringParser.Parse(ResourceService.GetString(
@@ -219,20 +271,25 @@ namespace ICSharpCode.SharpDevelop.Commands
                         new string[,] { { "PROJECT", recentProject } });
 
                     if (isSolutionOpened && String.Equals(openedSolutionPath,
-                        recentProject, StringComparison.CurrentCultureIgnoreCase))
+                        recentProject, StringComparison.OrdinalIgnoreCase))
                     {
                         menuItem.Checked = true;
                         menuItem.Enabled = false;
                     }
 
                     menuItem.ToolTipText = recentProject;
+                    if (recentItem.Pinned)
+                    {
+                        menuItem.Image = IconService.GetBitmap("Icons.16x16.PushPin");
+                    }
 
                     items[i] = menuItem;
 				}
 				return items;
 			}
 			
-			MenuCommand defaultMenu = new MenuCommand("${res:Dialog.Componnents.RichMenuItem.NoRecentProjectsString}");
+			MenuCommand defaultMenu = new MenuCommand(
+                "${res:Dialog.Componnents.RichMenuItem.NoRecentProjectsString}");
 			defaultMenu.Enabled = false;
 			
 			return new MenuCommand[] { defaultMenu };

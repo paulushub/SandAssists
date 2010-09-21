@@ -23,13 +23,18 @@ namespace ICSharpCode.SharpDevelop
 		static bool serviceInitialized;
 		
 		#region RecentOpen
+
 		static RecentOpen recentOpen = null;
 		
-		public static RecentOpen RecentOpen {
-			get {
-				if (recentOpen == null) {
-					recentOpen = RecentOpen.FromXmlElement(PropertyService.Get("RecentOpen", new Properties()));
+		public static RecentOpen RecentOpen 
+        {
+			get 
+            {
+				if (recentOpen == null) 
+                {
+                    CreateRecentOpen();
 				}
+
 				return recentOpen;
 			}
 		}
@@ -38,13 +43,29 @@ namespace ICSharpCode.SharpDevelop
 		{
 			RecentOpen.AddLastProject(e.Solution.FileName);
 		}
+
 		#endregion
 		
 		public static void Unload()
 		{
-			if (recentOpen != null) {
-				PropertyService.Set("RecentOpen", recentOpen.ToProperties());
+			if (recentOpen != null) 
+            {
+                string configDir = PropertyService.ConfigDirectory;
+                if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
+                {
+                    string recentFiles = Path.Combine(configDir,
+                        RecentOpen.RecentOpenFileName);
+                    if (!recentOpen.SaveXml(recentFiles))
+                    {
+                        PropertyService.Set("RecentOpen", recentOpen.ToProperties());
+                    }
+                }
+                else
+                {
+                    PropertyService.Set("RecentOpen", recentOpen.ToProperties());
+                }
 			}
+
 			ProjectService.SolutionLoaded -= ProjectServiceSolutionLoaded;
 			ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
 			serviceInitialized = false;
@@ -665,6 +686,36 @@ namespace ICSharpCode.SharpDevelop
 		public static event EventHandler<FileEventArgs> FileReplaced;
 		
 		#endregion Events
+
+        private static void CreateRecentOpen()
+        {
+            if (recentOpen != null)
+            {
+                return;
+            }
+
+            string configDir = PropertyService.ConfigDirectory;
+            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
+            {
+                string recentFiles = Path.Combine(configDir,
+                    RecentOpen.RecentOpenFileName);
+                if (File.Exists(recentFiles))
+                {
+                    recentOpen = new RecentOpen();
+                    recentOpen.LoadXml(recentFiles);
+                }
+                else
+                {
+                    recentOpen = new RecentOpen(PropertyService.Get(
+                        "RecentOpen", new Properties()));
+                }
+            }
+            else
+            {
+                recentOpen = new RecentOpen(PropertyService.Get(
+                    "RecentOpen", new Properties()));
+            }
+        }
 	}
 }
 

@@ -287,23 +287,26 @@ namespace WeifenLuo.WinFormsUI.Docking
 			}
 		}
 
-		internal Rectangle ContentRectangle
-		{
-			get
-			{
-				Rectangle rectWindow = DisplayingRectangle;
-				Rectangle rectCaption = CaptionRectangle;
-				Rectangle rectTabStrip = TabStripRectangle;
+        internal Rectangle ContentRectangle
+        {
+            get
+            {
+                Rectangle rectWindow = DisplayingRectangle;
+                Rectangle rectCaption = CaptionRectangle;
+                Rectangle rectTabStrip = TabStripRectangle;
 
-				int x = rectWindow.X;
-				int y = rectWindow.Y + (rectCaption.IsEmpty ? 0 : rectCaption.Height) +
-					(DockState == DockState.Document ? rectTabStrip.Height : 0);
-				int width = rectWindow.Width;
-				int height = rectWindow.Height - rectCaption.Height - rectTabStrip.Height;
+                int x = rectWindow.X;
 
-				return new Rectangle(x, y, width, height);
-			}
-		}
+                int y = rectWindow.Y + (rectCaption.IsEmpty ? 0 : rectCaption.Height);
+                if (DockState == DockState.Document && DockPanel.DocumentTabStripLocation == DocumentTabStripLocation.Top)
+                    y += rectTabStrip.Height;
+
+                int width = rectWindow.Width;
+                int height = rectWindow.Height - rectCaption.Height - rectTabStrip.Height;
+
+                return new Rectangle(x, y, width, height);
+            }
+        }
 
 		internal Rectangle TabStripRectangle
 		{
@@ -337,25 +340,30 @@ namespace WeifenLuo.WinFormsUI.Docking
 			}
 		}
 
-		private Rectangle TabStripRectangle_Document
-		{
-			get
-			{
-				if (DisplayingContents.Count == 0)
-					return Rectangle.Empty;
+        private Rectangle TabStripRectangle_Document
+        {
+            get
+            {
+                if (DisplayingContents.Count == 0)
+                    return Rectangle.Empty;
 
-				if (DisplayingContents.Count == 1 && DockPanel.DocumentStyle == DocumentStyle.DockingSdi)
-					return Rectangle.Empty;
+                if (DisplayingContents.Count == 1 && DockPanel.DocumentStyle == DocumentStyle.DockingSdi)
+                    return Rectangle.Empty;
 
-				Rectangle rectWindow = DisplayingRectangle;
-				int x = rectWindow.X;
-				int y = rectWindow.Y;
-				int width = rectWindow.Width;
-				int height = TabStripControl.MeasureHeight();
+                Rectangle rectWindow = DisplayingRectangle;
+                int x = rectWindow.X;
+                int width = rectWindow.Width;
+                int height = TabStripControl.MeasureHeight();
 
-				return new Rectangle(x, y, width, height);
-			}
-		}
+                int y = 0;
+                if (DockPanel.DocumentTabStripLocation == DocumentTabStripLocation.Bottom)
+                    y = rectWindow.Height - height;
+                else
+                    y = rectWindow.Y;
+
+                return new Rectangle(x, y, width, height);
+            }
+        }
 
 		public virtual string CaptionText
 		{
@@ -1237,9 +1245,12 @@ namespace WeifenLuo.WinFormsUI.Docking
                 for (int i = Contents.Count - 1; i >= 0; i--)
                 {
                     IDockContent c = Contents[i];
-                    c.DockHandler.Pane = pane;
-                    if (contentIndex != -1)
-                        pane.SetContentIndex(c, contentIndex);
+                    if (c.DockHandler.DockState == DockState)
+                    {
+                        c.DockHandler.Pane = pane;
+                        if (contentIndex != -1)
+                            pane.SetContentIndex(c, contentIndex);
+                    }
                 }
                 pane.ActiveContent = activeContent;
             }

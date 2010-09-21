@@ -31,7 +31,6 @@ using System.Windows.Forms;
 
 using XPTable.Models;
 
-
 namespace XPTable.Events
 {
 	#region Delegates
@@ -45,15 +44,13 @@ namespace XPTable.Events
 
 	#endregion
 
-
-
 	#region HeaderMouseEventArgs
 	
 	/// <summary>
 	/// Provides data for the HeaderMouseEnter, HeaderMouseLeave, HeaderMouseDown, 
 	/// HeaderMouseUp, HeaderMouseMove, HeaderClick and HeaderDoubleClick events of a Table
 	/// </summary>
-	public class HeaderMouseEventArgs : MouseEventArgs
+    public sealed class HeaderMouseEventArgs : MouseEventArgs
 	{
 		#region Private Fields
 
@@ -79,7 +76,6 @@ namespace XPTable.Events
 
 		#endregion
 		
-		
 		#region Constructor
 
 		/// <summary>
@@ -90,14 +86,15 @@ namespace XPTable.Events
 		/// <param name="table">The Table the Column belongs to</param>
 		/// <param name="index">The index of the Column</param>
 		/// <param name="headerRect">The column header's bounding rectangle</param>
-		public HeaderMouseEventArgs(Column column, Table table, int index, Rectangle headerRect) : base(MouseButtons.None, 0, -1, -1, 0)
+		public HeaderMouseEventArgs(Column column, Table table, int index, 
+            Rectangle headerRect) 
+            : base(MouseButtons.None, 0, -1, -1, 0)
 		{
 			this.column = column;
 			this.table = table;
 			this.index = index;
 			this.headerRect = headerRect;
 		} 
-
 		
 		/// <summary>
 		/// Initializes a new instance of the HeaderMouseEventArgs class with 
@@ -110,7 +107,9 @@ namespace XPTable.Events
 		/// <param name="headerRect">The column header's bounding rectangle</param>
 		/// <param name="mea">The MouseEventArgs that contains data about the 
 		/// mouse event</param>
-		public HeaderMouseEventArgs(Column column, Table table, int index, Rectangle headerRect, MouseEventArgs mea) : base(mea.Button, mea.Clicks, mea.X, mea.Y, mea.Delta)
+		public HeaderMouseEventArgs(Column column, Table table, int index, 
+            Rectangle headerRect, MouseEventArgs mea) 
+            : base(mea.Button, mea.Clicks, mea.X, mea.Y, mea.Delta)
 		{
 			this.column = column;
 			this.table = table;
@@ -119,7 +118,6 @@ namespace XPTable.Events
 		} 
 
 		#endregion
-
 
 		#region Properties
 
@@ -134,7 +132,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the Table the Cell belongs to
 		/// </summary>
@@ -146,7 +143,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the index of the Column
 		/// </summary>
@@ -157,7 +153,6 @@ namespace XPTable.Events
 				return this.index;
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the column header's bounding rectangle

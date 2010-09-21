@@ -2,58 +2,76 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Sandcastle.Utilities
 {
     public static class DirectoryUtils
-    {      
-        // String test = GetRelativePath(
-        // @"E:\Source_Code\Code\ProjectsGroup1\Project1", 
-        // @"E:\Source_Code\Code\ProjecstGroup2\Project2"); 
-        // This will generate something like ..\..\ProjectGroup2\Project2
+    {
+        private const int MAX_PATH = 260;
+        private const uint FILE_ATTRIBUTE_DIRECTORY = 0x10;
 
-        public static string GetRelativePath(string mainDirPath,
-            string absoluteFilePath)
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        private static extern bool PathIsDirectoryEmpty(
+            [MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        private static extern bool PathIsDirectory(
+            [MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
+
+        /// <summary>
+        /// Verifies that a path is a valid directory.
+        /// </summary>
+        /// <param name="path">The path to verify.</param>
+        /// <returns><see langword="true"/> if the path is a valid directory; 
+        /// otherwise, <see langword="false"/>.</returns>
+        public static bool IsDirectory(string path)
         {
-            string[] firstPathParts = mainDirPath.Trim(
-                Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-            string[] secondPathParts = absoluteFilePath.Trim(
-                Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-            int sameCounter = 0;
-            for (int i = 0; i < Math.Min(firstPathParts.Length, secondPathParts.Length); i++)
+            return PathIsDirectory(path);
+        }
+
+        public static bool IsDirectoryEmpty(string directory)
+        {      
+            if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
             {
-                if (!firstPathParts[i].ToLower().Equals(secondPathParts[i].ToLower()))
-                {
-                    break;
-                } 
-                sameCounter++;
+                return false;
             }
 
-            if (sameCounter == 0)
+            return PathIsDirectoryEmpty(directory);
+        }
+
+        public static void DeleteDirectory(string directoryPath, bool recursive)
+        {
+            if (String.IsNullOrEmpty(directoryPath))
             {
-                return absoluteFilePath;
+                return;
             }
 
-            string newPath = String.Empty;
-            for (int i = sameCounter; i < firstPathParts.Length; i++)
+            DirectoryInfo dirInfo = new DirectoryInfo(directoryPath);
+            if (dirInfo.Exists)
             {
-                if (i > sameCounter)
+                // It is a directory...
+                try
                 {
-                    newPath += Path.DirectorySeparatorChar;
+                    dirInfo.Attributes = FileAttributes.Normal;
+                    dirInfo.Delete(recursive);
                 }
-                newPath += "..";
-            }
-            if (newPath.Length == 0)
-            {
-                newPath = ".";
-            }
-            for (int i = sameCounter; i < secondPathParts.Length; i++)
-            {
-                newPath += Path.DirectorySeparatorChar;
-                newPath += secondPathParts[i];
-            }
+                catch (UnauthorizedAccessException)
+                {
+                    // One possible cause of this is read-only file, so first
+                    // try another method of deleting the directory...
+                    foreach (string file in PathSearch.FindFiles(dirInfo, "*.*",
+                        recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                    {
+                        File.SetAttributes(file, FileAttributes.Normal);
+                        File.Delete(file);
+                    }
 
-            return newPath;
+                    dirInfo.Delete(recursive);
+                }
+            }
         }
     }
 }

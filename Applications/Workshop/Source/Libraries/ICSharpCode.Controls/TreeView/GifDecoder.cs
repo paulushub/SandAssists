@@ -25,22 +25,24 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 
 namespace Aga.Controls
 {
-	public class GifFrame
+	public sealed class GifFrame
 	{
 		private Image _image;
+        private int _delay;
+
 		public Image Image
 		{
 			get { return _image; }
 		}
 
-		private int _delay;
 		public int Delay
 		{
 			get { return _delay; }
@@ -53,7 +55,7 @@ namespace Aga.Controls
 		}
 	}
 
-	public class GifDecoder 
+    public sealed class GifDecoder 
 	{
 		public const int StatusOK = 0;//File read status: No errors.
 		public const int StatusFormatError = 1; //File read status: Error decoding file (may be partially decoded)
@@ -107,7 +109,7 @@ namespace Aga.Controls
 		private byte[] pixelStack;
 		private byte[] pixels;
 
-		private ArrayList frames; // frames read from current file
+		private List<GifFrame> frames; // frames read from current file
 		private int frameCount;
 		private bool _makeTransparent;
 
@@ -138,7 +140,7 @@ namespace Aga.Controls
 
 		/**
 		 * Gets the "Netscape" iteration count, if any.
-		 * A count of 0 means repeat indefinitiely.
+		 * A count of 0 means repeat indefinitely.
 		 *
 		 * @return iteration count if one was specified, else 1.
 		 */
@@ -315,7 +317,7 @@ namespace Aga.Controls
 		public GifFrame GetFrame(int n) 
 		{
 			if ((n >= 0) && (n < frameCount))
-				return (GifFrame)frames[n];
+				return frames[n];
 			else
 				throw new ArgumentOutOfRangeException();
 		}
@@ -524,7 +526,7 @@ namespace Aga.Controls
 		{
 			status = StatusOK;
 			frameCount = 0;
-			frames = new ArrayList();
+			frames = new List<GifFrame>();
 			gct = null;
 			lct = null;
 		}
@@ -810,7 +812,7 @@ namespace Aga.Controls
 		}
 
 		/**
-		 * Reads Netscape extenstion to obtain iteration count
+		 * Reads Netscape extention to obtain iteration count
 		 */
 		private void ReadNetscapeExt() 
 		{

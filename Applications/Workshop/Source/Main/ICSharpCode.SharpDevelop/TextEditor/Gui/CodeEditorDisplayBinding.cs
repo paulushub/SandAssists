@@ -39,12 +39,22 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
                         {
                             return false;
                         }
+                        if (String.Equals(fileExt, ".cab",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
                         if (String.Equals(fileExt, ".msi",
                             StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
                         if (String.Equals(fileExt, ".resources",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                        if (String.Equals(fileExt, ".module",
                             StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
@@ -67,21 +77,28 @@ namespace ICSharpCode.SharpDevelop.TextEditor.Gui
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			CodeEditorViewContent b2 = CreateWrapper(file);
-			file.ForceInitializeView(b2); // load file to initialize folding etc.
-			
-			b2.textEditorControl.Dock = DockStyle.Fill;
-			try {
-				b2.textEditorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(file.FileName);
-				b2.textEditorControl.InitializeAdvancedHighlighter();
-			} catch (HighlightingDefinitionInvalidException ex) {
-				b2.textEditorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy();
-				MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			CodeEditorViewContent editorView = CreateWrapper(file);
+			file.ForceInitializeView(editorView); // load file to initialize folding etc.
+
+            CodeEditorControl editorControl = editorView.TextEditorControl as CodeEditorControl;
+
+			editorControl.Dock = DockStyle.Fill;
+			try 
+            {
+				editorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(file.FileName);
+				editorControl.InitializeAdvancedHighlighter();
+			} 
+            catch (HighlightingDefinitionInvalidException ex) 
+            {
+				editorControl.Document.HighlightingStrategy = 
+                    HighlightingStrategyFactory.CreateHighlightingStrategy();
+				MessageBox.Show(ex.ToString(), "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			b2.textEditorControl.InitializeFormatter();
-			b2.textEditorControl.ActivateQuickClassBrowserOnDemand();
+			editorControl.InitializeFormatter();
+			editorControl.ActivateQuickClassBrowserOnDemand();
 			
-			return b2;
+			return editorView;
 		}
 	}
 }

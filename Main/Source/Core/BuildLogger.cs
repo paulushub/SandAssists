@@ -3,8 +3,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-using ResourcesEx = Sandcastle.Properties.Resources;
-
 namespace Sandcastle
 {
     /// <summary>
@@ -14,23 +12,73 @@ namespace Sandcastle
     /// </para>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The logger records all the relevant build events, information, warnings, 
     /// and errors to various streams or data storages.
-    /// <para>
-    /// The build step derives from <see cref="MarshalByRefObject"/> so that any of its 
-    /// derivative can be instantiated in its own app domain.
     /// </para>
+    /// <para>
+    /// Each build logger is uniquely named to make it easy to identify and script.
+    /// </para>
+    /// <para>
+    /// The default or system build loggers will have names in the format:
+    /// </para>
+    /// <para>
+    /// <bold>Sandcastle.{X}.Logger</bold>
+    /// where {X} represents the format or output destination of the logger.
+    /// </para>
+    /// <para>
+    /// The available loggers and their names are listed below:
+    /// </para>
+    /// <list type="bullet">
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.NoneLogger</bold>, the output logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.ConsoleLogger</bold>, the console logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.FileLogger</bold>, the file logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.HtmlLogger</bold>, the HTML format logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.XmlLogger</bold>, the XML format logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.XamlLogger</bold>, the XAML flow document logger
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// <bold>Sandcastle.BuildLoggers</bold>, the logger container, with no output
+    /// </description>
+    /// </item>
+    /// </list>
     /// </remarks>
     /// <seealso cref="BuildLoggers"/>
     /// <seealso cref="BuildLoggerLevel"/>
     /// <seealso cref="BuildLoggerVerbosity"/>
-    public abstract class BuildLogger : MarshalByRefObject, IDisposable
+    public abstract class BuildLogger : BuildObject, IDisposable
     {
         #region Private Fields
 
         private bool   _isAppend;
+        private bool   _includeSummary;
         private bool   _isInitialize;
         private bool   _isLogging;
+        private bool   _includeMetadata;
         private bool   _keepLogFile;
 
         private bool   _logStarted;
@@ -40,7 +88,9 @@ namespace Sandcastle
         private bool   _logEnded;
         private bool   _logCopyright;
 
-        private string _logFile;
+        private string _logTitle;
+        private string _logFileName;
+        private string _logFullPath;
 
         private string _prefixStarted;
         private string _prefixInfo;
@@ -62,14 +112,26 @@ namespace Sandcastle
         protected BuildLogger()
             : this(null)
         {
-            _isLogging     = true;
+            _includeSummary  = true;
+            _includeMetadata = true;
+            _isLogging       = true;
         }
 
         protected BuildLogger(string logFile)
         {
+            if (logFile != null)
+            {
+                logFile = logFile.Trim();
+            }
+            if (!String.IsNullOrEmpty(logFile) && Path.IsPathRooted(logFile))
+            {
+                logFile = Path.GetFileName(logFile);
+            }
+
             _isLogging     = true;
             _keepLogFile   = true;
-            _logFile       = logFile;
+            _logTitle      = String.Empty;
+            _logFileName   = logFile;
             _encoding      = new UTF8Encoding();
 
             _verbosity     = BuildLoggerVerbosity.Normal;
@@ -119,6 +181,25 @@ namespace Sandcastle
         #region Public Properties
 
         /// <summary>
+        /// Gets the unique name of this build logger.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the unique name of this
+        /// build logger implementation.
+        /// </value>
+        /// <remarks>
+        /// The name makes it possible to uniquely identify the logger, which may be
+        /// required by other build operations such as the build completion 
+        /// notification process. Since the build helpers library makes it possible
+        /// to use different types of logger, user can specify which build logger
+        /// output to include in, say the mail, notifications. 
+        /// </remarks>
+        public abstract string Name
+        {
+            get;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <value>
@@ -135,6 +216,44 @@ namespace Sandcastle
             protected set
             {
                 _isInitialize = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public bool IncludeSummary
+        {
+            get
+            {
+                return _includeSummary;
+            }
+
+            set
+            {
+                _includeSummary = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public bool IncludeMetadata
+        {
+            get
+            {
+                return _includeMetadata;
+            }
+
+            set
+            {
+                _includeMetadata = value;
             }
         }
 
@@ -163,16 +282,64 @@ namespace Sandcastle
         /// <value>
         /// 
         /// </value>
-        public string LogFile
+        public string LogTitle
         {
             get
             {
-                return _logFile;
+                return _logTitle;
+            }
+        }
+
+        /// <summary>
+        /// Gets the fully qualified path of the log file.
+        /// </summary>
+        /// <value>
+        /// A fully qualified name of the log file, if initialized; otherwise,
+        /// the file name of the log file.
+        /// </value>
+        public string LogFullPath
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_logFullPath))
+                {
+                    return _logFileName;
+                }
+
+                return _logFullPath;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public string LogFileName
+        {
+            get
+            {
+                return _logFileName;
             }
 
             set
             {
-                _logFile = value;
+                // If this logger is initialized, setting this value has no effect...
+                if (_isInitialize)
+                {
+                    return;
+                }
+                // Trim any non-empty/null string to avoid any preventable problem...
+                if (value != null)
+                {
+                    value = value.Trim();
+                }
+                if (!String.IsNullOrEmpty(value) && Path.IsPathRooted(value))
+                {
+                    value = Path.GetFileName(value);
+                }
+                _logFileName = value;
             }
         }
 
@@ -229,7 +396,7 @@ namespace Sandcastle
 
             set
             {
-                if (value != null)
+                if (!_isInitialize && value != null)
                 {
                     _encoding = value;
                 }
@@ -381,7 +548,55 @@ namespace Sandcastle
 
         #region Protected Properties
 
-        protected virtual TextWriter BaseWriter
+        protected string PrefixStarted
+        {
+            get
+            {
+                return _prefixStarted;
+            }
+        }
+
+        protected string PrefixInfo
+        {
+            get
+            {
+                return _prefixInfo;
+            }
+        }
+
+        protected string PrefixWarn
+        {
+            get
+            {
+                return _prefixWarn;
+            }
+        }
+
+        protected string PrefixError
+        {
+            get
+            {
+                return _prefixError;
+            }
+        }
+
+        protected string PrefixEnded
+        {
+            get
+            {
+                return _prefixEnded;
+            }
+        }
+
+        protected string PrefixRights
+        {
+            get
+            {
+                return _prefixRights;
+            }
+        }
+
+        protected TextWriter BaseWriter
         {
             get
             {
@@ -393,23 +608,38 @@ namespace Sandcastle
 
         #region Public Methods
 
-        public virtual void Initialize()
+        public virtual void Initialize(string logWorkingDir, string logTitle)
         {
             if (_isInitialize)
             {
                 return;
             }
+            _logTitle    = logTitle;
+            _logFullPath = null;
 
-            if (!String.IsNullOrEmpty(_logFile))
+            if (!String.IsNullOrEmpty(_logFileName))
             {
-                // if the log directory does not exits, create it...
-                string logDir = Path.GetDirectoryName(_logFile);
-                if (!Directory.Exists(logDir))
+                if (!String.IsNullOrEmpty(logWorkingDir))
+                {   
+                    if (Path.IsPathRooted(_logFileName))
+                    {
+                        _logFileName = Path.GetFileName(_logFileName);
+                    }
+                    // if the log directory does not exits, create it...
+                    logWorkingDir = Path.GetFullPath(logWorkingDir);
+                    if (!Directory.Exists(logWorkingDir))
+                    {
+                        Directory.CreateDirectory(logWorkingDir);
+                    }
+
+                    _logFullPath = Path.Combine(logWorkingDir, _logFileName);
+                }
+                else
                 {
-                    Directory.CreateDirectory(logDir);
+                    _logFullPath = Path.GetFullPath(_logFileName);
                 }
 
-                _baseWriter = new StreamWriter(_logFile, _isAppend, _encoding);
+                _baseWriter = new StreamWriter(_logFullPath, _isAppend, _encoding);
             }
 
             _isInitialize = true;
@@ -448,7 +678,7 @@ namespace Sandcastle
 
         public virtual void Write(Exception ex, BuildLoggerLevel level)
         {
-            if (this.LogLevel(level) == false)
+            if (!this.LogLevel(level))
             {
                 return;
             }
@@ -464,7 +694,7 @@ namespace Sandcastle
 
         public virtual void WriteLine(Exception ex, BuildLoggerLevel level)
         {
-            if (this.LogLevel(level) == false)
+            if (!this.LogLevel(level))
             {
                 return;
             }
@@ -478,7 +708,7 @@ namespace Sandcastle
 
         public virtual void Write(string outputText, BuildLoggerLevel level)
         {
-            if (this.LogLevel(level) == false)
+            if (!this.LogLevel(level))
             {
                 return;
             }
@@ -493,7 +723,7 @@ namespace Sandcastle
 
         public virtual void WriteLine(string outputText, BuildLoggerLevel level)
         {   
-            if (this.LogLevel(level) == false)
+            if (!this.LogLevel(level))
             {
                 return;
             }

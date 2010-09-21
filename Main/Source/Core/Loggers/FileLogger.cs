@@ -38,6 +38,21 @@ namespace Sandcastle.Loggers
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets the unique name of this build logger.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the unique name of this
+        /// build logger implementation. This will always return <c>Sandcastle.FileLogger</c>.
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return "Sandcastle.FileLogger";
+            }
+        }
+
         #endregion
 
         #region Public Methods

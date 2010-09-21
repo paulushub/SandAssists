@@ -5,6 +5,8 @@ using System.Text;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.Conceptual;
+using Sandcastle.References;
 
 namespace Sandcastle
 {
@@ -16,11 +18,15 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private bool   _viewOnBuild;
+        private bool   _optimizeStyle;
+
+        private bool   _closeBeforeBuild;
+        private bool   _openAfterBuild;
         private bool   _outputIndent;
         private bool   _outputEnabled;
         private bool   _omitRoot;
         private bool   _omitXmlDeclaration;
+        private bool   _addXhtmlNamespace;
 
         private string _formatDir;
         private string _outputDir;
@@ -35,6 +41,7 @@ namespace Sandcastle
         private BuildLinkType   _linkType;
         private BuildLinkType   _extLinkType;
         private BuildLinkTargetType _extLinkTarget;
+        private BuildIntegrationTarget _integrationTarget;
 
         private Dictionary<string, string> _properties;
 
@@ -44,15 +51,17 @@ namespace Sandcastle
 
         protected BuildFormat()
         {
-            _viewOnBuild = true;
+            _openAfterBuild   = true;
+            _closeBeforeBuild = true;
             _properties  = new Dictionary<string, string>(
-                StringComparer.CurrentCultureIgnoreCase);
+                StringComparer.OrdinalIgnoreCase);
         }
 
         protected BuildFormat(BuildFormat source)
             : base(source)
         {
-            _viewOnBuild = source._viewOnBuild;
+            _closeBeforeBuild = source._closeBeforeBuild;
+            _openAfterBuild = source._openAfterBuild;
             _properties  = source._properties;
         }
 
@@ -379,7 +388,11 @@ namespace Sandcastle
             }
             set
             {
-                _linkType = value;
+                if (value == BuildLinkType.None || value == BuildLinkType.Local
+                    || value == BuildLinkType.Index || value == BuildLinkType.Id)
+                {
+                    _linkType = value;
+                }
             }
         }
 
@@ -435,7 +448,11 @@ namespace Sandcastle
             }
             set
             {
-                _extLinkType = value;
+                if (value == BuildLinkType.None || value == BuildLinkType.Msdn
+                    || value == BuildLinkType.Index || value == BuildLinkType.Id)
+                {
+                    _extLinkType = value;
+                }
             }
         }
 
@@ -517,6 +534,27 @@ namespace Sandcastle
             set
             {
                 _omitXmlDeclaration = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to add the XHTML namespace
+        /// to the output HTML.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> to add the XHTML namespace; otherwise, 
+        /// it is <see langword="false"/>. The default is <see langword="false"/>, 
+        /// an XHTML namespace is not added.
+        /// </value>
+        public virtual bool AddXhtmlNamespace
+        {
+            get
+            {
+                return _addXhtmlNamespace;
+            }
+            set
+            {
+                _addXhtmlNamespace = value;
             }
         }
 
@@ -619,6 +657,27 @@ namespace Sandcastle
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to close the help viewer, if
+        /// any before starting the build process.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if there is a help viewer, which must
+        /// be closed before the build process; otherwise, it is 
+        /// <see langword="false"/>. The default is <see langword="true"/>.
+        /// </value>
+        public bool CloseViewerBeforeBuild
+        {
+            get
+            {
+                return _closeBeforeBuild;
+            }
+            set
+            {
+                _closeBeforeBuild = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to open the help file for viewing 
         /// after a successful build.
         /// </summary>
@@ -627,15 +686,69 @@ namespace Sandcastle
         /// successful build; otherwise, it is <see langword="false"/>. The default is
         /// <see langword="true"/>.
         /// </value>
-        public bool ViewOnBuild
+        public bool OpenViewerAfterBuild
         {
             get 
             { 
-                return _viewOnBuild; 
+                return _openAfterBuild; 
             }
             set 
             { 
-                _viewOnBuild = value; 
+                _openAfterBuild = value; 
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Visual Studio target for integration, where
+        /// applicable.
+        /// </summary>
+        /// <value>
+        /// An enumeration of the type <see cref="BuildIntegrationTarget"/>,
+        /// specifying the Visual Studio target for help integration. The default
+        /// value is <see cref="BuildIntegrationTarget.None"/>.
+        /// </value>
+        /// <remarks>
+        /// This is not required for the compilable of the help format, but may
+        /// be needed by deployment tools.
+        /// </remarks>
+        public virtual BuildIntegrationTarget IntegrationTarget
+        {
+            get
+            {
+                return _integrationTarget;
+            }
+            set
+            {
+                _integrationTarget = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or set a value indicating whether the selected build style 
+        /// build for be optimized for this format. 
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the style can be optimized for
+        /// this format; otherwise, the stoke style or presentation is not
+        /// overwritten or modified. The default is <see langword="true"/>.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// This style and format specific feature, and is applied only where
+        /// necessary. For instance, for the Help 1.x built using the VS2005
+        /// style, an improved script can be provided to allow the persistence
+        /// of the language filters and collapsible states.
+        /// </para>
+        /// </remarks>
+        public bool OptimizeStyle
+        {
+            get
+            {
+                return _optimizeStyle;
+            }
+            set
+            {
+                _optimizeStyle = value;
             }
         }
 
@@ -662,15 +775,66 @@ namespace Sandcastle
                     "There is no settings associated with the builder.");
             }
 
+            BuildFormatAssembler formatAssembler = null;
+
             BuildGroupType groupType = group.GroupType;
             if (groupType == BuildGroupType.Conceptual)
             {
-                this.ConceptualAssembler(settings, group, xmlWriter);
+                formatAssembler = new ConceptualFormatAssembler(context);
             }
             else if (groupType == BuildGroupType.Reference)
             {
-                this.ReferenceAssembler(settings, group, xmlWriter);
+                formatAssembler = new ReferenceFormatAssembler(context);
             }
+
+            if (formatAssembler != null)
+            {
+                // Initialize the assembler and write the assembler contents...
+                formatAssembler.Initialize(this, settings, group);
+                formatAssembler.WriteAssembler(xmlWriter);
+            }
+        }
+
+        public virtual IList<SharedItem> PrepareShared(BuildSettings settings,
+            BuildGroup group)
+        {
+            return null;
+        }
+
+        public virtual IList<RuleItem> PrepareSharedRule(BuildSettings settings,
+            BuildGroup group)
+        {
+            List<RuleItem> listRules = new List<RuleItem>();
+            BuildFeedback feedback   = settings.Feedback;
+            BuildFeedbackType fbType = feedback.FeedbackType;
+
+            // Only the VS2005/Whidbey support the rating feedbacks...
+            BuildStyleType styleType = settings.Style.StyleType;
+            if (styleType != BuildStyleType.ClassicWhite &&
+                styleType != BuildStyleType.ClassicBlue)
+            {
+                if (fbType == BuildFeedbackType.Standard ||
+                    fbType == BuildFeedbackType.Rating)
+                {
+                    fbType = BuildFeedbackType.Simple;
+                }
+            }
+
+            listRules.Add(new RuleItem("Feedback", fbType.ToString()));
+
+            BuildFormatType formatType = this.FormatType;
+            if (formatType == BuildFormatType.HtmlHelp3)
+            {
+                listRules.Add(new RuleItem("ContentPaths", "Mshc"));
+                listRules.Add(new RuleItem("HelpViewer",   "Mshc"));
+            }
+            else
+            {
+                listRules.Add(new RuleItem("ContentPaths", String.Empty));
+                listRules.Add(new RuleItem("HelpViewer",   String.Empty));
+            }   
+
+            return listRules;
         }
 
         #region Properties Methods
@@ -784,6 +948,7 @@ namespace Sandcastle
             _outputEnabled      = false;
             _omitRoot           = false;
             _omitXmlDeclaration = true;
+            _optimizeStyle      = true;
 
             _formatDir          = "html";
             _outputDir          = String.Empty;
@@ -797,6 +962,7 @@ namespace Sandcastle
             _linkType           = BuildLinkType.Local;
             _extLinkType        = BuildLinkType.Local;
             _extLinkTarget      = BuildLinkTargetType.Blank;
+            _integrationTarget  = BuildIntegrationTarget.None;
         }
 
         #endregion
@@ -804,276 +970,6 @@ namespace Sandcastle
         #endregion
 
         #region Protected Methods
-
-        #region ReferenceAssembler Method
-
-        protected virtual void ReferenceAssembler(BuildSettings settings, 
-            BuildGroup group, XmlWriter xmlWriter)
-        {
-            BuildStyleType styleType = settings.Style.StyleType;
-
-            // 1. For the reference...
-            //<component type="Microsoft.Ddue.Tools.ResolveReferenceLinksComponent" assembly="$(SandcastleComponent)">
-            //<targets base="%DXROOT%\Data\Reflection\" recurse="true"  
-            //   files="*.xml" type="msdn" />
-            //<targets base=".\" recurse="false"  
-            //   files=".\reflection.xml" type="local" />        
-            //</component>
-
-            xmlWriter.WriteComment(" Resolve reference links ");
-            xmlWriter.WriteStartElement("component");    // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.ResolveReferenceLinksComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-            xmlWriter.WriteAttributeString("locale", settings.CultureInfo.Name.ToLower());
-            xmlWriter.WriteAttributeString("linkTarget", 
-                "_" + _extLinkTarget.ToString().ToLower());
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("targets");
-            xmlWriter.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
-            xmlWriter.WriteAttributeString("recurse", "true");
-            xmlWriter.WriteAttributeString("files", "*.xml");
-            xmlWriter.WriteAttributeString("type", 
-                _extLinkType.ToString().ToLower());
-            xmlWriter.WriteEndElement();
-
-            IList<LinkContent> listTokens = group.LinkContents;
-            if (listTokens != null && listTokens.Count != 0)
-            {
-                int contentCount = listTokens.Count;
-                for (int i = 0; i < contentCount; i++)
-                {
-                    LinkContent content = listTokens[i];
-                    if (content == null || content.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    int itemCount = content.Count;
-                    for (int j = 0; j < itemCount; j++)
-                    {
-                        LinkItem item = content[j];
-                        if (item == null || item.IsEmpty)
-                        {
-                            continue;
-                        }
-
-                        xmlWriter.WriteStartElement("targets");
-
-                        if (item.IsDirectory)
-                        {
-                            xmlWriter.WriteAttributeString("base", item.LinkDirectory);
-                            xmlWriter.WriteAttributeString("recurse",
-                                item.Recursive.ToString());
-                            xmlWriter.WriteAttributeString("files", @"*.xml");
-                        }
-                        else
-                        {
-                            string linkFile = item.LinkFile;
-                            string linkDir = Path.GetDirectoryName(linkFile);
-                            if (String.IsNullOrEmpty(linkDir))
-                            {
-                                linkDir = @".\";
-                            }
-                            else
-                            {
-                                linkFile = Path.GetFileName(linkFile);
-                            }
-                            xmlWriter.WriteAttributeString("base", linkDir);
-                            xmlWriter.WriteAttributeString("recurse", "false");
-                            xmlWriter.WriteAttributeString("files", linkFile);
-                        }
-
-                        xmlWriter.WriteAttributeString("type", 
-                            _linkType.ToString().ToLower());
-                        xmlWriter.WriteEndElement();
-                    }
-                }
-            }
-            //<targets base=".\" recurse="false"  
-            //   files=".\reflection.xml" type="local" />        
-            xmlWriter.WriteStartElement("targets");
-            xmlWriter.WriteAttributeString("base", @".\");
-            xmlWriter.WriteAttributeString("recurse", "false");
-            xmlWriter.WriteAttributeString("files", @".\reflection.xml");
-            xmlWriter.WriteAttributeString("type", _linkType.ToString().ToLower());
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.WriteEndElement();                 // end - component
-
-            // 2. For saving the results...
-            //<component type="Microsoft.Ddue.Tools.SaveComponent" assembly="$(SandcastleComponent)">
-            //<save base=".\Output\html" path="..." 
-            //    indent="true" omit-xml-declaration="true" />
-            //</component>
-
-            xmlWriter.WriteComment(" Save the result... ");
-            xmlWriter.WriteStartElement("component");    // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.SaveComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("save");
-            xmlWriter.WriteAttributeString("base",
-                Path.Combine(@".\Output\", this.FormatFolder));
-            string outputExt = this.OutputExtension;
-            if (String.IsNullOrEmpty(outputExt))
-            {
-                outputExt = ".htm";
-            }
-            if (styleType == BuildStyleType.Hana)
-            {
-                //path="concat(/html/head/meta[@name='guid']/@content,'.htm')"
-                xmlWriter.WriteAttributeString("path",
-                    String.Format("concat(/html/head/meta[@name='guid']/@content,'{0}')", 
-                    outputExt));
-            }
-            else
-            {
-                //path="concat(/html/head/meta[@name='file']/@content,'.htm')"
-                xmlWriter.WriteAttributeString("path",
-                    String.Format("concat(/html/head/meta[@name='file']/@content,'{0}')", 
-                    outputExt));
-            }
-            xmlWriter.WriteAttributeString("indent", _outputIndent.ToString());
-            xmlWriter.WriteAttributeString("omit-xml-declaration",
-                _omitXmlDeclaration.ToString());
-            xmlWriter.WriteEndElement();
-            xmlWriter.WriteEndElement();                 // end - component
-        }
-
-        #endregion
-
-        #region ConceptualAssembler Method
-
-        protected virtual void ConceptualAssembler(BuildSettings settings, 
-            BuildGroup group, XmlWriter xmlWriter)
-        {
-            // 1. For the conceptual links...
-            //<!-- resolve conceptual links -->
-            //<component type="Microsoft.Ddue.Tools.ResolveConceptualLinksComponent" assembly="$(SandcastleComponent)">
-            //  <targets base=".\XmlComp" type="local" />
-            //</component>
-            xmlWriter.WriteComment(" Resolve conceptual links ");
-            xmlWriter.WriteStartElement("component");    // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.ResolveConceptualLinksComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("targets");  // start - targets
-            xmlWriter.WriteAttributeString("base", @".\XmlComp");
-            xmlWriter.WriteAttributeString("type", _linkType.ToString().ToLower());
-            xmlWriter.WriteEndElement();             // end - targets
-
-            xmlWriter.WriteEndElement();                 // end - component
-
-            // 2. For the reference links...
-            //<component type="Microsoft.Ddue.Tools.ResolveReferenceLinksComponent2" assembly="$(SandcastleComponent)">
-            //<targets base="%DXROOT%\Data\Reflection\" recurse="true"  
-            //   files="*.xml" type="msdn" />
-            //<targets base=".\" recurse="false"  
-            //   files=".\reflection.xml" type="local" />        
-            //</component>
-
-            xmlWriter.WriteComment(" Resolve reference links ");
-            xmlWriter.WriteStartElement("component");    // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.ResolveReferenceLinksComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-            xmlWriter.WriteAttributeString("locale", settings.CultureInfo.Name.ToLower());
-            xmlWriter.WriteAttributeString("linkTarget", 
-                "_" + _extLinkTarget.ToString().ToLower());
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("targets");
-            xmlWriter.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
-            xmlWriter.WriteAttributeString("recurse", "true");
-            xmlWriter.WriteAttributeString("files", "*.xml");
-            xmlWriter.WriteAttributeString("type", 
-                _extLinkType.ToString().ToLower());
-            xmlWriter.WriteEndElement();
-
-            IList<LinkContent> listTokens = group.LinkContents;
-            if (listTokens != null && listTokens.Count != 0)
-            {
-                int contentCount = listTokens.Count;
-                for (int i = 0; i < contentCount; i++)
-                {
-                    LinkContent content = listTokens[i];
-                    if (content == null || content.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    int itemCount = content.Count;
-                    for (int j = 0; j < itemCount; j++)
-                    {
-                        LinkItem item = content[j];
-                        if (item == null || item.IsEmpty)
-                        {
-                            continue;
-                        }
-
-                        xmlWriter.WriteStartElement("targets");
-
-                        if (item.IsDirectory)
-                        {
-                            xmlWriter.WriteAttributeString("base", item.LinkDirectory);
-                            xmlWriter.WriteAttributeString("recurse",
-                                item.Recursive.ToString());
-                            xmlWriter.WriteAttributeString("files", @"*.xml");
-                        }
-                        else
-                        {
-                            string linkFile = item.LinkFile;
-                            string linkDir = Path.GetDirectoryName(linkFile);
-                            if (String.IsNullOrEmpty(linkDir))
-                            {
-                                linkDir = @".\";
-                            }
-                            else
-                            {
-                                linkFile = Path.GetFileName(linkFile);
-                            }
-                            xmlWriter.WriteAttributeString("base", linkDir);
-                            xmlWriter.WriteAttributeString("recurse", "false");
-                            xmlWriter.WriteAttributeString("files", linkFile);
-                        }
-
-                        xmlWriter.WriteAttributeString("type", 
-                            _linkType.ToString().ToLower());
-                        xmlWriter.WriteEndElement();
-                    }
-                }
-            }
-
-            xmlWriter.WriteEndElement();                 // end - component
-
-            // 3. For saving the results...
-            //<component type="Microsoft.Ddue.Tools.SaveComponent" assembly="$(SandcastleComponent)">
-            //<save base=".\Output\html" path="concat($key,'.htm')" 
-            //    indent="true" omit-xml-declaration="true" />
-            //</component>
-
-            xmlWriter.WriteComment(" Save the result... ");
-            xmlWriter.WriteStartElement("component");    // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.SaveComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("save");
-            xmlWriter.WriteAttributeString("base", 
-                Path.Combine(@".\Output\", this.FormatFolder));
-            string outputExt = this.OutputExtension;
-            if (String.IsNullOrEmpty(outputExt))
-            {
-                outputExt = ".htm";
-            }
-            xmlWriter.WriteAttributeString("path",
-                String.Format("concat($key,'{0}')", outputExt));
-            xmlWriter.WriteAttributeString("indent", _outputIndent.ToString());
-            xmlWriter.WriteAttributeString("omit-xml-declaration",
-                _omitXmlDeclaration.ToString());
-            xmlWriter.WriteEndElement();
-            xmlWriter.WriteEndElement();                 // end - component
-        }
-
-        #endregion
 
         #endregion
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepHxsViewerStart : BuildStep
+    public sealed class StepHxsViewerStart : BuildStep
     {
         #region Private Fields
 
@@ -24,16 +24,18 @@ namespace Sandcastle.Steps
 
         public StepHxsViewerStart()
         {
-            this.Message    = "Opening compiled HtmlHelp file";
+            this.LogTitle         = "Opening compiled Help 2.x file.";
+            this.ContinueOnError = true;
         }
 
         public StepHxsViewerStart(string workingDir, string htmlHelpFile,
             string helpCollection)
             : base(workingDir)
         {
-            _htmlHelpFile   = htmlHelpFile;
-            _helpCollection = helpCollection;
-            this.Message    = "Opening compiled HtmlHelp file";
+            _htmlHelpFile        = htmlHelpFile;
+            _helpCollection      = helpCollection;
+            this.LogTitle         = "Opening compiled Help 2.x file.";
+            this.ContinueOnError = true;
         }
 
         #endregion
@@ -120,7 +122,7 @@ namespace Sandcastle.Steps
 
         #region Protected Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             BuildLogger logger = context.Logger;
             BuildSettings settings = context.Settings;
@@ -150,7 +152,7 @@ namespace Sandcastle.Steps
             // There are three possible installed directories of the Help 2.x viewer,
             // depending on the edition of the Visual Studio installed.
             // We start with the latest edition of the visual studio...
-            bool foundViewer = false;
+            bool foundViewer  = false;
             string viewerPath = null;
             string specialFolder = Environment.GetFolderPath(
                 Environment.SpecialFolder.CommonProgramFiles);
@@ -381,7 +383,6 @@ namespace Sandcastle.Steps
                 logger.WriteLine("Opening: " + _htmlHelpFile, BuildLoggerLevel.Info);
             }
 
-            bool isStarted = false;
             try
             {
                 CultureInfo culture = settings.CultureInfo;
@@ -397,7 +398,14 @@ namespace Sandcastle.Steps
                     helpNamespace, helpTitleId, lcid);
                 Process process = Process.Start(viewerPath, runOptions);
 
-                isStarted = (process != null);
+                // The return could be null, if no process resource is started 
+                // (for example, if an existing process is reused as in browsers).
+                if (process != null)
+                {
+                    process.Close();
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -405,9 +413,9 @@ namespace Sandcastle.Steps
                 {
                     logger.WriteLine(ex, BuildLoggerLevel.Error);
                 }
-            }
 
-            return isStarted;
+                return false;
+            }
         }
 
         #endregion

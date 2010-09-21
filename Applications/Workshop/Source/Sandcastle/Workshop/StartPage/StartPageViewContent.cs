@@ -39,12 +39,20 @@ namespace Sandcastle.Workshop.StartPage
             }
         }
 
-        public override void Save(OpenedFile file, Stream stream)
+        public override void ViewLoad()
         {
+            if (_startpageControl != null)
+            {
+                _startpageControl.ViewLoad();
+            }
         }
 
-        public override void Load(OpenedFile file, Stream stream)
+        public override void ViewUnload()
         {
+            if (_startpageControl != null)
+            {
+                _startpageControl.ViewUnload();
+            }
         }
 
         /// <summary>
@@ -83,7 +91,10 @@ namespace Sandcastle.Workshop.StartPage
             // TODO: Clean up resources in this method
             if (disposing)
             {
-                _startpageControl.Dispose();
+                if (_startpageControl != null)
+                {
+                    _startpageControl.Dispose();
+                }
             }
 
             base.Dispose(disposing);

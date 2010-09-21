@@ -37,21 +37,21 @@
     <Lollipop Position="0.95" />
   </Class>
   <Class Name="Sandcastle.Steps.StepAssembler" Collapsed="true">
-    <Position X="4.25" Y="10.25" Width="1.5" />
+    <Position X="4.25" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAACAAAAAEAAAAAAACACBAABABAAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepAssembler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepChmViewerClose" Collapsed="true">
-    <Position X="0.75" Y="8" Width="1.75" />
+    <Position X="0.75" Y="9" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAEAACAACAgAAAAAAAAIAAAAAAAAAAACAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepChmViewerClose.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepChmViewerStart" Collapsed="true">
-    <Position X="4.5" Y="8" Width="1.75" />
+    <Position X="4.5" Y="9" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAgAAAAAAAAIAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepChmViewerStart.cs</FileName>
@@ -99,7 +99,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepProcess" Collapsed="true">
-    <Position X="2.75" Y="8" Width="1.5" />
+    <Position X="2.75" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAgAAAAAjAEBCAAAgBAAAAAoAQAABCAZoAgAmAAAgI=</HashCode>
       <FileName>Steps\StepProcess.cs</FileName>
@@ -113,16 +113,16 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepChmBuilder" Collapsed="true">
-    <Position X="1.25" Y="9.25" Width="1.5" />
+    <Position X="1.25" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CIAAQACDASQAC1AABAAAAISAAAgACAQAACAAAOBAEAQ=</HashCode>
       <FileName>Steps\StepChmBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepChmCompiler" Collapsed="true">
-    <Position X="4.25" Y="9.25" Width="1.5" />
+    <Position X="4.25" Y="10.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAEAAAABACAAAQAAAAAAAIAAAAAACAAAACAAAMAAAAA=</HashCode>
+      <HashCode>gAEAAAABACAAAQAEAAAAAIAAAAAACBAAACAAAMAAAAA=</HashCode>
       <FileName>Steps\StepChmCompiler.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -160,7 +160,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepHxsCompiler" Collapsed="true">
-    <Position X="1.25" Y="10.25" Width="1.5" />
+    <Position X="1.25" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gIECIAIhADAgVQgkpAAAAIQAgACASEAAAKAAANgQIAI=</HashCode>
       <FileName>Steps\StepHxsCompiler.cs</FileName>
@@ -176,19 +176,19 @@
   <Class Name="Sandcastle.Steps.StepWebBuilder" Collapsed="true">
     <Position X="1.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <HashCode>AAAAAAAAASAAAQAAAAAAAAAAAAAAAAAAAABAAEBAAAA=</HashCode>
       <FileName>Steps\StepWebBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepChmDbcsFix" Collapsed="true">
-    <Position X="1.25" Y="11" Width="1.5" />
+    <Position X="1.25" Y="12" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAASAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAA=</HashCode>
       <FileName>Steps\StepChmDbcsFix.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepXslTransform" Collapsed="true">
-    <Position X="4.25" Y="11" Width="1.5" />
+    <Position X="4.25" Y="12" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepXslTransform.cs</FileName>
@@ -202,7 +202,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepMrefBuilder" Collapsed="true">
-    <Position X="2.75" Y="11.75" Width="1.5" />
+    <Position X="2.75" Y="12.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAACAAAAAAAAAAAAAAACAAAAABAAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepMrefBuilder.cs</FileName>
@@ -213,6 +213,13 @@
     <TypeIdentifier>
       <HashCode>AAIAAAAAACAAAAEAAAAAAAAAAAAAAAABAAAAAEAAAAA=</HashCode>
       <FileName>Steps\StepCleanup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Steps.StepMhvBuilder" Collapsed="true">
+    <Position X="1.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GAACQKABAGgwBQABAAAAAIAAAAAACAAAASAgCMAAAAA=</HashCode>
+      <FileName>Steps\StepMhvBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

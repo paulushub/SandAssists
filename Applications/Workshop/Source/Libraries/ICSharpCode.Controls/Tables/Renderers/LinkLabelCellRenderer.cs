@@ -39,8 +39,28 @@ namespace XPTable.Renderers
 			return this.ClientRectangle;
 		}
 
+        /// <summary>
+        /// Gets the ButtonCellRenderer specific data used by the Renderer from 
+        /// the specified Cell
+        /// </summary>
+        /// <param name="cell">The Cell to get the ButtonCellRenderer data for</param>
+        /// <returns>The ButtonCellRenderer data for the specified Cell</returns>
+        protected LinkLabelRendererData GetLinkRendererData(Cell cell)
+        {
+            LinkLabelRendererData linkData =
+                this.GetRendererData(cell) as LinkLabelRendererData;
 
-		#endregion
+            if (linkData == null)
+            {
+                linkData = new LinkLabelRendererData();
+
+                this.SetRendererData(cell, linkData);
+            }
+
+            return linkData;
+        }
+
+        #endregion
 
 		#region Events
 
@@ -120,8 +140,30 @@ namespace XPTable.Renderers
 		{
             base.OnMouseEnter(e);
 
+            LinkLabelRendererData linkData = this.GetLinkRendererData(e.Cell);
+
+            // if the mouse is inside the button, make sure it is "hot"
+            if (this.CalcButtonBounds().Contains(e.X, e.Y))
+            {
+                if (linkData.ButtonState != PushButtonState.Hot)
+                {
+                    linkData.ButtonState = PushButtonState.Hot;
+
+                    e.Table.Invalidate(e.CellRect);
+                }
+            }
+            // the mouse isn't inside the button, so it is in its normal state
+            else
+            {
+                if (linkData.ButtonState != PushButtonState.Normal)
+                {
+                    linkData.ButtonState = PushButtonState.Normal;
+
+                    e.Table.Invalidate(e.CellRect);
+                }
+            }
+
             e.Table.Cursor = Cursors.Hand;
-            e.Table.Invalidate();
         }
 
 		#endregion
@@ -136,8 +178,17 @@ namespace XPTable.Renderers
 		{
             base.OnMouseLeave(e);
 
-            e.Table.Cursor = Cursors.Arrow;
-            e.Table.Invalidate();
+            LinkLabelRendererData linkData = this.GetLinkRendererData(e.Cell);
+
+            // make sure the button is in its normal state
+            if (linkData.ButtonState != PushButtonState.Normal)
+            {
+                linkData.ButtonState = PushButtonState.Normal;
+
+                e.Table.Invalidate(e.CellRect);
+            }
+
+            e.Table.Cursor = Cursors.Default;
         }
 
 		#endregion
@@ -177,7 +228,65 @@ namespace XPTable.Renderers
 		public override void OnMouseMove(CellMouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-		}
+
+            Rectangle buttonRect = this.CalcButtonBounds();
+
+            LinkLabelRendererData linkData = this.GetLinkRendererData(e.Cell);
+
+            // check if the left mouse button is pressed
+            if (e.Button == MouseButtons.Left)
+            {
+                // check if the mouse press originated in the button area
+                if (buttonRect.Contains(linkData.ClickPoint))
+                {
+                    // check if the mouse is currently in the button
+                    if (buttonRect.Contains(e.X, e.Y))
+                    {
+                        // make sure the button is pressed
+                        if (linkData.ButtonState != PushButtonState.Pressed)
+                        {
+                            linkData.ButtonState = PushButtonState.Pressed;
+
+                            e.Table.Invalidate(e.CellRect);
+                        }
+                    }
+                    else
+                    {
+                        // the mouse isn't inside the button so make sure it is "hot"
+                        if (linkData.ButtonState != PushButtonState.Hot)
+                        {
+                            linkData.ButtonState = PushButtonState.Hot;
+
+                            e.Table.Invalidate(e.CellRect);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // check if the mouse is currently in the button
+                if (buttonRect.Contains(e.X, e.Y))
+                {
+                    // the mouse is inside the button so make sure it is "hot"
+                    if (linkData.ButtonState != PushButtonState.Hot)
+                    {
+                        linkData.ButtonState = PushButtonState.Hot;
+
+                        e.Table.Invalidate(e.CellRect);
+                    }
+                }
+                else
+                {
+                    // not inside the button so make sure it is in its normal state
+                    if (linkData.ButtonState != PushButtonState.Normal)
+                    {
+                        linkData.ButtonState = PushButtonState.Normal;
+
+                        e.Table.Invalidate(e.CellRect);
+                    }
+                }
+            }
+        }
 
 		#endregion
 
@@ -200,8 +309,12 @@ namespace XPTable.Renderers
                 return;
             }
 
-            Font font = new Font(this.Font, FontStyle.Underline);
-            this.ForeBrush.Color = Color.Blue;
+            LinkLabelRendererData linkData = this.GetLinkRendererData(e.Cell);
+
+            Font font = this.Font;
+            //Font font = new Font(this.Font, FontStyle.Underline);
+            this.ForeBrush.Color = linkData.ButtonState == PushButtonState.Hot ? 
+                Color.Red : Color.Blue;
 
             Cell c = e.Cell;
 
@@ -240,8 +353,8 @@ namespace XPTable.Renderers
                 ControlPaint.DrawFocusRectangle(graphics, this.ClientRectangle);
             }
 
-            font.Dispose();
-            font = null;
+            //font.Dispose();
+            //font = null;
         }
 
         /// <summary>

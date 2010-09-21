@@ -24,13 +24,11 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 using XPTable.Models;
-
 
 namespace XPTable.Events
 {
@@ -42,16 +40,14 @@ namespace XPTable.Events
 	/// </summary>
 	public delegate void CellKeyEventHandler(object sender, CellKeyEventArgs e);
 
-	#endregion
-
-
+	#endregion        
 
 	#region CellKeyEventArgs
 	
 	/// <summary>
 	/// Provides data for the CellKeyDown and CellKeyUp events of a Table
 	/// </summary>
-	public class CellKeyEventArgs : KeyEventArgs
+    public sealed class CellKeyEventArgs : KeyEventArgs
 	{
 		#region Private Fields
 

@@ -57,7 +57,6 @@ namespace XPTable.Renderers
 
 		#endregion
 
-
 		#region Constructor
 		
 		/// <summary>
@@ -71,7 +70,6 @@ namespace XPTable.Renderers
 		}
 
 		#endregion
-
 
 		#region Methods
 
@@ -119,44 +117,39 @@ namespace XPTable.Renderers
 
 		#endregion
 
-
 		#region Properties
 
 		/// <summary>
 		/// Gets or sets the width of the dropdown button
 		/// </summary>
-		protected internal int ButtonWidth
+		public int ButtonWidth
 		{
 			get
 			{
 				return this.buttonWidth;
-			}
-
-			set
+			} 
+			protected set
 			{
 				this.buttonWidth = value;
 			}
 		}
 
-
 		/// <summary>
 		/// Gets or sets whether the DropDownCellRenderer dropdown button should be drawn
 		/// </summary>
-		protected bool ShowDropDownButton
+		public bool ShowDropDownButton
 		{
 			get
 			{
 				return this.showButton;
-			}
-
-			set
+			} 
+			protected set
 			{
 				this.showButton = value;
 			}
 		}
 
 		#endregion
-
 
 		#region Events
 

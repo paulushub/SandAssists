@@ -56,6 +56,8 @@ namespace Sandcastle.Formats
             //_tocTrackSelect = false;
             //_tocSingleExpand = false;
             //_tocFullrowSelect = false;
+
+            this.AddProperty("SharedContentSuffix", "Chm");
         }
 
         public FormatChm(FormatChm source)
@@ -503,13 +505,26 @@ namespace Sandcastle.Formats
                         appLocale = Path.Combine(toolsDir, "SBAppLocale.exe");
                     }
                 }
+                string tocTopics = context["$HelpTocFile"];
+
+                FormatChmOptions options = new FormatChmOptions();
+                options.ConfigFile       = Path.Combine(workingDir, "ChmBuilder.config");
+                options.HtmlDirectory    = Path.Combine(workingDir, @"Output\html");
+                options.LangID           = lcid;
+                options.Metadata         = false;
+                options.WorkingDirectory = workingDir;
+                options.OutputDirectory  = Path.Combine(workingDir, helpFolder);
+                options.ProjectName      = helpName;
+                options.TocFile          = Path.Combine(workingDir, tocTopics);
                 
                 BuildMultiStep listSteps = new BuildMultiStep();
+                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTimeSpan = true;
+
                 // 1. Prepare the help html files, and create the html project
                 // ChmBuilder.exe 
                 // /project:Manual /html:Output\html 
                 //   /lcid:1041 /toc:Toc.xml /out:Help
-                string tocTopics   = context["$HelpTocFile"];
                 string application = Path.Combine(context.SandcastleToolsDirectory, 
                     "ChmBuilder.exe");
                 string arguments = String.Format(
@@ -517,24 +532,17 @@ namespace Sandcastle.Formats
                     helpName, lcid, tocTopics, helpFolder);
                 StepChmBuilder chmProcess = new StepChmBuilder(workingDir,
                     application, arguments);
-                chmProcess.Message = "CHM Format - Creating Project and HTML files for the Help 1.x compiler";
+                chmProcess.LogTitle        = String.Empty;
+                chmProcess.Message         = "Creating project and HTML files for the compiler";
                 chmProcess.CopyrightNotice = 2;
                 chmProcess.HelpName      = helpName;
                 chmProcess.HelpFolder    = helpFolder;
-                chmProcess.HelpDirectory = helpDirectory;
-                listSteps.Add(chmProcess);
+                chmProcess.HelpDirectory = helpDirectory;  
+                chmProcess.Options       = options;
+                chmProcess.OptimizeStyle = this.OptimizeStyle;
+                chmProcess.Format        = this;
 
-                // TODO: Testing...
-                FormatChmOptions options = new FormatChmOptions();
-                options.ConfigFile = Path.Combine(workingDir, "ChmBuilder.config");
-                options.HtmlDirectory = Path.Combine(workingDir, @"Output\html");
-                options.LangID = lcid;
-                options.Metadata = false;
-                options.WorkingDirectory = workingDir;
-                options.OutputDirectory = Path.Combine(workingDir, helpFolder);
-                options.ProjectName = helpName;
-                options.TocFile = Path.Combine(workingDir, tocTopics);
-                chmProcess.Options = options;
+                listSteps.Add(chmProcess);
 
                 // 2. Fix the file encoding: DBCSFix.exe /d:Help /l:1033  
                 application = Path.Combine(context.SandcastleToolsDirectory, 
@@ -542,11 +550,12 @@ namespace Sandcastle.Formats
                 arguments = String.Format("/d:{0} /l:{1}", helpFolder + @"\html", lcid);
                 StepChmDbcsFix dbcsFixProcess = new StepChmDbcsFix(workingDir,
                     application, arguments);
-                dbcsFixProcess.Message         = "CHM Converter - Fixing the DBCS for the non-Unicode Help 1.x compiler";
-                dbcsFixProcess.CopyrightNotice = 2;
-                listSteps.Add(dbcsFixProcess);
+                dbcsFixProcess.LogTitle        = String.Empty;
+                dbcsFixProcess.Message         = "Fixing the DBCS for the non-Unicode compiler";
+                dbcsFixProcess.CopyrightNotice = 2;   
+                dbcsFixProcess.Options         = options;
 
-                dbcsFixProcess.Options = options;
+                listSteps.Add(dbcsFixProcess);
 
                 // 3. Compile the Html help files: hhc Help\Manual.hhp
                 application = this.Compiler;
@@ -560,12 +569,14 @@ namespace Sandcastle.Formats
                 }
                 StepChmCompiler hhcProcess = new StepChmCompiler(workingDir,
                     application, arguments);
-                hhcProcess.Message         = "HHC Tool - Compiling the Help 1.x output";
+                hhcProcess.LogTitle        = String.Empty;
+                hhcProcess.Message         = "Compiling the help file (HHC Tool)";
                 hhcProcess.CopyrightNotice = 2;
                 hhcProcess.KeepSources     = _keepSources;
                 hhcProcess.HelpName        = helpName;
                 hhcProcess.HelpFolder      = helpFolder;
                 hhcProcess.HelpDirectory   = helpDirectory;
+
                 listSteps.Add(hhcProcess);
 
                 return listSteps;

@@ -43,8 +43,6 @@ namespace XPTable.Events
 
 	#endregion
 
-
-
 	#region PaintCellEventArgs
 	
 	/// <summary>
@@ -111,7 +109,6 @@ namespace XPTable.Events
 
 		#endregion
 
-
 		#region Constructor
 
 		/// <summary>
@@ -160,7 +157,6 @@ namespace XPTable.Events
 
 		#endregion
 
-
 		#region Properties
 
 		/// <summary>
@@ -174,7 +170,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -183,7 +178,6 @@ namespace XPTable.Events
 		{
 			this.cell = cell;
 		}
-
 
 		/// <summary>
 		/// Gets the Table the Cell belongs to
@@ -196,7 +190,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -205,7 +198,6 @@ namespace XPTable.Events
 		{
 			this.table = table;
 		}
-
 
 		/// <summary>
 		/// Gets the Row index of the Cell
@@ -218,7 +210,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -227,7 +218,6 @@ namespace XPTable.Events
 		{
 			this.row = row;
 		}
-
 
 		/// <summary>
 		/// Gets the Column index of the Cell
@@ -240,7 +230,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -249,7 +238,6 @@ namespace XPTable.Events
 		{
 			this.column = column;
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell is selected
@@ -262,7 +250,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -271,7 +258,6 @@ namespace XPTable.Events
 		{
 			this.selected = selected;
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell has focus
@@ -284,7 +270,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -293,7 +278,6 @@ namespace XPTable.Events
 		{
 			this.focused = focused;
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell's Column is sorted
@@ -306,7 +290,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -315,7 +298,6 @@ namespace XPTable.Events
 		{
 			this.sorted = sorted;
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell is able to be edited
@@ -328,7 +310,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -337,7 +318,6 @@ namespace XPTable.Events
 		{
 			this.editable = editable;
 		}
-
 
 		/// <summary>
 		/// Gets whether the Cell is enabled
@@ -350,7 +330,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -359,7 +338,6 @@ namespace XPTable.Events
 		{
 			this.enabled = enabled;
 		}
-
 
 		/// <summary>
 		/// Gets the Cells bounding rectangle
@@ -372,7 +350,6 @@ namespace XPTable.Events
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -381,7 +358,6 @@ namespace XPTable.Events
 		{
 			this.cellRect = cellRect;
 		}
-
 
 		/// <summary>
 		/// Gets the position of the Cell
@@ -393,7 +369,6 @@ namespace XPTable.Events
 				return new CellPos(this.Row, this.Column);
 			}
 		}
-
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the BeforePaintCell 

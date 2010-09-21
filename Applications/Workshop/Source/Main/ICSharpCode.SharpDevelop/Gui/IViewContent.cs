@@ -143,6 +143,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Builds an <see cref="INavigationPoint"/> for the current position.
 		/// </summary>
 		INavigationPoint BuildNavPoint();
+
+        void ViewLoad();
+        void ViewUnload();
 		
 		#region Secondary view content support
 

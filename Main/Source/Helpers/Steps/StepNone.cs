@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public class StepNone : BuildStep
+    public sealed class StepNone : BuildStep
     {
         #region Private Fields
 
@@ -24,7 +24,7 @@ namespace Sandcastle.Steps
 
         #region Public Methods
 
-        protected override bool MainExecute(BuildContext context)
+        protected override bool OnExecute(BuildContext context)
         {
             return true;
         }

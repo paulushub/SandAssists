@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace Sandcastle
 {
     [Serializable]
-    public abstract class BuildFilter<T> : ICloneable, IXmlSerializable
+    public abstract class BuildFilter<T> : BuildObject, ICloneable, IXmlSerializable
         where T : BuildFilter<T>
     {
         #region Constructors and Destructor

@@ -16,10 +16,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public static class WorkbenchSingleton
 	{
-		const string uiIconStyle             = "IconMenuItem.IconMenuStyle";
-		const string uiLanguageProperty      = "CoreProperties.UILanguage";
-		const string workbenchMemento        = "WorkbenchMemento";
-		const string activeContentState      = "Workbench.ActiveContent";
+		const string uiIconStyle        = "IconMenuItem.IconMenuStyle";
+		const string uiLanguageProperty = "CoreProperties.UILanguage";
+		const string workbenchMemento   = "WorkbenchMemento";
+		const string activeContentState = "Workbench.ActiveContent";
 
 		static STAThreadCaller caller;
 		static IWorkbench workbench;
@@ -27,9 +27,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the main form. Returns null in unit-testing mode.
 		/// </summary>
-		public static Form MainForm {
-			get {
-				if (workbench != null) {
+		public static Form MainForm 
+        {
+			get 
+            {
+				if (workbench != null) 
+                {
 					return workbench.MainForm;
 				}
 				return null;
@@ -39,22 +42,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the workbench. Returns null in unit-testing mode.
 		/// </summary>
-		public static IWorkbench Workbench {
-			get {
+		public static IWorkbench Workbench 
+        {
+			get 
+            {
 				return workbench;
 			}
 		}
 		
-		public static Control ActiveControl {
-			get {
+		public static Control ActiveControl 
+        {
+			get 
+            {
 				ContainerControl container = WorkbenchSingleton.MainForm;
-				Control ctl;
-				do {
+				Control ctl = null;
+				do 
+                {
 					ctl = container.ActiveControl;
 					if (ctl == null)
 						return container;
 					container = ctl as ContainerControl;
 				} while(container != null);
+
 				return ctl;
 			}
 		}
@@ -64,8 +73,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </remarks>
 		static void TrackPropertyChanges(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.OldValue != e.NewValue && workbench != null) {
-				switch (e.Key) {
+			if (e.OldValue != e.NewValue && workbench != null) 
+            {
+				switch (e.Key) 
+                {
 					case "ICSharpCode.SharpDevelop.Gui.StatusBarVisible":
 					case "ICSharpCode.SharpDevelop.Gui.VisualStyle":
 					case "ICSharpCode.SharpDevelop.Gui.ToolBarVisible":
@@ -87,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InitializeWorkbench(new Workbench(), new WorkbenchLayout());
 		}
 		
-		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
+		public static void InitializeWorkbench(Workbench workbench, WorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
 
@@ -110,9 +121,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WinFormsMessageService.DialogSynchronizeInvoke = workbench.MainForm;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
-			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
+			ResourceService.LanguageChanged += delegate 
+            {
+                if (workbench != null && !workbench.IsDisposed)
+                {
+                    workbench.RedrawAllComponents(); 
+                }
+            };
 						
-			ApplicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+			ApplicationStateInfoService.RegisterStateGetter(activeContentState, 
+                delegate 
+                { 
+                    return WorkbenchSingleton.Workbench.ActiveContent; 
+                }
+                );
 
             // attach workbench layout -> load pads
             workbench.WorkbenchLayout = layout;
@@ -123,13 +145,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.ProjectService.InitializeService();
 			NavigationService.InitializeService();
 			
-			workbench.ActiveContentChanged += delegate {
+			workbench.ActiveContentChanged += delegate 
+            {
 				LoggingService.Debug("ActiveContentChanged to " + workbench.ActiveContent);
 			};
-			workbench.ActiveViewContentChanged += delegate {
+			workbench.ActiveViewContentChanged += delegate 
+            {
 				LoggingService.Debug("ActiveViewContentChanged to " + workbench.ActiveViewContent);
 			};
-			workbench.ActiveWorkbenchWindowChanged += delegate {
+			workbench.ActiveWorkbenchWindowChanged += delegate 
+            {
 				LoggingService.Debug("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
 			};
 
@@ -149,12 +174,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 
             FileService.Unload();
 			
-			if (WorkbenchUnloaded != null) {
+			if (WorkbenchUnloaded != null) 
+            {
 				WorkbenchUnloaded(null, EventArgs.Empty);
 			}
 		}
 		
 		#region Safe Thread Caller
+
 		/// <summary>
 		/// Helper class for invoking methods on the main thread.
 		/// </summary>
@@ -207,12 +234,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static bool InvokeRequired {
-			get {
-				if (workbench == null)
-					return false; // unit test mode, don't crash
-				else
-					return workbench.MainForm.InvokeRequired;
+		public static bool InvokeRequired 
+        {
+			get 
+            {
+                if (workbench == null || workbench.IsDisposed)
+                {
+                    return false; // unit test mode, don't crash
+                }
+                else
+                {
+                    return workbench.MainForm.InvokeRequired;
+                }
 			}
 		}
 		
@@ -231,6 +264,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void AssertMainThread()
 		{
+            if (workbench == null || workbench.IsDisposed)
+            {
+                return;
+            }
+
 			if (InvokeRequired) {
 				throw new InvalidOperationException("This operation can be called on the main thread only.");
 			}
@@ -355,7 +393,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static void OnWorkbenchCreated()
 		{
-			if (WorkbenchCreated != null) {
+			if (WorkbenchCreated != null) 
+            {
 				WorkbenchCreated(null, EventArgs.Empty);
 			}
 		}

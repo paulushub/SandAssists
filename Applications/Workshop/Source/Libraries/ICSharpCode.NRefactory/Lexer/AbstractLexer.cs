@@ -29,8 +29,8 @@ namespace ICSharpCode.NRefactory.Parser
 		protected Token lastToken = null;
 		protected Token curToken  = null;
 		protected Token peekToken = null;
-		
-		string[]  specialCommentTags = null;
+
+        IList<string> specialCommentTags = null;
 		protected Hashtable specialCommentHash  = null;
 		List<TagComment> tagComments  = new List<TagComment>();
 		protected StringBuilder sb              = new StringBuilder();
@@ -119,14 +119,15 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Special comment tags are tags like TODO, HACK or UNDONE which are read by the lexer and stored in <see cref="TagComments"/>.
 		/// </summary>
-		public string[] SpecialCommentTags {
+        public IList<string> SpecialCommentTags
+        {
 			get {
 				return specialCommentTags;
 			}
 			set {
 				specialCommentTags = value;
 				specialCommentHash = null;
-				if (specialCommentTags != null && specialCommentTags.Length > 0) {
+				if (specialCommentTags != null && specialCommentTags.Count > 0) {
 					specialCommentHash = new Hashtable();
 					foreach (string str in specialCommentTags) {
 						specialCommentHash.Add(str, null);

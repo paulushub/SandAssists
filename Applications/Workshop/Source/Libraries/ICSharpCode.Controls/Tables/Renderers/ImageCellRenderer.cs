@@ -24,7 +24,6 @@
  * OF SUCH DAMAGE.
  */
 
-
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -33,7 +32,6 @@ using System.Windows.Forms;
 
 using XPTable.Events;
 using XPTable.Models;
-
 
 namespace XPTable.Renderers
 {

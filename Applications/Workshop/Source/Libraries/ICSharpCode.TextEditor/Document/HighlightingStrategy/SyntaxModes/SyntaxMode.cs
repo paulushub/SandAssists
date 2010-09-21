@@ -15,9 +15,25 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public class SyntaxMode
 	{
-		string   fileName;
-		string   name;
-		string[] extensions;
+		private string   fileName;
+        private string name;
+        private string[] extensions;
+
+        private ISyntaxModeFileProvider _provider;
+
+        public SyntaxMode(string fileName, string name, string extensions)
+        {
+            this.fileName = fileName;
+            this.name = name;
+            this.extensions = extensions.Split(';', '|', ',');
+        }
+
+        public SyntaxMode(string fileName, string name, string[] extensions)
+        {
+            this.fileName = fileName;
+            this.name = name;
+            this.extensions = extensions;
+        }
 		
 		public string FileName {
 			get {
@@ -45,32 +61,34 @@ namespace ICSharpCode.TextEditor.Document
 				extensions = value;
 			}
 		}
-		
-		public SyntaxMode(string fileName, string name, string extensions)
-		{
-			this.fileName   = fileName;
-			this.name       = name;
-			this.extensions = extensions.Split(';', '|', ',');
-		}
-		
-		public SyntaxMode(string fileName, string name, string[] extensions)
-		{
-			this.fileName = fileName;
-			this.name = name;
-			this.extensions = extensions;
-		}
+
+        internal ISyntaxModeFileProvider Provider
+        {
+            get
+            {
+                return _provider;
+            }
+            set
+            {
+                _provider = value;
+            }
+        }
 		
 		public static List<SyntaxMode> GetSyntaxModes(Stream xmlSyntaxModeStream)
 		{
             XmlReader reader = XmlReader.Create(xmlSyntaxModeStream);
 			List<SyntaxMode> syntaxModes = new List<SyntaxMode>();
-			while (reader.Read()) {
-				switch (reader.NodeType) {
+			while (reader.Read()) 
+            {
+				switch (reader.NodeType) 
+                {
 					case XmlNodeType.Element:
-						switch (reader.Name) {
+						switch (reader.Name) 
+                        {
 							case "SyntaxModes":
 								string version = reader.GetAttribute("version");
-								if (version != "1.0") {
+								if (version != "1.0") 
+                                {
 									throw new HighlightingDefinitionInvalidException("Unknown syntax mode file defininition with version " + version);
 								}
 								break;
@@ -88,9 +106,12 @@ namespace ICSharpCode.TextEditor.Document
 			reader.Close();
 			return syntaxModes;
 		}
+
 		public override string ToString() 
 		{
-			return String.Format("[SyntaxMode: FileName={0}, Name={1}, Extensions=({2})]", fileName, name, String.Join(",", extensions));
+			return String.Format(
+                "[SyntaxMode: FileName={0}, Name={1}, Extensions=({2})]", 
+                fileName, name, String.Join(",", extensions));
 		}
 	}
 }

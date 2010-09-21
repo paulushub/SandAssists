@@ -173,7 +173,7 @@ namespace Sandcastle.References
 
             // 1. For the auto-documentation options...
             if (String.Equals(category, AutoDoc,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_autoDocument != null)
                 {
@@ -184,7 +184,7 @@ namespace Sandcastle.References
             }
             // 2. For the missing-documentation options...
             if (String.Equals(category, Missing,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_missingDocument != null)
                 {
@@ -195,7 +195,7 @@ namespace Sandcastle.References
             }
             // 3. For the included-documentation options...
             if (String.Equals(category, Included,
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_includedDocument != null)
                 {

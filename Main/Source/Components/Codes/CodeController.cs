@@ -145,45 +145,45 @@ namespace Sandcastle.Components.Codes
 
             // For C#
             if (String.Equals(codeLang, "c#",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "CSharp";
                 _lastHighlighter = _csHighlighter;
             }
             else if (String.Equals(codeLang, "cs",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "CSharp";
                 _lastHighlighter = _csHighlighter;
             }
             else if (String.Equals(codeLang, "CSharp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "CSharp";
                 _lastHighlighter = _csHighlighter;
             }    
             // For Visual Basic
             else if (String.Equals(codeLang, "vbnet",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "VisualBasic";
                 _lastHighlighter = _vbHighlighter;
             }
             else if (String.Equals(codeLang, "vb",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "VisualBasic";
                 _lastHighlighter = _vbHighlighter;
             }
             else if (String.Equals(codeLang, "VisualBasic",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 _lastCodeId      = "VisualBasic";
                 _lastHighlighter = _vbHighlighter;
             }  
             // For C++
             else if (String.Equals(codeLang, "cpp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_cppHighlighter == null)
                 {
@@ -195,7 +195,7 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _cppHighlighter;
             }
             else if (String.Equals(codeLang, "ManagedCPlusPlus",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_cppHighlighter == null)
                 {
@@ -207,7 +207,7 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _cppHighlighter;
             } 
             else if (String.Equals(codeLang, "cpp#",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_cppHighlighter == null)
                 {
@@ -220,7 +220,7 @@ namespace Sandcastle.Components.Codes
             } 
             // For JSharp
             else if (String.Equals(codeLang, "j#",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_javaHighlighter == null)
                 {
@@ -232,7 +232,7 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _javaHighlighter;
             }
             else if (String.Equals(codeLang, "JSharp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_javaHighlighter == null)
                 {
@@ -245,7 +245,7 @@ namespace Sandcastle.Components.Codes
             } 
             // For HTML
             else if (String.Equals(codeLang, "html",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_htmlHighlighter == null)
                 {
@@ -258,7 +258,7 @@ namespace Sandcastle.Components.Codes
             } 
             // For XML and related
             else if (String.Equals(codeLang, "xml",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_xmlHighlighter == null)
                 {
@@ -270,7 +270,7 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _xmlHighlighter;
             }
             else if (String.Equals(codeLang, "xaml",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_xmlHighlighter == null)
                 {
@@ -282,7 +282,7 @@ namespace Sandcastle.Components.Codes
                 _lastHighlighter = _xmlHighlighter;
             }
             else if (String.Equals(codeLang, "xmlLang",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_xmlHighlighter == null)
                 {
@@ -296,7 +296,7 @@ namespace Sandcastle.Components.Codes
             else
             {
                 if (String.Equals(codeLang, "vb-c#",
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     _lastCodeId = "VisualBasicAndCSharp";
                 }
@@ -411,12 +411,12 @@ namespace Sandcastle.Components.Codes
         public static CodeController GetInstance(string buildType)
         {
             if (String.Equals(buildType, "conceptual",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _conceptualHighlighter;
             }
             else if (String.Equals(buildType, "reference",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return _referenceHighlighter;
             }
@@ -427,7 +427,7 @@ namespace Sandcastle.Components.Codes
         public static void Create(string buildType, CodeHighlightMode mode)
         {
             if (String.Equals(buildType, "conceptual",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_conceptualHighlighter == null ||
                     _conceptualHighlighter._highlightMode != mode)
@@ -436,7 +436,7 @@ namespace Sandcastle.Components.Codes
                 }
             }
             else if (String.Equals(buildType, "reference",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 if (_referenceHighlighter == null ||
                     _referenceHighlighter._highlightMode != mode)
@@ -449,52 +449,52 @@ namespace Sandcastle.Components.Codes
         public static string GetCodeAttribute(string snippetLang)
         {   
             if (String.Equals(snippetLang, "CSharp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "c#";
             }
             if (String.Equals(snippetLang, "VisualBasic",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "vb";
             }
             if (String.Equals(snippetLang, "ManagedCPlusPlus",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "cpp";
             }
             if (String.Equals(snippetLang, "JSharp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "j#";
             }
             if (String.Equals(snippetLang, "XmlLang",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "xml";
             }
             if (String.Equals(snippetLang, "Xaml",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "xaml";
             }
             if (String.Equals(snippetLang, "Html",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "html";
             }
             if (String.Equals(snippetLang, "JScript",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "js";
             }
             if (String.Equals(snippetLang, "VBScript",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "vbs";
             }
             if (String.Equals(snippetLang, "VisualBasicAndCSharp",
-                StringComparison.CurrentCultureIgnoreCase))
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "vb-c#";
             }

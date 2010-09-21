@@ -11,6 +11,7 @@ using System.Linq;
 using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -69,7 +70,8 @@ namespace ICSharpCode.SharpDevelop.Gui
             {
 				// DetachContent must be called before the controls are disposed
 				this.ViewContents.Clear();
-				if (this.TabPageContextMenu != null) {
+				if (this.TabPageContextMenu != null) 
+                {
 					this.TabPageContextMenu.Dispose();
 					this.TabPageContextMenu = null;
 				}
@@ -85,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         public event EventHandler ActiveViewContentChanged;
 
-        public System.Enum InternalState
+        public Enum InternalState
         {
             get
             {
@@ -104,11 +106,14 @@ namespace ICSharpCode.SharpDevelop.Gui
             }
         }
 		
-		public string Title {
-			get {
+		public string Title 
+        {
+			get 
+            {
 				return Text;
 			}
-			set {
+			set 
+            {
 				Text = value;
 				OnTitleChanged(EventArgs.Empty);
 			}
@@ -257,7 +262,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			content.TabPageTextChanged += OnTabPageTextChanged;
 			content.TitleNameChanged   += OnTitleNameChanged;
-			content.DirtyChanged     += OnIsDirtyChanged;
+			content.DirtyChanged       += OnIsDirtyChanged;
 		}
 
         private void UnregisterContent(IViewContent content)
@@ -266,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			content.TabPageTextChanged -= OnTabPageTextChanged;
 			content.TitleNameChanged   -= OnTitleNameChanged;
-			content.DirtyChanged     -= OnIsDirtyChanged;
+			content.DirtyChanged       -= OnIsDirtyChanged;
 		}
 
         private void OnTabPageTextChanged(object sender, EventArgs e)
@@ -372,34 +377,53 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         private void OnTitleChanged(EventArgs e)
 		{
-			if (TitleChanged != null) {
+			if (TitleChanged != null) 
+            {
 				TitleChanged(this, e);
 			}
 		}
-		
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            if (viewContents != null)
+            {
+                viewContents.ViewLoad();
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
 		{
-			e.Cancel = !CloseWindow(false);
+            base.OnFormClosing(e);
+
+            bool isClosed = CloseWindow(false);
+
+            e.Cancel = !isClosed;
 		}
 
         private void OnCloseEvent(EventArgs e)
 		{
 			OnWindowDeselected(e);
-			if (WindowClosed != null) {
+
+			if (WindowClosed != null) 
+            {
 				WindowClosed(this, e);
 			}
 		}
 		
 		public void OnWindowSelected(EventArgs e)
 		{
-			if (WindowSelected != null) {
+			if (WindowSelected != null) 
+            {
 				WindowSelected(this, e);
 			}
 		}
 		
 		public void OnWindowDeselected(EventArgs e)
 		{
-			if (WindowDeselected != null) {
+			if (WindowDeselected != null) 
+            {
 				WindowDeselected(this, e);
 			}
 		}
@@ -470,13 +494,31 @@ namespace ICSharpCode.SharpDevelop.Gui
         {
             readonly WorkbenchWindow window;
 
-            internal ViewContentCollection(WorkbenchWindow window)
+            public ViewContentCollection(WorkbenchWindow window)
             {
                 this.window = window;
             }
 
+            public void ViewLoad()
+            {
+                foreach (IViewContent vc in this)
+                {
+                    vc.ViewLoad();
+                }
+            }
+
+            public void ViewUnload()
+            {
+                foreach (IViewContent vc in this)
+                {
+                    vc.ViewUnload();
+                }
+            }
+
             protected override void ClearItems()
             {
+                this.ViewUnload();
+
                 foreach (IViewContent vc in this)
                 {
                     window.UnregisterContent(vc);
