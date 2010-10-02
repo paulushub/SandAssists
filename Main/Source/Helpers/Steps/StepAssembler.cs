@@ -101,7 +101,8 @@ namespace Sandcastle.Steps
 
             if (buildResult && _logger != null && !String.IsNullOrEmpty(_lastMessage))
             {
-                if (_lastLevel == BuildLoggerLevel.Info && 
+                if (_lastLevel == BuildLoggerLevel.Info &&
+                    _verbosity == BuildLoggerVerbosity.Normal &&
                     _verbosity != BuildLoggerVerbosity.Quiet)
                 {
                     _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
@@ -148,7 +149,7 @@ namespace Sandcastle.Steps
             string levelText = textData.Substring(0, findPos);
             _lastMessage = textData.Substring(findPos + 1).Trim();
             if (String.Equals(levelText, "Info"))
-            {   
+            {
                 if (_verbosity == BuildLoggerVerbosity.Detailed ||
                     _verbosity == BuildLoggerVerbosity.Diagnostic)
                 {

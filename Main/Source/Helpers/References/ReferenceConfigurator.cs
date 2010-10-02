@@ -636,7 +636,15 @@ namespace Sandcastle.References
             BuildFramework framework = _settings.Framework;
             if (framework != null)
             {
-                framework.WriteAssembler(_context, _group, xmlWriter);
+                //framework.WriteAssembler(_context, _group, xmlWriter);
+                //TODO - For now just write the default...
+
+                xmlWriter.WriteStartElement("data");  // start - data
+                xmlWriter.WriteAttributeString("base",
+                    @"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\");
+                xmlWriter.WriteAttributeString("recurse", "false");
+                xmlWriter.WriteAttributeString("files", "*.xml");
+                xmlWriter.WriteEndElement();          // end - data
             }
 
             IList<ReferenceItem> listItems = _group.Items;

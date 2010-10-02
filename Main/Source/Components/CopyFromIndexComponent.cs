@@ -240,6 +240,10 @@ namespace Sandcastle.Components
                 XPathExpression keyExpression = copyCommand.Key.Clone();
                 keyExpression.SetContext(_context);
                 string keyValue = (string)document.CreateNavigator().Evaluate(keyExpression);
+                if (String.IsNullOrEmpty(keyValue))
+                {
+                    continue;
+                }
 
                 XPathNavigator data = copyCommand.Index.GetContent(keyValue);
 
@@ -304,7 +308,8 @@ namespace Sandcastle.Components
                 // notify if no source found
                 if (sourceCount == 0)
                 {
-                    WriteMessage(copyCommand.MissingSource, String.Format("Source node '{0}' not found.", sourceExpression.Expression));
+                    WriteMessage(copyCommand.MissingSource, String.Format(
+                        "Source node '{0}' not found.", sourceExpression.Expression));
                 }
 
                 foreach (CopyComponent component in _copyComponents)

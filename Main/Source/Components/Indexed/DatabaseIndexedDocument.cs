@@ -10,6 +10,8 @@ using BplusDotNet;
 
 using Microsoft.Ddue.Tools;
 
+using Sandcastle.ReflectionData;
+
 namespace Sandcastle.Components.Indexed
 {
     public sealed class DatabaseIndexedDocument : IndexedDocument
@@ -26,48 +28,30 @@ namespace Sandcastle.Components.Indexed
 
         private XmlReaderSettings _settings;
 
+        private TargetDictionary  _targetIds;
+
         #endregion
 
         #region Constructors and Destructor
 
-        public DatabaseIndexedDocument(bool isSystem)
+        public DatabaseIndexedDocument(bool isSystem, bool createNotFound)
         {
             _isSystem = isSystem;
-
-            _settings = new XmlReaderSettings();
-            _settings.ConformanceLevel = ConformanceLevel.Fragment;            
 
             string assemblyPath = Path.GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
 
-            string workingDir    = Path.Combine(assemblyPath, "Data");
-            if (!Directory.Exists(workingDir))
-            {
-                Directory.CreateDirectory(workingDir);
-            }
-            if (_isSystem)
-            {   
-                _treeFileName  = Path.Combine(workingDir, "RefT2.6.10621.1.dat");
-                _blockFileName = Path.Combine(workingDir, "RefB2.6.10621.1.dat");
-            }
-            else
-            {
-                string tempFile = Path.GetFileNameWithoutExtension(
-                    Path.GetTempFileName());
-                _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
-                _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
-            }
+            string workingDir = Path.Combine(assemblyPath, "Data");
 
-            if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
-            {
-                _isExisted = true;
-                _plusTree  = hBplusTree.ReOpen(_treeFileName, _blockFileName);
-            }
-            else
-            {
-                _plusTree = hBplusTree.Initialize(_treeFileName, 
-                    _blockFileName, 64);
-            }
+            this.Initialize(workingDir, createNotFound);
+        }
+
+        public DatabaseIndexedDocument(bool isSystem, bool createNotFound,
+            string workingDir)
+        {
+            _isSystem = isSystem;
+
+            this.Initialize(workingDir, createNotFound);
         }
 
         #endregion
@@ -98,9 +82,17 @@ namespace Sandcastle.Components.Indexed
         {
             XPathNavigator navigator = null;
 
-            if (_plusTree != null && _plusTree.ContainsKey(key))
+            if (_plusTree != null)
             {
-                string innerXml = _plusTree[key];
+                string innerXml = null;
+                if (_targetIds != null && _targetIds.Contains(key))
+                {
+                    innerXml = _plusTree[key];
+                }
+                else if (_plusTree.ContainsKey(key))
+                {
+                    innerXml = _plusTree[key];
+                }
 
                 if (String.IsNullOrEmpty(innerXml))
                 {
@@ -184,6 +176,56 @@ namespace Sandcastle.Components.Indexed
             {
                 source.WriteMessage(MessageLevel.Error,
                     String.Format("The indexed document '{0}' is not a valid XML document. The error message is: {1}", file, e.Message));
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Initialize(string workingDir, bool createNotFound)
+        {
+            _settings = new XmlReaderSettings();
+            _settings.ConformanceLevel = ConformanceLevel.Fragment;
+
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+            if (_isSystem)
+            {
+                _treeFileName  = Path.Combine(workingDir, "RefT2.6.10621.1.dat");
+                _blockFileName = Path.Combine(workingDir, "RefB2.6.10621.1.dat");
+            }
+            else
+            {
+                string tempFile = Path.GetFileNameWithoutExtension(
+                    Path.GetTempFileName());
+                _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
+                _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
+            }
+
+            if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
+            {
+                _isExisted = true;
+                _plusTree  = hBplusTree.ReOpen(_treeFileName, _blockFileName);
+            }
+            else
+            {
+                if (createNotFound)
+                {
+                    _plusTree = hBplusTree.Initialize(_treeFileName,
+                        _blockFileName, 64);
+                }
+            }
+
+            _targetIds = TargetDictionary.Dictionary;
+            if (_targetIds != null)
+            {
+                if (!_targetIds.Exists || _targetIds.Count == 0)
+                {
+                    _targetIds = null;
+                }
             }
         }
 

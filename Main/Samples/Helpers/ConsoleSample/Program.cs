@@ -9,7 +9,7 @@ using Sandcastle.References;
 using Sandcastle.Configurators;
 
 using Sandcastle.Loggers;
-using Sandcastle.Reflections;
+using Sandcastle.ReflectionData;
 
 namespace Sandcastle.Helpers.Sample
 {
@@ -17,25 +17,65 @@ namespace Sandcastle.Helpers.Sample
     {
         static void Main(string[] args)
         {
-            try
-            {
-                ReflectionIndexedBuilder indexedBuilder =
-                    new ReflectionIndexedBuilder();
+            //try
+            //{
+            //    TargetDictionaryBuilder targetDictionary =
+            //        new TargetDictionaryBuilder();
 
-                if (!indexedBuilder.Exists)
-                {
-                    Console.WriteLine("Please wait, building reflection database...");
-                    indexedBuilder.AddDocuments();
-                }
+            //    if (!targetDictionary.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building target lists...");
+            //        targetDictionary.Build();
+            //    }
 
-                indexedBuilder.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+            //    targetDictionary.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
 
-                return;
-            }
+            //    return;
+            //}
+
+            //try
+            //{
+            //    DatabaseTargetBinaryBuilder targetBuilder =
+            //        new DatabaseTargetBinaryBuilder();
+
+            //    if (!targetBuilder.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building target binary database...");
+            //        targetBuilder.Build();
+            //    }
+
+            //    targetBuilder.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+
+            //    return;
+            //}
+
+            //try
+            //{
+            //    ReflectionIndexedBuilder indexedBuilder =
+            //        new ReflectionIndexedBuilder();
+
+            //    if (!indexedBuilder.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building reflection database...");
+            //        indexedBuilder.AddDocuments();
+            //    }
+
+            //    indexedBuilder.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+
+            //    return;
+            //}
 
             bool useCustomStyles = false;
 
@@ -54,7 +94,7 @@ namespace Sandcastle.Helpers.Sample
 
             BuildSettings settings = documenter.Settings;
             settings.WorkingDirectory = workingDir;
-            settings.CleanIntermediate = true;
+            settings.CleanIntermediate = false;
             settings.ShowPreliminary = true;            
             settings.Style.StyleType = styleType;
             //settings.SyntaxType = BuildSyntaxType.None;

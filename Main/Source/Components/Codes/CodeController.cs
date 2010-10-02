@@ -10,7 +10,7 @@ using Sandcastle.Components.Snippets;
 
 namespace Sandcastle.Components.Codes
 {
-    public sealed class CodeController : MarshalByRefObject
+    public sealed class CodeController
     {
         #region Private Fields
 

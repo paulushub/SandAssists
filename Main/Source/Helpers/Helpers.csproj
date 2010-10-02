@@ -82,34 +82,25 @@
     <Compile Include="BuildConfigurationCoverage.cs" />
     <Compile Include="BuildConfigurationList.cs" />
     <Compile Include="BuildConfigurationType.cs" />
-    <Compile Include="BuildInsertType.cs" />
     <Compile Include="BuildStyleUtils.cs" />
     <Compile Include="Configurators\IncludeContentList.cs" />
     <Compile Include="BuildConverter.cs" />
     <Compile Include="BuildDocumenter.cs" />
     <Compile Include="BuildErrorEventArgs.cs" />
     <Compile Include="BuildEventArgs.cs" />
-    <Compile Include="BuildFeedback.cs" />
-    <Compile Include="BuildFeedbackType.cs" />
     <Compile Include="BuildFinishedEventArgs.cs" />
     <Compile Include="BuildFormat.cs" />
     <Compile Include="BuildFormatAssembler.cs" />
     <Compile Include="BuildFormatType.cs" />
-    <Compile Include="BuildFramework.cs" />
     <Compile Include="BuildGroup.cs" />
     <Compile Include="BuildGroupType.cs" />
     <Compile Include="BuildSettings.cs" />
     <Compile Include="BuildStyle.cs" />
     <Compile Include="BuildStyleType.cs" />
-    <Compile Include="BuildSyntaxType.cs" />
     <Compile Include="BuildToc.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BuildStage.cs" />
     <Compile Include="BuildStartedEventArgs.cs" />
-    <Compile Include="BuildState.cs" />
-    <Compile Include="BuildSystem.cs" />
-    <Compile Include="BuildType.cs" />
     <Compile Include="BuildVisitor.cs" />
     <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
     <Compile Include="Conceptual\ConceptualTocFilter.cs" />
@@ -187,8 +178,6 @@
     <Compile Include="References\ReferenceTocVisitor.cs" />
     <Compile Include="References\ReferenceNamespaceFilter.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
-    <Compile Include="Reflections\ReflectionIndexedBuilder.cs" />
-    <Compile Include="Reflections\ReflectionIndexedDocument.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
     <Compile Include="Steps\StepSleep.cs" />

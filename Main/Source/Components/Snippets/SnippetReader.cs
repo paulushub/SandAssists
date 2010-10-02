@@ -5,7 +5,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components.Snippets
 {
-    public abstract class SnippetReader : MarshalByRefObject, IDisposable
+    public abstract class SnippetReader : IDisposable
     {
         #region Private Fields
 

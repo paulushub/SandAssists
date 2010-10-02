@@ -167,9 +167,9 @@ namespace Sandcastle.Conceptual
                 group["$ManifestFile"] =
                     String.Format("TopicsManifest{0}.xml", indexText);
                 group["$ConfigurationFile"] =
-                    String.Format("Conceptual{0}.config", indexText);
+                    String.Format("TopicsBuildAssembler{0}.config", indexText);
                 group["$BuildManifestFile"] =
-                    String.Format("BuildManifest{0}.proj.xml", indexText);
+                    String.Format("TopicsProjectManifest{0}.xml", indexText);
                 group["$BuildTocFile"] =
                     String.Format("Toc{0}.xml", indexText);
                 group["$BuildTocTechReviewFile"] =

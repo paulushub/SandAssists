@@ -94,6 +94,12 @@ namespace Sandcastle.Components
 
                 _workingDir = displayLogDir;
                 Directory.CreateDirectory(_workingDir);
+
+                if (!String.IsNullOrEmpty(_writeStage))
+                {
+                    // Since the output text is in the XML format...
+                    _writeStage = "<!-- " + _writeStage + " -->";
+                }
             }
             catch (Exception ex)
             {

@@ -106,25 +106,6 @@ namespace Sandcastle
 
         #region Public Methods
 
-        public void WriteAssembler(BuildContext context, 
-            BuildGroup group, XmlWriter xmlWriter)
-        {
-            BuildExceptions.NotNull(context, "context");
-            BuildExceptions.NotNull(group, "group");
-            BuildExceptions.NotNull(xmlWriter, "xmlWriter");
-
-            // <data base="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\" 
-            //  recurse="false"  files="*.xml" />
-            //TODO - For now just write the default...
-
-            xmlWriter.WriteStartElement("data");  // start - data
-            xmlWriter.WriteAttributeString("base", 
-                @"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\");
-            xmlWriter.WriteAttributeString("recurse", "false");
-            xmlWriter.WriteAttributeString("files", "*.xml");
-            xmlWriter.WriteEndElement();          // end - data
-        }
-
         #endregion
 
         #region ICloneable Members

@@ -10,7 +10,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components.Maths
 {
-    public abstract class MathFormatter : MarshalByRefObject, IDisposable
+    public abstract class MathFormatter : IDisposable
     {
         #region Private Fields
 

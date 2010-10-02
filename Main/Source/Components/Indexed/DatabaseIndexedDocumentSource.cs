@@ -24,7 +24,7 @@ namespace Sandcastle.Components.Indexed
             int cacheSize, bool isSystem)
             : base(component, keyXPath, valueXPath, context, cacheSize)
         {
-            _document = new DatabaseIndexedDocument(isSystem);
+            _document = new DatabaseIndexedDocument(isSystem, false);
             _cache    = new DatabaseIndexedDocumentCache(100);
         }
 

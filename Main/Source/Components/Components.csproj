@@ -91,6 +91,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +115,7 @@
     <Compile Include="Codes\CodeHighlightMode.cs" />
     <Compile Include="Copiers\CopyComponentEx.cs" />
     <Compile Include="Copiers\InheritDocCopyComponent.cs" />
+    <Compile Include="TargetController.cs" />
     <Compile Include="CopyFromIndexCommand.cs" />
     <Compile Include="CopyFromIndexComponent.cs" />
     <Compile Include="FileDisplayComponent.cs">
@@ -129,6 +132,7 @@
     <Compile Include="Indexed\MemoryIndexedDocument.cs" />
     <Compile Include="Indexed\MemoryIndexedDocumentCache.cs" />
     <Compile Include="Indexed\MemoryIndexedDocumentSource.cs" />
+    <Compile Include="IntellisenseComponent.cs" />
     <Compile Include="LinkComponent.cs" />
     <Compile Include="MathComponent.cs" />
     <Compile Include="Maths\MathFormatter.cs" />
@@ -194,6 +198,11 @@
     <None Include="Diagrams\Indexed.cd" />
     <None Include="Diagrams\Maths.cd" />
     <None Include="Diagrams\OtherBuildComponents.cd" />
+    <None Include="Diagrams\ReferenceLinks.cd" />
+    <None Include="Diagrams\References.cd" />
+    <None Include="Diagrams\TargetCollections.cd" />
+    <None Include="Diagrams\TargetMsdnResolvers.cd" />
+    <None Include="Diagrams\Targets.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -206,6 +215,13 @@
   <ItemGroup>
     <Content Include="Docs\N.Sandcastle.Builders.xml" />
     <Content Include="Docs\P.Sandcastle.Builders.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReflectionData\ReflectionData.csproj">
+      <Project>{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}</Project>
+      <Name>ReflectionData</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Codes\Docs\" />

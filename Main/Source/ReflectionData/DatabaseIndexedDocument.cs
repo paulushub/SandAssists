@@ -8,9 +8,9 @@ using System.Collections.Generic;
 
 using BplusDotNet;
 
-namespace Sandcastle.Reflections
+namespace Sandcastle.ReflectionData
 {
-    public sealed class ReflectionIndexedDocument
+    public sealed class DatabaseIndexedDocument
     {
         #region Private Fields
 
@@ -28,7 +28,7 @@ namespace Sandcastle.Reflections
 
         #region Constructors and Destructor
 
-        public ReflectionIndexedDocument(bool isSystem)
+        public DatabaseIndexedDocument(bool isSystem)
         {
             _isSystem = isSystem;
 
@@ -68,7 +68,7 @@ namespace Sandcastle.Reflections
             }
         }
 
-        ~ReflectionIndexedDocument()
+        ~DatabaseIndexedDocument()
         {
             this.Dispose(false);
         }
@@ -121,7 +121,7 @@ namespace Sandcastle.Reflections
             return navigator;
         }
 
-        public void AddDocument(ReflectionIndexedBuilder builder, string file)
+        public void AddDocument(DatabaseIndexedBuilder builder, string file)
         {
             BuildExceptions.NotNull(builder, "builder");
             BuildExceptions.NotNull(file,   "file");

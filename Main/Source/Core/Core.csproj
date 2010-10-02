@@ -74,10 +74,19 @@
     <Compile Include="BuildCredentials.cs" />
     <Compile Include="BuildDeployment.cs" />
     <Compile Include="BuildDirCopier.cs" />
+    <Compile Include="BuildFeedback.cs" />
+    <Compile Include="BuildFeedbackType.cs" />
+    <Compile Include="BuildFramework.cs" />
+    <Compile Include="BuildInsertType.cs" />
     <Compile Include="BuildPrompt.cs" />
     <Compile Include="BuildPromptButtons.cs" />
     <Compile Include="BuildPromptIcon.cs" />
     <Compile Include="BuildPromptResult.cs" />
+    <Compile Include="BuildStage.cs" />
+    <Compile Include="BuildState.cs" />
+    <Compile Include="BuildSyntaxType.cs" />
+    <Compile Include="BuildSystem.cs" />
+    <Compile Include="BuildType.cs" />
     <Compile Include="Utilities\PathSearch.cs" />
     <Compile Include="BuildException.cs" />
     <Compile Include="BuildExceptions.cs" />
@@ -198,6 +207,7 @@
     <None Include="Resources\HtmlLogCss.css" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Diagrams\BuildLists.cd" />
     <None Include="Resources\HtmlLogJs.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

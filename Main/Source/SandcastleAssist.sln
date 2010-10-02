@@ -21,11 +21,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{048F177F-802E-494D-89E0-CD4074F8A33C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReflectionData", "ReflectionData\ReflectionData.csproj", "{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs06.codeplex.com/
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = Builders\\Builders.csproj
 		SccProjectName1 = Builders
@@ -45,6 +47,9 @@ Global
 		SccProjectUniqueName6 = Core\\Core.csproj
 		SccProjectName6 = Core
 		SccLocalPath6 = Core
+		SccProjectUniqueName7 = ReflectionData\\ReflectionData.csproj
+		SccProjectName7 = ReflectionData
+		SccLocalPath7 = ReflectionData
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -101,6 +106,14 @@ Global
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{048F177F-802E-494D-89E0-CD4074F8A33C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Analysis|Any CPU.ActiveCfg = Documentation|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Analysis|Any CPU.Build.0 = Documentation|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

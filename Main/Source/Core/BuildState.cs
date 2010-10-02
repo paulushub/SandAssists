@@ -5,8 +5,6 @@ namespace Sandcastle
     /// <summary>
     /// This specifies or indicates the current state of the build process.
     /// </summary>
-    /// <seealso cref="BuildContext.State"/>
-    /// <seealso cref="BuildContext.SetState(BuildState)"/>
     [Serializable]
     public enum BuildState
     {

@@ -387,12 +387,12 @@ namespace Sandcastle
 
                     if (!buildStep.Execute())
                     {
-                        if (logger != null)
-                        {
-                            logger.WriteLine(
-                                "An error occurred in the multi-step = " + i.ToString(),
-                                BuildLoggerLevel.Error);
-                        }
+                        //if (logger != null)
+                        //{
+                        //    logger.WriteLine(
+                        //        "An error occurred in the multi-step = " + i.ToString(),
+                        //        BuildLoggerLevel.Error);
+                        //}
                         context.StepError(buildStep);
 
                         if (!buildStep.ContinueOnError)

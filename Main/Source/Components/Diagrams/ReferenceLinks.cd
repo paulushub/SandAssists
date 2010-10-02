@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.ReflectionData.ReferenceTextUtilities" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAAkkgCAgACABDACIAEBIAAAAAQAAIAAEAAYCAAAAI=</HashCode>
+      <FileName>Targets\ReferenceTextUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ReferenceLinkTextResolver" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>UCMQgQAgAgAABEAIACAAAAAAAAIgRgqQsAC0AAAAgAA=</HashCode>
+      <FileName>Targets\ReferenceLinkTextResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ReferenceLinkInfo" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAgAAAAAQAAAAgBAAAAACAAQAAAAEAAIEAAAABAAAA=</HashCode>
+      <FileName>Targets\ReferenceLinkInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.ReflectionData.ReferenceLinkDisplayOptions">
+    <Position X="0.75" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACIAAAIAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Targets\ReferenceLinkTextResolver.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.ReflectionData.ReferenceLinkType">
+    <Position X="3.5" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABACAAAAAQAAAAAAAAABAAAAAABAAAAAAAEAAAEAAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

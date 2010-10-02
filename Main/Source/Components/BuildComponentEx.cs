@@ -65,6 +65,7 @@ namespace Sandcastle.Components
                 message = ex.ToString();
             }
             this.WriteMessage(level,  message);
+            //this.WriteMessage(level, ex.ToString());
             //this.WriteMessage(level, String.Format("Exception({0}) - {1}",
             //    ex.GetType().FullName, message));
         }

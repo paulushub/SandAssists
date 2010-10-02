@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.ReflectionData.Reference" Collapsed="true">
+    <Position X="3.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAACAAAAAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ReferenceType" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.008" />
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.NamespaceReference" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAACAAAAAAAAAAAACAAAAAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TypeReference" Collapsed="true">
+    <Position X="3.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.SimpleTypeReference" Collapsed="true">
+    <Position X="6.75" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAACAAAAAAAAAAAACAAAAAAAAAAAAoAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.SpecializedTypeReference" Collapsed="true">
+    <Position X="1.25" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAACAAAAAAAAAAAAgAQIAEA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TemplateTypeReference" Collapsed="true">
+    <Position X="3.5" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.IndexedTemplateTypeReference" Collapsed="true">
+    <Position X="6" Y="7.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAACAAAAAIBAAAEAwAAJAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.NamedTemplateTypeReference" Collapsed="true">
+    <Position X="1.25" Y="8.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQCAAAEAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TypeTemplateTypeReference" Collapsed="true">
+    <Position X="0.5" Y="7.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABgAAAAIAACAAAAAAAAAAIAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.MethodTemplateTypeReference" Collapsed="true">
+    <Position X="5.25" Y="8.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAABgAAAAIAACAAAAAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ArrayTypeReference" Collapsed="true">
+    <Position X="0.5" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAABBAAAAQQAAAAAAAAAAAACAAAAAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ReferenceTypeReference" Collapsed="true">
+    <Position X="5.75" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAACAAAACAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.PointerTypeReference" Collapsed="true">
+    <Position X="2.5" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAACAAAAAAAAAAAAgAAICAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.MemberReference" Collapsed="true">
+    <Position X="3.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ExtensionMethodReference" Collapsed="true">
+    <Position X="6.5" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAQiAAAAAAIAAIAAgACIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.SimpleMemberReference" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAACAAAABAAAAAAACAAAAAAAAAAAAgAAIAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.SpecializedMemberReference" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAACAAABAAAACAAAgAAMAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.SpecializedMemberWithParametersReference" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACIAABAgAACAAAgACMAgA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.InvalidReference" Collapsed="true">
+    <Position X="1.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAIAgA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.ReflectionData.ReferenceType" Collapsed="true">
+    <Position X="6.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEEAIAEEAEAAAAAAAAAAAAEQAAIgAABAIAAAEMAAA=</HashCode>
+      <FileName>Targets\References.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

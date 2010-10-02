@@ -6,7 +6,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components.Snippets
 {
-    public abstract class SnippetProvider : MarshalByRefObject, IDisposable
+    public abstract class SnippetProvider : IDisposable
     {
         #region Private Fields
 

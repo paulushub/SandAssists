@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Xml.Xsl;
 using System.Xml.XPath;
 using System.Text;
 using System.Reflection;
@@ -8,9 +9,9 @@ using System.Collections.Generic;
 
 using BplusDotNet;
 
-namespace Sandcastle.Reflections
+namespace Sandcastle.ReflectionData
 {
-    public sealed class ReflectionIndexedBuilder : IDisposable
+    public sealed class DatabaseIndexedBuilder : IDisposable
     {
         #region Private Fields
 
@@ -20,15 +21,15 @@ namespace Sandcastle.Reflections
         // search pattern for the index keys (relative to the index value node)
         private XPathExpression _keyExpression;
 
-        private ReflectionIndexedDocument _document;
+        private DatabaseIndexedDocument _document;
 
         #endregion
 
         #region Constructors and Destructor
 
-        public ReflectionIndexedBuilder()
+        public DatabaseIndexedBuilder()
         {
-            _document             = new ReflectionIndexedDocument(true);
+            _document             = new DatabaseIndexedDocument(true);
 
             // The following are the usual key/value in the configuration file...
             string keyXPath       = "@id";
@@ -42,7 +43,7 @@ namespace Sandcastle.Reflections
             _valueExpression.SetContext(context);
         }
 
-        ~ReflectionIndexedBuilder()
+        ~DatabaseIndexedBuilder()
         {
             this.Dispose(false);
         }
@@ -174,4 +175,113 @@ namespace Sandcastle.Reflections
 
         #endregion
     }
+
+    #region CustomContext Class
+
+    internal sealed class CustomContext : XsltContext
+    {
+        // variable control
+        private Dictionary<string, IXsltContextVariable> variables;
+
+        public CustomContext()
+            : base()
+        {
+            variables = new Dictionary<string, IXsltContextVariable>();
+        }
+
+        public string this[string variable]
+        {
+            get
+            {
+                return (variables[variable].Evaluate(this).ToString());
+            }
+            set
+            {
+                variables[variable] = new CustomVariable(value);
+            }
+        }
+
+        public bool ClearVariable(string name)
+        {
+            return (variables.Remove(name));
+        }
+
+        public void ClearVariables()
+        {
+            variables.Clear();
+        }
+
+        // Implementation of XsltContext methods
+
+        public override IXsltContextVariable ResolveVariable(
+            string prefix, string name)
+        {
+            return (variables[name]);
+        }
+
+        public override IXsltContextFunction ResolveFunction(
+            string prefix, string name, XPathResultType[] argumentTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int CompareDocument(string baseUri, string nextBaseUri)
+        {
+            return (0);
+        }
+
+        public override bool Whitespace
+        {
+            get
+            {
+                return (true);
+            }
+        }
+
+        public override bool PreserveWhitespace(XPathNavigator node)
+        {
+            return (true);
+        }
+    }
+
+    internal sealed class CustomVariable : IXsltContextVariable
+    {
+        private string value;
+
+        public CustomVariable(string value)
+        {
+            this.value = value;
+        }
+
+        public bool IsLocal
+        {
+            get
+            {
+                return (false);
+            }
+        }
+
+        public bool IsParam
+        {
+            get
+            {
+                return (false);
+            }
+        }
+
+        public XPathResultType VariableType
+        {
+            get
+            {
+                return (XPathResultType.String);
+            }
+        }
+
+        public Object Evaluate(XsltContext context)
+        {
+            return (value);
+        }
+    }
+
+    #endregion
 }

@@ -30,7 +30,7 @@ namespace Sandcastle.Components.Indexed
 
         public DatabaseIndexedBuilder()
         {
-            _document             = new DatabaseIndexedDocument(true);
+            _document             = new DatabaseIndexedDocument(true, true);
 
             // The following are the usual key/value in the configuration file...
             string keyXPath       = "@id";

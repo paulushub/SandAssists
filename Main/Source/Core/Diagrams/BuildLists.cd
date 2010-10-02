@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.BuildList&lt;T&gt;" Collapsed="true">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAABAAAAgJAAIBAAgAAAAQAgAAAAEAAAAAAAAABA=</HashCode>
+      <FileName>BuildList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.867" />
+  </Class>
+  <Class Name="System.Collections.ObjectModel.Collection&lt;T&gt;" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Sandcastle.BuildKeyedList&lt;T&gt;" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>IAIAAABAAAAgJAAIDAAgAAAAQAgABAAEAAAgAAAAABA=</HashCode>
+      <FileName>BuildKeyedList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.033" />
+  </Class>
+  <Class Name="Sandcastle.BuildListEventArgs&lt;T&gt;" Collapsed="true">
+    <Position X="1.75" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgAIAAAAgAAAIAAAAEgAAQAgAAAEAAAAAEAAAAAAAA=</HashCode>
+      <FileName>BuildListEventArgs.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ChangeType" />
+    </ShowAsAssociation>
+  </Class>
+  <Enum Name="Sandcastle.BuildListChangeType">
+    <Position X="2" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAEAAgAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>BuildListChangeType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

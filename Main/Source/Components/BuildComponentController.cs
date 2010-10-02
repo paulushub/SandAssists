@@ -5,14 +5,14 @@ using Sandcastle.Components.Others;
 
 namespace Sandcastle.Components
 {
-    public sealed class BuildComponentController : MarshalByRefObject
+    public sealed class BuildComponentController
     {
         private static BuildComponentController _buildController;
 
         private IList<VersionInfo> _currentVersions;
         private Dictionary<string, VersionInfo> _versionInfo;
 
-        public BuildComponentController()
+        private BuildComponentController()
         {
             _versionInfo     = new Dictionary<string, VersionInfo>(
                 StringComparer.OrdinalIgnoreCase);

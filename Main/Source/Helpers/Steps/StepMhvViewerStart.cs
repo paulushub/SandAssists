@@ -640,14 +640,30 @@ namespace Sandcastle.Steps
                     return false;
                 }
                 else
-                {  
-                    if (logger != null)
+                {
+                    // Verify the successful installation.
+                    // Even with an indication of success, the Help Library 
+                    // Manager process might have being cancelled...
+                    if (this.IsHelpLocaleBookInstalled(context))
                     {
-                        logger.WriteLine("The installation was successful.", 
-                            BuildLoggerLevel.Info);
-                    }
+                        if (logger != null)
+                        {
+                            logger.WriteLine("The installation was successful.",
+                                BuildLoggerLevel.Info);
+                        }
 
-                    return true;
+                        return true;
+                    }
+                    else
+                    {
+                        if (logger != null)
+                        {
+                            logger.WriteLine("The installation failed. The installation is probably cancelled.",
+                                BuildLoggerLevel.Error);
+                        }
+
+                        return false;
+                    }  
                 }
             }
             catch (Exception ex)
@@ -831,7 +847,7 @@ namespace Sandcastle.Steps
             }
 
             // 2. Examine the vendor directory...
-            string vendorDir = Path.Combine(_helpLocalStore, "content" + company);
+            string vendorDir = Path.Combine(_helpLocalStore, @"content\" + company);
             if (!Directory.Exists(vendorDir))
             {
                 return false;

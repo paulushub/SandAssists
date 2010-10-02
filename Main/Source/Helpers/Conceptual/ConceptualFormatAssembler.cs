@@ -323,8 +323,8 @@ namespace Sandcastle.Conceptual
 
             writer.WriteComment(" Resolve reference links ");
             writer.WriteStartElement("component");    // start - component
-            writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ResolveReferenceLinksComponent");
-            writer.WriteAttributeString("assembly", "$(SandcastleComponent)");
+            writer.WriteAttributeString("type", "Sandcastle.Components.ReferenceLinkComponent");
+            writer.WriteAttributeString("assembly", "$(SandAssistComponent)");
             writer.WriteAttributeString("locale", settings.CultureInfo.Name.ToLower());
             writer.WriteAttributeString("linkTarget",
                 "_" + format.ExternalLinkTarget.ToString().ToLower());

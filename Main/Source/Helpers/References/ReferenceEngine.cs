@@ -227,7 +227,7 @@ namespace Sandcastle.References
                 group["$ManifestFile"] =
                     String.Format("ApiManifest{0}.xml", indexText);
                 group["$ConfigurationFile"] =
-                    String.Format("Reference{0}.config", indexText);
+                    String.Format("ApiBuildAssembler{0}.config", indexText);
                 group["$ReflectionFile"] =
                     String.Format("Reflection{0}.xml", indexText);
                 group["$ReflectionBuilderFile"] =

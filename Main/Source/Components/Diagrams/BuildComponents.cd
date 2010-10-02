@@ -15,14 +15,14 @@
   <Class Name="Sandcastle.Components.MathComponent" Collapsed="true">
     <Position X="4" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAIAAABACAAAACAIAhAYAAAAAAAKAAAAAAAAAAAAAI=</HashCode>
+      <HashCode>ABAIAAABAKAAAACAIAjAQAAAAAAAKAAAAAAAAAAAAAI=</HashCode>
       <FileName>MathComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.PostTransComponent" Collapsed="true">
     <Position X="1.75" Y="7.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>ASiEAAZBQBBAAAARUAQAAABgSABDBoADTABBEAgAISA=</HashCode>
+      <HashCode>ASiFAAZBQBBAEQARUAQAACBgSABDBoADXAJREAgAISA=</HashCode>
       <FileName>PostTransComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -37,8 +37,8 @@
     <Position X="0.5" Y="4.25" Width="2.25" />
     <InheritanceLine Type="Sandcastle.Components.CodeComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2" Y="3.375" />
-        <Point X="1.562" Y="3.375" />
+        <Point X="2" Y="3.312" />
+        <Point X="1.562" Y="3.312" />
         <Point X="1.562" Y="4.25" />
       </Path>
     </InheritanceLine>
@@ -48,12 +48,12 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ReferenceCodeComponent" Collapsed="true">
-    <Position X="0.5" Y="2" Width="2" />
+    <Position X="0.5" Y="1.75" Width="2" />
     <InheritanceLine Type="Sandcastle.Components.CodeComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2" Y="3.375" />
-        <Point X="1.562" Y="3.375" />
-        <Point X="1.562" Y="2.63" />
+        <Point X="2" Y="3.312" />
+        <Point X="1.562" Y="3.312" />
+        <Point X="1.562" Y="2.38" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -65,8 +65,8 @@
     <Position X="5" Y="4.25" Width="2.25" />
     <InheritanceLine Type="Sandcastle.Components.MathComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="5.5" Y="3.25" />
-        <Point X="6" Y="3.25" />
+        <Point X="5.5" Y="3.375" />
+        <Point X="6" Y="3.375" />
         <Point X="6" Y="4.25" />
       </Path>
     </InheritanceLine>
@@ -76,26 +76,26 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ReferenceMathComponent" Collapsed="true">
-    <Position X="5" Y="2" Width="2" />
+    <Position X="5" Y="1.75" Width="2" />
     <InheritanceLine Type="Sandcastle.Components.MathComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="5.5" Y="3.25" />
-        <Point X="6" Y="3.25" />
-        <Point X="6" Y="2.63" />
+        <Point X="5.5" Y="3.375" />
+        <Point X="6" Y="3.375" />
+        <Point X="6" Y="2.38" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAADAAAAAAIAAAAAIEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAAADACAAAAIAAAAAIEAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ReferenceMathComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ConceptualPreTransComponent" Collapsed="true">
-    <Position X="5" Y="6.25" Width="2.5" />
+    <Position X="4.5" Y="6.25" Width="2.5" />
     <InheritanceLine Type="Sandcastle.Components.PreTransComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.75" Y="7.812" />
-        <Point X="6.312" Y="7.812" />
-        <Point X="6.312" Y="6.88" />
+        <Point X="6.062" Y="7.812" />
+        <Point X="6.062" Y="6.88" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -104,12 +104,12 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ReferencePreTransComponent" Collapsed="true">
-    <Position X="5.25" Y="8.75" Width="2.25" />
+    <Position X="5" Y="8.75" Width="2.25" />
     <InheritanceLine Type="Sandcastle.Components.PreTransComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.75" Y="7.812" />
-        <Point X="6.312" Y="7.812" />
-        <Point X="6.312" Y="8.75" />
+        <Point X="6.062" Y="7.812" />
+        <Point X="6.062" Y="8.75" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -121,8 +121,8 @@
     <Position X="0.5" Y="6.25" Width="2.5" />
     <InheritanceLine Type="Sandcastle.Components.PostTransComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="1.75" Y="7.875" />
-        <Point X="1.438" Y="7.875" />
+        <Point X="1.75" Y="7.812" />
+        <Point X="1.438" Y="7.812" />
         <Point X="1.438" Y="6.88" />
       </Path>
     </InheritanceLine>
@@ -135,46 +135,32 @@
     <Position X="0.5" Y="8.75" Width="2.5" />
     <InheritanceLine Type="Sandcastle.Components.PostTransComponent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="1.75" Y="7.875" />
-        <Point X="1.438" Y="7.875" />
+        <Point X="1.75" Y="7.812" />
+        <Point X="1.438" Y="7.812" />
         <Point X="1.438" Y="8.75" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAACAAAAABAAAAIAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEACAAAAABACAAIAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ReferencePostTransComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.MediaComponent" Collapsed="true">
-    <Position X="3" Y="1.25" Width="1.5" />
+    <Position X="3" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAQAAAACgQAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
       <FileName>MediaComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ConceptualMediaComponent" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="2.25" />
-    <InheritanceLine Type="Sandcastle.Components.MediaComponent" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="3" Y="1.562" />
-        <Point X="1.625" Y="1.562" />
-        <Point X="1.625" Y="1.13" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ConceptualMediaComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.ReferenceMediaComponent" Collapsed="true">
     <Position X="4.75" Y="0.5" Width="2.25" />
-    <InheritanceLine Type="Sandcastle.Components.MediaComponent" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.5" Y="1.562" />
-        <Point X="6" Y="1.562" />
-        <Point X="6" Y="1.13" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ReferenceMediaComponent.cs</FileName>
@@ -211,14 +197,14 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAEAAAQABAAAAAAAEAAgBAAAAAAAAAAAAAgAIAAAgA=</HashCode>
       <FileName>ReferenceLinkComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.BuildComponentEx" Collapsed="true">
     <Position X="3" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAAgACAAAAAAAYAAAAAAACAAAABAAABAAAAAAAA=</HashCode>
+      <HashCode>AACAQAAgACIAAAAAAYAAAAAQACAAAABAAABAAAEAAAA=</HashCode>
       <FileName>BuildComponentEx.cs</FileName>
     </TypeIdentifier>
   </Class>

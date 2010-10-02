@@ -73,8 +73,9 @@ namespace Sandcastle.Formats
             BuildSettings settings = context.Settings;
 
             string workingDir    = _options.WorkingDirectory;
-            string treeFileName  = Path.Combine(workingDir, "webTreeFile.dat");
-            string blockFileName = Path.Combine(workingDir, "webBlockFile.dat");
+            workingDir           = Path.Combine(workingDir, "Data");
+            string treeFileName  = Path.Combine(workingDir, "WebTreeFile.dat");
+            string blockFileName = Path.Combine(workingDir, "WebBlockFile.dat");
 
             try
             {

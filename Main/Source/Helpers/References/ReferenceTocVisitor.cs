@@ -9,7 +9,7 @@ namespace Sandcastle.References
     {
         #region Private Fields
 
-        private bool _isEnabled;
+        private bool   _isEnabled;
         private string _name;
 
         #endregion

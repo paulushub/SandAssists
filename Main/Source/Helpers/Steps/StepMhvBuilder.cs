@@ -356,7 +356,7 @@ namespace Sandcastle.Steps
                 xmlWriter.WriteStartElement("html", "http://www.w3.org/1999/xhtml"); // html
                 xmlWriter.WriteStartElement("head"); //head
                 xmlWriter.WriteStartElement("title"); // title
-                xmlWriter.WriteString("Optional: may be useful for tools used to generate these files.");
+                xmlWriter.WriteString(displayedName);
                 xmlWriter.WriteEndElement(); //title
                 xmlWriter.WriteEndElement(); // head
 

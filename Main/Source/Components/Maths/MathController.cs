@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Components.Maths
 {
-    public sealed class MathController : MarshalByRefObject
+    public sealed class MathController
     {
         #region Public Constant Fields
 

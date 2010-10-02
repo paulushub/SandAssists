@@ -40,7 +40,7 @@ namespace Sandcastle.Formats
         private BuildLogger  _logger;
         private BuildContext _context;
 
-        private BplusTree _plusTree;
+        private BplusTree    _plusTree;
 
         public FormatChmHelper(FormatChmOptions options)
         {
@@ -88,7 +88,7 @@ namespace Sandcastle.Formats
                 return dir;
         }
 
-        public void Run(BuildContext context)
+        public bool Run(BuildContext context)
         {
             _context = context;
             _logger  = context.Logger;
@@ -96,23 +96,40 @@ namespace Sandcastle.Formats
             BuildSettings settings = context.Settings;
 
             string workingDir    = _options.WorkingDirectory;
-            string treeFileName  = Path.Combine(workingDir, "treeFile.dat");
-            string blockFileName = Path.Combine(workingDir, "blockFile.dat");
+            workingDir           = Path.Combine(workingDir, "Data");
+            string treeFileName  = Path.Combine(workingDir, "ChmTreeFile.dat");
+            string blockFileName = Path.Combine(workingDir, "ChmBlockFile.dat");
 
-            _plusTree    = hBplusTree.Initialize(treeFileName, blockFileName, 64);
-            _indentCount = 0;
-
-            WriteHtmls();
-            WriteHhk();
-            if (_hasToc) 
-                WriteHhc();
-            WriteHhp();
-
-            if (_plusTree != null)
+            try
             {
-                //_plusTree.Commit();
-                _plusTree.Shutdown();
+                _plusTree    = hBplusTree.Initialize(treeFileName, blockFileName, 64);
+                _indentCount = 0;
+
+                WriteHtmls();
+                WriteHhk();
+                if (_hasToc)
+                    WriteHhc();
+                WriteHhp();
+
+                return true;
             }
+            catch (System.Exception ex)
+            {
+            	if (_logger != null)
+                {
+                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
+                }
+
+                return false;
+            }
+            finally
+            {   
+                if (_plusTree != null)
+                {
+                    //_plusTree.Commit();
+                    _plusTree.Shutdown();
+                }
+            }  
         }
 
         /// <summary>

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.ReflectionData.TargetMsdnResolver" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAABAAAMAEAAACAAAAAA=</HashCode>
+      <FileName>Targets\TargetMsdnResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.DatabaseMsdnResolver" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAMAAAAAAAEAAAA=</HashCode>
+      <FileName>Targets\DatabaseMsdnResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.MemoryMsdnResolver" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAgAAAMAAAAAAAAAAAA=</HashCode>
+      <FileName>Targets\MemoryMsdnResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TargetMsdnResolvers" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.75" />
+    <AssociationLine Name="MemoryResolver" Type="Sandcastle.ReflectionData.MemoryMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.062" Y="2.441" />
+        <Point X="4.062" Y="2.816" />
+        <Point X="5.75" Y="2.816" />
+        <Point X="5.75" Y="2.441" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="DatabaseResolver" Type="Sandcastle.ReflectionData.DatabaseMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.125" Y="2.441" />
+        <Point X="3.125" Y="2.816" />
+        <Point X="1.5" Y="2.816" />
+        <Point X="1.5" Y="2.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.423" Y="0.118" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAOEAAAQAAAAAAA=</HashCode>
+      <FileName>Targets\TargetMsdnResolvers.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MemoryResolver" />
+      <Property Name="DatabaseResolver" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TargetMsdnController" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.75" />
+    <AssociationLine Name="MemoryResolver" Type="Sandcastle.ReflectionData.MemoryMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.5" Y="3.531" />
+        <Point X="6.375" Y="3.531" />
+        <Point X="6.375" Y="2.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.11" Y="0.827" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="DatabaseResolver" Type="Sandcastle.ReflectionData.DatabaseMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.75" Y="3.531" />
+        <Point X="0.938" Y="3.531" />
+        <Point X="0.938" Y="2.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.407" Y="0.785" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAQAAAAAACAAAAAAAAABAAAGEEAAQAEAAAAA=</HashCode>
+      <FileName>Targets\TargetMsdnController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MemoryResolver" />
+      <Property Name="DatabaseResolver" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
