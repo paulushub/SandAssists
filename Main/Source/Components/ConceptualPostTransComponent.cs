@@ -16,7 +16,7 @@ using Sandcastle.Components.Snippets;
 
 namespace Sandcastle.Components
 {
-    public class ConceptualPostTransComponent : PostTransComponent
+    public sealed class ConceptualPostTransComponent : PostTransComponent
     {
         #region Private Fields
 

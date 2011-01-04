@@ -3,7 +3,7 @@
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class TokenItem : BuildItem<TokenItem>, IBuildNamedItem
+    public sealed class TokenItem : BuildItem<TokenItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -15,6 +15,7 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public TokenItem()
+            : this(Guid.NewGuid().ToString(), String.Empty)
         {
         }
 
@@ -55,10 +56,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _key;
-            }
-            set
-            {
-                _key = value;
             }
         }
 

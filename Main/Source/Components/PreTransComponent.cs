@@ -1,5 +1,5 @@
 using System;
-using System.Text;
+using System.IO;
 using System.Collections.Generic;
 
 using System.Xml;
@@ -16,6 +16,28 @@ namespace Sandcastle.Components
         protected PreTransComponent(BuildAssembler assembler, 
             XPathNavigator configuration) : base(assembler, configuration)
         {
+            BuildLocalizedContents localizedContents = 
+                BuildLocalizedContents.Instance;
+            if (localizedContents != null && !localizedContents.IsInitialized)
+            {
+                XPathNavigator navigator = configuration.SelectSingleNode(
+                    "BuildLocalizedContents");
+                if (navigator != null)
+                {
+                    string contentFile = navigator.GetAttribute("file", 
+                        String.Empty);
+                    if (!String.IsNullOrEmpty(contentFile))
+                    {
+                        contentFile = Environment.ExpandEnvironmentVariables(contentFile);
+                        contentFile = Path.GetFullPath(contentFile);
+
+                        if (File.Exists(contentFile))
+                        {
+                            localizedContents.Initialize(contentFile, assembler.MessageHandler);
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

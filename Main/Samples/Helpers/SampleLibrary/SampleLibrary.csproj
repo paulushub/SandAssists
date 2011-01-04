@@ -59,8 +59,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AClass.cs" />
+    <Compile Include="AEnum.cs" />
+    <Compile Include="AFormatType.cs" />
+    <Compile Include="AStruct.cs" />
+    <Compile Include="BClass.cs" />
+    <Compile Include="CClass.cs" />
     <Compile Include="CodeSnippets.cs" />
+    <Compile Include="DClass.cs" />
     <Compile Include="Equation.cs" />
+    <Compile Include="GClass.cs" />
+    <Compile Include="IAClass.cs" />
+    <Compile Include="IBClass.cs" />
+    <Compile Include="Others.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Point3D.cs" />
     <Compile Include="PointCollection.cs" />

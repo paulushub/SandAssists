@@ -4,9 +4,13 @@ using System.Xml;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 using Sandcastle.Formats;
+using Sandcastle.Contents;
+using Sandcastle.Conceptual;
+using Sandcastle.References;
 
 namespace Sandcastle
 {
@@ -56,7 +60,7 @@ namespace Sandcastle
     /// </list>
     /// </remarks>
     [Serializable]
-    public class BuildSettings : BuildObject<BuildSettings>
+    public class BuildSettings : BuildOptions<BuildSettings>, ISupportInitialize
     {
         #region Private Fields
 
@@ -65,7 +69,6 @@ namespace Sandcastle
         private bool   _keepLogFile;
         private string _logFileName;
 
-        private bool   _isInitialized;
         private bool   _cleanIntermediate;
         private bool   _showUpdated;
         private bool   _showPreliminary;
@@ -73,9 +76,6 @@ namespace Sandcastle
 
         private bool   _isHelpApi;
         private bool   _isHelpTopics;
-
-        private bool   _rootContainer;
-        private string _rootTitle;
 
         private string _helpName;
         private string _helpTitle;
@@ -90,6 +90,10 @@ namespace Sandcastle
         private string _sandcastleDir;
         private string _sandassistDir;
 
+        private SharedContent     _sharedContent;
+        private IncludeContent    _includeContent;
+        private AttributeContent  _attributeContent;
+
         private CultureInfo       _outputCulture;
         private BuildStyle        _outputStyle;
         private BuildFeedback     _outputFeedback;
@@ -99,8 +103,10 @@ namespace Sandcastle
         private BuildLoggerVerbosity _verbosity;
 
         private List<string>               _outputFolders;
-        private List<BuildFormat>          _listFormats;
+        private BuildFormatList            _listFormats;
         private Dictionary<string, string> _properties;
+
+        private BuildEngineSettingsList    _listEngineSettings;
 
         #endregion
 
@@ -118,19 +124,24 @@ namespace Sandcastle
             _keepLogFile     = true;
             _logFileName     = "HelpBuild.log";
 
-            _rootContainer   = true;
-            _rootTitle       = "Programmer's Reference";
-
             _helpName        = "Documentation";
             _helpTitle       = "Sandcastle Documentation";
             _outputStyle     = new BuildStyle();
-            _listFormats     = new List<BuildFormat>();
+            _listFormats     = new BuildFormatList();
 
             _outputCulture   = new CultureInfo(1033, false);
             _outputFeedback  = new BuildFeedback();
             _outputFramework = BuildFramework.Default;
 
             _verbosity       = BuildLoggerVerbosity.Minimal;
+
+            _sharedContent      = new SharedContent("Default", String.Empty);
+            _attributeContent   = new AttributeContent();
+            _includeContent     = new IncludeContent("Default");
+
+            _listEngineSettings = new BuildEngineSettingsList();
+            _listEngineSettings.Add(new ReferenceEngineSettings());
+            _listEngineSettings.Add(new ConceptualEngineSettings());
 
             // Check and set the Sandcastle installed directory...
             string tempDir = Environment.ExpandEnvironmentVariables("%DXROOT%");
@@ -166,9 +177,6 @@ namespace Sandcastle
             FormatWeb htmFormat = new FormatWeb();
             htmFormat.Reset();
             _listFormats.Add(htmFormat);
-            
-            _properties = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
 
             // Add all the "standard" Sandcastle/Assist folders....
             _outputFolders = new List<string>();
@@ -178,6 +186,9 @@ namespace Sandcastle
             _outputFolders.Add("media");
             _outputFolders.Add("images");
             _outputFolders.Add("maths");
+
+            _properties = new Dictionary<string, string>(
+                StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -187,13 +198,13 @@ namespace Sandcastle
         public BuildSettings(BuildSettings source)
             : base(source)
         {
-            _rootTitle     = source._rootTitle;
-            _rootContainer = source._rootContainer;
-
-            _syntaxType    = source._syntaxType;
-            _properties    = source._properties;
-            _listFormats   = source._listFormats;
-            _outputFolders = source._outputFolders;
+            _syntaxType         = source._syntaxType;
+            _properties         = source._properties;
+            _listFormats        = source._listFormats;
+            _outputFolders      = source._outputFolders;
+            _listEngineSettings = source._listEngineSettings;
+            _sharedContent      = source._sharedContent;
+            _includeContent     = source._includeContent;
         }
 
         #endregion
@@ -322,14 +333,6 @@ namespace Sandcastle
             }
         }
 
-        public bool IsInitialized
-        {
-            get
-            {
-                return _isInitialized;
-            }
-        }
-
         public BuildSyntaxType SyntaxType
         {
             get 
@@ -354,7 +357,7 @@ namespace Sandcastle
             }
         }
 
-        public IList<BuildFormat> Formats
+        public BuildFormatList Formats
         {
             get
             {
@@ -549,30 +552,6 @@ namespace Sandcastle
                 _showPreliminary = value; 
             }
         }
-
-        public bool RootNamespaceContainer
-        {
-            get
-            {
-                return _rootContainer;
-            }
-            set
-            {
-                _rootContainer = value;
-            }
-        }
-
-        public string RootNamespaceTitle
-        {
-            get
-            {
-                return _rootTitle;
-            }
-            set
-            {
-                _rootTitle = value;
-            }
-        }
         
         public string HeaderText
         {
@@ -640,6 +619,38 @@ namespace Sandcastle
                 {
                     _outputFramework = value;
                 }
+            }
+        }
+
+        public BuildEngineSettingsList EngineSettings
+        {
+            get
+            {
+                return _listEngineSettings;
+            }
+        }
+
+        public SharedContent SharedContent
+        {
+            get
+            {
+                return _sharedContent;
+            }
+        }
+
+        public IncludeContent IncludeContent
+        {
+            get
+            {
+                return _includeContent;
+            }
+        }
+
+        public AttributeContent Attributes
+        {
+            get
+            {
+                return _attributeContent;
             }
         }
 
@@ -745,23 +756,91 @@ namespace Sandcastle
 
         #region Public Methods
 
-        public void Initialize()
+        public override void Initialize(BuildContext context)
         {
-            if (_isInitialized)
+            base.Initialize(context);
+
+            if (!this.IsInitialized)
             {
                 return;
             }
 
-            _outputStyle.Initialize(this);
+            // 2. Process the locale
+            CultureInfo culture = this.CultureInfo;
+            string tempText = culture.Name.ToLower(culture);
+            _sharedContent.Add(new SharedItem("helpLocale", tempText));
 
-            _isInitialized = true;
+            // For the header...
+            // 1. Process the preliminary text...
+            if (this.ShowPreliminary)
+            {
+                _sharedContent.Add(new SharedItem("preliminaryStatement",
+                    "<include item=\"preliminaryText\"/>"));
+            }
+            // 2. Process the running header text...  
+            tempText = this.HelpTitle;
+            _sharedContent.Add(new SharedItem("runningHeaderText", tempText));
+            // 3. Process the header text...
+            tempText = this.HeaderText;
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _sharedContent.Add(new SharedItem("headerStatement",
+                    "<include item=\"headerText\"/>"));
+                _sharedContent.Add(new SharedItem("headerText", tempText));
+            }
+
+            // For the footer...
+            tempText = this.FooterText;
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _sharedContent.Add(new SharedItem("footerStatement",
+                    "<include item=\"footerText\"/>"));
+                _sharedContent.Add(new SharedItem("footerText", tempText));
+            }
+
+            // For the feedback...
+            BuildFeedback feedBack = this.Feedback;
+            // 1. Process the email...
+            _sharedContent.Add(new SharedItem("feedbackEmail", feedBack.EmailAddress));
+            // 2. Process the product...
+            _sharedContent.Add(new SharedItem("feedbackProduct", feedBack.Product));
+            // 3. Process the product...
+            _sharedContent.Add(new SharedItem("feedbackCompany", feedBack.Company));
+            // 4. Process the copyright...
+            tempText = feedBack.Copyright;
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _sharedContent.Add(new SharedItem("copyrightStatement",
+                    "<include item=\"copyrightText\"/>"));
+                string copyUri = feedBack.CopyrightLink;
+                if (!String.IsNullOrEmpty(copyUri))
+                {
+                    tempText = String.Format("<a href=\"{0}\">{1}</a>",
+                        copyUri, tempText);
+                }
+                _sharedContent.Add(new SharedItem("copyrightText", tempText));
+            }
+
+            for (int i = 0; i < _listEngineSettings.Count; i++)
+            {
+                _listEngineSettings[i].Initialize(context);
+            }
+
+            _outputStyle.Initialize(context);
+            _outputFeedback.Initialize(context);
+            _outputFramework.Initialize(context);
         }
 
-        public void Uninitialize()
+        public override void Uninitialize()
         {
-            _outputStyle.Uninitialize();
+            for (int i = 0; i < _listEngineSettings.Count; i++)
+            {
+                _listEngineSettings[i].Uninitialize();
+            }
 
-            _isInitialized = false;
+            _outputStyle.Uninitialize();
+            _outputFeedback.Uninitialize();
+            _outputFramework.Uninitialize();
         }
 
         /// <summary>
@@ -871,7 +950,24 @@ namespace Sandcastle
         {
             BuildSettings settings = new BuildSettings(this);
 
+            if (_includeContent != null)
+            {
+                settings._includeContent = _includeContent.Clone();
+            }
+
             return settings;
+        }
+
+        #endregion
+
+        #region ISupportInitialize Members
+
+        public void BeginInit()
+        {
+        }
+
+        public void EndInit()
+        {
         }
 
         #endregion

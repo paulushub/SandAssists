@@ -403,7 +403,7 @@ namespace Sandcastle.Conceptual
 
         #region Initialize Method
 
-        public override bool Initialize(BuildContext context)
+        public override void Initialize(BuildContext context)
         {
             base.Initialize(context);
             BuildSettings settings = context.Settings;
@@ -418,21 +418,25 @@ namespace Sandcastle.Conceptual
             if (String.IsNullOrEmpty(_contentsDir) ||
                 !Directory.Exists(_contentsDir))
             {
-                return false;
+                this.IsInitialized = false;
+                return;
             }
             if (String.IsNullOrEmpty(_contentsDir) ||
                 !Directory.Exists(_contentsDir))
             {
-                return false;
+                this.IsInitialized = false;
+                return;
             }
             if (String.IsNullOrEmpty(_contentsFile) ||
                 !File.Exists(_contentsFile))
             {
-                return false;
+                this.IsInitialized = false;
+                return;
             }
             if (_listItems == null || _listItems.Count == 0)
             {
-                return false;
+                this.IsInitialized = false;
+                return;
             }
 
             string dduexmlDir = Path.Combine(workingDir, "DdueXml");
@@ -479,8 +483,6 @@ namespace Sandcastle.Conceptual
             buildManifest.Write(this, settings);
 
             _buildManifestFile = buildManifest.FilePath;
-
-            return true;
         }
 
         #endregion

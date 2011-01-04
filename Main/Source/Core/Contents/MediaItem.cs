@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class MediaItem : BuildItem<MediaItem>
+    public sealed class MediaItem : BuildItem<MediaItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -19,12 +19,15 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public MediaItem()
+            : this(Guid.NewGuid().ToString(), String.Empty, String.Empty)
         {
             _itemType = MediaItemType.Image;
         }
 
         public MediaItem(string id, string path, string alternateText)
         {
+            BuildExceptions.NotNullNotEmpty(id, "id");
+
             _mediaId   = id;
             _mediaPath = path;
             _altText   = alternateText;
@@ -58,15 +61,15 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string MediaPath
+        public MediaItemType MediaType
         {
             get
             {
-                return _mediaPath;
+                return _itemType;
             }
             set
             {
-                _mediaPath = value;
+                _itemType = value;
             }
         }
         
@@ -76,21 +79,17 @@ namespace Sandcastle.Contents
             { 
                 return _mediaId; 
             }
-            set 
-            { 
-                _mediaId = value; 
-            }
         }
-        
-        public MediaItemType MediaType
+
+        public string MediaPath
         {
-            get 
-            { 
-                return _itemType; 
+            get
+            {
+                return _mediaPath;
             }
-            set 
-            { 
-                _itemType = value; 
+            set
+            {
+                _mediaPath = value;
             }
         }
 
@@ -184,6 +183,18 @@ namespace Sandcastle.Contents
             }
 
             return resource;
+        }
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        string IBuildNamedItem.Name
+        {
+            get 
+            {
+                return _mediaId;
+            }
         }
 
         #endregion

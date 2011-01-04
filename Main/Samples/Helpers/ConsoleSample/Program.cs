@@ -1,83 +1,29 @@
 using System;
 using System.IO;
-using System.Text;
+using System.Globalization;
 
 using Sandcastle.Formats;
+using Sandcastle.Loggers;
 using Sandcastle.Contents;
 using Sandcastle.Conceptual;
 using Sandcastle.References;
-using Sandcastle.Configurators;
-
-using Sandcastle.Loggers;
-using Sandcastle.ReflectionData;
 
 namespace Sandcastle.Helpers.Sample
 {
     class Program
     {
+        enum ReferencesTestType
+        {
+            SampleLibrary         = 0,
+            SampleHierarchicalToc = 1,
+        }
+
         static void Main(string[] args)
         {
-            //try
-            //{
-            //    TargetDictionaryBuilder targetDictionary =
-            //        new TargetDictionaryBuilder();
-
-            //    if (!targetDictionary.Exists)
-            //    {
-            //        Console.WriteLine("Please wait, building target lists...");
-            //        targetDictionary.Build();
-            //    }
-
-            //    targetDictionary.Dispose();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.ToString());
-
-            //    return;
-            //}
-
-            //try
-            //{
-            //    DatabaseTargetBinaryBuilder targetBuilder =
-            //        new DatabaseTargetBinaryBuilder();
-
-            //    if (!targetBuilder.Exists)
-            //    {
-            //        Console.WriteLine("Please wait, building target binary database...");
-            //        targetBuilder.Build();
-            //    }
-
-            //    targetBuilder.Dispose();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.ToString());
-
-            //    return;
-            //}
-
-            //try
-            //{
-            //    ReflectionIndexedBuilder indexedBuilder =
-            //        new ReflectionIndexedBuilder();
-
-            //    if (!indexedBuilder.Exists)
-            //    {
-            //        Console.WriteLine("Please wait, building reflection database...");
-            //        indexedBuilder.AddDocuments();
-            //    }
-
-            //    indexedBuilder.Dispose();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.ToString());
-
-            //    return;
-            //}
-
             bool useCustomStyles = false;
+
+            ReferencesTestType refTestType = 
+                ReferencesTestType.SampleLibrary;
 
             string sampleDir  = @"..\Samples\Helpers\";
             sampleDir = Path.GetFullPath(sampleDir);
@@ -87,8 +33,6 @@ namespace Sandcastle.Helpers.Sample
 
             BuildProject project = new BuildProject();
             BuildDocumenter documenter = project.Documenter;
-
-            IncludeContentList configuration = documenter.Configuration;
 
             BuildStyleType styleType = BuildStyleType.ClassicWhite;
 
@@ -111,6 +55,28 @@ namespace Sandcastle.Helpers.Sample
                 "Copyright &#169; 2007-2008 Sandcastle Assist. All Rights Reserved.";
             feedBack.CopyrightLink = "http://www.codeplex.com/SandAssist";
 
+            // Configure the logo image information...
+            feedBack.LogoInHeader  = true; // show it...
+            feedBack.LogoImage     = Path.Combine(sandAssistDir, "AssistLogo.jpg");
+            feedBack.LogoWidth     = 64;
+            feedBack.LogoHeight    = 64;
+            feedBack.LogoPadding   = 3;
+            feedBack.LogoText      = "Sandcastle Assist";
+            feedBack.LogoLink      = "http://www.codeplex.com/SandAssist";
+            feedBack.LogoAlignment = BuildLogoAlignment.Center;
+            feedBack.LogoPlacement = BuildLogoPlacement.Right;
+
+            BuildStyle style = settings.Style;
+            // Add some custom math packages and commands...
+            MathPackageContent mathPackages = style.MathPackages;
+            mathPackages.Add("picture", "calc");
+            mathPackages.Add("xy", "all", "knot", "poly");
+
+            MathCommandContent mathCommands = style.MathCommands;
+            mathCommands.Add(@"\quot",
+                @"\dfrac{\varphi \cdot X_{n, #1}}{\varphi_{#2} \times \varepsilon_{#1}}", 2);
+            mathCommands.Add(@"\exn", @"(x+\varepsilon_{#1})^{#1}", 1);
+
             if (useCustomStyles)
             {
                 string stylesDir = @"CustomStyles";
@@ -118,28 +84,31 @@ namespace Sandcastle.Helpers.Sample
                 settings.Style.Directory = stylesDir;
             }
 
-            settings.Formats[0].Enabled = true;
-            FormatChm chmFormat = settings.Formats[0] as FormatChm;
+            FormatChm chmFormat = 
+                settings.Formats[BuildFormatType.HtmlHelp1] as FormatChm;
             if (chmFormat != null)
             {
+                chmFormat.Enabled = true;
                 chmFormat.UseBinaryToc = false;
                 chmFormat.Indent = true;
             }
-            settings.Formats[1].Enabled = false;
-            FormatHxs hxsFormat = settings.Formats[1] as FormatHxs;
-            if (hxsFormat != null)
-            {
-                //hxsFormat.SeparateIndexFile = true;
-                hxsFormat.Enabled = true;
-                hxsFormat.Indent = true;
-            }
-            FormatMhv mhvFormat = settings.Formats[2] as FormatMhv;
-            if (mhvFormat != null)
-            {
-                mhvFormat.Enabled = true;
-                mhvFormat.Indent = true;
-            }
-            //FormatWeb webFormat = settings.Formats[3] as FormatWeb;
+            //FormatHxs hxsFormat =
+            //  settings.Formats[BuildFormatType.HtmlHelp2] as FormatHxs;
+            //if (hxsFormat != null)
+            //{
+            //    //hxsFormat.SeparateIndexFile = true;
+            //    hxsFormat.Enabled = true;
+            //    hxsFormat.Indent = true;
+            //}
+            //FormatMhv mhvFormat = 
+            //    settings.Formats[BuildFormatType.HtmlHelp3] as FormatMhv;
+            //if (mhvFormat != null)
+            //{
+            //    mhvFormat.Enabled = true;
+            //    mhvFormat.Indent = true;
+            //}
+            //FormatWeb webFormat = 
+            //    settings.Formats[BuildFormatType.WebHelp] as FormatWeb;
             //if (webFormat != null)
             //{
             //    webFormat.Enabled = true;
@@ -155,61 +124,61 @@ namespace Sandcastle.Helpers.Sample
                 return;
             }
 
-            string codeStyle = Path.Combine(sandAssistDir,
-                @"Styles\IrisModifiedVS.css");
-            codeStyle = String.Format("<style file=\"{0}\"/>", codeStyle);
-            configuration.Add("codeStyle", codeStyle);
-
-            string assistStyle = Path.Combine(sandAssistDir,
-                String.Format(@"Styles\{0}\SandAssist.css", 
-                BuildStyleUtils.StyleFolder(styleType)));
-            assistStyle = String.Format("<style file=\"{0}\"/>", assistStyle);
-            configuration.Add("assistStyle", assistStyle);
-
-            // We add support for the extra script - currently only for prototype.
-            string assistScripts = Path.Combine(sandAssistDir,
-                String.Format(@"Scripts\{0}\SandAssist.js",
-                BuildStyleUtils.StyleFolder(styleType)));
-            assistScripts = String.Format("<script file=\"{0}\"/>", assistScripts);
-            configuration.Add("assistScripts", assistScripts);
-
-            // Configure the logo image information...
-            string imagePath = Path.Combine(sandAssistDir, "AssistLogo.jpg");
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine("<logo width=\"64\" height=\"64\" padding=\"3\">");
-            builder.AppendLine(String.Format("  <image path=\"{0}\" altText=\"Sandcastle Assist\"/>",
-                imagePath));
-            builder.AppendLine("  <link uri=\"http://www.codeplex.com/SandAssist\" />");
-            builder.AppendLine("  <position placement=\"Right\" alignment=\"Center\" />");
-            builder.AppendLine("</logo>");
-            configuration.Add("logoImage", builder.ToString());
-
             try
             {
                 if (settings.BuildReferences)
                 {
-                    string libraryDir = Path.Combine(sampleDir, @"SampleLibrary\");
+                    ReferenceEngineSettings engineSettings =
+                        settings.EngineSettings[BuildEngineType.Reference] as ReferenceEngineSettings;
 
-                    string outputDir = Path.Combine(libraryDir, @"Output\");
-                    string projectDoc = Path.Combine(outputDir, "Project.xml");
+                    if (refTestType == ReferencesTestType.SampleLibrary)
+                    {   
+                        string libraryDir = Path.Combine(sampleDir, @"SampleLibrary\");
 
-                    ReferenceGroup apiGroup = new ReferenceGroup();
-                    apiGroup.RunningHeaderText = "Sandcastle Helpers: Test API Reference";
-                    apiGroup.AddItem(projectDoc, null);
-                    apiGroup.AddItem(Path.Combine(outputDir, "TestLibrary.xml"),
-                        Path.Combine(outputDir, "TestLibrary.dll"));
+                        string outputDir = Path.Combine(libraryDir, @"Output\");
+                        string projectDoc = Path.Combine(outputDir, "Project.xml");
 
-                    apiGroup.AddSnippet(new SnippetContent(Path.Combine(
-                        libraryDir, "CodeSnippetSample.xml")));
+                        ReferenceGroup apiGroup = new ReferenceGroup();
+                        apiGroup.RunningHeaderText = "Sandcastle Helpers: Test API Reference";
+                        apiGroup.AddItem(projectDoc, null);
+                        apiGroup.AddItem(Path.Combine(outputDir, "TestLibrary.xml"),
+                            Path.Combine(outputDir, "TestLibrary.dll"));
 
-                    // Create and add an API filter...
-                    ReferenceNamespaceFilter namespaceFilter =
-                        new ReferenceNamespaceFilter("TestLibrary", true);
-                    namespaceFilter.Add(new ReferenceTypeFilter("Point3D", false, false));
+                        apiGroup.AddSnippet(new SnippetContent(Path.Combine(
+                            libraryDir, "CodeSnippetSample.xml")));
 
-                    apiGroup.TypeFilters.Add(namespaceFilter);
+                        // Create and add an API filter...
+                        ReferenceNamespaceFilter namespaceFilter =
+                            new ReferenceNamespaceFilter("TestLibrary", true);
+                        namespaceFilter.Add(new ReferenceTypeFilter("Point3D", false, false));
 
-                    documenter.Add(apiGroup);
+                        apiGroup.TypeFilters.Add(namespaceFilter);
+
+                        documenter.Add(apiGroup);
+                    }
+                    else if (refTestType == ReferencesTestType.SampleHierarchicalToc)
+                    {
+                        if (engineSettings != null)
+                        {
+                            ReferenceTocLayoutConfiguration tocLayout =
+                                engineSettings.TocLayout;
+                            tocLayout.ContentsAfter = false;
+                            tocLayout.LayoutType = ReferenceTocLayoutType.Hierarchical;
+                        }
+
+                        string libraryDir = Path.Combine(sampleDir, @"SampleHierarchicalToc\");
+
+                        string outputDir = Path.Combine(libraryDir, @"Output\");
+                        //string projectDoc = Path.Combine(outputDir, "Project.xml");
+
+                        ReferenceGroup apiGroup = new ReferenceGroup();
+                        apiGroup.RunningHeaderText = "Sandcastle Helpers: Test Hierarchical Toc";
+                        //apiGroup.AddItem(projectDoc, null);
+                        apiGroup.AddItem(Path.Combine(outputDir, "SampleHierarchicalToc.xml"),
+                            Path.Combine(outputDir, "SampleHierarchicalToc.dll"));
+
+                        documenter.Add(apiGroup);
+                    }
                 }
 
                 if (settings.BuildConceptual)
@@ -261,7 +230,9 @@ namespace Sandcastle.Helpers.Sample
                 project.Logger.Add(new XmlLogger("XmlLogFile.xml"));
                 project.Logger.Add(new HtmlLogger("HmtlLogFile.htm"));
                 project.Logger.Add(new ConsoleLogger());
-                if (project.Initialize())
+
+                project.Initialize();
+                if (project.IsInitialized)
                 {
                     project.Build();
                 }

@@ -100,6 +100,7 @@
     <Compile Include="BuildComponentController.cs" />
     <Compile Include="BuildComponentExceptions.cs" />
     <Compile Include="BuildComponentStyle.cs" />
+    <Compile Include="BuildLocalizedContents.cs" />
     <Compile Include="CloneComponent.cs" />
     <Compile Include="CodeComponent.cs" />
     <Compile Include="Codes\CodeController.cs" />

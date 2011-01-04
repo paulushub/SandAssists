@@ -45,12 +45,15 @@ namespace Sandcastle.Components
 
                 // Select and process all the branches...
                 XPathNodeIterator branchNodes = configuration.Select("branch");
-                foreach (XPathNavigator branchNode in branchNodes)
+                if (branchNodes != null && branchNodes.Count != 0)
                 {
-                    BuildComponent[] components = assembler.LoadComponents(branchNode);
-                    if (components != null && components.Length != 0)
+                    foreach (XPathNavigator branchNode in branchNodes)
                     {
-                        _listBranches.Add(components);
+                        BuildComponent[] components = assembler.LoadComponents(branchNode);
+                        if (components != null && components.Length != 0)
+                        {
+                            _listBranches.Add(components);
+                        }
                     }
                 }
 
@@ -59,6 +62,14 @@ namespace Sandcastle.Components
                 if (defaultNode != null)
                 {
                     _defaultBranch = assembler.LoadComponents(defaultNode);
+                }
+
+                // For the special case where neither "branch" nor "default" is
+                // specified, we treat anything there as default...
+                if ((branchNodes == null || branchNodes.Count == 0) &&
+                    defaultNode == null)
+                {
+                    _defaultBranch = assembler.LoadComponents(configuration);
                 }
             }
             catch (Exception ex)

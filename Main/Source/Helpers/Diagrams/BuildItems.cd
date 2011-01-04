@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildItem&lt;T&gt;" Collapsed="true">
-    <Position X="2.5" Y="2.25" Width="1.75" />
+    <Position X="2.5" Y="0.75" Width="1.75" />
     <TypeIdentifier />
     <Lollipop Position="0.971" />
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualItem" Collapsed="true">
-    <Position X="0.5" Y="5" Width="1.75" />
+    <Position X="0.5" Y="3.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="Items" Type="Sandcastle.Conceptual.ConceptualItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="0.5" Y="5.312" />
-        <Point X="0.125" Y="5.312" />
-        <Point X="0.125" Y="6.295" />
-        <Point X="1.062" Y="6.295" />
-        <Point X="1.062" Y="5.691" />
+        <Point X="0.5" Y="3.562" />
+        <Point X="0.125" Y="3.562" />
+        <Point X="0.125" Y="4.255" />
+        <Point X="1.375" Y="4.255" />
+        <Point X="1.375" Y="3.88" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -31,45 +31,36 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Sandcastle.References.ReferenceItem" Collapsed="true">
-    <Position X="4.75" Y="5" Width="1.75" />
+    <Position X="2.5" Y="3.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABAAAAAEAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAIBA=</HashCode>
       <FileName>References\ReferenceItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualMetadataItem" Collapsed="true">
-    <Position X="0.5" Y="3.75" Width="2.25" />
+    <Position X="0.5" Y="2" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAEAAACAAAAQYAAgABAAAigQBEAkKAAAAABAAEgABI=</HashCode>
       <FileName>Conceptual\ConceptualMetadataItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualCategoryItem" Collapsed="true">
-    <Position X="4" Y="3.75" Width="2.25" />
+    <Position X="4" Y="2" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAgAAAEgAgAAAQCAAAAAIAAAAAAgAAAABA=</HashCode>
       <FileName>Conceptual\ConceptualCategoryItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.231" />
   </Class>
-  <Class Name="Sandcastle.Configurators.IncludeItem" Collapsed="true">
-    <Position X="1" Y="0.5" Width="1.5" />
+  <Class Name="Sandcastle.References.ReferenceXPathItem" Collapsed="true">
+    <Position X="4.5" Y="3.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>ABBAAIAAAAAAAAQAgACAAAAAAAAAAIAAAAAgAAAAABA=</HashCode>
-      <FileName>Configurations\IncludeItem.cs</FileName>
+      <HashCode>AJBAAAAQAAGCAAAAgAAAAAAACAgAAIQQCAAggAAAABA=</HashCode>
+      <FileName>References\ReferenceXPathItem.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Sandcastle.Configurators.ConfigurationItem" Collapsed="true">
-    <Position X="4.25" Y="0.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAIAAQAgAEAAAAAAAAAAYAAAAAAQAAAABA=</HashCode>
-      <FileName>Configurations\ConfigurationItem.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Enum Name="Sandcastle.Conceptual.ConceptualItemType">
-    <Position X="2.75" Y="5.75" Width="1.75" />
+    <Position X="0.5" Y="4.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAIAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Conceptual\ConceptualItemType.cs</FileName>

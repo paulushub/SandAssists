@@ -44,7 +44,7 @@ namespace Sandcastle
 
         #region Public Properties
 
-        public bool IsInitialize
+        public bool IsInitialized
         {
             get
             {
@@ -82,17 +82,17 @@ namespace Sandcastle
 
         #region Initialize Method
 
-        public virtual bool Initialize(BuildDocumenter documenter)
+        public virtual void Initialize(BuildDocumenter documenter)
         {
             if (documenter != null)
             {
                 _documenter = documenter;
             }
 
-            return this.Initialize();
+            this.Initialize();
         }
 
-        public virtual bool Initialize()
+        public virtual void Initialize()
         {
             DateTime startTime = DateTime.Now;
 
@@ -104,7 +104,7 @@ namespace Sandcastle
             _settings = _documenter.Settings;
 
             // 2. Initialize the logger...
-            if (!_logger.IsInitialize)
+            if (!_logger.IsInitialized)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
@@ -121,10 +121,12 @@ namespace Sandcastle
                     _logger.WriteLine("The project is already initialized",
                         BuildLoggerLevel.Warn);
 
-                    return _isInitialized;
+                    return;
                 }
 
-                if (!_documenter.Initialize(_context, _logger))
+                _documenter.Initialize(_context, _logger);
+
+                if (!_documenter.IsInitialized)
                 {
                     _isInitialized = false;
 
@@ -157,8 +159,6 @@ namespace Sandcastle
 
                 _logger.WriteLine();
             }
-
-            return _isInitialized;
         }
 
         #endregion

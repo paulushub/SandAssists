@@ -27,7 +27,7 @@ namespace Sandcastle.Utilities
 
         public DirectoryCopier()
         {
-            _isOverwrite      = true;
+            _isOverwrite     = true;
             _isRecursive     = true;
         }
 
@@ -35,7 +35,7 @@ namespace Sandcastle.Utilities
             : base(source)
         {
             _copiedCount     = source._copiedCount;
-            _isOverwrite      = source._isOverwrite;
+            _isOverwrite     = source._isOverwrite;
             _isRecursive     = source._isRecursive;
             _includeHidden   = source._includeHidden;
             _includeSecurity = source._includeSecurity;
@@ -234,7 +234,7 @@ namespace Sandcastle.Utilities
 
             string targetDirName = target.ToString();
             string filePath;
-            bool isLogging = (logger != null && logger.Logging &&
+            bool isLogging = (logger != null && logger.Enabled &&
                 logger.Verbosity == BuildLoggerVerbosity.Detailed);
             
             // Handle the copy of each file into it's new directory.

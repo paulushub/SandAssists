@@ -70,7 +70,7 @@ namespace Sandcastle.Components.Snippets
         {
             get
             {
-                return SnippetStorage.Sqlite;
+                return SnippetStorage.Database;
             }
         }
 

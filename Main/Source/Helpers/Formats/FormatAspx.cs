@@ -35,7 +35,7 @@ namespace Sandcastle.Formats
         /// A <see cref="System.String"/> containing the name of the output format.
         /// This will always return "WebHelp".
         /// </value>
-        public override string FormatName
+        public override string Name
         {
             get
             {
@@ -43,7 +43,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override string FormatExtension
+        public override string Extension
         {
             get
             {

@@ -1,124 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildObject&lt;T&gt;" Collapsed="true">
-    <Position X="2.75" Y="2.25" Width="1.5" />
+    <Position X="3.25" Y="1.75" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="1.044" />
   </Class>
   <Class Name="Sandcastle.BuildGroup" Collapsed="true">
-    <Position X="0.5" Y="2.25" Width="1.5" />
+    <Position X="4.5" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BARgkTARRFABEVAACMAAAAagAACAQAAYABAE44YSYCo=</HashCode>
+      <HashCode>BARgkTARRFABEdAACMAAAAagAACAQAAYABAE44YSYCo=</HashCode>
       <FileName>BuildGroup.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.929" />
   </Class>
-  <Class Name="Sandcastle.BuildSettings" Collapsed="true">
-    <Position X="4" Y="4.5" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <AssociationLine Name="Feedback" Type="Sandcastle.BuildFeedback">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.079" Y="0.071" />
-      </MemberNameLabel>
-    </AssociationLine>
+  <Class Name="Sandcastle.BuildMisspelledWord" Collapsed="true">
+    <Position X="0.5" Y="4.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>BBIAKAQwAoAFEREEeAACDoBIqIiBQgKgD5SABqRYIlo=</HashCode>
-      <FileName>BuildSettings.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="SyntaxType" />
-      <Property Name="Style" />
-      <Property Name="Feedback" />
-      <Property Name="Framework" />
-    </ShowAsAssociation>
-    <ShowAsCollectionAssociation>
-      <Property Name="Formats" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="Sandcastle.BuildFormat" Collapsed="true">
-    <Position X="0.5" Y="3.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>oQgAESgBkAEF1YCACAAEAEXAQACAxACYAECCJoACAFg=</HashCode>
-      <FileName>BuildFormat.cs</FileName>
+      <HashCode>AAUAAAAAAAAAAAQhAAwBAAAAAAAAAAAAAABAQAABABA=</HashCode>
+      <FileName>BuildMisspelledWord.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.BuildStyle" Collapsed="true">
-    <Position X="5.5" Y="3.5" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+  <Class Name="Sandcastle.BuildSpellChecker" Collapsed="true">
+    <Position X="3" Y="4.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>ABIgAJAQBAAQAQBECARABAQAAACAAAgAAKCChEBQABg=</HashCode>
-      <FileName>BuildStyle.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="StyleType" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Sandcastle.BuildFramework" Collapsed="true">
-    <Position X="2.5" Y="3.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>IRAAIAAAAAAAIAAAgAAAIQRAAAAAAIAAAQAAAAAABBA=</HashCode>
-      <FileName>BuildFramework.cs</FileName>
+      <HashCode>AAAEAAAQAAAAAQAAAAAAIAQAAAAAAIAAAAAABAAAAAg=</HashCode>
+      <FileName>BuildSpellChecker.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.BuildFeedback" Collapsed="true">
-    <Position X="4.5" Y="0.5" Width="1.75" />
-    <AssociationLine Name="FeedbackType" Type="Sandcastle.BuildFeedbackType" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="6.25" Y="0.812" />
-        <Point X="6.688" Y="0.812" />
-        <Point X="6.688" Y="1.5" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.783" Y="0.745" Height="0.16" Width="1.118" />
-      </MemberNameLabel>
-    </AssociationLine>
+  <Class Name="Sandcastle.BuildSpellCheckResult" Collapsed="true">
+    <Position X="5.5" Y="4.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>CAACAAABAAQAAAgAAAIAAAEAAAAEABAAEAAAhoAAABA=</HashCode>
-      <FileName>BuildFeedback.cs</FileName>
+      <HashCode>AAIAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABA=</HashCode>
+      <FileName>BuildSpellCheckResult.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="FeedbackType" />
-    </ShowAsAssociation>
   </Class>
-  <Class Name="Sandcastle.BuildToc" Collapsed="true">
-    <Position X="0.75" Y="0.5" Width="1.5" />
+  <Class Name="Sandcastle.BuildOptions&lt;T&gt;" Collapsed="true">
+    <Position X="2" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAJAAAAQAAAACQAADAAABEQAAAAAAQAAAAAABABQABg=</HashCode>
-      <FileName>BuildToc.cs</FileName>
+      <HashCode>AAAAAAAQAAAABQAAAAAAAAAAAAAAAAAAAAAABAAAAAg=</HashCode>
+      <FileName>BuildOptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildSource" Collapsed="true">
+    <Position X="3" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BuildSource.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="Sandcastle.IBuildListener" Collapsed="true">
-    <Position X="0.5" Y="5.25" Width="1.5" />
+    <Position X="3.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBuildListener.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="Sandcastle.BuildStyleType">
-    <Position X="5.5" Y="5.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAgAAgAAABAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
-      <FileName>BuildStyleType.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Sandcastle.BuildSyntaxType">
-    <Position X="2.25" Y="5.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>BAAACAAAAAAgAAAAAAAAAAABAMAAAAAABIAAEAEAAAA=</HashCode>
-      <FileName>BuildSyntaxType.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Sandcastle.BuildFeedbackType">
-    <Position X="5.75" Y="1.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAIQAAAEAAAAAAAEAAAA=</HashCode>
-      <FileName>BuildFeedbackType.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

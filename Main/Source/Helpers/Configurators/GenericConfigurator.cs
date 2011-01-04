@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
 
+using Sandcastle.Contents;
+
 namespace Sandcastle.Configurators
 {
     public class GenericConfigurator : BuildConfigurator
@@ -165,7 +167,7 @@ namespace Sandcastle.Configurators
         }
 
         public virtual void RegisterItem(string keyword,
-            ConfigurationItemHandler handler)
+            Action<string, XPathNavigator> handler)
         {
             if (_configContent == null || String.IsNullOrEmpty(keyword) ||
                 handler == null)

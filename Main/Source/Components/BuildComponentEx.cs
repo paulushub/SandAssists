@@ -60,14 +60,15 @@ namespace Sandcastle.Components
         protected void WriteMessage(MessageLevel level, Exception ex)
         {
             string message = ex.Message;
-            if (message == null)
+            if (String.IsNullOrEmpty(message))
             {
-                message = ex.ToString();
+                this.WriteMessage(level, ex.ToString());
             }
-            this.WriteMessage(level,  message);
-            //this.WriteMessage(level, ex.ToString());
-            //this.WriteMessage(level, String.Format("Exception({0}) - {1}",
-            //    ex.GetType().FullName, message));
+            else
+            {
+                this.WriteMessage(level, String.Format("Exception({0}) - {1}",
+                    ex.GetType().Name, message));
+            }
         }
 
         protected bool SetXmlStringValue(XPathNavigator navigator,

@@ -1,10 +1,14 @@
 using System;
+using System.Xml;
+using System.Xml.XPath;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Loggers;
+using Sandcastle.Contents;
 using Sandcastle.Configurators;
 
 namespace Sandcastle
@@ -22,7 +26,7 @@ namespace Sandcastle
         private BuildContext  _context;
         private BuildSettings _settings;
 
-        private IncludeContentList   _configuration;
+        private IncludeContent   _includeContent;
         private ConfiguratorContent _configContent;
 
         #endregion
@@ -37,7 +41,7 @@ namespace Sandcastle
         /// to the default properties or values.
         /// </summary>
         protected BuildEngine()
-            : this(null, null, null, null)
+            : this(null, null, null)
         {
         }
 
@@ -46,7 +50,7 @@ namespace Sandcastle
         /// </summary>
         /// <param name="settings"></param>
         protected BuildEngine(BuildSettings settings)
-            : this(settings, null, null, null)
+            : this(settings, null, null)
         {
         }
 
@@ -55,7 +59,7 @@ namespace Sandcastle
         /// </summary>
         /// <param name="logger"></param>
         protected BuildEngine(BuildLoggers logger)
-            : this(null, logger, null, null)
+            : this(null, logger, null)
         {
         }
 
@@ -67,12 +71,11 @@ namespace Sandcastle
         /// <param name="context"></param>
         /// <param name="configuration"></param>
         protected BuildEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context, IncludeContentList configuration)
+            BuildContext context)
         {
             _settings      = settings;
             _logger        = logger;
             _context       = context;
-            _configuration = configuration;
 
             if (_settings == null)
             {
@@ -88,11 +91,6 @@ namespace Sandcastle
             {
                 _logger = new BuildLoggers();
                 _ownsLogger = true;
-            }
-
-            if (_configuration == null)
-            {
-                _configuration = new IncludeContentList();
             }
 
             _configContent = new ConfiguratorContent();
@@ -177,11 +175,11 @@ namespace Sandcastle
             }
         }
 
-        public IncludeContentList Configuration
+        public IncludeContent IncludeContent
         {
             get
-            {
-                return _configuration;
+            {                
+                return _includeContent;
             }
         }
 
@@ -209,18 +207,23 @@ namespace Sandcastle
 
         #region Initialize Method
 
-        public virtual bool Initialize(BuildSettings settings, BuildLoggers logger)
+        public virtual void Initialize(BuildSettings settings, BuildLoggers logger)
         {
             if (logger != null)
             {
                 _logger = logger;
             }
 
-            return this.Initialize(settings);
+            this.Initialize(settings);
         }
 
-        public virtual bool Initialize(BuildSettings settings)
+        public virtual void Initialize(BuildSettings settings)
         {
+            if (_isInitialized)
+            {
+                return;
+            }
+
             if (settings == null)
             {
                 settings = _settings;
@@ -236,7 +239,7 @@ namespace Sandcastle
                 _ownsLogger = true;
             }
 
-            if (_logger.IsInitialize == false)
+            if (_logger.IsInitialized == false)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
@@ -262,9 +265,16 @@ namespace Sandcastle
             //}
             //_settings.WorkingDirectory = workingDir;
 
-            _isInitialized = true;
+            BuildEngineSettings engineSettings = 
+                _settings.EngineSettings[this.EngineType];
+            Debug.Assert(engineSettings != null);
+            if (engineSettings == null)
+            {
+                return;
+            }
+            _includeContent = engineSettings.IncludeContent;
 
-            return _isInitialized;
+            _isInitialized = true;
         }
 
         #endregion
@@ -291,7 +301,7 @@ namespace Sandcastle
 
         #region ConfigurationItem Methods
 
-        public void AddHandler(string keyword, ConfigurationItemHandler handler)
+        public void AddHandler(string keyword, Action<string, XPathNavigator> handler)
         {
             ConfiguratorItem item = new ConfiguratorItem(keyword, handler);
             _configContent.Add(item);
@@ -370,7 +380,8 @@ namespace Sandcastle
                     BuildStep buildStep = listSteps[i];
                     if (buildStep != null)
                     {
-                        if (buildStep.Initialize(_context) == false)
+                        buildStep.Initialize(_context);
+                        if (!buildStep.IsInitialized)
                         {
                             _logger.WriteLine(
                                 "An error occurred when initializing the step = " + i.ToString(),
@@ -382,7 +393,7 @@ namespace Sandcastle
                     }
                 }
 
-                // If the initialization fails, we need not continune...
+                // If the initialization fails, we need not continue...
                 if (buildResult == false)
                 {
                     return buildResult;

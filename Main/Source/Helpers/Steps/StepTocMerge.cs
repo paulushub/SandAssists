@@ -4,6 +4,8 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.References;
+
 namespace Sandcastle.Steps
 {
     public sealed class StepTocMerge : BuildStep
@@ -11,6 +13,7 @@ namespace Sandcastle.Steps
         #region Private Fields
 
         private int          _refStartIndex;
+        private bool         _isHierarchical;
         private bool         _isRooted;
         private string       _mergedToc;
         private BuildToc     _helpToc;
@@ -23,37 +26,54 @@ namespace Sandcastle.Steps
         public StepTocMerge()
         {
             _refStartIndex = -1;
-            _listToc = new List<string>();
-            this.LogTitle = "Merging Table of Contents";
+            _listToc       = new List<string>();
+            this.LogTitle  = "Merging Table of Contents";
         }
 
         public StepTocMerge(string workingDir)
             : base(workingDir)
         {
             _refStartIndex = -1;
-            _listToc = new List<string>();
-            this.LogTitle = "Merging Table of Contents";
+            _listToc       = new List<string>();
+            this.LogTitle  = "Merging Table of Contents";
         }
 
-        public StepTocMerge(string workingDir, BuildToc helpToc)
-            : base(workingDir)
+        public StepTocMerge(string workingDir, BuildToc helpToc, 
+            bool isHierarchical) : base(workingDir)
         {
             BuildExceptions.NotNull(helpToc, "helpToc");
 
-            _refStartIndex = -1;
-            _listToc       = new List<string>();
-            _helpToc       = helpToc;
-            this.LogTitle   = "Merging Table of Contents";
+            _isHierarchical = isHierarchical;
+            _refStartIndex  = -1;
+            _listToc        = new List<string>();
+            _helpToc        = helpToc;
+            if (_isHierarchical)
+            {
+                this.LogTitle = "Merging Hierarchical Table of Contents";
+            }
+            else
+            {
+                this.LogTitle = "Merging Table of Contents";
+            }
         }
 
-        public StepTocMerge(string workingDir, string mergedToc)
+        public StepTocMerge(string workingDir, string mergedToc, bool isHierarchical)
             : this(workingDir)
         {
-            _mergedToc = mergedToc;
+            _mergedToc      = mergedToc;
+            _isHierarchical = isHierarchical;
+            if (_isHierarchical)
+            {
+                this.LogTitle = "Merging Hierarchical Table of Contents";
+            }
+            else
+            {
+                this.LogTitle = "Merging Table of Contents";
+            }
         }
 
-        public StepTocMerge(string workingDir, string topicsToc, 
-            string apiToc, string mergedToc)
+        public StepTocMerge(string workingDir, string topicsToc,
+            string apiToc, string mergedToc, bool isHierarchical)
             : this(workingDir)
         {
             if (!String.IsNullOrEmpty(topicsToc))
@@ -64,8 +84,17 @@ namespace Sandcastle.Steps
             {
                 _listToc.Add(apiToc);
             }
-            _mergedToc   = mergedToc;
-            this.LogTitle = "Merging Table of Contents";
+
+            _mergedToc      = mergedToc;
+            _isHierarchical = isHierarchical;
+            if (_isHierarchical)
+            {
+                this.LogTitle = "Merging Hierarchical Table of Contents";
+            }
+            else
+            {
+                this.LogTitle = "Merging Table of Contents";
+            }
         }
 
         #endregion
@@ -101,12 +130,12 @@ namespace Sandcastle.Steps
 
         #region Public Methods
 
-        public override bool Initialize(BuildContext context)
+        public override void Initialize(BuildContext context)
         {
-            bool initResult = base.Initialize(context);
-            if (initResult == false)
+            base.Initialize(context);
+            if (!this.IsInitialized)
             {
-                return initResult;
+                return;
             }
             if (_helpToc != null)
             {
@@ -115,15 +144,19 @@ namespace Sandcastle.Steps
 
             _isRooted              = false;
             BuildSettings settings = context.Settings;
-            bool rootContainer     = settings.RootNamespaceContainer;
-            string rootTitle       = settings.RootNamespaceTitle;
-            if (rootContainer && String.IsNullOrEmpty(rootTitle) == false)
+            ReferenceEngineSettings refSettings = 
+                (ReferenceEngineSettings)settings.EngineSettings[BuildEngineType.Reference];
+            if (refSettings != null)
             {
-                _isRooted = true;
+                bool rootContainer = refSettings.RootNamespaceContainer;
+                string rootTitle   = refSettings.RootNamespaceTitle;
+                if (rootContainer && String.IsNullOrEmpty(rootTitle) == false)
+                {
+                    _isRooted = true;
+                }
             }
-            _refStartIndex = -1;
 
-            return initResult;
+            _refStartIndex = -1;
         }
 
         public override void Uninitialize()
@@ -179,7 +212,14 @@ namespace Sandcastle.Steps
                                 String.Equals(reader.Name, "topic", 
                                 StringComparison.OrdinalIgnoreCase))
                             {
-                                context["$HelpTocRoot"] = reader.GetAttribute("id");
+                                if (_isHierarchical)
+                                {
+                                    context["$HelpHierarchicalTocRoot"] = reader.GetAttribute("id");
+                                }
+                                else
+                                {
+                                    context["$HelpTocRoot"] = reader.GetAttribute("id");
+                                }
                                 break;
                             }
                         }
@@ -216,7 +256,14 @@ namespace Sandcastle.Steps
                 string mergedToc = _mergedToc;
                 if (String.IsNullOrEmpty(_mergedToc))
                 {
-                    mergedToc = BuildToc.HelpToc;
+                    if (_isHierarchical)
+                    {
+                        mergedToc = BuildToc.HierarchicalToc;
+                    }
+                    else
+                    {
+                        mergedToc = BuildToc.HelpToc;
+                    }
                 }
                 if (_listToc == null || _listToc.Count == 0)
                 {

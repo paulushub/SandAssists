@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -32,9 +33,8 @@ namespace Sandcastle
         private BuildLoggers               _logger;
         private BuildContext               _context;
         private BuildSettings              _settings;
-        private IncludeContentList         _configuration;
         private List<BuildStep>            _listSteps;
-        private BuildList<BuildFormat>     _listFormats;
+        private BuildFormatList            _listFormats;
         private BuildKeyedList<BuildGroup> _listGroups;
 
         private ReferenceEngine            _referenceEngine;
@@ -53,10 +53,9 @@ namespace Sandcastle
         /// </summary>
         public BuildDocumenter()
         {
-            _helpToc       = new BuildToc();
-            _listGroups    = new BuildKeyedList<BuildGroup>();
-            _settings      = new BuildSettings();
-            _configuration = new IncludeContentList();
+            _helpToc    = new BuildToc();
+            _listGroups = new BuildKeyedList<BuildGroup>();
+            _settings   = new BuildSettings();
         }
 
         /// <summary>
@@ -122,7 +121,7 @@ namespace Sandcastle
             }
         }
 
-        public bool IsInitialize
+        public bool IsInitialized
         {
             get
             {
@@ -150,14 +149,6 @@ namespace Sandcastle
             get
             {
                 return _settings;
-            }
-        }
-
-        public IncludeContentList Configuration
-        {
-            get
-            {
-                return _configuration;
             }
         }
 
@@ -215,11 +206,11 @@ namespace Sandcastle
 
         #region Initialize Method
 
-        public virtual bool Initialize(BuildContext context, BuildLoggers logger)
+        public virtual void Initialize(BuildContext context, BuildLoggers logger)
         {
             if (_isInitialized)
             {
-                return false;
+                return;
             }
             BuildExceptions.NotNull(context, "context");
             BuildExceptions.NotNull(logger, "logger");
@@ -228,7 +219,7 @@ namespace Sandcastle
 
             if (_listGroups == null || _listGroups.Count == 0)
             {
-                return false;
+                return;
             }
 
             _isBuildSuccess   = false;
@@ -236,9 +227,13 @@ namespace Sandcastle
             _logger    = logger;
             _context   = context;
 
-            _settings.Initialize();
+            _settings.BeginInit();
 
-            _context.Initialize(_settings, _logger, _configuration);
+            _context.Initialize(_settings, _logger);
+
+            _settings.Initialize(context);
+
+            _settings.EndInit();
 
             // 1. If there is no logger, we try creating a default logger...
             if (_logger.Count == 0)
@@ -251,18 +246,18 @@ namespace Sandcastle
             }
 
             // 2. If the logger is not initialized, we initialize it now...
-            if (!_logger.IsInitialize)
+            if (!_logger.IsInitialized)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
 
-            IList<BuildFormat> listFormats = this.Settings.Formats;
+            BuildFormatList listFormats = this.Settings.Formats;
             if (listFormats == null || listFormats.Count == 0)
             {
-                return false;
+                return;
             }
             int itemCount = listFormats.Count;
-            _listFormats = new BuildList<BuildFormat>();
+            _listFormats = new BuildFormatList();
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = listFormats[i];
@@ -273,15 +268,12 @@ namespace Sandcastle
             }
             if (_listFormats == null || _listFormats.Count == 0)
             {
-                return false;
+                return;
             }
 
-            _referenceEngine  = new ReferenceEngine(_settings, _logger,
-                _context, _configuration);
-            _conceptualEngine = new ConceptualEngine(_settings, _logger,
-                _context, _configuration);
+            _referenceEngine  = new ReferenceEngine(_settings, _logger, _context);
+            _conceptualEngine = new ConceptualEngine(_settings, _logger, _context);
 
-            int namingApi      = 0;
             int includedApi    = 0;
             int includedTopics = 0;
             BuildGroup group   = null;
@@ -298,13 +290,8 @@ namespace Sandcastle
                 groupType = group.GroupType;
                 if (groupType == BuildGroupType.Reference)
                 {
-                    includedApi++;
-
-                    ReferenceGroup refGroup = (ReferenceGroup)group;
-
-                    namingApi = Math.Max((int)refGroup.Options.Naming, namingApi);
-
-                    _referenceEngine.Add(refGroup);
+                    includedApi++;  
+                    _referenceEngine.Add((ReferenceGroup)group);
                 }
                 else if (groupType == BuildGroupType.Conceptual)
                 {
@@ -312,8 +299,6 @@ namespace Sandcastle
                     _conceptualEngine.Add((ConceptualGroup)group);
                 }
             }
-
-            context["$ApiNamingMethod"] = namingApi.ToString();
 
             bool buildApi    = (includedApi != 0 && _references > 0 && 
                 _settings.BuildReferences);
@@ -324,7 +309,8 @@ namespace Sandcastle
             {
                 try
                 {
-                    if (!_referenceEngine.Initialize(_settings))
+                    _referenceEngine.Initialize(_settings);
+                    if (!_referenceEngine.IsInitialized)
                     {
                         _isInitialized = false;
                     }
@@ -340,7 +326,8 @@ namespace Sandcastle
             {
                 try
                 {
-                    if (!_conceptualEngine.Initialize(_settings))
+                    _conceptualEngine.Initialize(_settings);
+                    if (!_conceptualEngine.IsInitialized)
                     {
                         _isInitialized = false;
                     }
@@ -354,30 +341,26 @@ namespace Sandcastle
 
             _listSteps = new List<BuildStep>(16);
 
-            _context["$HelpTocFile"] = BuildToc.HelpToc;
+            _context["$HelpTocFile"]             = BuildToc.HelpToc;
+            _context["$HelpHierarchicalTocFile"] = BuildToc.HierarchicalToc; 
+            _context["$HierarchicalToc"]         = "false";
 
             _isInitialized = this.CreateSteps();
-
-            return _isInitialized;
         }
 
-        public virtual bool Initialize(BuildContext context, BuildLoggers logger,
-            BuildSettings settings, IncludeContentList configuration)
+        public virtual void Initialize(BuildContext context, BuildLoggers logger,
+            BuildSettings settings)
         {
             if (_isInitialized)
             {
-                return false;
+                return;
             }
             if (settings != null)
             {
                 _settings = settings;
             }
-            if (configuration != null)
-            {
-                _configuration = configuration;
-            }
 
-            return this.Initialize(context, logger);
+            this.Initialize(context, logger);
         }
 
         #endregion
@@ -405,7 +388,7 @@ namespace Sandcastle
                 return false;
             }
 
-            if (!_logger.IsInitialize)
+            if (!_logger.IsInitialized)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
@@ -482,6 +465,7 @@ namespace Sandcastle
             }
             if (_context != null)
             {
+                _context["$HierarchicalToc"] = "false";
                 _context.Uninitialize();
             }
 
@@ -749,15 +733,35 @@ namespace Sandcastle
 
         protected virtual bool CreateMergingSteps()
         {
+            BuildEngineSettingsList listSettings = _settings.EngineSettings;
+            Debug.Assert(listSettings != null,
+                "The settings does not include the engine settings.");
+            if (listSettings == null || listSettings.Count == 0)
+            {
+                return false;
+            }
+            ReferenceEngineSettings engineSettings = 
+                listSettings[BuildEngineType.Reference] as ReferenceEngineSettings;
+
+            Debug.Assert(engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (engineSettings == null)
+            {
+                return false;
+            }
+
+            string workingDir = _context.WorkingDirectory;
+
+            // Merge the table of contents...
+            StepTocMerge tocMerge = null;
+            bool createResult     = false;
+
+            // Create the merging for the flat TOC for formats requiring it...
             try
             {
-                string workingDir = _context.WorkingDirectory;
-
-                // Merge the table of contents...
-                StepTocMerge tocMerge = null;
                 if (_helpToc == null || _helpToc.IsEmpty == true)
                 {
-                    tocMerge = new StepTocMerge(workingDir, BuildToc.HelpToc);
+                    tocMerge = new StepTocMerge(workingDir, BuildToc.HelpToc, false);
 
                     IList<ConceptualGroup> topicsGroups =
                         _conceptualEngine.Groups;
@@ -808,7 +812,7 @@ namespace Sandcastle
                 }
                 else
                 {
-                    tocMerge = new StepTocMerge(workingDir, _helpToc);
+                    tocMerge = new StepTocMerge(workingDir, _helpToc, false);
                 }
 
                 if (tocMerge != null)
@@ -816,14 +820,109 @@ namespace Sandcastle
                     _listSteps.Add(tocMerge);
                 }
 
-                return true;
+                createResult = true;
             }
             catch (Exception ex)
             {
                 _logger.WriteLine(ex, BuildLoggerLevel.Error);
 
-                return false;
+                createResult = false;
             }
+
+            if (!createResult)
+            {
+                return createResult;
+            }
+
+            // If there is no hierarchical TOC, do not proceed further...
+            ReferenceTocLayoutConfiguration tocConfig = engineSettings.TocLayout;
+            if (tocConfig == null || !tocConfig.Enabled || !tocConfig.IsActive)
+            {
+                return createResult;
+            }
+            ReferenceTocLayoutType layoutType = tocConfig.LayoutType;
+            if (layoutType != ReferenceTocLayoutType.Hierarchical &&
+                layoutType != ReferenceTocLayoutType.Custom)
+            {
+                return createResult;
+            }
+
+            // Create the merging for hierarchical TOC...
+            try
+            {
+                if (_helpToc == null || _helpToc.IsEmpty == true)
+                {
+                    tocMerge = new StepTocMerge(workingDir, BuildToc.HierarchicalToc, true);
+
+                    IList<ConceptualGroup> topicsGroups =
+                        _conceptualEngine.Groups;
+
+                    if (topicsGroups != null && topicsGroups.Count != 0)
+                    {
+                        int itemCount = topicsGroups.Count;
+
+                        for (int i = 0; i < itemCount; i++)
+                        {
+                            ConceptualGroup group = topicsGroups[i];
+                            if (group == null || group.IsEmpty || group.Exclude ||
+                                group.ExcludeToc)
+                            {
+                                continue;
+                            }
+
+                            string topicsToc = group["$TocFile"];
+                            if (!String.IsNullOrEmpty(topicsToc))
+                            {
+                                tocMerge.Add(topicsToc, BuildGroupType.Conceptual);
+                            }
+                        }
+                    }
+
+                    IList<ReferenceGroup> apiGroups = _referenceEngine.Groups;
+
+                    if (apiGroups != null && apiGroups.Count != 0)
+                    {
+                        int itemCount = apiGroups.Count;
+
+                        for (int i = 0; i < itemCount; i++)
+                        {
+                            ReferenceGroup group = apiGroups[i];
+                            if (group == null || group.IsEmpty || group.Exclude ||
+                                group.ExcludeToc)
+                            {
+                                continue;
+                            }
+
+                            string topicsToc = group["$HierarchicalTocFile"];
+                            if (!String.IsNullOrEmpty(topicsToc))
+                            {
+                                tocMerge.Add(topicsToc, BuildGroupType.Reference);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    tocMerge = new StepTocMerge(workingDir, _helpToc, true);
+                }
+
+                if (tocMerge != null)
+                {
+                    _listSteps.Add(tocMerge);
+                }
+
+                _context["$HierarchicalToc"] = "true";
+
+                createResult = true;
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteLine(ex, BuildLoggerLevel.Error);
+
+                createResult = false;
+            }
+
+            return createResult;
         }
 
         #endregion
@@ -948,7 +1047,7 @@ namespace Sandcastle
 
                 if (formatCount != 0)
                 {
-                    messageText = "For the help format: " + format.FormatName;
+                    messageText = "For the help format: " + format.Name;
                 }
 
                 foreach (string folder in outputFolders)
@@ -1036,7 +1135,7 @@ namespace Sandcastle
                         closeViewer.LogTitle = String.Empty;
 
                         closeViewerSteps.Add(closeViewer,
-                            "For the format: " + format.FormatName);
+                            "For the format: " + format.Name);
                     }
                 }
 
@@ -1052,14 +1151,14 @@ namespace Sandcastle
                 _listSteps.Add(closeViewerSteps);
             }
 
-            // Add the Intellisense directory for deletion, may not exists...
-            deleteDirs.Add("Intellisense");
+            //// Add the Intellisense directory for deletion, may not exists...
+            //deleteDirs.Add("Intellisense");
             _listSteps.Add(deleteDirs);
 
             // 3. Recreate the output directories
             StepDirectoryCreate createDir = new StepDirectoryCreate(workingDir);
             createDir.LogTitle = "Creating standard and formats directories.";
-            createDir.Add("Intellisense");
+            //createDir.Add("Intellisense");
             for (int i = 0; i < folderCount; i++)
             {
                 createDir.Add(@"Output\" + listFolders[i]);
@@ -1160,7 +1259,7 @@ namespace Sandcastle
                         startViewer.LogTitle = String.Empty;
 
                         startViewerSteps.Add(startViewer,
-                            "For the format: " + format.FormatName);
+                            "For the format: " + format.Name);
                     }
                 }
             }
@@ -1226,7 +1325,8 @@ namespace Sandcastle
                     BuildStep buildStep = listSteps[i];
                     if (buildStep != null)
                     {
-                        if (buildStep.Initialize(_context) == false)
+                        buildStep.Initialize(_context);
+                        if (!buildStep.IsInitialized)
                         {
                             _logger.WriteLine(
                                 "An error occurred when initializing the step = " + i.ToString(),
@@ -1238,7 +1338,7 @@ namespace Sandcastle
                     }
                 }
 
-                // If the initialization fails, we need not continune...
+                // If the initialization fails, we need not continue...
                 if (buildResult == false)
                 {
                     return buildResult;

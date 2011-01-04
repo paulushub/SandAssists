@@ -3,7 +3,7 @@ using System;
 namespace TestLibrary
 {
     /// <summary>
-    /// This is a point class.
+    /// This is a point class of somthing I knoww.
     /// </summary>
     /// <remarks>
     /// <code language="c#">

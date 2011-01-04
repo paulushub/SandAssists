@@ -435,25 +435,15 @@ namespace Sandcastle.Steps
             }
 
             bool buildResult = false;
-            FormatHxs hxsFormat = null;
 
             _settings = context.Settings;
-            IList<BuildFormat> formats = _settings.Formats;
+            BuildFormatList formats = _settings.Formats;
             if (formats == null || formats.Count == 0)
             {
                 return buildResult;
             }
-
-            int itemCount = formats.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = formats[i];
-                if (format != null && format.FormatType == BuildFormatType.HtmlHelp2)
-                {
-                    hxsFormat = (FormatHxs)format;
-                    break;
-                }
-            }
+            FormatHxs hxsFormat =
+                formats[BuildFormatType.HtmlHelp2] as FormatHxs;
 
             if (hxsFormat == null || hxsFormat.Enabled == false)
             {

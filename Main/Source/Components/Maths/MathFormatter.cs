@@ -426,7 +426,7 @@ namespace Sandcastle.Components.Maths
 
         #region Protected Methods
 
-        protected virtual string NextName()
+        protected string NextName()
         {
             if (_namingMethod == MathNamingMethod.Guid)
             {
@@ -452,7 +452,7 @@ namespace Sandcastle.Components.Maths
             return Guid.NewGuid().ToString() + this.ImageExtension;
         }
 
-        protected virtual string GetSize(int index)
+        protected string GetSize(int index)
         {
             if ((_sizesLaTeX == null || _sizesLaTeX.Length == 0) ||
                 (index < 0 || index >= _sizesLaTeX.Length))
@@ -463,7 +463,7 @@ namespace Sandcastle.Components.Maths
             return _sizesLaTeX[index];
         }
 
-        protected virtual void WriteMessage(MessageLevel level, string message)
+        protected void WriteMessage(MessageLevel level, string message)
         {
             if (String.IsNullOrEmpty(message))
             {
@@ -476,11 +476,18 @@ namespace Sandcastle.Components.Maths
             }
         }
 
-        protected virtual void WriteMessage(MessageLevel level, Exception ex)
+        protected void WriteMessage(MessageLevel level, Exception ex)
         {
-            this.WriteMessage(level, ex.ToString());
-            //this.WriteMessage(level, String.Format("Exception({0}) - {1}",
-            //    ex.GetType().FullName, ex.Message));
+            string message = ex.Message;
+            if (String.IsNullOrEmpty(message))
+            {
+                this.WriteMessage(level, ex.ToString());
+            }
+            else
+            {
+                this.WriteMessage(level, String.Format("Exception({0}) - {1}",
+                    ex.GetType().Name, message));
+            }
         }
 
         #endregion

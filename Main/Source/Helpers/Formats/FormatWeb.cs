@@ -174,7 +174,7 @@ namespace Sandcastle.Formats
                 string webHelpDir = Path.Combine(helpDirectory, helpFolder);
 
                 BuildMultiStep listSteps = new BuildMultiStep();
-                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTitle    = "Building document output format - " + this.Name;
                 listSteps.LogTimeSpan = true;
 
                 StepDirectoryCopy dirCopy = new StepDirectoryCopy();
@@ -186,9 +186,18 @@ namespace Sandcastle.Formats
 
                 listSteps.Add(dirCopy);
 
+                string tocTopics = context["$HelpTocFile"];
+                string tempText = context["$HierarchicalToc"];
+
+                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+                    "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    tocTopics = context["$HelpHierarchicalTocFile"];
+                }
+
                 FormatWebOptions options = new FormatWebOptions();
                 options.HelpTitle   = helpTitle;
-                options.HelpTocFile = context["$HelpTocFile"];
+                options.HelpTocFile = tocTopics;
                 options.ProjectName = helpName;
                 options.WorkingDirectory = workingDir;
                 options.HtmlDirectory = Path.Combine(workingDir, 

@@ -93,7 +93,7 @@ namespace Sandcastle.Formats
         /// A <see cref="System.String"/> containing the name of the output format.
         /// This will always return "HtmlHelp 1.x".
         /// </value>
-        public override string FormatName
+        public override string Name
         {
             get
             {
@@ -101,7 +101,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override string FormatExtension
+        public override string Extension
         {
             get
             {
@@ -506,6 +506,13 @@ namespace Sandcastle.Formats
                     }
                 }
                 string tocTopics = context["$HelpTocFile"];
+                string tempText  = context["$HierarchicalToc"];
+
+                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+                    "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    tocTopics = context["$HelpHierarchicalTocFile"];
+                }
 
                 FormatChmOptions options = new FormatChmOptions();
                 options.ConfigFile       = Path.Combine(workingDir, "ChmBuilder.config");
@@ -518,7 +525,7 @@ namespace Sandcastle.Formats
                 options.TocFile          = Path.Combine(workingDir, tocTopics);
                 
                 BuildMultiStep listSteps = new BuildMultiStep();
-                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTitle    = "Building document output format - " + this.Name;
                 listSteps.LogTimeSpan = true;
 
                 // 1. Prepare the help html files, and create the html project

@@ -56,6 +56,25 @@ namespace Sandcastle
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildList{T}"/> class
+        /// with parameters copied from the specified instance of the 
+        /// <see cref="BuildList{T}"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="BuildList{T}"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
+        public BuildList(BuildList<T> source)
+        {
+            BuildExceptions.NotNull(source, "source");
+
+            _version = source._version;
+        }
+
         #endregion
 
         #region Public Events
@@ -266,7 +285,7 @@ namespace Sandcastle
 
         public BuildList<T> Clone()
         {
-            BuildList<T> clonedList = new BuildList<T>();
+            BuildList<T> clonedList = new BuildList<T>(this);
 
             int itemCount = this.Count;
             for (int i = 0; i < itemCount; i++)
@@ -276,10 +295,6 @@ namespace Sandcastle
 
             return clonedList;
         }
-
-        #endregion
-
-        #region ICloneable Members
 
         object ICloneable.Clone()
         {

@@ -41,8 +41,7 @@ namespace Sandcastle.Conceptual
         }
 
         public ConceptualEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context, IncludeContentList configuration)
-            : base(settings, logger, context, configuration)
+            BuildContext context) : base(settings, logger, context)
         {
         }
 
@@ -107,26 +106,27 @@ namespace Sandcastle.Conceptual
 
         #region Initialize Method
 
-        public override bool Initialize(BuildSettings settings)
+        public override void Initialize(BuildSettings settings)
         {
-            bool initResult = base.Initialize(settings);
-            if (initResult == false)
+            base.Initialize(settings);
+            if (!this.IsInitialized)
             {
-                return initResult;
+                return;
             }
+
             if (_listGroups == null || _listGroups.Count == 0)
             {
-                return false;
+                this.IsInitialized = false;
+                return;
             }
 
             _listFormats = new List<BuildFormat>();
 
-            IList<BuildFormat> listFormats = this.Settings.Formats;
+            BuildFormatList listFormats = this.Settings.Formats;
             if (listFormats == null || listFormats.Count == 0)
             {
                 this.IsInitialized = false;
-
-                return false;
+                return;
             }
             int itemCount = listFormats.Count;
             _listFormats  = new List<BuildFormat>(itemCount);
@@ -141,8 +141,7 @@ namespace Sandcastle.Conceptual
             if (_listFormats == null || _listFormats.Count == 0)
             {
                 this.IsInitialized = false;
-
-                return false;
+                return;
             }
             itemCount = _listGroups.Count;
             for (int i = 0; i < itemCount; i++)
@@ -181,17 +180,14 @@ namespace Sandcastle.Conceptual
                 group["$ProjSettingsLoc"] =
                     String.Format("ProjectSettings{0}.loc.xml", indexText);
                 group["$GroupIndex"] = indexText;
-
-                if (!group.Initialize(this.Context))
+                
+                group.Initialize(this.Context);
+                if (!group.IsInitialized)
                 {
                     this.IsInitialized = false;
-
-                    initResult = false;
                     break;
                 }
             }
-
-            return initResult;
         }
 
         #endregion
@@ -285,8 +281,9 @@ namespace Sandcastle.Conceptual
                     {
                         continue;
                     }
-
-                    if (group.Initialize(context))
+                    
+                    group.Initialize(context);
+                    if (group.IsInitialized)
                     {
                         _curGroup = group;
 

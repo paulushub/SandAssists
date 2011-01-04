@@ -16,8 +16,7 @@ namespace Sandcastle.Components
     {
         #region Private Fields
 
-        private int     _pageCount;
-
+        private int     _pageCount;   
         private bool    _isInline;
         private string  _mathClass;
 

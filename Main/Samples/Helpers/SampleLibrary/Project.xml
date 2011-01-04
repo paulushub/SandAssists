@@ -2,7 +2,7 @@
 <doc>
   <members>
     <member name="R:Project">
-      <summary>This the description of the project.</summary>
+      <summary>This is the description of the project.</summary>
     </member>
     <member name="N:TestLibrary">
       <summary>This is the description TestLibary namespace - testing only.</summary>

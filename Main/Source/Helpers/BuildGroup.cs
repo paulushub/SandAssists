@@ -23,6 +23,7 @@ namespace Sandcastle
 
         private bool   _isExcluded;
         private bool   _isTocExcluded;
+        private bool   _isInitialized;
 
         private Guid   _groupId;
 
@@ -79,13 +80,14 @@ namespace Sandcastle
         /// </exception>
         protected BuildGroup(BuildGroup source)
             : base(source)
-        {   
+        {
             _listLinks     = source._listLinks;
             _listMedia     = source._listMedia;
             _listTokens    = source._listTokens;
             _listShared    = source._listShared;
             _listSnippets  = source._listSnippets;
             _listResources = source._listResources;
+            _isInitialized = source._isInitialized;
         }
 
         #endregion
@@ -336,6 +338,18 @@ namespace Sandcastle
             }
         }
 
+        public bool IsInitialized
+        {
+            get
+            {
+                return _isInitialized;
+            }
+            protected set
+            {
+                _isInitialized = value;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the string value associated with the specified string key.
         /// </summary>
@@ -454,15 +468,16 @@ namespace Sandcastle
 
         #region Initialization Methods
 
-        public virtual bool Initialize(BuildContext context)
+        public virtual void Initialize(BuildContext context)
         {
             BuildExceptions.NotNull(context, "context");
 
-            return true;
+            _isInitialized = true;
         }
 
         public virtual void Uninitialize()
         {
+            _isInitialized = false;
         }
 
         #endregion

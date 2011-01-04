@@ -11,8 +11,13 @@ namespace Sandcastle
     /// This is the <see langword="abstract"/> base class for all the build contents, which
     /// are containers for the build items, <see cref="BuildItem{T}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="U"></typeparam>
+    /// <typeparam name="T">
+    /// The content item, <see cref="BuildItem{T}"/>, which is the basic unit of
+    /// the contents.
+    /// </typeparam>
+    /// <typeparam name="U">
+    /// The underlying value type of the <see cref="BuildContent{T, U}"/> generic type. 
+    /// </typeparam>
     [Serializable]
     public abstract class BuildContent<T, U> : BuildObject, ICloneable, IXmlSerializable
         where T : BuildItem<T>
@@ -26,18 +31,48 @@ namespace Sandcastle
 
         #region Constructors and Destructor
 
+        /// <overloads>
+        /// Initializes a new instance of the <see cref="BuildContent{T, U}"/> 
+        /// class.
+        /// </overloads>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildContent{T, U}"/> 
+        /// class with the default parameters.
+        /// </summary>
         protected BuildContent()
         {
             _listItems = new BuildList<T>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildContent{T, U}"/> 
+        /// class with the specified list of items.
+        /// </summary>
+        /// <param name="itemList">
+        /// An initial list of content items of the type, <see cref="BuildItem{T}"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="itemList"/> is <see langword="null"/>.
+        /// </exception>
         protected BuildContent(IList<T> itemList)
-        {
+        {                                          
             BuildExceptions.NotNull(itemList, "itemList");
 
             _listItems = itemList;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildContent{T, U}"/>
+        /// class with initial parameters copied from the specified instance of 
+        /// the specified <see cref="BuildContent{T, U}"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="BuildContent{T, U}"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
         protected BuildContent(BuildContent<T, U> source)
         {
             BuildExceptions.NotNull(source, "source");
@@ -145,6 +180,13 @@ namespace Sandcastle
             }
         }
 
+        public virtual void Insert(int index, T item)
+        {
+            BuildExceptions.NotNull(item, "item");
+
+            _listItems.Insert(index, item);
+        }
+
         public virtual void Remove(int index)
         {
             if (_listItems.Count == 0)
@@ -155,16 +197,16 @@ namespace Sandcastle
             _listItems.RemoveAt(index);
         }
 
-        public virtual void Remove(T item)
+        public virtual bool Remove(T item)
         {
             BuildExceptions.NotNull(item, "item");
 
             if (_listItems.Count == 0)
             {
-                return;
+                return false;
             }
 
-            _listItems.Remove(item);
+            return _listItems.Remove(item);
         }
 
         public virtual bool Contains(T item)
@@ -191,15 +233,44 @@ namespace Sandcastle
 
         #region IXmlSerializable Members
 
+        /// <summary>
+        /// This property is reserved, apply the <see cref="XmlSchemaProviderAttribute"/> to the class instead.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="XmlSchema"/> that describes the XML representation of 
+        /// the object that is produced by the <see cref="WriteXml"/> method and 
+        /// consumed by the <see cref="ReadXml"/> method.
+        /// </returns>
         XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
         }
 
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public virtual void ReadXml(XmlReader reader)
         {
         }
 
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public virtual void WriteXml(XmlWriter writer)
         {
         }

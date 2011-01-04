@@ -66,6 +66,10 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Sandcastle.NHunspell, Version=0.9.6.0, Culture=neutral, PublicKeyToken=1ac793ea843b4366, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Sandcastle.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=26d176bb73235da5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -78,12 +82,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildComponentConfiguration.cs" />
     <Compile Include="BuildConfiguration.cs" />
-    <Compile Include="BuildConfigurationCoverage.cs" />
-    <Compile Include="BuildConfigurationList.cs" />
-    <Compile Include="BuildConfigurationType.cs" />
+    <Compile Include="BuildSource.cs" />
+    <Compile Include="BuildComponentType.cs" />
+    <Compile Include="BuildEngineSettings.cs" />
+    <Compile Include="BuildFeedback.cs" />
+    <Compile Include="BuildFeedbackType.cs" />
+    <Compile Include="BuildFramework.cs" />
+    <Compile Include="BuildFrameworkId.cs" />
+    <Compile Include="BuildLogoAlignment.cs" />
+    <Compile Include="BuildLogoPlacement.cs" />
+    <Compile Include="BuildMisspelledWord.cs" />
+    <Compile Include="BuildOptions.cs" />
+    <Compile Include="BuildSpellChecker.cs" />
+    <Compile Include="BuildSpellCheckResult.cs" />
     <Compile Include="BuildStyleUtils.cs" />
-    <Compile Include="Configurators\IncludeContentList.cs" />
+    <Compile Include="BuildSyntaxType.cs" />
+    <Compile Include="Conceptual\ConceptualCloneConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualCodeConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualComponentConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualEngineSettings.cs" />
+    <Compile Include="Conceptual\ConceptualIntelliSenseConfiguration.cs" />
     <Compile Include="BuildConverter.cs" />
     <Compile Include="BuildDocumenter.cs" />
     <Compile Include="BuildErrorEventArgs.cs" />
@@ -103,10 +124,12 @@
     <Compile Include="BuildStartedEventArgs.cs" />
     <Compile Include="BuildVisitor.cs" />
     <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
+    <Compile Include="Conceptual\ConceptualLinkConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualMathConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualMediaConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualPostTransConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualPreTransConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualTocFilter.cs" />
-    <Compile Include="Configurators\ConfiguratorContent.cs" />
-    <Compile Include="Configurators\ConfiguratorItem.cs" />
-    <Compile Include="Configurators\ConfiguratorItemEvents.cs" />
     <Compile Include="Configurators\AssemblerConfigurator.cs" />
     <Compile Include="BuildConfigurator.cs" />
     <Compile Include="BuildContext.cs" />
@@ -134,8 +157,6 @@
     <Compile Include="Configurators\ConfiguratorKeywords.cs" />
     <Compile Include="Configurators\GenericConfigurator.cs" />
     <Compile Include="Configurators\IncludeConfigurator.cs" />
-    <Compile Include="Configurators\IncludeContent.cs" />
-    <Compile Include="Configurators\IncludeItem.cs" />
     <Compile Include="Formats\FormatChmConverter.cs" />
     <Compile Include="Formats\FormatChmEncoding.cs" />
     <Compile Include="Formats\FormatChmHelper.cs">
@@ -164,22 +185,46 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="References\ReferenceAutoDocConfiguration.cs" />
+    <Compile Include="References\ReferenceCloneConfiguration.cs" />
+    <Compile Include="References\ReferenceCodeConfiguration.cs" />
+    <Compile Include="References\ReferenceComponentConfiguration.cs" />
+    <Compile Include="References\ReferenceConfiguration.cs" />
+    <Compile Include="References\ReferenceDocumentType.cs" />
+    <Compile Include="References\ReferenceEngineSettings.cs" />
+    <Compile Include="References\ReferenceTocExcludeConfiguration.cs" />
     <Compile Include="References\ReferenceFilterType.cs" />
     <Compile Include="References\ReferenceFormatAssembler.cs" />
+    <Compile Include="References\ReferenceIntelliSenseConfiguration.cs" />
+    <Compile Include="References\ReferenceTocLayoutConfiguration.cs" />
+    <Compile Include="References\ReferenceTocLayoutType.cs" />
+    <Compile Include="References\ReferenceLinkConfiguration.cs" />
+    <Compile Include="References\ReferenceMathConfiguration.cs" />
+    <Compile Include="References\ReferenceMediaConfiguration.cs" />
     <Compile Include="References\ReferenceMemberFilter.cs" />
+    <Compile Include="References\ReferenceMissingTagsConfiguration.cs" />
+    <Compile Include="References\ReferencePostTransConfiguration.cs" />
     <Compile Include="References\ReferenceRootFilter.cs" />
     <Compile Include="References\ReferenceNamer.cs" />
-    <Compile Include="References\ReferenceOptions.cs" />
+    <Compile Include="References\ReferenceSpellCheckConfiguration.cs" />
+    <Compile Include="References\ReferenceSpellCheckVisitor.cs" />
     <Compile Include="References\ReferenceTypeFilter.cs" />
     <Compile Include="References\ReferenceContent.cs" />
     <Compile Include="References\ReferenceDocument.cs" />
-    <Compile Include="References\ReferenceExcludeTocVisitor.cs" />
-    <Compile Include="References\ReferenceLayoutTocVisitor.cs" />
+    <Compile Include="References\ReferenceTocExcludeVisitor.cs" />
+    <Compile Include="References\ReferenceTocLayoutVisitor.cs" />
     <Compile Include="References\ReferenceTocVisitor.cs" />
     <Compile Include="References\ReferenceNamespaceFilter.cs" />
+    <Compile Include="References\ReferenceVisibilityConfiguration.cs" />
+    <Compile Include="References\ReferenceVisibilityVisitor.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
+    <Compile Include="References\ReferenceXPathItem.cs" />
+    <Compile Include="References\ReferenceXPathConfiguration.cs" />
+    <Compile Include="References\ReferenceXPathVisitor.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
+    <Compile Include="Steps\StepReferenceRefine.cs" />
+    <Compile Include="Steps\StepReferenceToc.cs" />
     <Compile Include="Steps\StepSleep.cs" />
     <Compile Include="Steps\StepMessage.cs" />
     <Compile Include="Steps\StepMhvBuilder.cs" />
@@ -232,6 +277,8 @@
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
+    <None Include="Diagrams\BuildComponentConfigurations.cd" />
+    <None Include="Diagrams\BuildConfigurations.cd" />
     <None Include="Diagrams\BuildConfigurators.cd" />
     <None Include="Diagrams\BuildContents.cd" />
     <None Include="Diagrams\BuildContexts.cd" />
@@ -240,6 +287,7 @@
     <None Include="Diagrams\BuildGroups.cd" />
     <None Include="Diagrams\BuildItems.cd" />
     <None Include="Diagrams\BuildObjects.cd" />
+    <None Include="Diagrams\BuildSettings.cd" />
     <None Include="Diagrams\BuildSteps.cd" />
     <None Include="Diagrams\BuildFormats.cd" />
     <None Include="Diagrams\BuildVisitors.cd" />
@@ -262,11 +310,6 @@
       <Name>Resources</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configurations\" />
-    <Folder Include="Deployments\" />
-    <Folder Include="Notifiers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

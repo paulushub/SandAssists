@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class SnippetContent : BuildContent<SnippetItem, SnippetContent>
+    public sealed class SnippetContent : BuildContent<SnippetItem, SnippetContent>
     {
         #region Private Fields
 

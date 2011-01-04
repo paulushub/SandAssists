@@ -27,7 +27,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.CloneComponent" Collapsed="true">
-    <Position X="4.25" Y="0.5" Width="1.5" />
+    <Position X="4.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAABAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CloneComponent.cs</FileName>
@@ -105,6 +105,13 @@
     <TypeIdentifier>
       <HashCode>ACgIAAACCHAAAAAIAQAAAAAggBAAEiAABAAQAAAQCAQ=</HashCode>
       <FileName>IntellisenseComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Components.BuildComponents" Collapsed="true">
+    <Position X="4.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAJAAAAAABAACAAACAAAAEQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BuildComponents.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

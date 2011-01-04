@@ -272,6 +272,12 @@ namespace Sandcastle.Components
                 return;
             }
 
+            if ((id[0] == 'N') && id.EndsWith("TocExcluded",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             XPathNavigator root = null;
             if (_rootExpression != null)
             {

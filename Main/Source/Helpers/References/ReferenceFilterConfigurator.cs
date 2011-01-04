@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using System.Xml;
 using System.Xml.XPath;
 
-using Sandcastle.Configurators;
+using Sandcastle.Contents;
 
 namespace Sandcastle.References
 {
@@ -33,7 +34,9 @@ namespace Sandcastle.References
         private BuildContext    _context;
         private ReferenceGroup  _group;
 
-        private ConfiguratorContent _configContent;
+        private ConfiguratorContent     _configContent;
+        [NonSerialized]
+        private ReferenceEngineSettings _engineSettings;
 
         #endregion
 
@@ -94,7 +97,15 @@ namespace Sandcastle.References
             {
                 this.IsInitialized = false;
                 return;
-            }            
+            }
+            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
+                BuildEngineType.Reference];
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
+            {
+                return;
+            }
 
             _settings        = settings;
             _context         = context;
@@ -102,22 +113,22 @@ namespace Sandcastle.References
 
             // 1. The reference ...
             this.RegisterItem(KeywordNamer,
-                new ConfigurationItemHandler(OnNamerItem));
+                new Action<string, XPathNavigator>(OnNamerItem));
             // 2. The reference ...
             this.RegisterItem(KeywordAddins,
-                new ConfigurationItemHandler(OnAddinsItem));
+                new Action<string, XPathNavigator>(OnAddinsItem));
             // 3. The reference ...
             this.RegisterItem(KeywordPlatform,
-                new ConfigurationItemHandler(OnPlatformItem));
+                new Action<string, XPathNavigator>(OnPlatformItem));
             // 4. The reference ...
             this.RegisterItem(KeywordResolver,
-                new ConfigurationItemHandler(OnResolverItem));
+                new Action<string, XPathNavigator>(OnResolverItem));
             // 5. The reference ...
             this.RegisterItem(KeywordApiFilter,
-                new ConfigurationItemHandler(OnApiFilterItem));
+                new Action<string, XPathNavigator>(OnApiFilterItem));
             // 6. The reference ...
             this.RegisterItem(KeywordAttributeFilter,
-                new ConfigurationItemHandler(OnAttributeFilterItem));
+                new Action<string, XPathNavigator>(OnAttributeFilterItem));
 
             this.IsInitialized = true;
         }
@@ -204,7 +215,8 @@ namespace Sandcastle.References
             return _configContent[keyword];
         }
 
-        public void RegisterItem(string keyword, ConfigurationItemHandler handler)
+        public void RegisterItem(string keyword, 
+            Action<string, XPathNavigator> handler)
         {
             if (_configContent == null || String.IsNullOrEmpty(keyword) ||
                 handler == null)
@@ -221,14 +233,17 @@ namespace Sandcastle.References
 
         #region OnNamerItem Method
 
-        private void OnNamerItem(object sender, ConfigurationItemEventArgs args)
+        private void OnNamerItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-            ReferenceOptions options = _group.Options;
+            Debug.Assert(_engineSettings != null);
+            if (_engineSettings == null)
+            {
+                return;
+            }
 
             string sandcastleDir = _context.SandcastleDirectory;
 
-            if (options.Namer == ReferenceNamer.Whidbey)
+            if (_engineSettings.Namer == ReferenceNamer.Whidbey)
             {   
                 XmlWriter xmlWriter = navigator.InsertAfter();
 
@@ -252,10 +267,8 @@ namespace Sandcastle.References
 
         #region OnAddinsItem Method
 
-        private void OnAddinsItem(object sender, ConfigurationItemEventArgs args)
+        private void OnAddinsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             //XmlWriter xmlWriter = navigator.InsertAfter();
 
             //...
@@ -272,10 +285,9 @@ namespace Sandcastle.References
 
         #region OnPlatformItem Method
 
-        private void OnPlatformItem(object sender, ConfigurationItemEventArgs args)
+        private void OnPlatformItem(string keyword, XPathNavigator navigator)
         {
             BuildFramework framework = _settings.Framework;
-            XPathNavigator navigator = args.Navigator;
 
             XmlWriter xmlWriter = navigator.InsertAfter();
 
@@ -296,10 +308,8 @@ namespace Sandcastle.References
 
         #region OnResolverItem Method
 
-        private void OnResolverItem(object sender, ConfigurationItemEventArgs args)
+        private void OnResolverItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             string sandcastleDir = _context.SandcastleDirectory;
 
             XmlWriter xmlWriter = navigator.InsertAfter();
@@ -323,10 +333,8 @@ namespace Sandcastle.References
 
         #region OnApiFilterItem Method
 
-        private void OnApiFilterItem(object sender, ConfigurationItemEventArgs args)
+        private void OnApiFilterItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             XmlWriter xmlWriter = navigator.InsertAfter();
 
             // <apiFilter expose="true">
@@ -364,10 +372,8 @@ namespace Sandcastle.References
 
         #region OnAttributeFilterItem Method
 
-        private void OnAttributeFilterItem(object sender, ConfigurationItemEventArgs args)
+        private void OnAttributeFilterItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             ReferenceRootFilter attributeFilters = _group.AttributeFilters;
 
             // If there is customization of the attribute filters, we use it...

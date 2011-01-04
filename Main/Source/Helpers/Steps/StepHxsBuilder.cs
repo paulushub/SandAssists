@@ -199,25 +199,15 @@ namespace Sandcastle.Steps
             }
 
             bool buildResult = false;
-            FormatHxs hxsFormat = null;
 
             _settings = context.Settings;
-            IList<BuildFormat> formats = _settings.Formats;
+            BuildFormatList formats = _settings.Formats;
             if (formats == null || formats.Count == 0)
             {
                 return buildResult;
             }
-
-            int itemCount = formats.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = formats[i];
-                if (format != null && format.FormatType == BuildFormatType.HtmlHelp2)
-                {
-                    hxsFormat = (FormatHxs)format;
-                    break;
-                }
-            }
+            FormatHxs hxsFormat = 
+                formats[BuildFormatType.HtmlHelp2] as FormatHxs;
 
             if (hxsFormat == null || hxsFormat.Enabled == false)
             {
@@ -430,11 +420,11 @@ namespace Sandcastle.Steps
                 //<Keyword Term="HomePage">
                 //    <Jump Url="" />
                 //</Keyword>
-                IList<PropertyItem> items = CreateNamedUrl();
-                int itemCount = items.Count;
+                IList<AttributeItem> items = CreateNamedUrl();
+                int itemCount = (items == null) ? 0 : items.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
-                    PropertyItem item = items[i];
+                    AttributeItem item = items[i];
                     xmlWriter.WriteStartElement("Keyword");
                     xmlWriter.WriteAttributeString("Term", item.Name);
 
@@ -443,7 +433,7 @@ namespace Sandcastle.Steps
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteEndElement();
-               }
+                }
 
                 xmlWriter.WriteEndElement();               // end - HelpIndex
             }
@@ -766,81 +756,81 @@ namespace Sandcastle.Steps
         /// <seealso href="http://msdn.microsoft.com/en-us/library/bb164963(VS.80).aspx">
         /// Implementing Named URL Indexes
         /// </seealso>
-        private IList<PropertyItem> CreateNamedUrl()
+        private IList<AttributeItem> CreateNamedUrl()
         {
             if (_defaultPage == null)
             {
                 _defaultPage = String.Empty;
             }
 
-            List<PropertyItem> items = new List<PropertyItem>(10);
+            List<AttributeItem> items = new List<AttributeItem>(10);
             string tempText = _buildFormat.HomePage;
             if (String.IsNullOrEmpty(tempText))
             {
                 tempText = _defaultPage;
             }
-            items.Add(new PropertyItem("HomePage", tempText));
+            items.Add(new AttributeItem("HomePage", tempText));
             tempText = _buildFormat.DefaultPage;
             if (String.IsNullOrEmpty(tempText))
             {
                 tempText = _defaultPage;
             }
-            items.Add(new PropertyItem("DefaultPage",    tempText));
+            items.Add(new AttributeItem("DefaultPage",    tempText));
 
             tempText = _buildFormat.NavFailPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("NavFailPage", tempText));
+                items.Add(new AttributeItem("NavFailPage", tempText));
             }
 
             tempText = _buildFormat.AboutPageInfo;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("AboutPageInfo", tempText));
+                items.Add(new AttributeItem("AboutPageInfo", tempText));
             }
 
             tempText = _buildFormat.AboutPageIcon;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("AboutPageIcon", tempText));
+                items.Add(new AttributeItem("AboutPageIcon", tempText));
             }
 
             tempText = _buildFormat.FilterEditPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("FilterEditPage", tempText));
+                items.Add(new AttributeItem("FilterEditPage", tempText));
             }
 
             tempText = _buildFormat.HelpPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("HelpPage", tempText));
+                items.Add(new AttributeItem("HelpPage", tempText));
             }
 
             tempText = _buildFormat.SupportPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("SupportPage", tempText));
+                items.Add(new AttributeItem("SupportPage", tempText));
             }
 
             tempText = _buildFormat.SampleDirPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("SampleDirPage", tempText));
+                items.Add(new AttributeItem("SampleDirPage", tempText));
             }
 
             tempText = _buildFormat.SearchHelpPage;
             if (String.IsNullOrEmpty(tempText) == false ||
                 File.Exists(tempText))
             {
-                items.Add(new PropertyItem("SearchHelpPage", tempText));
+                items.Add(new AttributeItem("SearchHelpPage", tempText));
             }
             
             return items;

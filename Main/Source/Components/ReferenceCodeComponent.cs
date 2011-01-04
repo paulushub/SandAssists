@@ -16,7 +16,7 @@ using Sandcastle.Components.Snippets;
 
 namespace Sandcastle.Components
 {
-    public class ReferenceCodeComponent : CodeComponent
+    public sealed class ReferenceCodeComponent : CodeComponent
     {
         #region Private Fields
 
@@ -38,7 +38,7 @@ namespace Sandcastle.Components
         public ReferenceCodeComponent(BuildAssembler assembler,
             XPathNavigator configuration) : base(assembler, configuration)
         {
-            _codeRefStorage   = SnippetStorage.Sqlite; //Default to database storage...
+            _codeRefStorage   = SnippetStorage.Database; //Default to database storage...
 
             CodeHighlightMode highlightMode = this.Mode;
             if (highlightMode == CodeHighlightMode.IndirectIris)
@@ -90,7 +90,7 @@ namespace Sandcastle.Components
                             _codeRefProvider = new SnippetMemoryProvider(compType,
                                 msgHandler);
                         }
-                        else if (_codeRefStorage == SnippetStorage.Sqlite)
+                        else if (_codeRefStorage == SnippetStorage.Database)
                         {
                             _codeRefProvider = new SnippetSqliteProvider(compType,
                                 msgHandler);

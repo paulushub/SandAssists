@@ -1858,18 +1858,18 @@ namespace Sandcastle.Components
 
         private enum LogoPlacement
         {
-            Left = 0,
-            Top = 1,
-            Right = 2,
+            Left   = 0,
+            Top    = 1,
+            Right  = 2,
             Bottom = 3
         }
 
         private enum LogoAlignment
         {
-            None = 0,
-            Near = 1,
+            None   = 0,
+            Near   = 1,
             Center = 2,
-            Far = 3
+            Far    = 3
         }
 
         #endregion

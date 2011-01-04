@@ -211,7 +211,7 @@ namespace Sandcastle.Formats
                     sw.WriteLine("  </object>");
                 }
 
-                bool bDefaultTopic = true;
+                bool isDefaultTopic = true;
                 while (reader.Read())
                 {
                     switch (reader.NodeType)
@@ -230,10 +230,10 @@ namespace Sandcastle.Formats
                                 WriteHhcLine(sw, "  <li><object type=\"text/sitemap\">");
                                 WriteHhcLine(sw, String.Format("    <param name=\"Name\" value=\"{0}\"/>", titleValue));
                                 WriteHhcLine(sw, String.Format("    <param name=\"Local\" value=\"{0}\\{1}\"/>", _localFilePrefix, fileAttr));
-                                if (bDefaultTopic)
+                                if (isDefaultTopic)
                                 {
                                     _defaultTopic = _localFilePrefix + "\\" + reader.GetAttribute("file") + ".htm";
-                                    bDefaultTopic = false;
+                                    isDefaultTopic = false;
                                 }
                                 WriteHhcLine(sw, "  </object></li>");
                                 if (reader.IsEmptyElement)

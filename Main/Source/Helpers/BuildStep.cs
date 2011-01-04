@@ -656,35 +656,33 @@ namespace Sandcastle
         /// An instance of the <see cref="BuildContext"/> class, specifying the current
         /// build context of the build process.
         /// </param>
-        /// <returns>
-        /// This returns <see langword="true"/> if the build step is successfully
-        /// initialized and ready for execution; otherwise, it returns 
-        /// <see langword="false"/>.
-        /// </returns>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="context"/> is <see langword="null"/>.
         /// </exception>
         /// <seealso cref="BuildStep.IsInitialized"/>
         /// <seealso cref="BuildStep.Uninitialize()"/>
-        public virtual bool Initialize(BuildContext context)
+        public virtual void Initialize(BuildContext context)
         {                        
             BuildExceptions.NotNull(context, "context");
 
             _isInitialized = false;
             if (_beforeSteps != null && _beforeSteps.Enabled)
             {
-                _isInitialized = _beforeSteps.Initialize(context);
-                if (_isInitialized == false)
+                _beforeSteps.Initialize(context);
+
+                if (!_beforeSteps.IsInitialized)
                 {
-                    return _isInitialized;
+                    return;
                 }
             }
+
             if (_afterSteps != null && _afterSteps.Enabled)
             {
-                _isInitialized = _afterSteps.Initialize(context);
-                if (_isInitialized == false)
+                _afterSteps.Initialize(context);
+
+                if (!_afterSteps.IsInitialized)
                 {
-                    return _isInitialized;
+                    return;
                 }
             }
 
@@ -695,8 +693,6 @@ namespace Sandcastle
             }
 
             _isInitialized = true;
-
-            return _isInitialized;
         }
 
         /// <summary>

@@ -217,8 +217,8 @@ namespace Sandcastle.Configurators
             return _dicConfigMap.ContainsKey(keyword);
         }
 
-        public virtual void RegisterConfigurationItem(string keyword, 
-            ConfigurationItemHandler handler)
+        public virtual void RegisterConfigurationItem(string keyword,
+            Action<string, XPathNavigator> handler)
         {
             if (_configContent == null || String.IsNullOrEmpty(keyword) ||
                 handler == null)
@@ -244,8 +244,8 @@ namespace Sandcastle.Configurators
 
         #region Protected Methods
 
-        protected abstract void OnComponentInclude(object sender,
-            ConfigurationItemEventArgs args);
+        protected abstract void OnComponentInclude(
+            string keyword, XPathNavigator navigator);
 
         #region Configure Method
 
@@ -283,6 +283,11 @@ namespace Sandcastle.Configurators
             XPathNavigator navigator = configDoc.CreateNavigator();
             XPathNodeIterator iterator = navigator.Select("//SandcastleInclude");
 
+            if (iterator == null || iterator.Count == 0)
+            {
+                return;
+            }
+
             int nodeCount = iterator.Count;
 
             XPathNavigator[] nodeNavigators = new XPathNavigator[iterator.Count];
@@ -301,10 +306,7 @@ namespace Sandcastle.Configurators
                     continue;
                 }
 
-                ConfigurationItemEventArgs args = new ConfigurationItemEventArgs(configItem,
-                    nodeNavigator);
-
-                this.OnComponentInclude(this, args);
+                this.OnComponentInclude(configItem, nodeNavigator);
             }
         }
 

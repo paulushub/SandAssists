@@ -9,7 +9,7 @@ using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components
 {
-    public class ConceptualPreTransComponent : PreTransComponent
+    public sealed class ConceptualPreTransComponent : PreTransComponent
     {
         #region Private Fields
 
@@ -34,7 +34,7 @@ namespace Sandcastle.Components
                 XPathNavigator navigator = configuration.SelectSingleNode("autoOutline");
                 if (navigator != null)
                 {
-                    string outlineText = navigator.GetAttribute("value", String.Empty);
+                    string outlineText = navigator.GetAttribute("enabled", String.Empty);
                     if (String.IsNullOrEmpty(outlineText) == false)
                     {
                         _autoOutline = Convert.ToBoolean(outlineText);

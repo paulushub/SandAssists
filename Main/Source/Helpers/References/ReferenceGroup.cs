@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using Sandcastle.Contents;
 
@@ -20,11 +21,12 @@ namespace Sandcastle.References
         private string _assemblyFolder;
         private string _dependencyFolder;
 
-        private ReferenceOptions     _refOptions;
-        private List<ReferenceItem>  _listItems;
-        private DependencyContent    _refDepencencies;
-        private ReferenceRootFilter  _typeFilters;
-        private ReferenceRootFilter  _attributeFilters;
+        private BuildList<string>        _commentFiles;
+        private BuildList<ReferenceItem> _listItems;
+        private DependencyContent        _refDepencencies;
+        private HierarchicalTocContent   _tocContent;
+        private ReferenceRootFilter      _typeFilters;
+        private ReferenceRootFilter      _attributeFilters;
 
         #endregion
 
@@ -56,7 +58,6 @@ namespace Sandcastle.References
         public ReferenceGroup(ReferenceGroup source)
             : base(source)
         {
-            _refOptions = source._refOptions;
         }
 
         #endregion
@@ -173,27 +174,6 @@ namespace Sandcastle.References
         /// <value>
         /// 
         /// </value>
-        public ReferenceOptions Options
-        {
-            get
-            {
-                return _refOptions;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _refOptions = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
         public IList<ReferenceItem> Items
         {
             get
@@ -230,6 +210,31 @@ namespace Sandcastle.References
             }
         }
 
+        public HierarchicalTocContent HierarchicalToc
+        {
+            get
+            {
+                return _tocContent;
+            }
+            set
+            {
+                _tocContent = value;
+            }
+        }
+
+        public IList<string> CommentFiles
+        {
+            get
+            {
+                if (_commentFiles == null)
+                {
+                    _commentFiles = new BuildList<string>();
+                }
+
+                return new ReadOnlyCollection<string>(_commentFiles);
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -243,10 +248,15 @@ namespace Sandcastle.References
 
             if (_listItems == null)
             {
-                _listItems = new List<ReferenceItem>();
+                _listItems = new BuildList<ReferenceItem>();
             }
 
             _listItems.Add(new ReferenceItem(comments, assembly));
+
+            if (_commentFiles != null && _commentFiles.Count != 0)
+            {
+                _commentFiles.Clear();
+            }
         }
 
         public void AddDependency(string assembly)
@@ -260,12 +270,28 @@ namespace Sandcastle.References
                 _refDepencencies = new DependencyContent();
             }
 
-            _refDepencencies.Add(new DependencyItem(assembly));
+            _refDepencencies.Add(new DependencyItem(
+                Path.GetFileName(assembly), assembly));
         }
 
-        public override bool Initialize(BuildContext context)
+        public override void Initialize(BuildContext context)
         {
-            bool initResult = base.Initialize(context);
+            if (this.IsInitialized)
+            {
+                return;
+            }
+
+            base.Initialize(context);
+
+            if (!this.IsInitialized)
+            {
+                return;
+            }
+
+            if (_commentFiles == null)
+            {
+                _commentFiles = new BuildList<string>();
+            }
 
             string workingDir = this.WorkingDirectory;
 
@@ -280,12 +306,15 @@ namespace Sandcastle.References
 
             // 2. Copy the dependencies to the expected directory...
             this.CopyDependencies(workingDir);
-
-            return initResult;
         }
 
         public override void Uninitialize()
         {
+            if (_commentFiles != null)
+            {
+                _commentFiles.Clear();
+            }
+
             base.Uninitialize();
         }
 
@@ -301,10 +330,11 @@ namespace Sandcastle.References
             _commentFolder    = "Comments";
             _dependencyFolder = "Dependencies";
             _refDepencencies  = new DependencyContent();
+            _tocContent       = new HierarchicalTocContent();
             _typeFilters      = new ReferenceRootFilter();
-            _listItems        = new List<ReferenceItem>();
-            _refOptions       = new ReferenceOptions();
+            _listItems        = new BuildList<ReferenceItem>();
             _attributeFilters = new ReferenceRootFilter();
+            _commentFiles     = new BuildList<string>();
         }
 
         #endregion
@@ -361,6 +391,8 @@ namespace Sandcastle.References
                     {
                         File.Copy(commentsFile, fileName, true);
                         File.SetAttributes(fileName, FileAttributes.Normal);
+
+                        _commentFiles.Add(fileName);
                     }
                 }
 

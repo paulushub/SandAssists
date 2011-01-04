@@ -6,7 +6,7 @@ namespace Sandcastle.Contents
     /// 
     /// </summary>
     [Serializable]
-    public class SharedItem : BuildItem<SharedItem>, IBuildNamedItem
+    public sealed class SharedItem : BuildItem<SharedItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -19,6 +19,7 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public SharedItem()
+            : this(Guid.NewGuid().ToString(), String.Empty)
         {
         }
 
@@ -61,10 +62,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _key;
-            }
-            set
-            {
-                _key = value;
             }
         }
 

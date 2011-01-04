@@ -43,7 +43,6 @@ namespace Sandcastle
         private BuildLogger     _logger;
         private BuildSystem     _buildSystem;
         private BuildSettings   _settings;
-        private IncludeContentList _configuration;
 
         private EventWaitHandle _waitHandle;
         private Dictionary<string, string> _properties;
@@ -207,14 +206,6 @@ namespace Sandcastle
             set 
             { 
                 _buildSystem = value; 
-            }
-        }
-
-        public IncludeContentList Configuration
-        {
-            get
-            {
-                return _configuration;
             }
         }
 
@@ -403,24 +394,20 @@ namespace Sandcastle
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="logger"></param>
-        /// <param name="configuration"></param>
         /// <seealso cref="BuildContext.IsInitialized"/>
         /// <seealso cref="BuildContext.Uninitialize()"/>
-        public virtual void Initialize(BuildSettings settings, BuildLogger logger,
-            IncludeContentList configuration)
+        public virtual void Initialize(BuildSettings settings, BuildLogger logger)
         {
             if (_isInitialized)
             {
                 return;
             }
 
-            BuildExceptions.NotNull(logger,        "logger");
-            BuildExceptions.NotNull(settings,      "settings");
-            BuildExceptions.NotNull(configuration, "configuration");
+            BuildExceptions.NotNull(logger,   "logger");
+            BuildExceptions.NotNull(settings, "settings");
 
             _logger             = logger;
             _settings           = settings;
-            _configuration      = configuration;
 
             _isBuildSuccess     = false;
 
@@ -479,7 +466,6 @@ namespace Sandcastle
         {
             _logger        = null;
             _settings      = null;
-            _configuration = null;
             _isInitialized = false;
         }
 
@@ -610,7 +596,6 @@ namespace Sandcastle
 
         private void Reset()
         {
-            _properties["$ApiNamingMethod"] = "1";
         }
 
         private bool ValidateSandcastle()

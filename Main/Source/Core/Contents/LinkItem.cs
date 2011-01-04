@@ -6,7 +6,7 @@ namespace Sandcastle.Contents
     /// 
     /// </summary>
     [Serializable]
-    public class LinkItem : BuildItem<LinkItem>
+    public sealed class LinkItem : BuildItem<LinkItem>
     {
         #region Private Fields
 

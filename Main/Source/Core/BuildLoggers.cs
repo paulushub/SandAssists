@@ -177,7 +177,7 @@ namespace Sandcastle
 
         public override void WriteLine()
         {
-            if (_listLoggers == null || this.Logging == false)
+            if (_listLoggers == null || this.Enabled == false)
             {
                 return;
             }
@@ -206,7 +206,7 @@ namespace Sandcastle
                 return;
             }
 
-            if (_listLoggers == null || this.Logging == false)
+            if (_listLoggers == null || this.Enabled == false)
             {
                 return;
             }
@@ -231,7 +231,7 @@ namespace Sandcastle
 
         public override void WriteLine(string outputText, BuildLoggerLevel level)
         {
-            if (_listLoggers == null || this.Logging == false)
+            if (_listLoggers == null || this.Enabled == false)
             {
                 return;
             }

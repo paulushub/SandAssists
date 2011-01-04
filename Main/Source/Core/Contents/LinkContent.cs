@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class LinkContent : BuildContent<LinkItem, LinkContent>
+    public sealed class LinkContent : BuildContent<LinkItem, LinkContent>
     {
         #region Private Fields
 

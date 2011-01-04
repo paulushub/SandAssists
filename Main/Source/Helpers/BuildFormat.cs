@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 using Sandcastle.Contents;
 using Sandcastle.Conceptual;
@@ -14,7 +15,7 @@ namespace Sandcastle
     /// This specifies the help output format of a Sandcastle build.
     /// </summary>
     [Serializable]
-    public abstract class BuildFormat : BuildObject<BuildFormat>
+    public abstract class BuildFormat : BuildOptions<BuildFormat>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -70,12 +71,24 @@ namespace Sandcastle
         #region Public Properties
 
         /// <summary>
+        /// Gets a value specifying the type of this output format.
+        /// </summary>
+        /// <value>
+        /// An enumeration of the type <see cref="BuildFormatType"/> specifying the type
+        /// of this output.
+        /// </value>
+        public abstract BuildFormatType FormatType
+        {
+            get;
+        }
+
+        /// <summary>
         /// Gets a value specifying the name of the this output format.
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the name of the output format.
         /// </value>
-        public abstract string FormatName
+        public abstract string Name
         {
             get;
         }
@@ -87,7 +100,7 @@ namespace Sandcastle
         /// A <see cref="System.String"/> containing the extension of the output format.
         /// For HtmlHelp 1.x, this is <c>*.chm</c>.
         /// </value>
-        public abstract string FormatExtension
+        public abstract string Extension
         {
             get;
         }
@@ -113,18 +126,6 @@ namespace Sandcastle
         /// <see langword="false"/>.
         /// </value>
         public abstract bool IsCompilable
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets a value specifying the type of this output format.
-        /// </summary>
-        /// <value>
-        /// An enumeration of the type <see cref="BuildFormatType"/> specifying the type
-        /// of this output.
-        /// </value>
-        public abstract BuildFormatType FormatType
         {
             get;
         }
@@ -942,7 +943,7 @@ namespace Sandcastle
 
         #region Reset Method
 
-        public virtual void Reset()
+        public override void Reset()
         {
             _outputIndent       = false;
             _outputEnabled      = false;
@@ -978,6 +979,71 @@ namespace Sandcastle
         protected virtual BuildFormat Clone(BuildFormat clonedformat)
         {                       
             return clonedformat;
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// A strongly-typed collection of <see cref="BuildFormat"/> objects.
+    /// </summary>
+    [Serializable]
+    public sealed class BuildFormatList : BuildKeyedList<BuildFormat>
+    {
+        #region Private Fields
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        /// <overloads>
+        /// Initializes a new instance of the <see cref="BuildFormatList"/> class.
+        /// </overloads>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildFormatList"/> 
+        /// class with the default parameters.
+        /// </summary>
+        public BuildFormatList()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildFormatList"/> class
+        /// with parameters copied from the specified instance of the 
+        /// <see cref="BuildFormatList"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="BuildFormatList"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
+        public BuildFormatList(BuildFormatList source)
+            : base(source)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        [IndexerName("Index")]
+        public BuildFormat this[BuildFormatType formatType]
+        {
+            get
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    BuildFormat format = base[i];
+                    if (format.FormatType == formatType)
+                    {
+                        return format;
+                    }
+                }
+
+                return null;
+            }
         }
 
         #endregion

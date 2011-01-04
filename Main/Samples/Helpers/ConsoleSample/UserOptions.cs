@@ -2,6 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData;
+
 namespace Sandcastle.Helpers.Sample
 {
     public class UserOptions
@@ -10,6 +12,66 @@ namespace Sandcastle.Helpers.Sample
 
         public UserOptions(BuildSettings settings)
         {
+            //try
+            //{
+            //    TargetDictionaryBuilder targetDictionary =
+            //        new TargetDictionaryBuilder();
+
+            //    if (!targetDictionary.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building target lists...");
+            //        targetDictionary.Build();
+            //    }
+
+            //    targetDictionary.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+
+            //    return;
+            //}
+
+            //try
+            //{
+            //    DatabaseTargetBinaryBuilder targetBuilder =
+            //        new DatabaseTargetBinaryBuilder();
+
+            //    if (!targetBuilder.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building target binary database...");
+            //        targetBuilder.Build();
+            //    }
+
+            //    targetBuilder.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+
+            //    return;
+            //}
+
+            //try
+            //{
+            //    ReflectionIndexedBuilder indexedBuilder =
+            //        new ReflectionIndexedBuilder();
+
+            //    if (!indexedBuilder.Exists)
+            //    {
+            //        Console.WriteLine("Please wait, building reflection database...");
+            //        indexedBuilder.AddDocuments();
+            //    }
+
+            //    indexedBuilder.Dispose();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+
+            //    return;
+            //}
+
             BuildExceptions.NotNull(settings, "settings");
 
             _settings = settings;

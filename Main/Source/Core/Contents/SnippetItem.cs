@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class SnippetItem : BuildItem<SnippetItem>
+    public sealed class SnippetItem : BuildItem<SnippetItem>//, IBuildNamedItem
     {
         #region Private Fields
 
@@ -19,9 +19,8 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public SnippetItem()
+            : this(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
         {
-            _exampleId   = String.Empty;
-            _snippetId   = String.Empty;
             _snippetLang = String.Empty;
             _snippetText = String.Empty;
         }
@@ -30,47 +29,20 @@ namespace Sandcastle.Contents
         public SnippetItem(string exampleId, string snippetId)
             : this()
         {
-            if (exampleId == null)
-            {
-                throw new ArgumentNullException("exampleId",
-                    "The example identifier cannot be null (or Nothing).");
-            }
-            if (snippetId == null)
-            {
-                throw new ArgumentNullException("snippetId",
-                    "The snippet identifier cannot be null (or Nothing).");
-            }
+            BuildExceptions.NotNullNotEmpty(exampleId, "exampleId");
+            BuildExceptions.NotNullNotEmpty(snippetId, "snippetId");
 
             _exampleId = exampleId;
             _snippetId = snippetId;
         }
 
         public SnippetItem(string exampleId, string snippetId,
-            string snippetLang, string snippetText) : this()
+            string snippetLang, string snippetText) 
+            : this(exampleId, snippetId)
         {
-            if (exampleId == null)
-            {
-                throw new ArgumentNullException("exampleId",
-                    "The example identifier cannot be null (or Nothing).");
-            }
-            if (snippetId == null)
-            {
-                throw new ArgumentNullException("snippetId",
-                    "The snippet identifier cannot be null (or Nothing).");
-            }
-            if (snippetLang == null)
-            {
-                throw new ArgumentNullException("snippetLang",
-                    "The example identifier cannot be null (or Nothing).");
-            }
-            if (snippetText == null)
-            {
-                throw new ArgumentNullException("snippetText",
-                    "The snippet identifier cannot be null (or Nothing).");
-            }
+            BuildExceptions.NotNull(snippetLang, "snippetLang");
+            BuildExceptions.NotNull(snippetText, "snippetText");
 
-            _exampleId   = exampleId;
-            _snippetId   = snippetId;
             _snippetLang = snippetLang;
             _snippetText = snippetText;
         }
@@ -127,13 +99,6 @@ namespace Sandcastle.Contents
             {
                 return _exampleId;
             }
-            set
-            {
-                if (value != null)
-                {
-                    _exampleId = value;
-                }
-            }
         }
 
         public string SnippetId
@@ -141,13 +106,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _snippetId;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _snippetId = value;
-                }
             }
         }
 
@@ -272,6 +230,18 @@ namespace Sandcastle.Contents
 
             return item;
         }
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        //string IBuildNamedItem.Name
+        //{
+        //    get 
+        //    {
+        //        return _exampleId; 
+        //    }
+        //}
 
         #endregion
     }

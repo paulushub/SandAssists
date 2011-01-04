@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class ResourceContent : BuildContent<ResourceItem, ResourceContent>
+    public sealed class ResourceContent : BuildContent<ResourceItem, ResourceContent>
     {
         #region Private Fields
 

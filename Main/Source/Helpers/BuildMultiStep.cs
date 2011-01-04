@@ -268,17 +268,18 @@ namespace Sandcastle
             _listSteps.Clear();
         }
 
-        public override bool Initialize(BuildContext context)
+        public override void Initialize(BuildContext context)
         {
-            bool initResult = base.Initialize(context);
-            if (initResult == false)
+            base.Initialize(context);
+            if (!this.IsInitialized)
             {
-                return initResult;
+                return;
             }
 
             if (_listSteps == null || _listSteps.Count == 0)
             {
-                return initResult;
+                this.IsInitialized = false;
+                return;
             }
 
             BuildLogger logger = context.Logger;
@@ -290,19 +291,19 @@ namespace Sandcastle
                 BuildStep buildStep = _listSteps[i];
                 if (buildStep != null)
                 {
-                    if (buildStep.Initialize(context) == false)
+                    buildStep.Initialize(context);
+
+                    if (!buildStep.IsInitialized)
                     {
                         logger.WriteLine(
                             "An error occurred when initializing the multi-step = " + i.ToString(),
                             BuildLoggerLevel.Error);
 
-                        initResult = false;
+                        this.IsInitialized = false;
                         break;
                     }
                 }
             }
-
-            return initResult;
         }
 
         public override void Uninitialize()

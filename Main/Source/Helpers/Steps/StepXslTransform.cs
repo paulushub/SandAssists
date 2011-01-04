@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sandcastle.Steps
 {
-    public sealed class StepXslTransform : StepProcess
+    public class StepXslTransform : StepProcess
     {
         #region Private Fields
 

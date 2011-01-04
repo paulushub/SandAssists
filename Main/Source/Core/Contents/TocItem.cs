@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class TocItem : BuildItem<TocItem>, IBuildNamedItem
+    public sealed class TocItem : BuildItem<TocItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -21,24 +21,15 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public TocItem()
+            : this(Guid.NewGuid().ToString(), String.Empty)
         {
-            _name    = String.Empty;
-            _path    = String.Empty;
             _project = String.Empty;
-        }
-
-        public TocItem(string path)
-        {
-            BuildExceptions.PathMustExist(path, "path");
-
-            _name = Path.GetFileName(path);
-            _path = path;
         }
 
         public TocItem(string name, string path)
         {
             BuildExceptions.NotNullNotEmpty(name, "name");
-            BuildExceptions.PathMustExist(path, "path");
+            BuildExceptions.NotNull(path, "path");
 
             _name = name;
             _path = path;
@@ -79,10 +70,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _name;
-            }
-            set
-            {
-                _name = value;
             }
         }
 

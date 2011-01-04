@@ -69,6 +69,95 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
+        #region Public Method
+
+        public override void Add(ConceptualCategoryItem item)
+        {
+            if (item != null && !String.IsNullOrEmpty(item.Name))
+            {
+                if (_dicItems.ContainsKey(item.Name))
+                {
+                    this.Insert(_dicItems[item.Name], item);
+                }
+                else
+                {
+                    base.Add(item);
+                }
+            }
+        }
+
+        public bool Contains(string itemName)
+        {
+            if (String.IsNullOrEmpty(itemName) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return false;
+            }
+
+            return _dicItems.ContainsKey(itemName);
+        }
+
+        public int IndexOf(string itemName)
+        {
+            if (String.IsNullOrEmpty(itemName) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return -1;
+            }
+
+            if (_dicItems.ContainsKey(itemName))
+            {
+                return _dicItems[itemName];
+            }
+
+            return -1;
+        }
+
+        public bool Remove(string itemName)
+        {
+            int itemIndex = this.IndexOf(itemName);
+            if (itemIndex < 0)
+            {
+                return false;
+            }
+
+            if (_dicItems.Remove(itemName))
+            {
+                base.Remove(itemIndex);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override bool Remove(ConceptualCategoryItem item)
+        {
+            if (base.Remove(item))
+            {
+                if (_dicItems != null && _dicItems.Count != 0)
+                {
+                    _dicItems.Remove(item.Name);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void Clear()
+        {
+            if (_dicItems != null && _dicItems.Count != 0)
+            {
+                _dicItems.Clear();
+            }
+
+            base.Clear();
+        }
+
+        #endregion
+
         #region IXmlSerializable Members
 
         public override void ReadXml(XmlReader reader)

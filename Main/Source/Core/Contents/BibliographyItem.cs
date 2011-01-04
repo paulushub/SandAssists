@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class BibliographyItem : BuildItem<BibliographyItem>, IBuildNamedItem
+    public sealed class BibliographyItem : BuildItem<BibliographyItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -21,28 +21,24 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public BibliographyItem()
+            : this(Guid.NewGuid().ToString())
         {
-            _name      = String.Empty;
+        }
+
+        public BibliographyItem(string name)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            _name      = name;
             _title     = String.Empty;
             _author    = String.Empty;
             _link      = String.Empty;
             _publisher = String.Empty;
         }
 
-        public BibliographyItem(string name)
-            : this()
-        {
-            BuildExceptions.NotNullNotEmpty(name, "name");
-
-            _name = name;
-        }
-
         public BibliographyItem(string name, string title, string author,
-            string publisher, string link) : this()
+            string publisher, string link) : this(name)
         {
-            BuildExceptions.NotNullNotEmpty(name, "name");
-
-            _name = name;
             if (title != null)
             {
                 _title = title;
@@ -93,13 +89,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _name;
-            }
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    _name = value;
-                }
             }
         }
 

@@ -13,22 +13,26 @@ namespace Sandcastle
     public enum BuildEngineType
     {
         /// <summary>
+        /// Indicates unknown or unspecified build engine.
+        /// </summary>
+        None       = 0,
+        /// <summary>
         /// Indicates the API or references build engine.
         /// <para>
         /// This is implemented by <see cref="Sandcastle.References.ReferenceEngine"/>
         /// </para>
         /// </summary>
-        Reference  = 0,
+        Reference  = 1,
         /// <summary>
         /// Indicates the conceptual topic build engine.
         /// <para>
         /// This is implemented by <see cref="Sandcastle.Conceptual.ConceptualEngine"/>
         /// </para>
         /// </summary>
-        Conceptual = 1,
+        Conceptual = 2,
         /// <summary>
         /// This indicates a custom build engine.
         /// </summary>
-        Custom     = 2
+        Custom     = 3
     }
 }

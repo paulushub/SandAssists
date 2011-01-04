@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class MediaContent : BuildContent<MediaItem, MediaContent>
+    public sealed class MediaContent : BuildContent<MediaItem, MediaContent>
     {
         #region Private Fields
 
@@ -18,16 +18,31 @@ namespace Sandcastle.Contents
         private string _outputPath;
         private string _outputLink;
 
+        [NonSerialized]
+        private IDictionary<string, int> _dicItems;
+
         #endregion
 
         #region Constructors and Destructor
 
-        public MediaContent() 
-            : this((string)null)
+        public MediaContent()
+            : base(new BuildKeyedList<MediaItem>())
         {
+            BuildKeyedList<MediaItem> keyedList =
+                this.List as BuildKeyedList<MediaItem>;
+
+            if (keyedList != null)
+            {
+                _dicItems = keyedList.Dictionary;
+            }
+
+            _outputPath = "string('media')";
+            _outputLink = "media";
+            _outputBase = @".\Output";
         }
 
         public MediaContent(string contentsFile)
+            : this()
         {
             _contentsName = String.Empty;
             if (String.IsNullOrEmpty(contentsFile) == false)
@@ -35,10 +50,6 @@ namespace Sandcastle.Contents
                 _contentsPath = Path.GetDirectoryName(contentsFile);
             }
             _contentsFile = contentsFile;
-
-            _outputPath   = "string('media')";
-            _outputLink   = "media";
-            _outputBase   = @".\Output";
         }
 
         public MediaContent(MediaContent source)
@@ -50,11 +61,40 @@ namespace Sandcastle.Contents
             _outputPath   = source._outputPath;
             _outputLink   = source._outputLink;
             _outputBase   = source._outputBase;
+            _dicItems     = source._dicItems;
         }
 
         #endregion
 
         #region Public Properties
+
+        public MediaItem this[string mediaId]
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(mediaId))
+                {
+                    return null;
+                }
+
+                int curIndex = -1;
+                if (_dicItems != null &&
+                    _dicItems.TryGetValue(mediaId, out curIndex))
+                {
+                    return this[curIndex];
+                }
+
+                return null;
+            }
+        }
+
+        public override bool IsKeyed
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override bool IsEmpty
         {
@@ -152,6 +192,95 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #region Public Method
+
+        public override void Add(MediaItem item)
+        {
+            if (item != null && !String.IsNullOrEmpty(item.MediaId))
+            {
+                if (_dicItems.ContainsKey(item.MediaId))
+                {
+                    this.Insert(_dicItems[item.MediaId], item);
+                }
+                else
+                {
+                    base.Add(item);
+                }
+            }
+        }
+
+        public bool Contains(string mediaId)
+        {
+            if (String.IsNullOrEmpty(mediaId) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return false;
+            }
+
+            return _dicItems.ContainsKey(mediaId);
+        }
+
+        public int IndexOf(string mediaId)
+        {
+            if (String.IsNullOrEmpty(mediaId) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return -1;
+            }
+
+            if (_dicItems.ContainsKey(mediaId))
+            {
+                return _dicItems[mediaId];
+            }
+
+            return -1;
+        }
+
+        public bool Remove(string mediaId)
+        {
+            int itemIndex = this.IndexOf(mediaId);
+            if (itemIndex < 0)
+            {
+                return false;
+            }
+
+            if (_dicItems.Remove(mediaId))
+            {
+                base.Remove(itemIndex);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override bool Remove(MediaItem item)
+        {
+            if (base.Remove(item))
+            {
+                if (_dicItems != null && _dicItems.Count != 0)
+                {
+                    _dicItems.Remove(item.MediaId);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void Clear()
+        {
+            if (_dicItems != null && _dicItems.Count != 0)
+            {
+                _dicItems.Clear();
+            }
+
+            base.Clear();
+        }
+
+        #endregion
+
         #region IXmlSerializable Members
 
         public override void ReadXml(XmlReader reader)
@@ -169,8 +298,8 @@ namespace Sandcastle.Contents
         public override MediaContent Clone()
         {
             MediaContent content = new MediaContent(this);
-            
-            this.Clone(content);
+
+            this.Clone(content, new BuildKeyedList<MediaItem>());
 
             if (_contentsName != null)
             {

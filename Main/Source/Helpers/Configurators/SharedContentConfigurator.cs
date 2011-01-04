@@ -90,7 +90,7 @@ namespace Sandcastle.Configurators
         {
             get
             {
-                if (_style == null)
+                if (_settings == null)
                 {
                     return base.HasContents;
                 }
@@ -100,24 +100,17 @@ namespace Sandcastle.Configurators
                     return true;
                 }
 
-                SharedContent content = _style.GetSharedContent(
-                    BuildStyle.SharedDefault);
+                SharedContent content = _settings.SharedContent;
                 if (content != null && content.Count > 0)
                 {
                     return true;
                 }
 
-                if (_engineType == BuildEngineType.Reference)
+                BuildEngineSettings engineSettings =
+                    _settings.EngineSettings[_engineType];
+                if (engineSettings != null)
                 {
-                    content = _style.GetSharedContent(BuildStyle.SharedReferences);
-                    if (content != null && content.Count > 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (_engineType == BuildEngineType.Conceptual)
-                {
-                    content = _style.GetSharedContent(BuildStyle.SharedConceptual);
+                    content = engineSettings.SharedContent;
                     if (content != null && content.Count > 0)
                     {
                         return true;
@@ -262,8 +255,8 @@ namespace Sandcastle.Configurators
             return _configContent[keyword];
         }
 
-        public virtual void RegisterItem(string keyword, 
-            ConfigurationItemHandler handler)
+        public virtual void RegisterItem(string keyword,
+            Action<string, XPathNavigator> handler)
         {
             if (_configContent == null || String.IsNullOrEmpty(keyword) ||
                 handler == null)
@@ -296,7 +289,7 @@ namespace Sandcastle.Configurators
         // look up shared content
         protected override string GetContent(string key, string[] parameters)
         {
-            if (String.IsNullOrEmpty(key) || _style == null)
+            if (String.IsNullOrEmpty(key) || _settings == null)
             {
                 return base.GetContent(key, parameters);
             }
@@ -318,22 +311,20 @@ namespace Sandcastle.Configurators
             // 2. Consider the shared contents from the groups...
             if (item == null)
             {
-                if (_engineType == BuildEngineType.Reference)
+                BuildEngineSettings engineSettings =
+                    _settings.EngineSettings[_engineType];
+
+                if (engineSettings != null)
                 {
-                    item = _style[BuildStyle.SharedReferences, key];
-                    if (item != null)
+                    SharedContent shared = engineSettings.SharedContent;
+                    if (shared != null && shared.Count != 0)
                     {
-                        isFound = true;
-                        value = item.Value;
-                    }
-                }
-                else if (_engineType == BuildEngineType.Conceptual)
-                {
-                    item = _style[BuildStyle.SharedConceptual, key];
-                    if (item != null)
-                    {
-                        isFound = true;
-                        value = item.Value;
+                        item = shared[key];
+                        if (item != null)
+                        {
+                            isFound = true;
+                            value = item.Value;
+                        }
                     }
                 }
             }
@@ -341,11 +332,15 @@ namespace Sandcastle.Configurators
             // 3. If not found, consider a common/default contents.... 
             if (item == null)
             {
-                item = _style[key];
-                if (item != null)
+                SharedContent shared = _settings.SharedContent;
+                if (shared != null && shared.Count != 0)
                 {
-                    isFound = true;
-                    value = item.Value;
+                    item = shared[key];
+                    if (item != null)
+                    {
+                        isFound = true;
+                        value = item.Value;
+                    }
                 }
             }
 

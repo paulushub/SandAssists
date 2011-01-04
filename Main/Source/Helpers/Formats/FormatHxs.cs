@@ -101,7 +101,7 @@ namespace Sandcastle.Formats
         /// A <see cref="System.String"/> containing the name of the output format.
         /// This will always return "HtmlHelp 2.x".
         /// </value>
-        public override string FormatName
+        public override string Name
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override string FormatExtension
+        public override string Extension
         {
             get
             {
@@ -532,7 +532,7 @@ namespace Sandcastle.Formats
                 }
                 
                 BuildMultiStep listSteps = new BuildMultiStep();
-                listSteps.LogTitle    = "Building document output format - " + this.FormatName;
+                listSteps.LogTitle    = "Building document output format - " + this.Name;
                 listSteps.LogTimeSpan = true;
 
                 // Prepare the help html files, and create the html project
@@ -546,6 +546,14 @@ namespace Sandcastle.Formats
 
                 // 2. Creating the project file...
                 string tocTopics = context["$HelpTocFile"];
+                string tempText = context["$HierarchicalToc"];
+
+                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+                    "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    tocTopics = context["$HelpHierarchicalTocFile"];
+                }
+
                 StepHxsBuilder hxsBuilder  = new StepHxsBuilder(workingDir);
                 hxsBuilder.LogTitle = String.Empty;
                 hxsBuilder.Message         = "Creating project, content and configuration files.";

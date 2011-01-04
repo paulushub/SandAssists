@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using System.Xml;
@@ -26,9 +27,10 @@ namespace Sandcastle.Conceptual
         private BuildSettings       _settings;
         private ConceptualGroup     _group;
 
-        private BuildFormat        _singleFormat;
-        private IncludeContentList _configuration;
-        private IList<BuildFormat> _listFormats;
+        [NonSerialized]
+        private ConceptualEngineSettings _engineSettings;
+        [NonSerialized]
+        private BuildComponentConfigurationList _componentConfigList;
 
         #endregion
 
@@ -49,21 +51,19 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                if (_configuration == null)
+                if (_engineSettings == null || _settings == null)
                 {
                     return base.HasContents;
                 }
 
-                IncludeContent content = _configuration.GetContent(
-                    IncludeContentList.IncludeDefault);
+                IncludeContent content = _settings.IncludeContent;
 
                 if (content != null && content.Count > 0)
                 {
                     return true;
                 }
 
-                content = _configuration.GetContent(
-                    IncludeContentList.IncludeConceptual);
+                content = _engineSettings.IncludeContent;
 
                 if (content != null && content.Count > 0)
                 {
@@ -104,47 +104,50 @@ namespace Sandcastle.Conceptual
         {
             base.Initialize(context);
 
-            _settings      = context.Settings;
-            _context       = context;
-            _configuration = context.Configuration;
+            if (!this.IsInitialized)
+            {
+                return;
+            }
+
+            _settings = context.Settings;
+            _context = context;
             if (_settings == null || _settings.Style == null)
             {
                 this.IsInitialized = false;
 
                 return;
             }
+            _engineSettings = _settings.EngineSettings[
+                BuildEngineType.Conceptual] as ConceptualEngineSettings;
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
+            {
+                this.IsInitialized = false;
+
+                return;
+            }
+
+            _componentConfigList = _engineSettings.ComponentConfigurations;
+            if (_componentConfigList != null && _componentConfigList.Count != 0)
+            {
+                _componentConfigList.Initialize(_context);
+            }
+
             _style = _settings.Style;
 
-            IList<BuildFormat> listFormats = _settings.Formats;
-            if (listFormats == null || listFormats.Count == 0)
+            //Keyword: "$(SandcastleCopyComponent)";
+            if (ContainsComponents("SandcastleCopyComponent") == false)
             {
-                this.IsInitialized = false;
+                string sandcastlePath = context.SandcastleDirectory;
 
-                return;
-            }
-            int itemCount = listFormats.Count;
-            _listFormats = new List<BuildFormat>(itemCount);
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = listFormats[i];
-                if (format != null && format.Enabled)
+                if (String.IsNullOrEmpty(sandcastlePath) == false ||
+                    Directory.Exists(sandcastlePath))
                 {
-                    _listFormats.Add(format);
+                    string copyComponents = Path.Combine(sandcastlePath,
+                        @"ProductionTools\CopyComponents.dll");
+                    RegisterComponents("SandcastleCopyComponent", copyComponents);
                 }
-            }
-            if (_listFormats == null || _listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-
-                return;
-            }
-            else if (_listFormats.Count == 1)
-            {
-                _singleFormat = _listFormats[0];
-            }
-            else
-            {
-                //TODO...
             }
 
             this.RegisterItemHandlers();
@@ -181,14 +184,16 @@ namespace Sandcastle.Conceptual
         // look up shared content
         protected override string GetContent(string key, string[] parameters)
         {
-            if (String.IsNullOrEmpty(key) || _configuration == null)
+            if (String.IsNullOrEmpty(key) || _settings == null ||
+                _engineSettings == null)
             {
                 return base.GetContent(key, parameters);
             }
 
+            IncludeContent includeContent = _settings.IncludeContent;
             bool isFound = false;
             string value = String.Empty;
-            IncludeItem item = _configuration[key];
+            IncludeItem item = includeContent[key];
             if (item != null)
             {
                 isFound = true;
@@ -196,7 +201,8 @@ namespace Sandcastle.Conceptual
             }
             else
             {
-                item = _configuration[IncludeContentList.IncludeConceptual, key];
+                includeContent = _engineSettings.IncludeContent;
+                item = includeContent[key];
                 if (item != null)
                 {
                     isFound = true;
@@ -239,33 +245,33 @@ namespace Sandcastle.Conceptual
         /// </remarks>
         protected virtual void RegisterItemHandlers()
         {
-            // 1. The conceptual skeleton templeate...
+            // 1. The conceptual skeleton template...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Skeleton,
-                new ConfigurationItemHandler(OnSkeletonItem));
+                new Action<string, XPathNavigator>(OnSkeletonItem));
             // 2. The conceptual topics contents...
             this.RegisterConfigurationItem(ConfiguratorKeywords.TopicsContents,
-                new ConfigurationItemHandler(OnTopicsContentsItem));
+                new Action<string, XPathNavigator>(OnTopicsContentsItem));
             // 3. The conceptual tokens...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Tokens,
-                new ConfigurationItemHandler(OnTokensItem));
+                new Action<string, XPathNavigator>(OnTokensItem));
             // 4. The conceptual metadata keyword...
             this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataKeywords,
-                new ConfigurationItemHandler(OnMetadataKeywordsItem));
+                new Action<string, XPathNavigator>(OnMetadataKeywordsItem));
             // 5. The conceptual metadata attributes...
             this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataAttributes,
-                new ConfigurationItemHandler(OnMetadataAttributesItem));
+                new Action<string, XPathNavigator>(OnMetadataAttributesItem));
             // 6. The conceptual metadata settings...
             this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataVersion,
-                new ConfigurationItemHandler(OnMetadataVersionItem));
+                new Action<string, XPathNavigator>(OnMetadataVersionItem));
             // 7. The conceptual metadata settings...
             this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataSettings,
-                new ConfigurationItemHandler(OnMetadataSettingsItem));
+                new Action<string, XPathNavigator>(OnMetadataSettingsItem));
             // 8. The conceptual transform...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
-                new ConfigurationItemHandler(OnTransformsItem));
+                new Action<string, XPathNavigator>(OnTransformsItem));
             // 9. The conceptual code snippets...
             this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
-                new ConfigurationItemHandler(OnCodeSnippetsItem));
+                new Action<string, XPathNavigator>(OnCodeSnippetsItem));
             //// . The conceptual ...
             //this.RegisterItem(ConfigItems,
             //    new ConfigItemHandler(OnItem));
@@ -281,294 +287,76 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected override void OnComponentInclude(object sender, 
-            ConfigurationItemEventArgs args)
+        protected override void OnComponentInclude(
+            string keyword, XPathNavigator navigator)
         {
-            if (args == null)
-            {
-                return;
-            }
-            string configKeyword = args.Keyword;
-            XPathNavigator navigator = args.Navigator;
+            Debug.Assert(_engineSettings != null);
 
-            if (String.IsNullOrEmpty(configKeyword) || navigator == null)
+            if (_engineSettings == null)
             {
                 return;
             }
 
-            // Handle the case of output formats only for now...
-            if (String.Equals(configKeyword, "Sandcastle.Components.CloneComponent",
-                StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(keyword) || navigator == null)
             {
-                this.OnClonedInclude(args);
+                return;
             }
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.IntellisenseComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnIntellisenseInclude(args);
-            //}
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.ExampleComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnExampleInclude(args);
-            //}
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.HxfGeneratorComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnHxfGeneratorInclude(args);
-            //}
-            else
-            {   
-                // TODO: For now, just delete the include nodes...
-                navigator.DeleteSelf();
-            }
-        }
 
-        #endregion
-
-        #region OnHxfGeneratorInclude Method
-
-        /// <summary>
-        /// This includes the Microsoft.Ddue.Tools.HxfGeneratorComponent build component,
-        /// which is used to record all the files created by the build process that may
-        /// be used to build the HtmlHelp 2.x table of contents.
-        /// <note type="important">
-        /// This is not used in the default build process.
-        /// </note>
-        /// </summary>
-        /// <param name="args"></param>
-        protected void OnHxfGeneratorInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            //<!-- Record file creation events -->
-            //<component type="Microsoft.Ddue.Tools.HxfGeneratorComponent" 
-            // assembly="$(SandcastleComponent)" 
-            // input="%DXROOT%\Presentation\vs2005\seed.HxF" 
-            // output=".\Output\test.HxF" />
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            xmlWriter.WriteComment(" Record file creation events ");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("component");
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.HxfGeneratorComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-            xmlWriter.WriteAttributeString("input", 
-                String.Format(@"%DXROOT%\Presentation\{0}\Seed.HxF", 
-                BuildStyleUtils.StyleFolder(_style.StyleType)));
-            xmlWriter.WriteAttributeString("output", 
-                String.Format(@".\Output\{0}.HxF", _settings.HelpName));
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnExampleInclude Method
-
-        /// <summary>
-        /// This includes the 
-        /// </summary>
-        /// <param name="args"></param>
-        protected void OnExampleInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            //<!-- Resolve code snippets --> 
-            //<component type="Microsoft.Ddue.Tools.ExampleComponent" assembly="%DXROOT%\ProductionTools\BuildComponents.dll">
-            //  <examples file="%DXROOT%\Data\CodeSnippet.xml" />
-            //  <examples file=".\CodeSnippetSample.xml" />
-            //  <colors language="VisualBasic">
-            //    <color pattern="^\s*'[^\r\n]*" class="comment" />
-            //    <color pattern="\&#34;[^&#34;\r\n]*\&#34;" class="literal" />
-            //    <color pattern="\b((AddHandler)|(AddressOf)|(As)|(Boolean)|(ByRef)|(ByVal)|(Case)|(Catch)|(Char)|(Class)|(Const)|(Continue)|(Delegate)|(Dim)|(Double)|(Each)|(Else)|(ElseIf)|(End)|(Enum)|(Event)|(Exit)|(False)|(Finally)|(For)|(Friend)|(From)|(Function)|(Get)|(Handles)|(If)|(Implements)|(Imports)|(In)|(Inherits)|(Integer)|(Interface)|(Is)|(Loop)|(Me)|(Module)|(MustInherit)|(MustOverride)|(MyBase)|(Namespace)|(New)|(Next)|(Nothing)|(NotInheritable)|(NotOverrideable)|(Of)|(Overloads)|(Overridable)|(Overrides)|(ParamArray)|(Partial)|(Private)|(Property)|(Protected)|(Public)|(RaiseEvent)|(ReadOnly)|(RemoveHandler)|(Select)|(Set)|(Shadows)|(Shared)|(Static)|(Step)|(String)|(Structure)|(Sub)|(Then)|(Throw)|(To)|(True)|(Try)|(Until)|(Using)|(When)|(While)|(With)|(WriteOnly))\b" class="keyword" />
-            //  </colors>
-            //  <colors language="CSharp">
-            //    <color pattern="/\*(.|\n)+?\*/" class="comment" />
-            //    <color pattern="//[^\r\n]*" class="comment" />
-            //    <color pattern="\&#34;[^&#34;\r\n]*\&#34;" class="literal" />
-            //    <color pattern="\b((abstract)|(as)|(ascending)|(base)|(bool)|(break)|(by)|(case)|(catch)|(char)|(class)|(const)|(continue)|(default)|(delegate)|(descending)|(do)|(double)|(else)|(enum)|(equals)|(event)|(extern)|(false)|(finally)|(float)|(for)|(foreach)|(from)|(get)|(group)|(if)|(in)|(int)|(interface)|(internal)|(into)|(is)|(join)|(let)|(namespace)|(new)|(null)|(on)|(orderby)|(out)|(override)|(params)|(private)|(protected)|(public)|(readonly)|(ref)|(return)|(sealed)|(select)|(set)|(static)|(struct)|(switch)|(this)|(throw)|(true)|(try)|(typeof)|(using)|(virtual)|(volatile)|(void)|(where)|(while))\b" class="keyword" />
-            //  </colors>
-            //  <colors language="ManagedCPlusPlus">
-            //    <color pattern="/\*(.|\n)+?\*/" class="comment" />
-            //    <color pattern="//[^\r\n]*" class="comment" />
-            //    <color pattern="\&#34;[^&#34;\r\n]*\&#34;" class="literal" />
-            //    <color pattern="\b((abstract)|(array)|(bool)|(break)|(case)|(catch)|(char)|(class)|(const)|(continue)|(delegate)|(delete)|(do)|(double)|(else)|(enum)|(event)|(extern)|(false)|(finally)|(float)|(for)|(friend)|(gcnew)|(generic)|(goto)|(if)|(initonly)|(inline)|(int)|(interface)|(literal)|(namespace)|(new)|(noinline)|(nullptr)|(operator)|(private)|(property)|(protected)|(public)|(ref)|(register)|(return)|(sealed)|(sizeof)|(static)|(struct)|(switch)|(template)|(this)|(throw)|(true)|(try)|(typedef)|(union)|(using)|(value)|(virtual)|(void)|(volatile)|(while))\b" class="keyword" />
-            //  </colors>
-            //</component>
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            xmlWriter.WriteComment(" Resolve code snippets ");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("component");  // start - component
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.ExampleComponent");
-            xmlWriter.WriteAttributeString("assembly", "$(SandcastleComponent)");
-
-            // Get the valid snippet contents....
-            IList<SnippetContent> listSnippets = GetSnippetContents(_group);
-            if (listSnippets == null || listSnippets.Count == 0)
+            if (_componentConfigList != null &&
+                _componentConfigList.ContainsComponent(keyword))
             {
-                //<examples file="%DXROOT%\Data\CodeSnippet.xml" />
-                xmlWriter.WriteStartElement("examples");   // start - examples
-                xmlWriter.WriteAttributeString("file", @"%DXROOT%\Data\CodeSnippet.xml");
-                xmlWriter.WriteEndElement();            // end - examples
-            }
-            else
-            {
-                int itemCount = listSnippets.Count;
-                for (int i = 0; i < itemCount; i++)
+                IList<BuildComponentConfiguration> componentList =
+                    _componentConfigList.GetConfigurations(keyword);
+                Debug.Assert(componentList != null && componentList.Count != 0);
+
+                if (componentList != null && componentList.Count != 0)
                 {
-                    string content = listSnippets[i].ContentsFile;
-                    xmlWriter.WriteStartElement("examples"); // start - examples
-                    xmlWriter.WriteAttributeString("file", 
-                        listSnippets[i].ContentsFile);
-                    xmlWriter.WriteEndElement();             // end - examples
-                }
-            }
-
-            // Start: For the VisualBasic language...
-            xmlWriter.WriteStartElement("colors");  // start - colors
-            xmlWriter.WriteAttributeString("language", "VisualBasic");
-            WriteColorPattern(xmlWriter, @"^\s*'[^\r\n]*", "comment");           
-            WriteColorPattern(xmlWriter, @"\&#34;[^&#34;\r\n]*\&#34;", "literal");
-            WriteColorPattern(xmlWriter, 
-                @"\b((AddHandler)|(AddressOf)|(As)|(Boolean)|(ByRef)|(ByVal)|(Case)|(Catch)|(Char)|(Class)|(Const)|(Continue)|(Delegate)|(Dim)|(Double)|(Each)|(Else)|(ElseIf)|(End)|(Enum)|(Event)|(Exit)|(False)|(Finally)|(For)|(Friend)|(From)|(Function)|(Get)|(Handles)|(If)|(Implements)|(Imports)|(In)|(Inherits)|(Integer)|(Interface)|(Is)|(Loop)|(Me)|(Module)|(MustInherit)|(MustOverride)|(MyBase)|(Namespace)|(New)|(Next)|(Nothing)|(NotInheritable)|(NotOverrideable)|(Of)|(Overloads)|(Overridable)|(Overrides)|(ParamArray)|(Partial)|(Private)|(Property)|(Protected)|(Public)|(RaiseEvent)|(ReadOnly)|(RemoveHandler)|(Select)|(Set)|(Shadows)|(Shared)|(Static)|(Step)|(String)|(Structure)|(Sub)|(Then)|(Throw)|(To)|(True)|(Try)|(Until)|(Using)|(When)|(While)|(With)|(WriteOnly))\b", 
-                "keyword");
-            xmlWriter.WriteEndElement();            // end - colors
-            // End: For the VisualBasic language
-
-            // Start: For the CSharp language...
-            xmlWriter.WriteStartElement("colors");  // start - colors
-            xmlWriter.WriteAttributeString("language", "CSharp");
-            WriteColorPattern(xmlWriter, @"/\*(.|\n)+?\*/", "comment");
-            WriteColorPattern(xmlWriter, @"//[^\r\n]*", "comment");
-            WriteColorPattern(xmlWriter, @"\&#34;[^&#34;\r\n]*\&#34;", "literal");
-            WriteColorPattern(xmlWriter, 
-                @"\b((abstract)|(as)|(ascending)|(base)|(bool)|(break)|(by)|(case)|(catch)|(char)|(class)|(const)|(continue)|(default)|(delegate)|(descending)|(do)|(double)|(else)|(enum)|(equals)|(event)|(extern)|(false)|(finally)|(float)|(for)|(foreach)|(from)|(get)|(group)|(if)|(in)|(int)|(interface)|(internal)|(into)|(is)|(join)|(let)|(namespace)|(new)|(null)|(on)|(orderby)|(out)|(override)|(params)|(private)|(protected)|(public)|(readonly)|(ref)|(return)|(sealed)|(select)|(set)|(static)|(struct)|(switch)|(this)|(throw)|(true)|(try)|(typeof)|(using)|(virtual)|(volatile)|(void)|(where)|(while))\b",
-                "keyword"); 
-            xmlWriter.WriteEndElement();            // end - colors
-            // End: For the CSharp language
-
-            // Start: For the ManagedCPlusPlus language...
-            xmlWriter.WriteStartElement("colors");  // start - colors
-            xmlWriter.WriteAttributeString("language", "ManagedCPlusPlus");
-            WriteColorPattern(xmlWriter, @"/\*(.|\n)+?\*/", "comment");
-            WriteColorPattern(xmlWriter, @"//[^\r\n]*", "comment");
-            WriteColorPattern(xmlWriter, @"\&#34;[^&#34;\r\n]*\&#34;", "literal");
-            WriteColorPattern(xmlWriter, 
-                @"\b((abstract)|(array)|(bool)|(break)|(case)|(catch)|(char)|(class)|(const)|(continue)|(delegate)|(delete)|(do)|(double)|(else)|(enum)|(event)|(extern)|(false)|(finally)|(float)|(for)|(friend)|(gcnew)|(generic)|(goto)|(if)|(initonly)|(inline)|(int)|(interface)|(literal)|(namespace)|(new)|(noinline)|(nullptr)|(operator)|(private)|(property)|(protected)|(public)|(ref)|(register)|(return)|(sealed)|(sizeof)|(static)|(struct)|(switch)|(template)|(this)|(throw)|(true)|(try)|(typedef)|(union)|(using)|(value)|(virtual)|(void)|(volatile)|(while))\b",
-                "keyword"); 
-            xmlWriter.WriteEndElement();            // end - colors
-            // End: For the ManagedCPlusPlus language
-       
-            xmlWriter.WriteEndElement();               // end - component
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnIntellisenseInclude Method
-
-        protected void OnIntellisenseInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            //<!-- Write out intellisense -->
-            //<component type="Microsoft.Ddue.Tools.IntellisenseComponent" 
-            //  assembly="$(SandcastleComponent)">
-            //  <output directory="Intellisense" />
-            //</component>          
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            xmlWriter.WriteComment("  Write out intellisense  ");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("component");
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.IntellisenseComponent");
-            xmlWriter.WriteAttributeString("files", "$(SandcastleComponent)");
-
-            xmlWriter.WriteStartElement("output");
-            xmlWriter.WriteAttributeString("directory", "Intellisense");
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnClonedInclude Method
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        protected void OnClonedInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            if (_singleFormat != null)
-            {
-                _singleFormat.WriteAssembler(_context, _group, xmlWriter);
-            }
-            else
-            {
-                if (_listFormats == null)
-                {
-                    return;
-                }
-
-                int itemCount = _listFormats.Count;
-
-                //<component type="Sandcastle.Components.CloneComponent"
-                //         assembly="%DXROOT%\ProductionTools\BuildComponents.dll">
-                //  <branch>
-                //  </branch>
-                //</component>
-
-                string componentAssembly = this.GetComponents("SandAssistComponent");
-                if (String.IsNullOrEmpty(componentAssembly))
-                {
-                    return;
-                }
-
-                xmlWriter.WriteStartElement("component");  // start - component
-                xmlWriter.WriteAttributeString("type",
-                    "Sandcastle.Components.CloneComponent");
-                xmlWriter.WriteAttributeString("assembly", componentAssembly);
-
-                for (int i = 0; i < itemCount - 1; i++)
-                {
-                    BuildFormat format = _listFormats[i];
-                    if (format != null)
+                    string componentAssembly = null;
+                    BuildComponentConfiguration component = componentList[0];
+                    switch (component.ComponentType)
                     {
-                        xmlWriter.WriteComment(String.Format(
-                            " For the help format: {0} ", format.FormatName));
-                        xmlWriter.WriteStartElement("branch");  // start - branch
-                        format.WriteAssembler(_context, _group, xmlWriter);
-                        xmlWriter.WriteEndElement();            // end - branch
+                        case BuildComponentType.Sandcastle:
+                            componentAssembly = this.GetComponents(
+                                "SandcastleComponent");
+                            break;
+                        case BuildComponentType.SandcastleAssist:
+                            componentAssembly = this.GetComponents(
+                                "SandAssistComponent");
+                            break;
+                        case BuildComponentType.Custom:
+                            componentAssembly = component.ComponentPath;
+                            break;
                     }
+
+                    if (String.IsNullOrEmpty(componentAssembly))
+                    {
+                        navigator.DeleteSelf();
+
+                        return;
+                    }
+
+                    XmlWriter xmlWriter = navigator.InsertAfter();
+
+                    xmlWriter.WriteStartElement("component");  // start - component
+                    xmlWriter.WriteAttributeString("type", keyword);
+                    xmlWriter.WriteAttributeString("assembly", componentAssembly);
+
+                    for (int i = 0; i < componentList.Count; i++)
+                    {
+                        componentList[i].Configure(_group, xmlWriter);
+                    }
+
+                    xmlWriter.WriteEndElement();               // end - component
+
+                    xmlWriter.Close();
                 }
 
-                // For the default branch...
-                BuildFormat formatDefault = _listFormats[itemCount - 1];
-                if (formatDefault != null)
-                {
-                    xmlWriter.WriteComment(String.Format(
-                        " For the help format: {0} ", formatDefault.FormatName));
-                    xmlWriter.WriteStartElement("default");  // start - default
-                    formatDefault.WriteAssembler(_context, _group, xmlWriter);
-                    xmlWriter.WriteEndElement();             // end - default
-                }
+                navigator.DeleteSelf();
 
-                xmlWriter.WriteEndElement();               // end - component
+                return;
             }
 
-            xmlWriter.Close();
+            // TODO: For now, just delete the include nodes...
             navigator.DeleteSelf();
         }
 
@@ -581,7 +369,7 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnSkeletonItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnSkeletonItem(string keyword, XPathNavigator navigator)
         {
             string skeleton = _style.GetSkeleton(BuildEngineType.Conceptual);
             if (String.IsNullOrEmpty(skeleton))
@@ -589,8 +377,6 @@ namespace Sandcastle.Conceptual
                 throw new BuildException(
                     "A well-defined document skeleton is required.");
             }
-
-            XPathNavigator navigator = args.Navigator;
 
             //<data file="%DXROOT%\Presentation\Vs2005\transforms\skeleton_conceptual.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
@@ -612,10 +398,8 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnTopicsContentsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnTopicsContentsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             // <data files=".\DdueXml\*.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
@@ -636,7 +420,7 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnTokensItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnTokensItem(string keyword, XPathNavigator navigator)
         {
             if (_group == null)
             {
@@ -644,8 +428,7 @@ namespace Sandcastle.Conceptual
                     "There is not build group to provide the media/arts contents.");
             }
 
-            XPathNavigator navigator = args.Navigator;
-            XmlWriter xmlWriter      = navigator.InsertAfter();
+            XmlWriter xmlWriter = navigator.InsertAfter();
 
             IList<TokenContent> listTokens = _group.TokenContents;
             if (listTokens == null || listTokens.Count == 0)
@@ -685,7 +468,7 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnCodeSnippetsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnCodeSnippetsItem(string keyword, XPathNavigator navigator)
         {
             if (_group == null)
             {
@@ -693,7 +476,6 @@ namespace Sandcastle.Conceptual
                     "There is not build group to provide the media/arts contents.");
             }
 
-            XPathNavigator navigator = args.Navigator;
             //<codeSnippets process="true" storage="Sqlite" separator="...">
             //  <codeSnippet source=".\CodeSnippetSample.xml" format="Sandcastle" />
             //</codeSnippets>
@@ -738,10 +520,8 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnMetadataKeywordsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnMetadataKeywordsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             //<copy base=".\XmlComp" file="concat($key,'.cmp.xml')" 
             //      source="/metadata/topic[@id=$key]/*" target="/document/metadata" />
             XmlWriter xmlWriter = navigator.InsertAfter();
@@ -766,10 +546,8 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnMetadataAttributesItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnMetadataAttributesItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             // <data files=".\ExtractedFiles\ContentMetadata.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
@@ -791,10 +569,8 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnMetadataVersionItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnMetadataVersionItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             // <data files="Version.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
@@ -815,10 +591,8 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnMetadataSettingsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnMetadataSettingsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             // <data files=".\ExtractedFiles\Projectsettings.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
@@ -840,15 +614,13 @@ namespace Sandcastle.Conceptual
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnTransformsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnTransformsItem(string keyword, XPathNavigator navigator)
         {
             string transform = _style.GetTransform(BuildEngineType.Conceptual);
             if (String.IsNullOrEmpty(transform))
             {
                 throw new BuildException("A document transformer is required.");
             }
-
-            XPathNavigator navigator = args.Navigator;
 
             //<transform file="%DXROOT%\Presentation\Vs2005\transforms\main_conceptual.xsl">
             //<argument key="metadata" value="true" />

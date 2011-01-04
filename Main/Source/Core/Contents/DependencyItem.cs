@@ -5,7 +5,7 @@ using System.Text;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class DependencyItem : BuildItem<DependencyItem>, IBuildNamedItem
+    public sealed class DependencyItem : BuildItem<DependencyItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -17,22 +17,14 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public DependencyItem()
+            : this(Guid.NewGuid().ToString())
         {
-            _name = String.Empty;
             _path = String.Empty;
         }
 
-        public DependencyItem(string path)
-        {
-            BuildExceptions.PathMustExist(path, "path");
-
-            _name = Path.GetFileName(path);
-            _path = path;
-        }
-
         public DependencyItem(string name, string path)
+            : this(name)
         {
-            BuildExceptions.NotNullNotEmpty(name, "name");
             BuildExceptions.PathMustExist(path, "path");
 
             _name = name;
@@ -46,6 +38,14 @@ namespace Sandcastle.Contents
             _path = source._path;
         }
 
+        private DependencyItem(string name)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            _name = name;
+            _path = String.Empty;
+        }
+
         #endregion
 
         #region Public Properties
@@ -54,7 +54,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_name))
+                if (String.IsNullOrEmpty(_path))
                 {
                     return true;
                 }
@@ -68,10 +68,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _name;
-            }
-            set
-            {
-                _name = value;
             }
         }
 
@@ -98,6 +94,10 @@ namespace Sandcastle.Contents
                 return false;
             }
             if (!String.Equals(this._name, other._name))
+            {
+                return false;
+            }
+            if (!String.Equals(this._path, other._path))
             {
                 return false;
             }

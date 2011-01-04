@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
@@ -16,8 +17,10 @@ namespace Sandcastle.References
 
         private ReferenceGroup        _curGroup;
         private IList<string>         _listFolders;
-        private List<BuildFormat>     _listFormats;
+        private BuildFormatList       _listFormats;
         private List<ReferenceGroup>  _listGroups;
+        [NonSerialized]
+        private ReferenceEngineSettings _engineSettings;
 
         #endregion
 
@@ -38,8 +41,7 @@ namespace Sandcastle.References
         }
 
         public ReferenceEngine(BuildSettings settings, BuildLoggers logger,
-            BuildContext context, IncludeContentList configuration)
-            : base(settings, logger, context, configuration)
+            BuildContext context) : base(settings, logger, context)
         {
         }
 
@@ -167,29 +169,38 @@ namespace Sandcastle.References
 
         #region Initialize Method
 
-        public override bool Initialize(BuildSettings settings)
+        public override void Initialize(BuildSettings settings)
         {
-            bool initResult = base.Initialize(settings);
-            if (initResult == false)
+            base.Initialize(settings);
+            if (!this.IsInitialized)
             {
-                return initResult;
+                return;
             }
+
             if (_listGroups == null || _listGroups.Count == 0)
             {
-                return false;
+                this.IsInitialized = false;
+                return;
+            }
+            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
+                BuildEngineType.Reference];
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
+            {
+                this.IsInitialized = false;
+                return;
             }
 
-            _listFormats = new List<BuildFormat>();
+            _listFormats = new BuildFormatList();
 
-            IList<BuildFormat> listFormats = this.Settings.Formats;
+            BuildFormatList listFormats = this.Settings.Formats;
             if (listFormats == null || listFormats.Count == 0)
             {
                 this.IsInitialized = false;
-
-                return false;
+                return;
             }
             int itemCount = listFormats.Count;
-            _listFormats = new List<BuildFormat>(itemCount);
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = listFormats[i];
@@ -201,8 +212,7 @@ namespace Sandcastle.References
             if (_listFormats == null || _listFormats.Count == 0)
             {
                 this.IsInitialized = false;
-
-                return false;
+                return;
             }
             itemCount = _listGroups.Count;
             for (int i = 0; i < itemCount; i++)
@@ -224,8 +234,12 @@ namespace Sandcastle.References
                     String.Format("ApiSharedContent{0}.xml", indexText);
                 group["$TocFile"] =
                     String.Format("ApiToc{0}.xml", indexText);
+                group["$HierarchicalTocFile"] =
+                    String.Format("ApiHierarchicalToc{0}.xml", indexText);
                 group["$ManifestFile"] =
                     String.Format("ApiManifest{0}.xml", indexText);
+                group["$RootNamespaces"] =
+                    String.Format("ApiRootNamespaces{0}.xml", indexText);
                 group["$ConfigurationFile"] =
                     String.Format("ApiBuildAssembler{0}.config", indexText);
                 group["$ReflectionFile"] =
@@ -233,17 +247,14 @@ namespace Sandcastle.References
                 group["$ReflectionBuilderFile"] =
                     String.Format("MRefBuilder{0}.config", indexText);
                 group["$GroupIndex"] = indexText;
-
-                if (!group.Initialize(this.Context))
+                
+                group.Initialize(this.Context);
+                if (!group.IsInitialized)
                 {
                     this.IsInitialized = false;
-
-                    initResult = false;
                     break;
                 }
             }
-                        
-            return initResult;
         }
 
         #endregion
@@ -275,7 +286,8 @@ namespace Sandcastle.References
                         continue;
                     }
 
-                    if (group.Initialize(context))
+                    group.Initialize(context);
+                    if (group.IsInitialized)
                     {
                         _curGroup = group;
 
@@ -488,11 +500,16 @@ namespace Sandcastle.References
         private void CreateReflectionSteps(BuildMultiStep listSteps, 
             ReferenceGroup group, string sandcastleDir, string helpStyle)
         {
+            Debug.Assert(_engineSettings != null);
+            if (_engineSettings == null)
+            {
+                return;
+            }
+
             BuildContext context     = this.Context;
             BuildSettings settings   = this.Settings;
 
             DependencyContent dependencies = group.Dependencies;
-            ReferenceOptions options = group.Options;
             string assemblyDir       = group.AssemblyFolder;
             string dependencyDir     = group.DependencyFolder;
 
@@ -524,8 +541,10 @@ namespace Sandcastle.References
 
             textBuilder.AppendFormat(" /out:{0} /config:{1}", 
                 refInfoFile, refBuilderFile);
-            bool? optionValue = options[ReferenceOptions.Included, "Internals"];
-            if (optionValue != null && optionValue.Value)
+            ReferenceVisibilityConfiguration visibility = 
+                _engineSettings.Visibility;
+            Debug.Assert(visibility != null);
+            if (visibility != null && visibility.IncludeInternalsMembers)
             {
                 textBuilder.Append(" /internal+");
             }
@@ -546,7 +565,16 @@ namespace Sandcastle.References
 
             textBuilder.Length = 0;
 
-            // 2. Apply Transforms
+            // 2. Create the reflection and comment refining step...
+            StepReferenceRefine referenceRefine =
+                new StepReferenceRefine(workingDir);
+            referenceRefine.Group = group;
+
+            listSteps.Add(referenceRefine);
+
+            textBuilder.Length = 0;
+
+            // 3. Apply Transforms
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
             //    reflection.org 
@@ -571,7 +599,7 @@ namespace Sandcastle.References
             textBuilder.AppendFormat("/xsl:\"{0}\" ", textTemp);
             textBuilder.Append(refInfoFile);
 
-            ReferenceNamingMethod namingMethod = options.Naming;
+            ReferenceNamingMethod namingMethod = _engineSettings.Naming;
             if (namingMethod == ReferenceNamingMethod.Guid)
             {
                 textTemp = Path.Combine(prodPath, "AddGuidFilenames.xsl");
@@ -590,8 +618,8 @@ namespace Sandcastle.References
             textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
             textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
 
-            bool rootContainer = settings.RootNamespaceContainer;
-            string rootTitle   = settings.RootNamespaceTitle;
+            bool rootContainer = _engineSettings.RootNamespaceContainer;
+            string rootTitle   = _engineSettings.RootNamespaceTitle;
             if (rootContainer && String.IsNullOrEmpty(rootTitle) == false)
             {
                 textBuilder.Append(" /arg:project=Project");
@@ -607,7 +635,7 @@ namespace Sandcastle.References
 
             textBuilder.Length = 0;
 
-            // 3. and finally the manifest...
+            // 4. and finally the manifest...
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl"  
             //   reflection.xml /out:manifest.xml
@@ -625,7 +653,7 @@ namespace Sandcastle.References
 
             listSteps.Add(manifestProcess);
 
-            // 4. Create the reflection table of contents
+            // 5. Create the reflection table of contents
             // XslTransform.exe 
             // /xsl:"%DXROOT%\ProductionTransforms\createvstoc.xsl" 
             //    reflection.xml /out:ApiToc.xml
@@ -645,10 +673,11 @@ namespace Sandcastle.References
             }
             arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}",
                 tempText, reflectionFile, tocFile);
-            StepXslTransform tocProcess = new StepXslTransform(workingDir,
+            StepReferenceToc tocProcess = new StepReferenceToc(workingDir,
                 application, arguments);
-            tocProcess.LogTitle = String.Empty;
-            tocProcess.Message  = "Xsl Transformation - Creating References TOC";
+            tocProcess.LogTitle        = String.Empty;
+            tocProcess.Message         = "Xsl Transformation - Creating References TOC";
+            tocProcess.Group           = group;
             tocProcess.CopyrightNotice = 2;
             
             listSteps.Add(tocProcess);

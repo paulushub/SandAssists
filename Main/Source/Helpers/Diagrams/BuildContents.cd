@@ -29,22 +29,8 @@
   <Class Name="Sandcastle.Conceptual.ConceptualCategoryContent" Collapsed="true">
     <Position X="1.75" Y="4" Width="3.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
+      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQABA=</HashCode>
       <FileName>Conceptual\ConceptualCategoryContent.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Configurators.ConfigurationContent" Collapsed="true">
-    <Position X="5" Y="1.75" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACAAAAAACAAEAAAAAAAAggAAAABA=</HashCode>
-      <FileName>Configurations\ConfigurationContent.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Configurators.IncludeContent" Collapsed="true">
-    <Position X="0.5" Y="1.75" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACAAAAAQCAAEAAAAAAAAkgAAAABA=</HashCode>
-      <FileName>Configurations\IncludeContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

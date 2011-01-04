@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using System.Xml;
@@ -26,9 +27,10 @@ namespace Sandcastle.References
         private BuildSettings      _settings;
         private ReferenceGroup     _group;
 
-        private BuildFormat        _singleFormat;
-        private IncludeContentList _configuration;
-        private IList<BuildFormat> _listFormats;
+        [NonSerialized]
+        private ReferenceEngineSettings _engineSettings;
+        [NonSerialized]
+        private BuildComponentConfigurationList _componentConfigList;
 
         #endregion
 
@@ -49,21 +51,19 @@ namespace Sandcastle.References
         {
             get
             {
-                if (_configuration == null)
+                if (_engineSettings == null || _settings == null)
                 {
                     return base.HasContents;
                 }
 
-                IncludeContent content = _configuration.GetContent(
-                    IncludeContentList.IncludeDefault);
+                IncludeContent content = _settings.IncludeContent;
 
                 if (content != null && content.Count > 0)
                 {
                     return true;
                 }
 
-                content = _configuration.GetContent(
-                    IncludeContentList.IncludeReferences);
+                content = _engineSettings.IncludeContent;
 
                 if (content != null && content.Count > 0)
                 {
@@ -104,24 +104,37 @@ namespace Sandcastle.References
         {
             base.Initialize(context);
 
+            if (!this.IsInitialized)
+            {
+                return;
+            }
+
             _settings      = context.Settings;
             _context       = context;
-            _configuration = context.Configuration;
             if (_settings == null || _settings.Style == null)
             {
                 this.IsInitialized = false;
 
                 return;
             }
-            _style = _settings.Style;
-
-            IList<BuildFormat> listFormats = _settings.Formats;
-            if (listFormats == null || listFormats.Count == 0)
+            _engineSettings = _settings.EngineSettings[
+                BuildEngineType.Reference] as ReferenceEngineSettings;
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
             {
                 this.IsInitialized = false;
 
                 return;
             }
+
+            _componentConfigList = _engineSettings.ComponentConfigurations;
+            if (_componentConfigList != null && _componentConfigList.Count != 0)
+            {
+                _componentConfigList.Initialize(_context);
+            }
+
+            _style = _settings.Style;
 
             //Keyword: "$(SandcastleCopyComponent)";
             if (ContainsComponents("SandcastleCopyComponent") == false)
@@ -137,32 +150,21 @@ namespace Sandcastle.References
                 }
             }
 
-            int itemCount = listFormats.Count;
-            _listFormats = new List<BuildFormat>(itemCount);
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = listFormats[i];
-                if (format != null && format.Enabled)
-                {
-                    _listFormats.Add(format);
-                }
-            }
-            if (_listFormats == null || _listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-
-                return;
-            }
-            else if (_listFormats.Count == 1)
-            {
-                _singleFormat = _listFormats[0];
-            }
-            else
-            {
-                //TODO...
-            }
-
             this.RegisterItemHandlers();
+        }
+
+        public override void Uninitialize()
+        {
+            if (_componentConfigList != null && _componentConfigList.Count != 0)
+            {
+                _componentConfigList.Uninitialize();
+            }
+
+            _settings            = null;
+            _context             = null;
+            _componentConfigList = null;
+
+            base.Uninitialize();
         }
 
         #endregion
@@ -196,14 +198,16 @@ namespace Sandcastle.References
         // look up shared content
         protected override string GetContent(string key, string[] parameters)
         {
-            if (String.IsNullOrEmpty(key) || _configuration == null)
+            if (String.IsNullOrEmpty(key) || _settings == null ||
+                _engineSettings == null)
             {
                 return base.GetContent(key, parameters);
             }
 
+            IncludeContent includeContent = _settings.IncludeContent;
             bool isFound = false;
             string value = String.Empty;
-            IncludeItem item = _configuration[key];
+            IncludeItem item = includeContent[key];
             if (item != null)
             {
                 isFound = true;
@@ -211,7 +215,8 @@ namespace Sandcastle.References
             }
             else
             {
-                item = _configuration[IncludeContentList.IncludeReferences, key];
+                includeContent = _engineSettings.IncludeContent;
+                item = includeContent[key];
                 if (item != null)
                 {
                     isFound = true;
@@ -256,25 +261,25 @@ namespace Sandcastle.References
         {
             // 1. The reference skeleton template...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Skeleton,
-                new ConfigurationItemHandler(OnSkeletonItem));
+                new Action<string, XPathNavigator>(OnSkeletonItem));
             // 2. The reference topics contents...
             this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceData,
-                new ConfigurationItemHandler(OnReferenceDataItem));
+                new Action<string, XPathNavigator>(OnReferenceDataItem));
             // 4. The reference syntax generators...
             this.RegisterConfigurationItem(ConfiguratorKeywords.SyntaxGenerators,
-                new ConfigurationItemHandler(OnSyntaxGeneratorsItem));
+                new Action<string, XPathNavigator>(OnSyntaxGeneratorsItem));
             //// 3. The reference tokens...
             //this.RegisterItem(ConfigItems.Tokens,
             //    new ConfigItemHandler(OnTokensItem));
             // 5. The reference metadata attributes...
             this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceContents,
-                new ConfigurationItemHandler(OnReferenceContentsItem));
+                new Action<string, XPathNavigator>(OnReferenceContentsItem));
             // . The reference code snippets ...
             this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
-                new ConfigurationItemHandler(OnCodeSnippetsItem));
+                new Action<string, XPathNavigator>(OnCodeSnippetsItem));
             // 8. The reference transform...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
-                new ConfigurationItemHandler(OnTransformsItem));
+                new Action<string, XPathNavigator>(OnTransformsItem));
             //// . The reference ...
             //this.RegisterItem(ConfigItems,
             //    new ConfigItemHandler(OnItem));
@@ -284,150 +289,76 @@ namespace Sandcastle.References
 
         #region OnComponentInclude Method
 
-        protected override void OnComponentInclude(object sender,
-            ConfigurationItemEventArgs args)
+        protected override void OnComponentInclude(
+            string keyword, XPathNavigator navigator)
         {
-            if (args == null)
-            {
-                return;
-            }
-            string configKeyword = args.Keyword;
-            XPathNavigator navigator = args.Navigator;
+            Debug.Assert(_engineSettings != null);
 
-            if (String.IsNullOrEmpty(configKeyword) || navigator == null)
+            if (_engineSettings == null)
             {
                 return;
             }
 
-            // Handle the case of output formats only for now...
-            if (String.Equals(configKeyword, "Sandcastle.Components.CloneComponent",
-                StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(keyword) || navigator == null)
             {
-                this.OnClonedInclude(args);
+                return;
             }
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.IntellisenseComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnIntellisenseInclude(args);
-            //}
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.ExampleComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnExampleInclude(args);
-            //}
-            //else if (String.Equals(configKeyword, "Microsoft.Ddue.Tools.HxfGeneratorComponent",
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    this.OnHxfGeneratorInclude(args);
-            //}
-            else
+
+            if (_componentConfigList != null &&
+                _componentConfigList.ContainsComponent(keyword))
             {
-                // TODO: For now, just delete the include nodes...
-                navigator.DeleteSelf();
-            }
-        }
+                IList<BuildComponentConfiguration> componentList =
+                    _componentConfigList.GetConfigurations(keyword);
+                Debug.Assert(componentList != null && componentList.Count != 0);
 
-        #endregion
-
-        #region OnIntellisenseInclude Method
-
-        protected void OnIntellisenseInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            //<!-- Write out intellisense -->
-            //<component type="Microsoft.Ddue.Tools.IntellisenseComponent" 
-            //  assembly="$(SandcastleComponent)">
-            //  <output directory="Intellisense" />
-            //</component>          
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            xmlWriter.WriteComment("  Write out intellisense  ");
-            // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("component");
-            xmlWriter.WriteAttributeString("type", "Microsoft.Ddue.Tools.IntellisenseComponent");
-            xmlWriter.WriteAttributeString("files", "$(SandcastleComponent)");
-
-            xmlWriter.WriteStartElement("output");
-            xmlWriter.WriteAttributeString("directory", "Intellisense");
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.WriteEndElement();
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
-        #region OnClonedInclude Method
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        protected void OnClonedInclude(ConfigurationItemEventArgs args)
-        {
-            XPathNavigator navigator = args.Navigator;
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-            if (_singleFormat != null)
-            {
-                _singleFormat.WriteAssembler(_context, _group, xmlWriter);
-            }
-            else
-            {
-                if (_listFormats == null)
+                if (componentList != null && componentList.Count != 0)
                 {
-                    return;
-                }
-
-                int itemCount = _listFormats.Count;
-
-                //<component type="Sandcastle.Components.CloneComponent"
-                //         assembly="%DXROOT%\ProductionTools\BuildComponents.dll">
-                //  <branch>
-                //  </branch>
-                //</component>
-
-                string componentAssembly = this.GetComponents("SandAssistComponent");
-                if (String.IsNullOrEmpty(componentAssembly))
-                {
-                    return;
-                }
-
-                xmlWriter.WriteStartElement("component");  // start - component
-                xmlWriter.WriteAttributeString("type",
-                    "Sandcastle.Components.CloneComponent");
-                xmlWriter.WriteAttributeString("assembly", componentAssembly);
-
-                for (int i = 0; i < itemCount - 1; i++)
-                {
-                    BuildFormat format = _listFormats[i];
-                    if (format != null)
+                    string componentAssembly = null;
+                    BuildComponentConfiguration component = componentList[0];
+                    switch (component.ComponentType)
                     {
-                        xmlWriter.WriteComment(String.Format(
-                            " For the help format: {0} ", format.FormatName));
-                        xmlWriter.WriteStartElement("branch");  // start - branch
-                        format.WriteAssembler(_context, _group, xmlWriter);
-                        xmlWriter.WriteEndElement();            // end - branch
+                        case BuildComponentType.Sandcastle:
+                            componentAssembly = this.GetComponents(
+                                "SandcastleComponent");
+                            break;
+                        case BuildComponentType.SandcastleAssist:
+                            componentAssembly = this.GetComponents(
+                                "SandAssistComponent");
+                            break;
+                        case BuildComponentType.Custom:
+                            componentAssembly = component.ComponentPath;
+                            break;
                     }
+
+                    if (String.IsNullOrEmpty(componentAssembly))
+                    {
+                        navigator.DeleteSelf();
+
+                        return;
+                    }
+
+                    XmlWriter xmlWriter = navigator.InsertAfter();
+
+                    xmlWriter.WriteStartElement("component");  // start - component
+                    xmlWriter.WriteAttributeString("type", keyword);
+                    xmlWriter.WriteAttributeString("assembly", componentAssembly);
+
+                    for (int i = 0; i < componentList.Count; i++)
+                    {
+                        componentList[i].Configure(_group, xmlWriter);
+                    }
+
+                    xmlWriter.WriteEndElement();               // end - component
+
+                    xmlWriter.Close();
                 }
 
-                // For the default branch...
-                BuildFormat formatDefault = _listFormats[itemCount - 1];
-                if (formatDefault != null)
-                {
-                    xmlWriter.WriteComment(String.Format(
-                        " For the help format: {0} ", formatDefault.FormatName));
-                    xmlWriter.WriteStartElement("default");  // start - default
-                    formatDefault.WriteAssembler(_context, _group, xmlWriter);
-                    xmlWriter.WriteEndElement();             // end - default
-                }
+                navigator.DeleteSelf();
 
-                xmlWriter.WriteEndElement();               // end - component
+                return;
             }
-
-            xmlWriter.Close();
+            
+            // TODO: For now, just delete the include nodes...
             navigator.DeleteSelf();
         }
 
@@ -440,7 +371,7 @@ namespace Sandcastle.References
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnSkeletonItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnSkeletonItem(string keyword, XPathNavigator navigator)
         {
             string skeleton = _style.GetSkeleton(BuildEngineType.Reference);
             if (String.IsNullOrEmpty(skeleton))
@@ -448,8 +379,6 @@ namespace Sandcastle.References
                 throw new BuildException(
                     "A well-defined document skeleton is required.");
             }
-
-            XPathNavigator navigator = args.Navigator;
 
             //<data file="%DXROOT%\Presentation\vs2005\Transforms\skeleton.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
@@ -470,7 +399,7 @@ namespace Sandcastle.References
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnCodeSnippetsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnCodeSnippetsItem(string keyword, XPathNavigator navigator)
         {
             if (_group == null)
             {
@@ -478,7 +407,6 @@ namespace Sandcastle.References
                     "There is not build group to provide the media/arts contents.");
             }
 
-            XPathNavigator navigator = args.Navigator;
             //<codeSnippets process="true" storage="Sqlite" separator="...">
             //  <codeSnippet source=".\CodeSnippetSample.xml" format="Sandcastle" />
             //</codeSnippets>
@@ -523,15 +451,13 @@ namespace Sandcastle.References
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnTransformsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnTransformsItem(string keyword, XPathNavigator navigator)
         {
             string transform = _style.GetTransform(BuildEngineType.Reference);
             if (String.IsNullOrEmpty(transform))
             {
                 throw new BuildException("A document transformer is required.");
             }
-
-            XPathNavigator navigator = args.Navigator;
 
             //<transform file="%DXROOT%\Presentation\Vs2005\transforms\main_conceptual.xsl">
             //<argument key="metadata" value="true" />
@@ -579,9 +505,8 @@ namespace Sandcastle.References
 
         #region OnReferenceDataItem Method
 
-        protected void OnReferenceDataItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnReferenceDataItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
             string sandcastleDir = _context.SandcastleDirectory;
 
             //<data base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" />
@@ -608,10 +533,8 @@ namespace Sandcastle.References
 
         #region OnSyntaxGeneratorsItem Method
 
-        protected void OnSyntaxGeneratorsItem(object sender, ConfigurationItemEventArgs args)
+        protected void OnSyntaxGeneratorsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
-
             XmlWriter xmlWriter = navigator.InsertAfter();
 
             this.WriteSyntaxGenerators(xmlWriter, _settings.SyntaxUsage);
@@ -624,9 +547,8 @@ namespace Sandcastle.References
 
         #region OnReferenceContentsItem Method
 
-        private void OnReferenceContentsItem(object sender, ConfigurationItemEventArgs args)
+        private void OnReferenceContentsItem(string keyword, XPathNavigator navigator)
         {
-            XPathNavigator navigator = args.Navigator;
             //<data base="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\" 
             //   recurse="false"  files="*.xml" />
             //<data files=".\Comments\Project.xml" />

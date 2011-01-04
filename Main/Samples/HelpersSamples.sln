@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "Helpers\ConsoleSample\ConsoleSample.csproj", "{9275708E-047E-42AB-A5E4-545DC80539ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0009470D-BB30-4147-B373-356A4EE11441} = {0009470D-BB30-4147-B373-356A4EE11441}
+		{7C0A054D-46A5-40E6-A736-39FC64B70215} = {7C0A054D-46A5-40E6-A736-39FC64B70215}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibrary", "Helpers\SampleLibrary\SampleLibrary.csproj", "{0009470D-BB30-4147-B373-356A4EE11441}"
 EndProject
@@ -9,9 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleRegisterTopics", "Hel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTopics", "Helpers\SampleTopics\SampleTopics.csproj", "{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleHierarchicalToc", "Helpers\SampleHierarchicalToc\SampleHierarchicalToc.csproj", "{7C0A054D-46A5-40E6-A736-39FC64B70215}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
 		SccLocalPath0 = .
@@ -27,9 +33,9 @@ Global
 		SccProjectUniqueName4 = Helpers\\SampleTopics\\SampleTopics.csproj
 		SccProjectName4 = Helpers/SampleTopics
 		SccLocalPath4 = Helpers\\SampleTopics
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DotNetZip1.vsmdi
+		SccProjectUniqueName5 = Helpers\\SampleHierarchicalToc\\SampleHierarchicalToc.csproj
+		SccProjectName5 = Helpers/SampleHierarchicalToc
+		SccLocalPath5 = Helpers\\SampleHierarchicalToc
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +58,10 @@ Global
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E82F84F5-EB65-49C3-B712-FAA3B3F1B140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C0A054D-46A5-40E6-A736-39FC64B70215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C0A054D-46A5-40E6-A736-39FC64B70215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C0A054D-46A5-40E6-A736-39FC64B70215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C0A054D-46A5-40E6-A736-39FC64B70215}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

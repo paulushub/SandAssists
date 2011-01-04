@@ -5,8 +5,7 @@ namespace Sandcastle.Components.Snippets
     [Serializable]
     public enum SnippetStorage
     {
-        Sqlite   = 0,
+        Database = 0,
         Memory   = 1,
-        Database = 2
     }
 }

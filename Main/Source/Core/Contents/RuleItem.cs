@@ -4,7 +4,7 @@ using System.Text;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class RuleItem : BuildItem<RuleItem>, IBuildNamedItem
+    public sealed class RuleItem : BuildItem<RuleItem>, IBuildNamedItem
     {
         #region Private Fields
 
@@ -16,17 +16,13 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public RuleItem()
+            : this(Guid.NewGuid().ToString(), String.Empty)
         {
-            _name  = String.Empty;
-            _value = String.Empty;
         }
 
         public RuleItem(string name)
+            : this(name, String.Empty)
         {
-            BuildExceptions.NotNullNotEmpty(name, "name");
-
-            _name  = name;
-            _value = String.Empty;
         }
 
         public RuleItem(string name, string value)
@@ -66,10 +62,6 @@ namespace Sandcastle.Contents
             get
             {
                 return _name;
-            }
-            set
-            {
-                _name = value;
             }
         }
 

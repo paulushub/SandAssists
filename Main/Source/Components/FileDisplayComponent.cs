@@ -29,9 +29,7 @@ namespace Sandcastle.Components
     /// <code lang="xml">
     /// <![CDATA[
     /// <component type="Sandcastle.Components.FileDisplayComponent" assembly="Sandcastle.Components.dll">
-    ///     <xpath>/</xpath>
-    ///     <directory>..\..\Displays</directory>
-    ///     <stage>Stage 1</stage>
+    ///     <display stage="Stage 1" xpath="/" directory="..\..\Displays"/>
     /// </component>
     /// ]]>
     /// </code>
@@ -62,20 +60,24 @@ namespace Sandcastle.Components
                 string folder  = "FileDisplays";
 
                 // Obtained the XPath for selecting the part of the document to display...
-			    XPathNavigator xpathNode = configuration.SelectSingleNode("xpath");
-                if (xpathNode != null && !String.IsNullOrEmpty(xpathNode.Value))
-                    _xpathFormat = xpathNode.Value;
-                
-                xpathNode = configuration.SelectSingleNode("directory");
-                if (xpathNode != null && !String.IsNullOrEmpty(xpathNode.Value))
-                {
-                    _workingDir = Path.GetFullPath(
-                        Environment.ExpandEnvironmentVariables(xpathNode.Value));
-                }
+			    XPathNavigator displayNode = configuration.SelectSingleNode("display");
+                if (displayNode != null)
+                {   
+                    string attValue = displayNode.GetAttribute("xpath", String.Empty);
+                    if (!String.IsNullOrEmpty(attValue))
+                        _xpathFormat = attValue;
+                    
+                    attValue = displayNode.GetAttribute("directory", String.Empty);
+                    if (!String.IsNullOrEmpty(attValue))
+                    {
+                        _workingDir = Path.GetFullPath(
+                            Environment.ExpandEnvironmentVariables(attValue));
+                    }
 
-                xpathNode = configuration.SelectSingleNode("stage");
-                if (xpathNode != null && !String.IsNullOrEmpty(xpathNode.Value))
-                    _writeStage = xpathNode.Value;
+                    attValue = displayNode.GetAttribute("stage", String.Empty);
+                    if (!String.IsNullOrEmpty(attValue))
+                        _writeStage = attValue;
+                }
 
                 if (!Directory.Exists(_workingDir))
                 {
@@ -131,6 +133,8 @@ namespace Sandcastle.Components
 
                 string fileName = key.Replace(':', '.') + _fileExtension;
                 fileName = fileName.Replace('#', '.');
+                fileName = fileName.Replace('<', '_');
+                fileName = fileName.Replace('>', '_');
                 fileName = fileName.Replace("..", ".");
 
                 string filePath = Path.Combine(_workingDir, fileName);
@@ -141,7 +145,7 @@ namespace Sandcastle.Components
                     {
                         writer.WriteLine();
                     }
-                    writer.WriteLine(_writeStage);
+                    writer.WriteLine("<!-- " + _writeStage + " -->");
                     writer.WriteLine();
 
                     XPathNodeIterator nodes = result as XPathNodeIterator;

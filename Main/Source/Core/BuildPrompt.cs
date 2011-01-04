@@ -53,12 +53,10 @@ namespace Sandcastle
         #region IDisposable Members
 
         /// <overloads>
-        /// This performs build object tasks associated with freeing, releasing, or 
-        /// resetting unmanaged resources.
+        /// This releases all resources used by the <see cref="BuildPrompt"/> object.
         /// </overloads>
         /// <summary>
-        /// This performs build object tasks associated with freeing, releasing, or 
-        /// resetting unmanaged resources.
+        /// This releases all resources used by the <see cref="BuildPrompt"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -67,7 +65,8 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// This cleans up any resources being used.
+        /// This releases the unmanaged resources used by the <see cref="BuildPrompt"/> 
+        /// and optionally releases the managed resources. 
         /// </summary>
         /// <param name="disposing">
         /// This is <see langword="true"/> if managed resources should be 

@@ -18,20 +18,20 @@ namespace Sandcastle
     /// table of content processing.
     /// </remarks>
     [Serializable]
-    public class BuildToc : BuildObject<BuildToc>
+    public class BuildToc : BuildOptions<BuildToc>
     {
         #region Public Static Fields
 
         /// <summary>
         /// 
         /// </summary>
-        public const string HelpToc = "HelpToc.xml";
+        public const string HelpToc         = "HelpToc.xml";
+        public const string HierarchicalToc = "HierarchicalToc.xml";
 
         #endregion
 
         #region Private Fields
 
-        private bool _isInitialized;
         private BuildList<TocContent> _listItems;
 
         #endregion
@@ -70,14 +70,6 @@ namespace Sandcastle
         #endregion
 
         #region Public Properties
-
-        public bool IsInitialized
-        {
-            get 
-            { 
-                return _isInitialized; 
-            }
-        }
 
         public virtual int Count
         {
@@ -137,25 +129,14 @@ namespace Sandcastle
 
         #region Public Methods
 
-        public virtual bool Initialize(BuildContext context)
+        public override void Initialize(BuildContext context)
         {
-            BuildExceptions.NotNull(context, "context");
-
-            if (_isInitialized)
-            {
-                return true;
-            }
-
-            _isInitialized = true;
-
-            return _isInitialized;
+            base.Initialize(context);
         }
 
-        public virtual bool Uninitialize()
+        public override void Uninitialize()
         {
-            _isInitialized = false;
-
-            return true;
+            base.Uninitialize();
         }
 
         public virtual bool Merge(BuildContext context)

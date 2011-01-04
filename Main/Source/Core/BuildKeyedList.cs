@@ -19,7 +19,7 @@ namespace Sandcastle
     /// </remarks>
     /// <seealso cref="System.Collections.ObjectModel.Collection{T}"/>
     [Serializable]
-    public class BuildKeyedList<T> : Collection<T>, ICloneable
+    public class BuildKeyedList<T> : Collection<T>, IBuildNamedList<T>, ICloneable
          where T : class, IBuildNamedItem
     {
         #region Private Fields
@@ -42,6 +42,26 @@ namespace Sandcastle
             _dicItems = new Dictionary<string, int>(
                 StringComparer.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildKeyedList{T}"/> class
+        /// with parameters copied from the specified instance of the 
+        /// <see cref="BuildKeyedList{T}"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="BuildKeyedList{T}"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
+        public BuildKeyedList(BuildKeyedList<T> source)
+        {
+            BuildExceptions.NotNull(source, "source");
+
+            _version  = source._version;
+            _dicItems = source._dicItems;
+        }   
 
         #endregion
 
@@ -134,6 +154,30 @@ namespace Sandcastle
             {
                 this.Add(items[i]);
             }
+        }
+
+        /// <summary>
+        /// Determines whether this list contains a specified key.
+        /// </summary>
+        /// <param name="key">
+        /// A string specifying the key to locate in the list.
+        /// </param>
+        /// <returns>
+        /// This returns <see langword="true"/> if this list contains an element
+        /// with the specified key; otherwise, it is <see langword="false"/>.
+        /// </returns>
+        public bool Contains(string key)
+        {
+            if (String.IsNullOrEmpty(key))
+            {
+                return false;
+            }
+            if (_dicItems != null && _dicItems.Count != 0)
+            {
+                return _dicItems.ContainsKey(key);
+            }
+
+            return false;
         }
 
         #endregion
@@ -330,7 +374,7 @@ namespace Sandcastle
 
         public BuildKeyedList<T> Clone()
         {
-            BuildKeyedList<T> clonedList = new BuildKeyedList<T>();
+            BuildKeyedList<T> clonedList = new BuildKeyedList<T>(this);
 
             int itemCount = this.Count;
             for (int i = 0; i < itemCount; i++)
@@ -340,10 +384,6 @@ namespace Sandcastle
 
             return clonedList;
         }
-
-        #endregion
-
-        #region ICloneable Members
 
         object ICloneable.Clone()
         {

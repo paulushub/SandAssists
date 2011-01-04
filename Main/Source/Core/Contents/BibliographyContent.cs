@@ -6,11 +6,14 @@ using System.Collections.Generic;
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public class BibliographyContent : BuildContent<BibliographyItem, BibliographyContent>
+    public sealed class BibliographyContent : BuildContent<BibliographyItem, BibliographyContent>
     {
         #region Private Fields
 
+        private bool   _isLoaded;
+
         private string _contentsFile;
+        [NonSerialized]
         private IDictionary<string, int> _dicItems;
 
         #endregion
@@ -38,6 +41,8 @@ namespace Sandcastle.Contents
         public BibliographyContent(BibliographyContent source)
             : base(source)
         {
+            _isLoaded     = source._isLoaded;
+            _dicItems     = source._dicItems;
             _contentsFile = source._contentsFile;
         }
 
@@ -49,12 +54,25 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_contentsFile) == false)
+                if (!String.IsNullOrEmpty(_contentsFile))
                 {
                     return false;
                 }
 
                 return base.IsEmpty;
+            }
+        }
+
+        public bool IsLoaded
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_contentsFile))
+                {
+                    return false;
+                }
+
+                return _isLoaded;
             }
         }
 
@@ -96,6 +114,122 @@ namespace Sandcastle.Contents
             {
                 return true;
             }
+        }
+
+        #endregion
+
+        #region Public Method
+
+        public void Load()
+        {
+            this.Load(_contentsFile);
+        }
+
+        public void Load(string contentFile)
+        {
+            BuildExceptions.PathMustExist(contentFile, "contentFile");
+
+            _isLoaded = true;
+        }
+
+        public void Save()
+        {
+            this.Save(_contentsFile);
+        }
+
+        public void Save(string contentFile)
+        {
+            BuildExceptions.NotNullNotEmpty(contentFile, "contentFile");
+        }
+
+        public void Add(string contentFile)
+        {
+            BuildExceptions.NotNullNotEmpty(contentFile, "contentFile");
+        }
+
+        public override void Add(BibliographyItem item)
+        {
+            if (item != null && !String.IsNullOrEmpty(item.Name))
+            {   
+                if (_dicItems.ContainsKey(item.Name))
+                {
+                    this.Insert(_dicItems[item.Name], item);
+                }
+                else
+                {
+                    base.Add(item);
+                }
+            }
+        }
+
+        public bool Contains(string itemName)
+        {
+            if (String.IsNullOrEmpty(itemName) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return false;
+            }
+
+            return _dicItems.ContainsKey(itemName);
+        }
+
+        public int IndexOf(string itemName)
+        {
+            if (String.IsNullOrEmpty(itemName) ||
+                _dicItems == null || _dicItems.Count == 0)
+            {
+                return -1;
+            }
+
+            if (_dicItems.ContainsKey(itemName))
+            {
+                return _dicItems[itemName];
+            }
+
+            return -1;
+        }
+
+        public bool Remove(string itemName)
+        {
+            int itemIndex = this.IndexOf(itemName);
+            if (itemIndex < 0)
+            {
+                return false;
+            }
+
+            if (_dicItems.Remove(itemName))
+            {
+                base.Remove(itemIndex);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override bool Remove(BibliographyItem item)
+        {
+            if (base.Remove(item))
+            {
+                if (_dicItems != null && _dicItems.Count != 0)
+                {
+                    _dicItems.Remove(item.Name);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void Clear()
+        {
+            if (_dicItems != null && _dicItems.Count != 0)
+            {
+                _dicItems.Clear();
+            }
+
+            base.Clear();
         }
 
         #endregion

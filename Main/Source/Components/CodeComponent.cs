@@ -34,7 +34,7 @@ namespace Sandcastle.Components
                 _highlightMode = CodeHighlightMode.IndirectIris;
 
                 // <options mode="snippets" tabSize="4" 
-                //    numberLines="false" outlining="false"/>
+                //    lineNumbers="false" outlining="false"/>
                 XPathNavigator navigator = configuration.SelectSingleNode("options");
                 if (navigator != null)
                 {
@@ -49,7 +49,7 @@ namespace Sandcastle.Components
                     {
                         _tabSize = Convert.ToInt32(attribute);
                     }
-                    attribute = navigator.GetAttribute("numberLines", String.Empty);
+                    attribute = navigator.GetAttribute("lineNumbers", String.Empty);
                     if (String.IsNullOrEmpty(attribute) == false)
                     {
                         _numberLines = Convert.ToBoolean(attribute);

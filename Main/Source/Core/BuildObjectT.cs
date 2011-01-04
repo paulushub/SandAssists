@@ -6,9 +6,10 @@ using System.Xml.Serialization;
 namespace Sandcastle
 {
     /// <summary>
-    /// This is an <see langword="abstract"/> base class for most objects in this library, 
-    /// and it defines the basic cloneable and serialization interfaces. This is used 
-    /// as the base object to create components object hierarchy.
+    /// This is the typed or generic <see langword="abstract"/> base class for 
+    /// most objects in this build library, and it defines the basic cloneable 
+    /// and serialization interfaces. This is used as the base object to create 
+    /// components object hierarchy.
     /// </summary>
     /// <typeparam name="T">
     /// The underlying value type of the <see cref="BuildObject{T}"/> generic type. 
@@ -36,8 +37,8 @@ namespace Sandcastle
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildObject{T}"/> class
-        /// with parameters copied from the specified instance of the 
-        /// <see cref="BuildObject{T}"/> class, a copy constructor.
+        /// with initial parameters copied from the specified instance of the 
+        /// specified <see cref="BuildObject{T}"/> class, a copy constructor.
         /// </summary>
         /// <param name="source">
         /// An instance of the <see cref="BuildObject{T}"/> class from which the

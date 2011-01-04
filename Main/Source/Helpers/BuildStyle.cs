@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.References;
 
 namespace Sandcastle
 {
@@ -64,39 +66,20 @@ namespace Sandcastle
     /// </remarks>
     /// <seealso cref="BuildStyleType"/>
     [Serializable]
-    public class BuildStyle : BuildObject<BuildStyle>
+    public class BuildStyle : BuildOptions<BuildStyle>, IBuildNamedItem
     {
-        #region Public Constant Fields
-
-        /// <summary>
-        /// Gets the name of the shared content that is common to all build
-        /// configurations.
-        /// </summary>
-        public const string SharedDefault    = "Default";
-        /// <summary>
-        /// Gets the name of the shared content that is specific to conceptual
-        /// build configuration.
-        /// </summary>
-        public const string SharedConceptual = "Conceptual";
-        /// <summary>
-        /// Gets the name of the shared content that is specific to references or API
-        /// build configurations.
-        /// </summary>
-        public const string SharedReferences = "References";
-
-        #endregion
-
         #region Private Fields
 
-        private bool           _isInitialized;
-        private string         _styleName;
-        private string         _styleDir;
-        private string         _stylePresent;
-        private BuildStyleType _styleType;
+        private string             _styleName;
+        private string             _styleDir;
+        private string             _stylePresent;
+        private BuildStyleType     _styleType;
 
-        private SharedContent _default;
-        private SharedContent _conceptual;
-        private SharedContent _references;
+        private ScriptContent      _scripts;
+        private StyleSheetContent  _styleSheets;
+
+        private MathPackageContent _mathPackages;
+        private MathCommandContent _mathCommands;
 
         #endregion
 
@@ -120,15 +103,41 @@ namespace Sandcastle
         /// the specified style type.
         /// </summary>
         /// <param name="type">
-        /// An enumeration of the type <see cref="BuildStyleType"/> specifyig the type
+        /// An enumeration of the type <see cref="BuildStyleType"/> specifying the type
         /// of the transformation and presentation style.
         /// </param>
         public BuildStyle(BuildStyleType type)
         {
-            _styleType  = type;
-            _default    = new SharedContent(SharedDefault, String.Empty);
-            _conceptual = new SharedContent(SharedConceptual, String.Empty);
-            _references = new SharedContent(SharedReferences, String.Empty);
+            _styleType    = type;
+            _scripts      = new ScriptContent("CommonScripts");
+            _styleSheets  = new StyleSheetContent("CommonStyleSheets");
+
+            _mathPackages = new MathPackageContent();
+            _mathCommands = new MathCommandContent();
+
+            string sandAssistDir = Path.GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+
+            string codeStyleFile = Path.Combine(sandAssistDir,
+                @"Styles\IrisModifiedVS.css");
+            string assistStyleFile = Path.Combine(sandAssistDir,
+                String.Format(@"Styles\{0}\SandAssist.css",
+                BuildStyleUtils.StyleFolder(type)));
+
+            StyleSheetItem codeStyle = new StyleSheetItem("CodeStyle", 
+                codeStyleFile);
+            codeStyle.Condition = "CodeHighlight";
+            _styleSheets.Add(codeStyle);
+            StyleSheetItem assistStyle = new StyleSheetItem("AssistStyle",
+                assistStyleFile);
+            _styleSheets.Add(assistStyle); 
+
+            string assistScriptFile = Path.Combine(sandAssistDir,
+                String.Format(@"Scripts\{0}\SandAssist.js",
+                BuildStyleUtils.StyleFolder(type)));
+            ScriptItem assistScript = new ScriptItem("AssistScripts", 
+                assistScriptFile);
+            _scripts.Add(assistScript);
         }
 
         /// <summary>
@@ -147,7 +156,7 @@ namespace Sandcastle
         /// </para>
         /// </param>
         /// <param name="type">
-        /// An enumeration of the type <see cref="BuildStyleType"/> specifyig the type
+        /// An enumeration of the type <see cref="BuildStyleType"/> specifying the type
         /// of the presentation style.
         /// </param>
         public BuildStyle(string name, string directory, 
@@ -176,11 +185,11 @@ namespace Sandcastle
             _styleName    = source._styleName;
             _stylePresent = source._stylePresent;
             _styleType    = source._styleType;
-
-            _default      = source._default;
-            _conceptual   = source._conceptual;
-            _references   = source._references;
-        }
+            _scripts      = source._scripts;
+            _styleSheets  = source._styleSheets;
+            _mathPackages = source._mathPackages;
+            _mathCommands = source._mathCommands;
+       }
 
         #endregion
 
@@ -212,7 +221,7 @@ namespace Sandcastle
         /// documentation.
         /// </summary>
         /// <value>
-        /// An enumeration of the type <see cref="BuildStyleType"/> specifyig the type
+        /// An enumeration of the type <see cref="BuildStyleType"/> specifying the type
         /// of the transformation and presentation style.
         /// <para>
         /// The default value is <see cref="BuildStyleType.Vs2005"/>.
@@ -258,19 +267,19 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Gets or sets the path of a custom presentation stylesheet for the specified 
+        /// Gets or sets the path of a custom presentation style sheet for the specified 
         /// style type.
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the path of the custom 
-        /// presentation stylesheet.
+        /// presentation style sheet.
         /// <para>
         /// The default value is <see langword="null"/>.
         /// </para>
         /// </value>
         /// <remarks>
         /// This is useful for the simple and common case of keeping the transformation
-        /// of the specified style type, but replacing the presentation stylesheet with
+        /// of the specified style type, but replacing the presentation style sheet with
         /// a customized version.
         /// </remarks>
         public string Presentation
@@ -285,99 +294,36 @@ namespace Sandcastle
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this style is initialized and ready for
-        /// the build process.
-        /// </summary>
-        /// <value>
-        /// This property is <see langword="true"/> if this style is initialized;
-        /// otherwise, it is <see langword="false"/>.
-        /// </value>
-        /// <seealso cref="BuildStyle.Initialize(BuildContext)"/>
-        /// <seealso cref="BuildStyle.Uninitialize()"/>
-        public bool IsInitialized
+        public ScriptContent Scripts
         {
             get
             {
-                return _isInitialized;
+                return _scripts;
             }
         }
 
-        /// <overloads>
-        /// Gets the transformation shared content item associated with this style at
-        /// the specified information.
-        /// </overloads>
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="itemIndex"></param>
-        /// <value>
-        /// 
-        /// </value>
-        public SharedItem this[int itemIndex]
+        public StyleSheetContent StyleSheets
         {
             get
             {
-                return _default[itemIndex];
+                return _styleSheets;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="itemName"></param>
-        /// <value>
-        /// 
-        /// </value>
-        public SharedItem this[string itemName]
+
+        public MathPackageContent MathPackages
         {
             get
             {
-                return _default[itemName];
+                return _mathPackages;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="contentName"></param>
-        /// <param name="itemIndex"></param>
-        /// <value>
-        /// 
-        /// </value>
-        public SharedItem this[string contentName, int itemIndex]
+        public MathCommandContent MathCommands
         {
             get
             {
-                SharedContent content = this.GetSharedContent(contentName);
-                if (content != null)
-                {
-                    return content[itemIndex];
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="contentName"></param>
-        /// <param name="itemName"></param>
-        /// <value>
-        /// 
-        /// </value>
-        public SharedItem this[string contentName, string itemName]
-        {
-            get
-            {
-                SharedContent content = this.GetSharedContent(contentName);
-                if (content != null)
-                {
-                    return content[itemName];
-                }
-
-                return null;
+                return _mathCommands;
             }
         }
 
@@ -393,79 +339,9 @@ namespace Sandcastle
         /// <param name="settings"></param>
         /// <seealso cref="BuildStyle.IsInitialized"/>
         /// <seealso cref="BuildStyle.Uninitialize()"/>
-        public void Initialize(BuildSettings settings)
+        public override void Initialize(BuildContext context)
         {
-            if (_isInitialized)
-            {
-                return;
-            }
-            BuildExceptions.NotNull(settings, "settings");
-
-            string tempText = String.Empty;
-            // For general shared items...
-            // 1. Process the root namespace container...
-            if (settings.RootNamespaceContainer)
-            {
-                tempText = settings.RootNamespaceTitle;
-            }
-            _default.Add(new SharedItem("rootTopicTitle", tempText));
-            // 2. Process the locale
-            CultureInfo culture = settings.CultureInfo;
-            tempText = culture.Name.ToLower(culture);
-            _default.Add(new SharedItem("helpLocale", tempText));
-
-            // For the header...
-            // 1. Process the preliminary text...
-            if (settings.ShowPreliminary)
-            {
-                _default.Add(new SharedItem("preliminaryStatement",
-                    "<include item=\"preliminaryText\"/>"));
-            }
-            // 2. Process the running header text...  
-            tempText = settings.HelpTitle;
-            _default.Add(new SharedItem("runningHeaderText", tempText));
-            // 3. Process the header text...
-            tempText = settings.HeaderText;
-            if (!String.IsNullOrEmpty(tempText))
-            {
-                _default.Add(new SharedItem("headerStatement",
-                    "<include item=\"headerText\"/>"));
-                _default.Add(new SharedItem("headerText", tempText));
-            }
-
-            // For the footer...
-            tempText = settings.FooterText;
-            if (!String.IsNullOrEmpty(tempText))
-            {
-                _default.Add(new SharedItem("footerStatement",
-                    "<include item=\"footerText\"/>"));
-                _default.Add(new SharedItem("footerText", tempText));
-            }
-
-            // For the feedback...
-            BuildFeedback feedBack = settings.Feedback;
-            // 1. Process the email...
-            _default.Add(new SharedItem("feedbackEmail", feedBack.EmailAddress));
-            // 2. Process the product...
-            _default.Add(new SharedItem("feedbackProduct", feedBack.Product));
-            // 3. Process the product...
-            _default.Add(new SharedItem("feedbackCompany", feedBack.Company));
-            // 4. Process the copyright...
-            tempText = feedBack.Copyright;
-            if (!String.IsNullOrEmpty(tempText))
-            {
-                _default.Add(new SharedItem("copyrightStatement", 
-                    "<include item=\"copyrightText\"/>"));
-                string copyUri = feedBack.CopyrightLink;
-                if (!String.IsNullOrEmpty(copyUri))
-                {   
-                    tempText = String.Format("<a href=\"{0}\">{1}</a>", 
-                        copyUri, tempText);
-                }
-                _default.Add(new SharedItem("copyrightText", tempText));
-            }
-
-            _isInitialized = true;
+            base.Initialize(context);
         }
 
         /// <summary>
@@ -473,151 +349,9 @@ namespace Sandcastle
         /// </summary>
         /// <seealso cref="BuildStyle.IsInitialized"/>
         /// <seealso cref="BuildStyle.Initialize(BuildContext)"/>
-        public void Uninitialize()
+        public override void Uninitialize()
         {
-            _isInitialized = false;
-        }
-
-        #endregion
-
-        #region SharedContent Methods
-
-        public SharedContent GetSharedContent(string contentName)
-        {
-            if (String.IsNullOrEmpty(contentName))
-            {
-                return _default;
-            }
-            if (String.Equals(contentName, SharedDefault,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return _default;
-            }
-            if (String.Equals(contentName, SharedConceptual,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return _conceptual;
-            }
-            if (String.Equals(contentName, SharedReferences,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return _references;
-            }
-
-            return null;
-        }
-
-        public void AddShared(SharedItem item)
-        {
-            _default.Add(item);
-        }
-
-        public void AddShared(string contentName, SharedItem item)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null)
-            {
-                content.Add(item);
-            }
-        }
-
-        public void AddShared(IList<SharedItem> items)
-        {
-            _default.Add(items);
-        }
-
-        public void AddShared(string contentName, IList<SharedItem> items)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null)
-            {
-                content.Add(items);
-            }
-        }
-
-        public void Remove(int index)
-        {
-            _default.Remove(index);
-        }
-
-        public void RemoveShared(string contentName, int index)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null)
-            {
-                content.Remove(index);
-            }
-        }
-
-        public void RemoveShared(SharedItem item)
-        {
-            _default.Remove(item);
-        }
-
-        public void RemoveShared(string contentName, SharedItem item)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null)
-            {
-                content.Remove(item);
-            }
-        }
-
-        public bool ContainsShared(SharedItem item)
-        {
-            return _default.Contains(item);
-        }
-
-        public bool ContainsShared(string contentName, SharedItem item)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null)
-            {
-                return content.Contains(item);
-            }
-
-            return false;
-        }
-
-        public void ClearShared()
-        {
-            if (_default.Count == 0)
-            {
-                return;
-            }
-
-            _default.Clear();
-        }
-
-        public void ClearShared(string contentName)
-        {
-            SharedContent content = this.GetSharedContent(contentName);
-
-            if (content != null && content.Count != 0)
-            {
-                content.Clear();
-            }
-        }
-
-        public void ClearSharedAll()
-        {
-            if (_default.Count != 0)
-            {
-                _default.Clear();
-            }
-            if (_conceptual.Count != 0)
-            {
-                _conceptual.Clear();
-            }
-            if (_references.Count != 0)
-            {
-                _references.Clear();
-            }
+            base.Uninitialize();
         }
 
         #endregion
@@ -790,20 +524,101 @@ namespace Sandcastle
         {
             BuildStyle style = new BuildStyle(this);
 
-            if (_default != null)
+            if (_styleName != null)
             {
-                style._default = _default.Clone();
+                style._styleName = String.Copy(_styleName);
             }
-            if (_conceptual != null)
+            if (_styleDir != null)
             {
-                style._conceptual = _conceptual.Clone();
+                style._styleDir = String.Copy(_styleDir);
             }
-            if (_references != null)
+            if (_stylePresent != null)
             {
-                style._references = _references.Clone();
+                style._stylePresent = String.Copy(_stylePresent);
+            }
+
+            if (_scripts != null)
+            {
+                style._scripts = _scripts.Clone();
+            }
+            if (_styleSheets != null)
+            {
+                style._styleSheets = _styleSheets.Clone();
+            }
+            if (_mathPackages != null)
+            {
+                style._mathPackages = _mathPackages.Clone();
+            }
+            if (_mathCommands != null)
+            {
+                style._mathCommands = _mathCommands.Clone();
             }
 
             return style;
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// A strongly-typed collection of <see cref="BuildStyle"/> objects.
+    /// </summary>
+    [Serializable]
+    public sealed class BuildStyleList : BuildKeyedList<BuildStyle>
+    {
+        #region Private Fields
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        /// <overloads>
+        /// Initializes a new instance of the <see cref="BuildStyleList"/> class.
+        /// </overloads>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildStyleList"/> 
+        /// class with the default parameters.
+        /// </summary>
+        public BuildStyleList()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildStyleList"/> class
+        /// with parameters copied from the specified instance of the 
+        /// <see cref="BuildStyleList"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="BuildStyleList"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
+        public BuildStyleList(BuildStyleList source)
+            : base(source)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public BuildStyle this[BuildStyleType styleType]
+        {
+            get
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    BuildStyle style = this[i];
+                    if (style.StyleType == styleType)
+                    {
+                        return style;
+                    }
+                }
+
+                return null;
+            }
         }
 
         #endregion
