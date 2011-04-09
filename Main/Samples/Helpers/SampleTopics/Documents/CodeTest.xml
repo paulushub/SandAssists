@@ -222,6 +222,44 @@ int main(array<System::String ^> ^args)
             </section>
         </sections>
     </section>
+    
+    <section address="section3">
+        <title>Using Sandcastle Code Snippets from Source Codes</title>
+        <content>
+            <para>
+                In this section, we provides samples to illustrate the code syntax
+                highlighting support using the <legacyBold>&lt;codeReference&gt;</legacyBold> tag.
+            </para>
+            <para>
+                In this section we illustrate the support of the Sandcastle XML new code
+                snippets format with sample codes.
+            </para>
+        </content>
+        <sections>
+            <section address="section31">
+                <title>The single-part code snippet</title>
+                <content>
+                    <para>
+                        <legacyBold>Example 1:</legacyBold> An example of two language code samples..
+                    </para>
+                    <codeReference>PlainForm#1</codeReference>
+                    <para>
+                        <legacyBold>Example 2:</legacyBold> An example of three language code samples...
+                    </para>
+                    <codeReference>PlainForm#2</codeReference>
+                </content>
+            </section>
+            <section address="section32">
+                <title>The multi-part code snippet</title>
+                <content>
+                    <para>
+                        <legacyBold>Example 1</legacyBold>: An example of two language code samples..
+                    </para>
+                    <codeReference>PlainForm#1,2</codeReference>
+                </content>
+            </section>
+        </sections>
+    </section>
 
     <relatedTopics>
         

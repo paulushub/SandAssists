@@ -1,55 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildObject&lt;T&gt;" Collapsed="true">
-    <Position X="3.25" Y="1.75" Width="1.5" />
+    <Position X="3" Y="2.25" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="1.044" />
   </Class>
   <Class Name="Sandcastle.BuildGroup" Collapsed="true">
-    <Position X="4.5" Y="3" Width="1.5" />
+    <Position X="5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BARgkTARRFABEdAACMAAAAagAACAQAAYABAE44YSYCo=</HashCode>
+      <HashCode>BARikTARRFABEdAACMAAAAagAACAQAAYABAEp4YSYCo=</HashCode>
       <FileName>BuildGroup.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.929" />
+    <Lollipop Position="0.731" />
   </Class>
   <Class Name="Sandcastle.BuildMisspelledWord" Collapsed="true">
-    <Position X="0.5" Y="4.25" Width="2" />
+    <Position X="0.5" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAUAAAAAAAAAAAQhAAwBAAAAAAAAAAAAAABAQAABABA=</HashCode>
       <FileName>BuildMisspelledWord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildSpellChecker" Collapsed="true">
-    <Position X="3" Y="4.25" Width="2" />
+    <Position X="2.75" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAEAAAQAAAAAQAAAAAAIAQAAAAAAIAAAAAABAAAAAg=</HashCode>
       <FileName>BuildSpellChecker.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildSpellCheckResult" Collapsed="true">
-    <Position X="5.5" Y="4.25" Width="2" />
+    <Position X="5" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAIAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABA=</HashCode>
       <FileName>BuildSpellCheckResult.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildOptions&lt;T&gt;" Collapsed="true">
-    <Position X="2" Y="3" Width="1.5" />
+    <Position X="1" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAQAAAABQAAAAAAAAAAAAAAAAAAAAAABAAAAAg=</HashCode>
       <FileName>BuildOptions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildSource" Collapsed="true">
-    <Position X="3" Y="0.5" Width="2" />
+    <Position X="4.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAgAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAQAgAABQAAAAgAABQAAAAAAAAAAAAABAAIAAg=</HashCode>
       <FileName>BuildSource.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Sandcastle.BuildDocumenter" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAJAgMAAAAAAAAAAiAAABAQAAAAAAAAAgAABAABQABA=</HashCode>
+      <FileName>BuildDocumenter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildSourceContext" Collapsed="true">
+    <Position X="1.25" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAIAMAARoAAAAQBgEAAAMSQAADoACAAAQAAABECAIBg=</HashCode>
+      <FileName>BuildSourceContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildGroupVisitor&lt;T&gt;" Collapsed="true">
+    <Position X="4.25" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAQAoAABYQAAAAAAAQAAAAAAAAAAAAAhBAAAAg=</HashCode>
+      <FileName>BuildGroupVisitor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.065" />
+  </Class>
   <Interface Name="Sandcastle.IBuildListener" Collapsed="true">
-    <Position X="3.25" Y="5.25" Width="1.5" />
+    <Position X="3" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IBuildListener.cs</FileName>

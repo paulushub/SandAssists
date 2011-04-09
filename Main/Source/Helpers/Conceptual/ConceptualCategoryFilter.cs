@@ -4,6 +4,8 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Contents;
+
 namespace Sandcastle.Conceptual
 {
     [Serializable]
@@ -11,7 +13,7 @@ namespace Sandcastle.Conceptual
     {
         #region Private Fields
 
-        private ConceptualCategoryItem _category;
+        private CategoryItem _category;
 
         #endregion
 
@@ -26,7 +28,7 @@ namespace Sandcastle.Conceptual
         {
         }
 
-        public ConceptualCategoryFilter(string name, ConceptualCategoryItem category)
+        public ConceptualCategoryFilter(string name, CategoryItem category)
             : base(name)
         {
             _category = category;
@@ -50,7 +52,7 @@ namespace Sandcastle.Conceptual
             }
         }
 
-        public ConceptualCategoryItem Category
+        public CategoryItem Category
         {
             get
             {
@@ -71,16 +73,18 @@ namespace Sandcastle.Conceptual
         {
             BuildExceptions.NotNull(item, "item");
 
-            string itemCat = item.Categories;
-            if (String.IsNullOrEmpty(itemCat))
+            if (_category.Enabled && _category.IsValid)
             {
-                return false;
+                HashSet<string> excludes = item.ExcludesInternal;
+                if (excludes == null || excludes.Count == 0)
+                {
+                    return false;
+                }
+
+                return excludes.Contains(_category.Name);
             }
 
-            bool isFiltered = itemCat.IndexOf(_category.Name, 
-                StringComparison.OrdinalIgnoreCase) >= 0;
-
-            return this.Inverse ? !isFiltered : isFiltered;
+            return false;
         }
 
         #endregion

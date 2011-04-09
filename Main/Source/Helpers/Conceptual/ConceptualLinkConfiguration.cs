@@ -22,8 +22,13 @@ namespace Sandcastle.Conceptual
 
         #region Private Fields
 
-        private string _outputDir;
-        private string _workingDir;
+        private bool _showLinkText;
+        private bool _showBrokenLinkText;
+
+        [NonSerialized]
+        private BuildFormat _format;
+        [NonSerialized]
+        private BuildContext _context;
 
         #endregion
 
@@ -56,8 +61,7 @@ namespace Sandcastle.Conceptual
         /// </exception>
         private ConceptualLinkConfiguration(string optionsName)
             : base(optionsName)
-        {
-            this.Enabled = false;
+        {               
         }
 
         /// <summary>
@@ -76,34 +80,13 @@ namespace Sandcastle.Conceptual
             ConceptualLinkConfiguration source)
             : base(source)
         {
-            _outputDir = source._outputDir;
-            _workingDir = source._workingDir;
+            _showLinkText       = source._showLinkText;
+            _showBrokenLinkText = source._showBrokenLinkText;
         }
 
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        /// Gets or sets the working directory of the IntelliSense component.
-        /// This is the directory where the IntelliSense output is generated.
-        /// </summary>
-        /// <value>
-        /// A string specifying the output directory of the IntelliSense 
-        /// component. The default is <see langword="null"/>, and the default
-        /// directory is used.
-        /// </value>
-        public string WorkingDirectory
-        {
-            get
-            {
-                return _workingDir;
-            }
-            set
-            {
-                _workingDir = value;
-            }
-        }
 
         /// <summary>
         /// Gets the source of the build component supported by this configuration.
@@ -116,7 +99,7 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                return BuildComponentType.Sandcastle;
+                return BuildComponentType.SandcastleAssist;
             }
         }
 
@@ -131,7 +114,7 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                return "Microsoft.Ddue.Tools.IntellisenseComponent";
+                return "Sandcastle.Components.ConceptualLinkComponent";
             }
         }
 
@@ -238,6 +221,30 @@ namespace Sandcastle.Conceptual
             }
         }
 
+        public bool ShowLinkText
+        {
+            get 
+            { 
+                return _showLinkText; 
+            }
+            set 
+            { 
+                _showLinkText = value; 
+            }
+        }
+
+        public bool ShowBrokenLinkText
+        {
+            get 
+            { 
+                return _showBrokenLinkText; 
+            }
+            set 
+            { 
+                _showBrokenLinkText = value; 
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -248,13 +255,28 @@ namespace Sandcastle.Conceptual
 
             if (this.IsInitialized)
             {
-                _outputDir = context.BaseDirectory;
+                if (_format == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
+
+                _context = context;
             }
+        }
+
+        public void Initialize(BuildContext context, BuildFormat format)
+        {
+            BuildExceptions.NotNull(format, "format");
+
+            _format = format;
+
+            this.Initialize(context);
         }
 
         public override void Uninitialize()
         {
-            _outputDir = null;
+            _format = null;
 
             base.Uninitialize();
         }
@@ -282,15 +304,38 @@ namespace Sandcastle.Conceptual
         /// </remarks>
         public override bool Configure(BuildGroup group, XmlWriter writer)
         {
-            BuildExceptions.NotNull(group, "group");
+            BuildExceptions.NotNull(group,  "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            if (!this.Enabled)
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
             }
 
-            return false;
+            string linkType = _format.LinkType.ToString().ToLower();
+
+            writer.WriteStartElement("options");  // start - options
+            writer.WriteAttributeString("showText", _showLinkText.ToString());
+            writer.WriteAttributeString("showBrokenLinkText", 
+                _showBrokenLinkText.ToString());
+            writer.WriteAttributeString("type", linkType);
+            writer.WriteEndElement();             // end - options
+
+            // For now, lets simply write the default...
+            writer.WriteStartElement("targets");  // start - targets
+            writer.WriteAttributeString("base", String.Format(
+                @".\{0}", groupContext["$DdueXmlCompDir"]));
+            writer.WriteAttributeString("type", linkType);
+            writer.WriteEndElement();             // end - targets
+
+            return true;
         }
 
         #endregion

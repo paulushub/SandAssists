@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------------------------------------
 // <copyright file="IntellisenseComponent2.cs" company="Microsoft">
-//      Copyright © Microsoft Corporation.
+//      Copyright (C) Microsoft Corporation.
 //      This source file is subject to the Microsoft Permissive License.
 //      See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
 //      All other rights reserved.
@@ -18,7 +18,6 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
-using System.Collections;
 using System.Collections.Generic;
 
 using Microsoft.Ddue.Tools;
@@ -305,7 +304,6 @@ namespace Sandcastle.Components
                 {   
                     // create a writer for the assembly
                     string name = Path.Combine(_outputDirectory, assembly + ".xml");
-                    // Console.WriteLine("creating {0}", name);
 
                     XmlWriterSettings settings = new XmlWriterSettings();
                     settings.Indent = true;
@@ -557,7 +555,6 @@ namespace Sandcastle.Components
             }
             //else
             //{
-            //    // Console.WriteLine("no summary");
             //}
         }
 

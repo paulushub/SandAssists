@@ -22,39 +22,70 @@ namespace Sandcastle.Utilities
         /// <summary>
         /// Creates a relative path from one file or folder to another.
         /// </summary>
-        /// <param name="from">Contains the directory that defines the start of 
-        /// the relative path.</param>
-        /// <param name="to">Contains the path that defines the endpoint of the 
-        /// relative path.</param>
-        /// <returns>The relative path from the start directory to the end 
-        /// path.</returns>
-        public static string GetRelativePath(string from, string to)
+        /// <param name="basePath">
+        /// Contains the directory that defines the start of the relative path.
+        /// </param>
+        /// <param name="absolutePath">
+        /// Contains the path that defines the endpoint of the relative path.
+        /// </param>
+        /// <returns>
+        /// The relative path from the start directory to the end path.
+        /// </returns>
+        public static string GetRelativePath(string basePath, string absolutePath)
         {
-            if (from != null)
+            if (basePath != null)
             {
-                from = from.Trim();
+                basePath = basePath.Trim();
             }
-            if (to != null)
+            if (absolutePath != null)
             {
-                to = to.Trim();
+                absolutePath = absolutePath.Trim();
             }
 
+            BuildExceptions.NotNullNotEmpty(basePath, "basePath");
+            BuildExceptions.NotNullNotEmpty(absolutePath, "absolutePath");
+
             string result = String.Empty;
-            if (String.IsNullOrEmpty(from) || String.IsNullOrEmpty(to))
+            if (String.IsNullOrEmpty(basePath) || String.IsNullOrEmpty(absolutePath))
             {
                 return result;
             }
 
-            StringBuilder path  = new StringBuilder(MAX_PATH);
-            uint fromAttributes = DirectoryUtils.IsDirectory(from) ? FILE_ATTRIBUTE_DIRECTORY : 0;
-            uint toAttributes   = DirectoryUtils.IsDirectory(to) ? FILE_ATTRIBUTE_DIRECTORY : 0;
+            basePath = Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(basePath));
 
-            if (PathRelativePathTo(path, from, fromAttributes, to, toAttributes))
+            StringBuilder path  = new StringBuilder(MAX_PATH);
+            uint fromAttributes = DirectoryUtils.IsDirectory(basePath) ? FILE_ATTRIBUTE_DIRECTORY : 0;
+            uint toAttributes   = DirectoryUtils.IsDirectory(absolutePath) ? FILE_ATTRIBUTE_DIRECTORY : 0;
+
+            if (PathRelativePathTo(path, basePath, fromAttributes, absolutePath, toAttributes))
             {
                 result = path.ToString();
             }
 
             return result;
+        }
+
+        public static string GetAbsolutePath(string basePath, string relativePath)
+        {
+            BuildExceptions.NotNullNotEmpty(basePath, "basePath");
+            BuildExceptions.NotNullNotEmpty(relativePath, "relativePath");
+
+            if (Path.IsPathRooted(relativePath))
+            {
+                return relativePath;
+            }
+
+            basePath = Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(basePath));
+            // Check the required condition, which works for all cases...
+            if (!basePath.EndsWith("\\"))
+            {
+                basePath += "\\";
+            }
+
+            // This is the most reliable so far on tests...
+            return Path.GetFullPath(Path.Combine(basePath, relativePath));
         }
     }
 }

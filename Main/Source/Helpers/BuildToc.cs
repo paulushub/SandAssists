@@ -32,7 +32,7 @@ namespace Sandcastle
 
         #region Private Fields
 
-        private BuildList<TocContent> _listItems;
+        private TocContent _tocContent;
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace Sandcastle
         /// </summary>
         public BuildToc()
         {
-            _listItems = new BuildList<TocContent>();
+            _tocContent = new TocContent();
         }
 
         /// <summary>
@@ -71,57 +71,28 @@ namespace Sandcastle
 
         #region Public Properties
 
-        public virtual int Count
+        public bool IsEmpty
         {
             get
             {
-                if (_listItems != null)
+                if (_tocContent != null)
                 {
-                    return _listItems.Count;
+                    return _tocContent.IsEmpty;
                 }
 
-                return 0;
+                return true;
             }
         }
 
-        public virtual TocContent this[int index]
+        public TocContent Content
         {
             get
             {
-                if (_listItems != null)
-                {
-                    return _listItems[index];
-                }
-
-                return null;
+                return _tocContent;
             }
             set
             {
-                if (value != null)
-                {
-                    _listItems[index] = value;
-                }
-            }
-        }
-
-        public virtual IList<TocContent> Items
-        {
-            get
-            {
-                if (_listItems != null)
-                {
-                    return new ReadOnlyCollection<TocContent>(_listItems);
-                }
-
-                return null;
-            }
-        }
-
-        public virtual bool IsEmpty
-        {
-            get
-            {
-                return (_listItems == null || _listItems.Count == 0);
+                _tocContent = value;
             }
         }
 
@@ -137,71 +108,6 @@ namespace Sandcastle
         public override void Uninitialize()
         {
             base.Uninitialize();
-        }
-
-        public virtual bool Merge(BuildContext context)
-        {
-            return true;
-        }
-
-        public virtual void Add(TocContent item)
-        {
-            BuildExceptions.NotNull(item, "item");
-
-            _listItems.Add(item);
-        }
-
-        public virtual void Add(IList<TocContent> items)
-        {
-            BuildExceptions.NotNull(items, "items");
-
-            int itemCount = items.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                this.Add(items[i]);
-            }
-        }
-
-        public virtual void Remove(int index)
-        {
-            if (_listItems.Count == 0)
-            {
-                return;
-            }
-
-            _listItems.RemoveAt(index);
-        }
-
-        public virtual void Remove(TocContent item)
-        {
-            BuildExceptions.NotNull(item, "item");
-
-            if (_listItems.Count == 0)
-            {
-                return;
-            }
-
-            _listItems.Remove(item);
-        }
-
-        public virtual bool Contains(TocContent item)
-        {
-            if (item == null || _listItems.Count == 0)
-            {
-                return false;
-            }
-
-            return _listItems.Contains(item);
-        }
-
-        public virtual void Clear()
-        {
-            if (_listItems.Count == 0)
-            {
-                return;
-            }
-
-            _listItems.Clear();
         }
 
         #endregion
@@ -226,11 +132,9 @@ namespace Sandcastle
         public override BuildToc Clone()
         {
             BuildToc helpToc = new BuildToc(this);
-            int itemCount = _listItems.Count;
-
-            for (int i = 0; i < itemCount; i++)
+            if (_tocContent != null)
             {
-                helpToc._listItems.Add(_listItems[i].Clone());
+                helpToc._tocContent = _tocContent.Clone();
             }
 
             return helpToc;

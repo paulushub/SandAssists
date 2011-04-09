@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Font Name="Tahoma" Size="8.25" />
   <Comment CommentText="Unlike the References build, the Conceptual build is not flexible so we provide various modes for optimized performance and outputs.">
     <Position X="0.5" Y="0.5" Height="0.833" Width="1.731" />
   </Comment>
   <Class Name="Sandcastle.Components.Codes.CodeFormatter" Collapsed="true">
     <Position X="3" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Codes\CodeFormatter.cs</FileName>
       <HashCode>CAAAgAAAQKgAIAAAAAAAAAAEAAQABAAAAAAIACAACIo=</HashCode>
+      <FileName>Codes\CodeFormatter.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Mode" />
@@ -20,30 +19,31 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Sandcastle.Components.Codes.CodeController" Collapsed="true">
-    <Position X="3" Y="3" Width="1.5" />
-    <TypeIdentifier>
-      <FileName>Codes\CodeController.cs</FileName>
-      <HashCode>QQCAABAAQIIAAAAAGAAgIAABFAABgEAAQAAgChAAEBA=</HashCode>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Mode" />
-    </ShowAsAssociation>
+    <Position X="3" Y="2.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="Mode" Type="Sandcastle.Components.Codes.CodeHighlightMode" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3" Y="3.375" />
-        <Point X="1.375" Y="3.375" />
+        <Point X="3" Y="3.125" />
+        <Point X="1.375" Y="3.125" />
         <Point X="1.375" Y="2.767" />
       </Path>
     </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QQCAABAAQIIAAAAAGAAgIAABFAABgEAAQAAgChAAEBA=</HashCode>
+      <FileName>Codes\CodeController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Mode" />
+    </ShowAsAssociation>
   </Class>
   <Enum Name="Sandcastle.Components.Codes.CodeHighlightMode">
     <Position X="0.5" Y="1.5" Width="1.75" />
     <TypeIdentifier>
-      <FileName>Codes\CodeHighlightMode.cs</FileName>
       <HashCode>AAAAAEAAAAAAAAAAAAAAAACAAAAAAAABAAAAAAEAAAA=</HashCode>
+      <FileName>Codes\CodeHighlightMode.cs</FileName>
     </TypeIdentifier>
   </Enum>
+  <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

@@ -99,7 +99,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeSnippetSample.xml" />
+    <None Include="CodeSnippetSample.snippets" />
     <Content Include="Project.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

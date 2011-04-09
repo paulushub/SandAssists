@@ -134,6 +134,13 @@ namespace Sandcastle.Steps
             _contentTypes = new Dictionary<string, string>(
                 StringComparer.OrdinalIgnoreCase);
 
+            _contentTypes[".js"]  = "text/javascript; charset=utf-8";
+            _contentTypes[".xap"] = "application/x-silverlight-app";
+            _contentTypes[".htm"] = "text/html; charset=utf-8";
+            _contentTypes[".gif"] = "image/gif";
+            _contentTypes[".png"] = "image/png";
+            _contentTypes[".jpg"] = "image/jpeg";
+
             if (String.IsNullOrEmpty(_helpName)   || 
                 String.IsNullOrEmpty(_helpFolder) ||
                 String.IsNullOrEmpty(_helpDirectory))

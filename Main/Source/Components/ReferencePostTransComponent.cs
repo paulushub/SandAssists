@@ -22,8 +22,11 @@ namespace Sandcastle.Components
         private bool         _rootContentsAfter;
         private bool         _codeApply;
 
+        private string       _rootId;
+
         private XPathExpression _codeSelector;
         private XPathExpression _mathSelector;
+        private XPathExpression _mediaSelector;
         private XPathExpression _rootTopicSelector;
         private XPathExpression _tocPositionSelector;
 
@@ -55,6 +58,8 @@ namespace Sandcastle.Components
         {
             try
             {
+                _rootId = String.Empty;
+
                 CodeController codeController = CodeController.GetInstance("reference");
                 if (codeController != null)
                 {
@@ -64,6 +69,9 @@ namespace Sandcastle.Components
                     _mathSelector = XPathExpression.Compile(
                         "//img/span[@name='SandMath' and @class='tgtSentence']");
                 }
+
+                _mediaSelector = XPathExpression.Compile(
+                    "//img/span[@name='SandMedia' and @class='tgtSentence']");
 
                 this.ParseRootNamespace(configuration);
             }
@@ -86,18 +94,21 @@ namespace Sandcastle.Components
                 base.Apply(document, docNavigator, key);
 
                 // 1. Apply the math images...
-                ApplyMath(docNavigator);
+                this.ApplyMath(docNavigator);
 
-                // 2. Apply the codes...
+                // 2. Apply the media...
+                this.ApplyMedia(docNavigator);
+
+                // 3. Apply the codes...
                 if (_codeApply)
                 {
-                    ApplyCode(docNavigator);
+                    this.ApplyCode(docNavigator);
                 }
 
-                // 3. Apply the header for logo and others
-                ApplyHeader(docNavigator);
+                // 4. Apply the header for logo and others
+                this.ApplyHeader(docNavigator);
 
-                // 4. Apply conversion of roots to namespaces for namespace containers...
+                // 5. Apply conversion of roots to namespaces for namespace containers...
                 if (_tocExcludedNamespaces != null && _tocExcludedNamespaces.Count != 0 &&
                     _tocExcludedNamespaces.ContainsKey(key))
                 {
@@ -107,6 +118,13 @@ namespace Sandcastle.Components
                     _tocExcludedDocuments.ContainsKey(key))
                 {
                     _tocExcludedDocuments[key] = (XmlDocument)document.Clone();
+                }
+                else if (key.Length > 2 && key[0] == 'R') // change the root id...
+                {
+                    if (!String.IsNullOrEmpty(_rootId))
+                    {
+                        this.ApplyRootId(docNavigator, key);
+                    }
                 }
             }
             catch (Exception ex)
@@ -129,6 +147,8 @@ namespace Sandcastle.Components
             {
                 return;
             }
+
+            _rootId = navigator.GetAttribute("id", String.Empty);
 
             string rootNamespacesFile = navigator.GetAttribute(
                 "source", String.Empty);
@@ -245,6 +265,47 @@ namespace Sandcastle.Components
                 "//body/div[@id='mainSection']/div[@id='mainBody']/h1[@class='heading' and .//include[@item='enumerationTypesFilterLabel']]");
             _tocEnumDivSelector = XPathExpression.Compile(
                 "//body/div[@id='mainSection']/div[@id='mainBody']/div[@id='enumerationSection']");
+        }
+
+        #endregion
+
+        #region ApplyMedia Method
+
+        private void ApplyMedia(XPathNavigator docNavigator)
+        {
+            XPathNodeIterator iterator = docNavigator.Select(_mediaSelector);
+            if (iterator == null || iterator.Count == 0)
+            {
+                return;
+            }
+
+            XPathNavigator navigator = null;
+            XPathNavigator[] arrNavigator =
+                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
+
+            int itemCount = arrNavigator.Length;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                navigator = arrNavigator[i];
+                if (navigator == null)
+                {
+                    continue;
+                }
+
+                string mediaFile = navigator.Value;
+                if (String.IsNullOrEmpty(mediaFile) == false)
+                {
+                    XmlWriter xmlWriter = navigator.InsertAfter();
+
+                    this.WriteIncludeAttribute(xmlWriter, "src",
+                        "mediaPath", mediaFile);
+
+                    xmlWriter.Close();
+
+                    navigator.DeleteSelf();
+                }
+            }
         }
 
         #endregion
@@ -378,6 +439,15 @@ namespace Sandcastle.Components
                             int snipIndex = snipNavigator.ValueAsInt;
                             SnippetItem item = codeController[snipIndex];
 
+                            if (item == null)
+                            {
+                                this.WriteMessage(MessageLevel.Warn,
+                                    "A code snippet specified could not be found. See next message for details.");
+
+                                snipNavigator.DeleteSelf();
+                                continue;
+                            }
+
                             string codeText = item.Text;
                             if (String.IsNullOrEmpty(codeText) == false)
                             {
@@ -401,6 +471,54 @@ namespace Sandcastle.Components
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region ApplyRootId Method
+
+        private void ApplyRootId(XPathNavigator docNavigator, string key)
+        {
+            if (String.IsNullOrEmpty(_rootId))
+            {
+                return;
+            }
+
+            XPathNavigator navigator = docNavigator.SelectSingleNode(
+                this.HeadSelector);
+            if (navigator == null)
+            {
+                return;
+            }
+
+            XPathNavigator helpId = navigator.SelectSingleNode(
+                "//meta[@name='Microsoft.Help.Id' and @content='R:Project']");
+
+            if (helpId != null && helpId.MoveToAttribute("content", String.Empty))
+            {
+                helpId.SetValue(_rootId);
+            }
+
+            CustomContext context = new CustomContext();
+            context.AddNamespace("MSHelp", "http://msdn.microsoft.com/mshelp");
+
+            XPathNavigator assertId = navigator.SelectSingleNode(
+                "//xml/MSHelp:Attr[@Name='AssetID' and @Value='R:Project']",
+                context);
+
+            if (assertId != null && assertId.MoveToAttribute("Value", String.Empty))
+            {
+                assertId.SetValue(_rootId);
+            }
+
+            XPathNavigator indexAId = navigator.SelectSingleNode(
+                "//xml/MSHelp:Keyword[@Index='A' and @Term='R:Project']",
+                context);
+
+            if (indexAId != null && indexAId.MoveToAttribute("Term", String.Empty))
+            {
+                indexAId.SetValue(_rootId);
+            }  
         }
 
         #endregion

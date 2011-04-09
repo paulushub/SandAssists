@@ -15,18 +15,21 @@ namespace Sandcastle.References
     [Serializable]
     public class ReferenceGroup : BuildGroup
     {
+        #region Private Static Fields
+
+        private static int _groupCount = 1;
+
+        #endregion
+
         #region Private Fields
 
-        private string _commentFolder;
-        private string _assemblyFolder;
-        private string _dependencyFolder;
+        private string                 _rootTitle;
+        private string                 _rootTopicId;
 
-        private BuildList<string>        _commentFiles;
-        private BuildList<ReferenceItem> _listItems;
-        private DependencyContent        _refDepencencies;
-        private HierarchicalTocContent   _tocContent;
-        private ReferenceRootFilter      _typeFilters;
-        private ReferenceRootFilter      _attributeFilters;
+        private ReferenceContent       _topicContent;
+        private ReferenceRootFilter    _typeFilters;
+        private ReferenceRootFilter    _attributeFilters;
+        private HierarchicalTocContent _tocContent;
 
         #endregion
 
@@ -40,8 +43,26 @@ namespace Sandcastle.References
         /// default parameters.
         /// </summary>
         public ReferenceGroup()
+            : base("ReferenceGroup" + _groupCount.ToString(), Guid.NewGuid().ToString())
         {
-            Reset();
+            _groupCount++;
+        }
+
+        public ReferenceGroup(string groupName)
+            : this(groupName, Guid.NewGuid().ToString())
+        {
+        }
+
+        public ReferenceGroup(string groupName, string groupId)
+            : base(groupName, groupId)
+        {
+            _rootTitle        = "Programmer's Reference";
+            _rootTopicId      = String.Empty;
+
+            _tocContent       = new HierarchicalTocContent();
+            _typeFilters      = new ReferenceRootFilter();
+            _topicContent     = new ReferenceContent();
+            _attributeFilters = new ReferenceRootFilter();
         }
 
         /// <summary>
@@ -58,6 +79,8 @@ namespace Sandcastle.References
         public ReferenceGroup(ReferenceGroup source)
             : base(source)
         {
+            _rootTitle   = source._rootTitle;
+            _rootTopicId = source._rootTopicId;
         }
 
         #endregion
@@ -75,7 +98,7 @@ namespace Sandcastle.References
         {
             get
             {
-                if (_listItems == null || _listItems.Count == 0)
+                if (_topicContent == null || _topicContent.Count == 0)
                 {
                     return true;
                 }
@@ -106,79 +129,18 @@ namespace Sandcastle.References
         /// <value>
         /// 
         /// </value>
-        public string CommentFolder
+        public ReferenceContent Content
         {
             get
             {
-                return _commentFolder;
+                return _topicContent;
             }
             set
             {
-                _commentFolder = value;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public string AssemblyFolder
-        {
-            get
-            {
-                return _assemblyFolder;
-            }
-            set
-            {
-                _assemblyFolder = value;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public string DependencyFolder
-        {
-            get
-            {
-                return _dependencyFolder;
-            }
-            set
-            {
-                _dependencyFolder = value;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public DependencyContent Dependencies
-        {
-            get
-            {
-                return _refDepencencies;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public IList<ReferenceItem> Items
-        {
-            get
-            {
-                return _listItems;
+                if (value != null)
+                {
+                    _topicContent = value;
+                }
             }
         }
 
@@ -222,57 +184,67 @@ namespace Sandcastle.References
             }
         }
 
-        public IList<string> CommentFiles
+        public string RootNamespaceTitle
         {
             get
             {
-                if (_commentFiles == null)
+                return _rootTitle;
+            }
+            set
+            {
+                if (value == null)
                 {
-                    _commentFiles = new BuildList<string>();
+                    _rootTitle = String.Empty;
                 }
+                else
+                {
+                    _rootTitle = value.Trim();
+                }
+            }
+        }
 
-                return new ReadOnlyCollection<string>(_commentFiles);
+        /// <summary>
+        /// Gets or sets the conceptual topic identifier, which will be used
+        /// as the root topic for this reference group.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing a valid topic ID 
+        /// (<see cref="Guid"/>), defined elsewhere, as the root topic for this
+        /// reference group; otherwise, it is <see langword="null"/> or empty.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// This is only used when a conceptual topic with this ID is defined.
+        /// The build system will check that the topic is defined; otherwise, it
+        /// will issue a warning, but build will continue.
+        /// </para>
+        /// <para>
+        /// If this is set and it is valid, the <see cref="ReferenceGroup.RootNamespaceTitle"/>
+        /// is no longer used.
+        /// </para>
+        /// </remarks>
+        public string RootTopicId
+        {
+            get
+            {
+                return _rootTopicId;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _rootTopicId = String.Empty;
+                }
+                else
+                {
+                    _rootTopicId = value.Trim();
+                }
             }
         }
 
         #endregion
 
         #region Public Methods
-
-        public void AddItem(string comments, string assembly)
-        {
-            if (String.IsNullOrEmpty(comments) && String.IsNullOrEmpty(assembly))
-            {
-                return;
-            }
-
-            if (_listItems == null)
-            {
-                _listItems = new BuildList<ReferenceItem>();
-            }
-
-            _listItems.Add(new ReferenceItem(comments, assembly));
-
-            if (_commentFiles != null && _commentFiles.Count != 0)
-            {
-                _commentFiles.Clear();
-            }
-        }
-
-        public void AddDependency(string assembly)
-        {
-            if (String.IsNullOrEmpty(assembly))
-            {
-                return;
-            }
-            if (_refDepencencies == null)
-            {
-                _refDepencencies = new DependencyContent();
-            }
-
-            _refDepencencies.Add(new DependencyItem(
-                Path.GetFileName(assembly), assembly));
-        }
 
         public override void Initialize(BuildContext context)
         {
@@ -288,11 +260,6 @@ namespace Sandcastle.References
                 return;
             }
 
-            if (_commentFiles == null)
-            {
-                _commentFiles = new BuildList<string>();
-            }
-
             string workingDir = this.WorkingDirectory;
 
             if (String.IsNullOrEmpty(workingDir))
@@ -301,168 +268,37 @@ namespace Sandcastle.References
                 this.WorkingDirectory = workingDir;
             }
 
-            // 1. Copy the comments to the expected directory...
-            this.CopyItems(workingDir);
-
-            // 2. Copy the dependencies to the expected directory...
-            this.CopyDependencies(workingDir);
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
         }
 
         public override void Uninitialize()
         {
-            if (_commentFiles != null)
-            {
-                _commentFiles.Clear();
-            }
-
             base.Uninitialize();
         }
+
+        public override IList<SharedItem> PrepareShared()
+        {
+            IList<SharedItem> listShared = base.PrepareShared();
+
+            if (!String.IsNullOrEmpty(_rootTitle))
+            {
+                if (listShared == null)
+                {
+                    listShared = new List<SharedItem>();
+                }
+
+                listShared.Add(new SharedItem("rootTopicTitle", _rootTitle));
+            }
+
+            return listShared;
+        }     
 
         #endregion
 
         #region Private Methods
-
-        #region Reset Method
-
-        private void Reset()
-        {
-            _assemblyFolder   = "Assemblies";
-            _commentFolder    = "Comments";
-            _dependencyFolder = "Dependencies";
-            _refDepencencies  = new DependencyContent();
-            _tocContent       = new HierarchicalTocContent();
-            _typeFilters      = new ReferenceRootFilter();
-            _listItems        = new BuildList<ReferenceItem>();
-            _attributeFilters = new ReferenceRootFilter();
-            _commentFiles     = new BuildList<string>();
-        }
-
-        #endregion
-
-        #region CopyItems Method
-
-        private void CopyItems(string workingDir)
-        {
-            string commentsDir = _commentFolder;
-            string assemblyDir = _assemblyFolder;
-            if (String.IsNullOrEmpty(commentsDir))
-            {
-                commentsDir = "Comments";
-            }
-            if (!Path.IsPathRooted(commentsDir))
-            {
-                commentsDir = Path.Combine(workingDir, commentsDir);
-            }
-            if (!Directory.Exists(commentsDir))
-            {
-                Directory.CreateDirectory(commentsDir);
-            }
-
-            if (String.IsNullOrEmpty(assemblyDir))
-            {
-                assemblyDir = "Assemblies";
-            }
-            if (!Path.IsPathRooted(assemblyDir))
-            {
-                assemblyDir = Path.Combine(workingDir, assemblyDir);
-            }         
-            if (!Directory.Exists(assemblyDir))
-            {
-                Directory.CreateDirectory(assemblyDir);
-            }
-
-            int itemCount = _listItems.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                ReferenceItem item = _listItems[i];
-                if (item == null || item.IsEmpty)
-                {
-                    continue;
-                }
-
-                string commentsFile = item.Comments;
-                if (!String.IsNullOrEmpty(commentsFile))
-                {
-                    string fileName = Path.GetFileName(commentsFile);
-                    fileName = Path.Combine(commentsDir, fileName);
-                    if (commentsFile.Length != fileName.Length ||
-                        String.Equals(commentsFile, fileName,
-                        StringComparison.OrdinalIgnoreCase) == false)
-                    {
-                        File.Copy(commentsFile, fileName, true);
-                        File.SetAttributes(fileName, FileAttributes.Normal);
-
-                        _commentFiles.Add(fileName);
-                    }
-                }
-
-                string assemblyFile = item.Assembly;
-                if (!String.IsNullOrEmpty(assemblyFile))
-                {
-                    string fileName = Path.GetFileName(assemblyFile);
-                    fileName = Path.Combine(assemblyDir, fileName);
-                    if (assemblyFile.Length != fileName.Length ||
-                        String.Equals(assemblyFile, fileName,
-                        StringComparison.OrdinalIgnoreCase) == false)
-                    {
-                        File.Copy(assemblyFile, fileName, true);
-                        File.SetAttributes(fileName, FileAttributes.Normal);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region CopyDependencies Method
-
-        private void CopyDependencies(string workingDir)
-        {
-            if (_refDepencencies == null || _refDepencencies.Count == 0)
-            {
-                return;
-            }
-
-            string dependencyDir = _dependencyFolder;
-            if (String.IsNullOrEmpty(dependencyDir))
-            {
-                dependencyDir = "Dependencies";
-            }
-            if (!Path.IsPathRooted(dependencyDir))
-            {
-                dependencyDir = Path.Combine(workingDir, dependencyDir);
-            }
-            if (!Directory.Exists(dependencyDir))
-            {
-                Directory.CreateDirectory(dependencyDir);
-            }
-
-            int itemCount = _refDepencencies.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                DependencyItem item = _refDepencencies[i];
-                if (item == null || item.IsEmpty)
-                {
-                    continue;
-                }
-
-                string dependencyFile = item.Location;
-                if (!String.IsNullOrEmpty(dependencyFile))
-                {
-                    string fileName = Path.GetFileName(dependencyFile);
-                    fileName = Path.Combine(dependencyDir, fileName);
-                    if (dependencyFile.Length != fileName.Length ||
-                        String.Equals(dependencyFile, fileName,
-                        StringComparison.OrdinalIgnoreCase) == false)
-                    {
-                        File.Copy(dependencyFile, fileName, true);
-                        File.SetAttributes(fileName, FileAttributes.Normal);
-                    }
-                }
-            }
-        }
-
-        #endregion
 
         #endregion
 

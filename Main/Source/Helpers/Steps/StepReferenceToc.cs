@@ -1,14 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.Conceptual;
 using Sandcastle.References;
 
 namespace Sandcastle.Steps
 {
-    public class StepReferenceToc : StepXslTransform
+    public sealed class StepReferenceToc : StepXslTransform
     {
         #region Private Fields
 
@@ -71,6 +73,13 @@ namespace Sandcastle.Steps
                     "A build group is required, but none is attached to this task.");
             }
 
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             bool buildResult = base.OnExecute(context);
 
             if (!buildResult)
@@ -78,7 +87,30 @@ namespace Sandcastle.Steps
                 return false;
             }
 
-            buildResult = this.ProcessHierarchicalToc(context);
+            buildResult = this.ProcessTocVisitors(context, groupContext);
+
+            if (buildResult)
+            {
+                string tempText = context["$HelpHierarchicalToc"];
+
+                string tocFilePath = String.Empty;
+                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+                {
+                    tocFilePath = Path.Combine(this.WorkingDirectory,
+                       groupContext["$HierarchicalTocFile"]);
+                }
+                else
+                {
+                    tocFilePath = Path.Combine(this.WorkingDirectory,
+                       groupContext["$TocFile"]);
+                }
+
+                if (!String.IsNullOrEmpty(tocFilePath) && File.Exists(tocFilePath))
+                {
+                    buildResult = ProcessRootToc(context, groupContext, tocFilePath);
+                }
+            }
 
             return buildResult;
         }
@@ -87,10 +119,121 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region ProcessHierarchicalToc Method
+        #region Private Methods
 
-        private bool ProcessHierarchicalToc(BuildContext context)
+        #region ProcessRootToc Method
+
+        private bool ProcessRootToc(BuildContext context, 
+            BuildGroupContext groupContext, string tocFilePath)
         {
+            bool buildResult = true;
+
+            string rootTopicId = _group.RootTopicId;
+            if (String.IsNullOrEmpty(rootTopicId) ||
+                !ConceptualUtils.IsValidId(rootTopicId))
+            {
+                return buildResult;
+            }
+
+            BuildLogger logger = context.Logger;
+
+            BuildTocContext tocContext = context.TocContext;
+            IBuildNamedList<BuildTopicTocInfo> relatedTopics =
+                tocContext.RelatedTopics;
+            if (relatedTopics == null || relatedTopics.Count == 0 ||
+                relatedTopics[rootTopicId] == null)
+            {   
+                if (logger != null)
+                {
+                    logger.WriteLine(String.Format(
+                        "The related topic '{0}' for the reference group '{1}' is not defined.",
+                        rootTopicId, _group.Name), BuildLoggerLevel.Warn);
+                }
+
+                return buildResult;
+            }
+
+            bool isRooted = Convert.ToBoolean(groupContext["$IsRooted"]);
+
+            string tocFileBackup = Path.ChangeExtension(tocFilePath, ".tocbak");
+            File.SetAttributes(tocFilePath, FileAttributes.Normal);
+            File.Move(tocFilePath, tocFileBackup);
+
+            XmlWriter writer = null;
+            try
+            {
+                XmlWriterSettings writerSettings  = new XmlWriterSettings();
+                writerSettings.Indent             = true;
+                writerSettings.OmitXmlDeclaration = false;
+                writer = XmlWriter.Create(tocFilePath, writerSettings);
+
+                writer.WriteStartElement("topics"); // start: topics
+                writer.WriteStartElement("topic");  // start: topic
+                writer.WriteAttributeString("id", rootTopicId);
+                writer.WriteAttributeString("file", rootTopicId);
+
+                using (XmlReader reader = XmlReader.Create(tocFileBackup))
+                {
+                    if (reader.IsStartElement("topics"))
+                    {
+                        while (!reader.EOF)
+                        {
+                            if (reader.Read())
+                            {
+                                if (reader.NodeType == XmlNodeType.Element &&
+                                    String.Equals(reader.Name, "topic", 
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    if (isRooted)
+                                    {
+                                        isRooted = false;
+                                        continue;
+                                    }
+
+                                    writer.WriteNode(reader, true);
+                                }  
+                            }
+                        }
+                    }
+                }
+
+                writer.WriteEndElement();           // end: topic
+                writer.WriteEndElement();           // end: topics
+
+                writer.Close();
+                writer = null;
+
+                return true;
+            }
+            catch (Exception ex)
+            {                      
+                File.Move(tocFileBackup, tocFilePath);
+
+                if (logger != null)
+                {
+                    logger.WriteLine(ex);
+                }
+
+                buildResult = false;
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }    
+
+            return buildResult;
+        }
+
+        #endregion
+
+        #region ProcessTocVisitors Method
+
+        private bool ProcessTocVisitors(BuildContext context, BuildGroupContext groupContext)
+        {   
             // We need the list of the available configurations from the
             // reference settings...
             BuildSettings settings = context.Settings;
@@ -117,7 +260,7 @@ namespace Sandcastle.Steps
             }
 
             string tocFilePath = Path.Combine(this.WorkingDirectory,
-                _group["$TocFile"]);
+                groupContext["$TocFile"]);
             if (File.Exists(tocFilePath))
             {
                 _listDocuments = new List<ReferenceDocument>();
@@ -161,7 +304,7 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region Private Methods
+        #region ProcessDocuments Method
 
         private void ProcessDocuments(BuildContext context)
         {
@@ -292,6 +435,10 @@ namespace Sandcastle.Steps
             }
         }
 
+        #endregion
+
+        #region PrepareVisitors Method
+
         private void PrepareVisitors(BuildContext context)
         {
             if (_dictVisitors == null)
@@ -306,6 +453,8 @@ namespace Sandcastle.Steps
                 ReferenceTocLayoutConfiguration.ConfigurationName,
                 new ReferenceTocLayoutVisitor());
         }
+
+        #endregion
 
         #endregion
 

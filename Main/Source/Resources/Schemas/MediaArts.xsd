@@ -94,6 +94,20 @@
         </xs:restriction>
     </xs:simpleType>
     <!--
+        This specifies the type of the media, the default is image.
+    -->
+    <xs:simpleType name="mediaType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="None" />
+            <xs:enumeration value="Image" />
+            <xs:enumeration value="Video" />
+            <xs:enumeration value="Flash" />
+            <xs:enumeration value="Silverlight" />
+            <xs:enumeration value="YouTube" />
+            <xs:enumeration value="Pdf" />
+        </xs:restriction>
+    </xs:simpleType>    
+    <!--
         This provides the information on the image of the link.
     -->
     <xs:complexType name="imageType">
@@ -142,6 +156,13 @@
                 <xs:documentation>
                     This unique identifier is used to provide link 
                     in the document to the image of this item.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="type" type="mediaType" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    This specifies the type of the media, the default is static image.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

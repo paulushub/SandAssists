@@ -313,7 +313,14 @@ namespace Sandcastle.References
         #region WriteNodes Methods
 
         private void WriteNodes()
-        {
+        {   
+            BuildGroupContext groupContext = this.Context.GroupContexts[this.Group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             // Determine if we have a root namespace container...
             bool includesRoot = !String.IsNullOrEmpty(_projectName);
 
@@ -323,7 +330,7 @@ namespace Sandcastle.References
             settings.Encoding           = Encoding.UTF8;
 
             string outputFile = Path.Combine(Path.GetDirectoryName(_tocFilePath),
-                this.Group["$HierarchicalTocFile"]);
+                groupContext["$HierarchicalTocFile"]);
 
             using (XmlWriter writer = XmlWriter.Create(outputFile, settings))
             {
@@ -510,9 +517,16 @@ namespace Sandcastle.References
         #region WriteReflections Method
 
         private void WriteReflections()
-        {
+        {                              
+            BuildGroupContext groupContext = this.Context.GroupContexts[this.Group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             string reflectionFile = Path.Combine(
-                Path.GetDirectoryName(_tocFilePath), this.Group["$ReflectionFile"]);
+                Path.GetDirectoryName(_tocFilePath), groupContext["$ReflectionFile"]);
 
             if (!File.Exists(reflectionFile))
             {
@@ -662,9 +676,15 @@ namespace Sandcastle.References
             {
                 return;
             }
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
 
             string manifestFile = Path.Combine(
-                Path.GetDirectoryName(_tocFilePath), this.Group["$ManifestFile"]);
+                Path.GetDirectoryName(_tocFilePath), groupContext["$ManifestFile"]);
 
             if (!File.Exists(manifestFile))
             {
@@ -693,7 +713,7 @@ namespace Sandcastle.References
             writerSettings.Encoding           = Encoding.UTF8;
 
             string rootNamespaceFile = Path.Combine(context.WorkingDirectory,
-                group["$RootNamespaces"]);
+                groupContext["$RootNamespaces"]);
             XmlWriter rootWriter = XmlWriter.Create(rootNamespaceFile, 
                 writerSettings);
 

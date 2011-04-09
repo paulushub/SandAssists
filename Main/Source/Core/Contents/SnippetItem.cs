@@ -1,60 +1,78 @@
 ﻿using System;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Xml;
+using System.Diagnostics;
 
 namespace Sandcastle.Contents
 {
     [Serializable]
-    public sealed class SnippetItem : BuildItem<SnippetItem>//, IBuildNamedItem
+    public sealed class SnippetItem : BuildItem<SnippetItem>
     {
+        #region Public Fields
+
+        public const string TagName = "snippetItem";
+
+        #endregion
+
         #region Private Fields
 
-        private string _exampleId;
-        private string _snippetId;
-        private string _snippetLang;
-        private string _snippetText;
+        private string _itemId;
+        private BuildDirectoryPath _source;
 
         #endregion
 
         #region Constructors and Destructor
 
         public SnippetItem()
-            : this(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
         {
-            _snippetLang = String.Empty;
-            _snippetText = String.Empty;
+            _itemId = Guid.NewGuid().ToString();
         }
 
-
-        public SnippetItem(string exampleId, string snippetId)
+        public SnippetItem(string source)
             : this()
         {
-            BuildExceptions.NotNullNotEmpty(exampleId, "exampleId");
-            BuildExceptions.NotNullNotEmpty(snippetId, "snippetId");
+            BuildExceptions.PathMustExist(source, "source");
 
-            _exampleId = exampleId;
-            _snippetId = snippetId;
+            _source = new BuildDirectoryPath(source);
         }
 
-        public SnippetItem(string exampleId, string snippetId,
-            string snippetLang, string snippetText) 
-            : this(exampleId, snippetId)
+        public SnippetItem(BuildDirectoryPath source)
+            : this()
         {
-            BuildExceptions.NotNull(snippetLang, "snippetLang");
-            BuildExceptions.NotNull(snippetText, "snippetText");
+            BuildExceptions.NotNull(source, "source");
 
-            _snippetLang = snippetLang;
-            _snippetText = snippetText;
+            _source = source;
+        }
+
+        public SnippetItem(string source, string itemId)
+            : this()
+        {
+            BuildExceptions.PathMustExist(source, "source");
+
+            if (!String.IsNullOrEmpty(itemId))
+            {
+                _itemId = itemId;
+            }
+            _source = new BuildDirectoryPath(source);
+        }
+
+        public SnippetItem(BuildDirectoryPath source, string itemId)
+            : this()
+        {
+            BuildExceptions.NotNull(source, "source");
+
+            if (!String.IsNullOrEmpty(itemId))
+            {
+                _itemId = itemId;
+            }   
+            _source = source;
         }
 
         public SnippetItem(SnippetItem source)
             : base(source)
         {
-            _exampleId   = source._exampleId;
-            _snippetId   = source._snippetId;
-            _snippetLang = source._snippetLang;
-            _snippetText = source._snippetText;
-       }
+            _itemId = source._itemId;
+            _source = source._source;
+        }
 
         #endregion
 
@@ -64,77 +82,29 @@ namespace Sandcastle.Contents
         {
             get
             {
-                return !this.IsValid;
+                return (_source == null || !_source.Exists);
             }
         }
 
-        public bool IsValid
+        public string Id
         {
             get
             {
-                if (String.IsNullOrEmpty(_exampleId))
-                {
-                    return false;
-                }
-                if (String.IsNullOrEmpty(_snippetId))
-                {
-                    return false;
-                }
-                if (String.IsNullOrEmpty(_snippetLang))
-                {
-                    return false;
-                }
-                if (String.IsNullOrEmpty(_snippetText))
-                {
-                    return false;
-                }
-
-                return true;
+                return _itemId;
             }
         }
 
-        public string ExampleId
+        public BuildDirectoryPath Source
         {
             get
             {
-                return _exampleId;
-            }
-        }
-
-        public string SnippetId
-        {
-            get
-            {
-                return _snippetId;
-            }
-        }
-
-        public string Language
-        {
-            get
-            {
-                return _snippetLang;
+                return _source;
             }
             set
             {
                 if (value != null)
                 {
-                    _snippetLang = value;
-                }
-            }
-        }
-
-        public string Text
-        {
-            get
-            {
-                return _snippetText;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _snippetText = value;
+                    _source = value;
                 }
             }
         }
@@ -149,19 +119,11 @@ namespace Sandcastle.Contents
             {
                 return false;
             }
-            if (!String.Equals(this._exampleId, other._exampleId))
+            if (!String.Equals(this._itemId, other._itemId))
             {
                 return false;
             }
-            if (!String.Equals(this._snippetId, other._snippetId))
-            {
-                return false;
-            }
-            if (!String.Equals(this._snippetLang, other._snippetLang))
-            {
-                return false;
-            }
-            if (!String.Equals(this._snippetText, other._snippetText))
+            if (this._source != other._source)
             {
                 return false;
             }
@@ -182,25 +144,102 @@ namespace Sandcastle.Contents
 
         public override int GetHashCode()
         {
-            int hashCode = 13;
-            if (_exampleId != null)
+            int hashCode = 23;
+            if (_itemId != null)
             {
-                hashCode ^= _exampleId.GetHashCode();
+                hashCode ^= _itemId.GetHashCode();
             }
-            if (_snippetId != null)
+            if (_source != null)
             {
-                hashCode ^= _snippetId.GetHashCode();
-            }
-            if (_snippetLang != null)
-            {
-                hashCode ^= _snippetLang.GetHashCode();
-            }
-            if (_snippetText != null)
-            {
-                hashCode ^= _snippetText.GetHashCode();
+                hashCode ^= _source.GetHashCode();
             }
 
             return hashCode;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            _itemId = reader.GetAttribute("id");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {   
+                    if (String.Equals(reader.Name, BuildFilePath.TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {   
+                        if (_source == null)
+                        {
+                            _source = new BuildDirectoryPath();
+                        }
+
+                        _source.ReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - snippet
+            writer.WriteAttributeString("id", _itemId);
+
+            _source.WriteXml(writer);
+
+            writer.WriteEndElement();           // end - snippet
         }
 
         #endregion
@@ -209,39 +248,18 @@ namespace Sandcastle.Contents
 
         public override SnippetItem Clone()
         {
-            SnippetItem item = new SnippetItem(this);
-
-            if (_exampleId != null)
+            SnippetItem resource = new SnippetItem(this);
+            if (_itemId != null)
             {
-                item._exampleId = String.Copy(_exampleId);
+                resource._itemId = String.Copy(_itemId);
             }
-            if (_snippetId != null)
+            if (_source != null)
             {
-                item._snippetId = String.Copy(_snippetId);
-            }
-            if (_snippetLang != null)
-            {
-                item._snippetLang = String.Copy(_snippetLang);
-            }
-            if (_snippetText != null)
-            {
-                item._snippetText = String.Copy(_snippetText);
+                resource._source = _source.Clone();
             }
 
-            return item;
+            return resource;
         }
-
-        #endregion
-
-        #region IBuildNamedItem Members
-
-        //string IBuildNamedItem.Name
-        //{
-        //    get 
-        //    {
-        //        return _exampleId; 
-        //    }
-        //}
 
         #endregion
     }

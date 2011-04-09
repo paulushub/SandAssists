@@ -106,7 +106,7 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region Public Methods
+        #region Protected Methods
 
         protected override bool OnExecute(BuildContext context)
         {
@@ -116,9 +116,17 @@ namespace Sandcastle.Steps
                 return false;
             }
 
+            ReferenceGroupContext groupContext =
+                context.GroupContexts[_group.Id] as ReferenceGroupContext;
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             // Create the documents...
-            string reflectionFile = _group["$ReflectionFile"];
-            string refInfoFile = Path.ChangeExtension(reflectionFile, ".org");
+            string reflectionFile = groupContext["$ReflectionFile"];
+            string refInfoFile    = Path.ChangeExtension(reflectionFile, ".org");
 
             string workingDir = this.WorkingDirectory;
             _listDocuments = new List<ReferenceDocument>();
@@ -128,7 +136,7 @@ namespace Sandcastle.Steps
                 ReferenceDocumentType.Reflection);
             _listDocuments.Add(document);
             // the comment files...
-            IList<string> commentFiles = _group.CommentFiles;
+            IList<string> commentFiles = groupContext.CommentFiles;
             if (commentFiles != null && commentFiles.Count != 0)
             {
                 for (int i = 0; i < commentFiles.Count; i++)

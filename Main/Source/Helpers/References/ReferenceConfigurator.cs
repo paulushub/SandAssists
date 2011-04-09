@@ -265,19 +265,13 @@ namespace Sandcastle.References
             // 2. The reference topics contents...
             this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceData,
                 new Action<string, XPathNavigator>(OnReferenceDataItem));
-            // 4. The reference syntax generators...
+            // 3. The reference syntax generators...
             this.RegisterConfigurationItem(ConfiguratorKeywords.SyntaxGenerators,
                 new Action<string, XPathNavigator>(OnSyntaxGeneratorsItem));
-            //// 3. The reference tokens...
-            //this.RegisterItem(ConfigItems.Tokens,
-            //    new ConfigItemHandler(OnTokensItem));
-            // 5. The reference metadata attributes...
+            // 4. The reference metadata attributes...
             this.RegisterConfigurationItem(ConfiguratorKeywords.ReferenceContents,
                 new Action<string, XPathNavigator>(OnReferenceContentsItem));
-            // . The reference code snippets ...
-            this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
-                new Action<string, XPathNavigator>(OnCodeSnippetsItem));
-            // 8. The reference transform...
+            // 5. The reference transform...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
                 new Action<string, XPathNavigator>(OnTransformsItem));
             //// . The reference ...
@@ -392,58 +386,6 @@ namespace Sandcastle.References
 
         #endregion
 
-        #region OnCodeSnippetsItem Method
-
-        /// <summary>
-        /// This specifies the token items used by the conceptual topics.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        protected void OnCodeSnippetsItem(string keyword, XPathNavigator navigator)
-        {
-            if (_group == null)
-            {
-                throw new BuildException(
-                    "There is not build group to provide the media/arts contents.");
-            }
-
-            //<codeSnippets process="true" storage="Sqlite" separator="...">
-            //  <codeSnippet source=".\CodeSnippetSample.xml" format="Sandcastle" />
-            //</codeSnippets>
-
-            XmlWriter xmlWriter = navigator.InsertAfter();
-
-            IList<SnippetContent> listSnippets = _group.SnippetContents;
-            if (listSnippets != null && listSnippets.Count != 0)
-            {
-                xmlWriter.WriteStartElement("codeSnippets");  // start - codeSnippets
-                xmlWriter.WriteAttributeString("process", "true");
-                xmlWriter.WriteAttributeString("storage", "Sqlite");
-                xmlWriter.WriteAttributeString("separator", "...");
-
-                int contentCount = listSnippets.Count;
-                for (int i = 0; i < contentCount; i++)
-                {
-                    SnippetContent snippetContent = listSnippets[i];
-                    if (snippetContent == null || snippetContent.IsEmpty)
-                    {
-                        continue;
-                    }
-                    xmlWriter.WriteStartElement("codeSnippet"); // start - codeSnippet
-                    xmlWriter.WriteAttributeString("source", snippetContent.ContentsFile);
-                    xmlWriter.WriteAttributeString("format", "Sandcastle");
-                    xmlWriter.WriteEndElement();                // end - codeSnippet
-                }
-
-                xmlWriter.WriteEndElement();                  // end - codeSnippets
-            }
-
-            xmlWriter.Close();
-            navigator.DeleteSelf();
-        }
-
-        #endregion
-
         #region OnTransformsItem Method
 
         /// <summary>
@@ -506,7 +448,14 @@ namespace Sandcastle.References
         #region OnReferenceDataItem Method
 
         protected void OnReferenceDataItem(string keyword, XPathNavigator navigator)
-        {
+        {    
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             string sandcastleDir = _context.SandcastleDirectory;
 
             //<data base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" />
@@ -522,7 +471,7 @@ namespace Sandcastle.References
 
             xmlWriter.WriteStartElement("data");   // start - data
             xmlWriter.WriteAttributeString("files", 
-                String.Format(@".\{0}", _group["$ReflectionFile"]));
+                String.Format(@".\{0}", groupContext["$ReflectionFile"]));
             xmlWriter.WriteEndElement();           // end - data
 
             xmlWriter.Close();
@@ -548,7 +497,15 @@ namespace Sandcastle.References
         #region OnReferenceContentsItem Method
 
         private void OnReferenceContentsItem(string keyword, XPathNavigator navigator)
-        {
+        {   
+            ReferenceGroupContext groupContext =
+                _context.GroupContexts[_group.Id] as ReferenceGroupContext;
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             //<data base="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\" 
             //   recurse="false"  files="*.xml" />
             //<data files=".\Comments\Project.xml" />
@@ -569,13 +526,13 @@ namespace Sandcastle.References
                 xmlWriter.WriteEndElement();          // end - data
             }
 
-            IList<ReferenceItem> listItems = _group.Items;
-            if (listItems != null && listItems.Count != 0)
+            ReferenceContent contents = _group.Content;
+            if (contents != null && contents.Count != 0)
             {
-                int itemCount = listItems.Count;
+                int itemCount = contents.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
-                    ReferenceItem item = listItems[i];
+                    ReferenceItem item = contents[i];
                     if (item == null || item.IsEmpty)
                     {
                         continue;
@@ -584,8 +541,9 @@ namespace Sandcastle.References
                     if (String.IsNullOrEmpty(referenceFile) == false)
                     {
                         xmlWriter.WriteStartElement("data");
-                        xmlWriter.WriteAttributeString("files",
-                            Path.Combine(@".\Comments\", referenceFile));
+                        xmlWriter.WriteAttributeString("files", Path.Combine(
+                            String.Format(@".\{0}\", groupContext.CommentFolder), 
+                            referenceFile));
                         xmlWriter.WriteEndElement();
                     }
                 }

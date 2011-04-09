@@ -133,6 +133,52 @@ namespace Sandcastle
             }
         }
 
+        public void Add(IEnumerable<T> collection)
+        {
+            if (collection == null)
+            {
+                return;
+            }
+
+            using (IEnumerator<T> enumerator = collection.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    this.Add(enumerator.Current);
+                }
+            }
+        }
+
+        public void Insert(int index, IList<T> items)
+        {
+            if (items == null || items.Count == 0)
+            {
+                return;
+            }
+
+            int itemCount = items.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                this.Insert(index++, items[i]);
+            }
+        }
+
+        public void Insert(int index, IEnumerable<T> collection)
+        {
+            if (collection == null)
+            {
+                return;
+            }
+
+            using (IEnumerator<T> enumerator = collection.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    this.Insert(index++, enumerator.Current);
+                }
+            }
+        }
+
         #endregion
 
         #region Protected Methods

@@ -2,151 +2,242 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
+using Sandcastle.Contents;
 
 namespace Sandcastle.Conceptual
 {
     [Serializable]
-    public class ConceptualItem : BuildItem<ConceptualItem>
+    public abstract class ConceptualItem : BuildItem<ConceptualItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "topic";
+
+        #endregion
+
         #region Private Fields
 
         private int    _revNumber;
-        private bool   _isNew;
         private bool   _isVisible;
-        private bool   _includesTopic;
-        private string _fileName;
-        private string _filePath;
-        private string _fileGuid;
-        private string _fileTitle;
-        private string _fileDate;
-        private string _categories;
+        private bool   _isInitialized;
+        private bool   _includesTopicId;
 
-        private string _topicSchemaId;
-        private string _topicSchemaName;
-        private string _topicEditor;
+        private string _topicId;
+        private string _topicTitle;
 
-        private ConceptualItemType   _itemType;
-        private BuildList<ConceptualItem> _listItems;
+        private string _topicTocTitle;
+        private string _topicLinkText;
+        private string _topicTypeId;
 
-        [NonSerialized]
-        private string _documentFile;
-        [NonSerialized]
-        private string _companionFile;
+        private HashSet<string> _listExcludes;
+
+        private Version _topicVersion;
+        private BuildFilePath _filePath;
+        private ConceptualAuthoring _authoring;
+
+        private KeywordContent   _keywords;
+        private AttributeContent _attributes;
 
         #endregion
 
         #region Constructors and Destructor
 
-        public ConceptualItem()
+        protected ConceptualItem()
         {
-            _itemType        = ConceptualItemType.MamlDoc;
+            _revNumber       = 1;
             _isVisible       = true;
-            _topicSchemaId   = "DevHowTo";
-            _topicSchemaName = "HowTo";
-            _fileDate        = DateTime.Now.ToUniversalTime().ToString("G");
+            _includesTopicId = false;
+            _topicId         = String.Empty;
+            _topicTitle      = String.Empty;
+            _topicVersion    = new Version(1, 0, 0, 0); 
+            _topicTocTitle   = String.Empty;
+            _topicTypeId     = String.Empty;   
+            _attributes      = new AttributeContent();
+            _keywords        = new KeywordContent();
         }
 
-        public ConceptualItem(string fileName, string filePath, string fileTitle)
+        protected ConceptualItem(BuildFilePath filePath, string topicTitle, 
+            string topicId) : this()
         {
-            _itemType        = ConceptualItemType.MamlDoc;
-            _isVisible       = true;
-            _fileName        = fileName;
             _filePath        = filePath;
-            _fileTitle       = fileTitle;
-
-            _topicSchemaId   = "DevHowTo";
-            _topicSchemaName = "HowTo";
-            _fileDate        = DateTime.Now.ToUniversalTime().ToString("G");
-
-            ReadFileInfo();
+            _topicTitle      = topicTitle;
+            _topicId         = topicId;
         }
 
-        public ConceptualItem(string fileName, string filePath, string fileTitle, 
-            string fileGuid, bool isNew, bool isVisible, int revisionNumber)
-        {
-            _itemType        = ConceptualItemType.MamlDoc;
-            _isNew           = isNew;
-            _isVisible       = isVisible;
-            _fileName        = fileName;
-            _filePath        = filePath;
-            _fileGuid        = fileGuid;
-            _fileTitle       = fileTitle;
-            _revNumber       = revisionNumber;
-            _topicSchemaId   = "DevHowTo";
-            _topicSchemaName = "HowTo";
-            _fileDate        = DateTime.Now.ToUniversalTime().ToString("G");
-
-            if (String.IsNullOrEmpty(_fileGuid) || 
-                String.IsNullOrEmpty(_fileName) ||
-                String.IsNullOrEmpty(_fileTitle) ||
-                ConceptualUtils.IsValidId(_fileGuid) == false)
-            {
-                ReadFileInfo();
-            }
-        }
-
-        public ConceptualItem(ConceptualItem source)
+        protected ConceptualItem(ConceptualItem source)
             : base(source)
         {
             _isVisible       = source._isVisible;
-            _topicSchemaId   = source._topicSchemaId;
-            _topicSchemaName = source._topicSchemaName;
-            _fileDate        = source._fileDate;
-            _itemType        = source._itemType;
+            _topicVersion    = source._topicVersion;
         }
 
         #endregion
 
         #region Public Properties
 
-        public ConceptualItemType ItemType
+        public abstract ConceptualItemType ItemType
+        {
+            get;
+        }
+
+        public bool Visible
         {
             get 
             { 
-                return _itemType; 
-            }
-
+                return _isVisible; 
+            }   
             set 
             { 
-                _itemType = value; 
+                _isVisible = value; 
             }
         }
 
-        public string SchemaID
+        public virtual bool IsEmpty
         {
             get
             {
-                return _topicSchemaId;
-            }
+                if (_filePath == null || String.IsNullOrEmpty(_topicId) ||
+                    String.IsNullOrEmpty(_topicTitle))
+                {
+                    return true;
+                }
+                if (!ConceptualUtils.IsValidId(_topicId))
+                {
+                    return true;
+                }
 
-            set
-            {
-                _topicSchemaId = value;
+                return false;
             }
         }
 
-        public string SchemaName
+        public bool IsInitialized
         {
             get
             {
-                return _topicSchemaName;
+                return _isInitialized;
             }
-
-            set
+            protected set
             {
-                _topicSchemaName = value;
+                _isInitialized = value;
             }
         }
 
-        public int RevisionNumber
+        public string TopicId
+        {
+            get
+            {
+                return _topicId;
+            }
+            set
+            {
+                if (!String.IsNullOrEmpty(value) &&
+                    ConceptualUtils.IsValidId(value))
+                {
+                    _topicId = value;
+                }
+            }
+        }
+
+        public string TopicTypeId
+        {
+            get
+            {
+                return _topicTypeId;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _topicTypeId = value.Trim();
+                }
+                else
+                {
+                    _topicTypeId = String.Empty;
+                }
+            }
+        }
+
+        public string TopicTitle
+        {
+            get
+            {
+                return _topicTitle;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    value = value.Trim();
+                } 
+                if (!String.IsNullOrEmpty(value))
+                {
+                    _topicTitle = value;
+                }
+            }
+        }
+
+        public string TocTitle
+        {
+            get
+            {
+                return _topicTocTitle;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _topicTocTitle = value.Trim();
+                }
+                else
+                {
+                    _topicTocTitle = String.Empty;
+                }
+            }
+        }
+
+        public string TopicLinkText
+        {
+            get
+            {
+                return _topicLinkText;
+            }
+            set
+            {
+                _topicLinkText = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public Version TopicVersion
+        {
+            get
+            {
+                return _topicVersion;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _topicVersion = value;
+                }
+            }
+        }
+
+        public int TopicRevisions
         {
             get
             {
                 return _revNumber;
             }
-
             set
             {
                 if (value >= 0)
@@ -156,191 +247,119 @@ namespace Sandcastle.Conceptual
             }
         }
 
-        public string Editor
+        public ICollection<string> Excludes
         {
             get
             {
-                return _topicEditor;
-            }
-
-            set
-            {
-                _topicEditor = value;
-            }
+                return _listExcludes;
+            }  
         }
 
-        public string Categories
+        public bool IncludesTopicId
         {
             get
             {
-                return _categories;
-            }
-
-            set
+                return _includesTopicId;
+            } 
+            protected set
             {
-                _categories = value;
+                _includesTopicId = value;
             }
         }
 
-        public ConceptualItem this[int index]
-        {
-            get
-            {
-                if (_listItems != null)
-                {
-                    return _listItems[index];
-                }
-
-                return null;
-            }
-        }
-
-        public bool IsNew
-        {
-            get 
-            { 
-                return _isNew; 
-            }
-
-            set 
-            { 
-                _isNew = value; 
-            }
-        }
-
-        public bool Visible
-        {
-            get 
-            { 
-                return _isVisible; 
-            }
-
-            set 
-            { 
-                _isVisible = value; 
-            }
-        }
-
-        public bool IsEmpty
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(_fileName) ||
-                    String.IsNullOrEmpty(_filePath))
-                {
-                    return true;
-                }
-                if (String.IsNullOrEmpty(_fileGuid) ||
-                    String.IsNullOrEmpty(_fileTitle))
-                {
-                    return true;
-                }
-                if (ConceptualUtils.IsValidId(_fileGuid) == false)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        public string FileName
-        {
-            get
-            {
-                return _fileName;
-            }
-
-            set
-            {
-                _fileName = value;
-            }
-        }
-
-        public string FilePath
+        public BuildFilePath FilePath
         {
             get
             {
                 return _filePath;
             }
-
             set
             {
+                if (value == null)
+                {
+                    return;
+                }
                 _filePath = value;
             }
         }
 
-        public string FileGuid
+        public ConceptualAuthoring Authoring
         {
             get
             {
-                return _fileGuid;
+                return _authoring;
             }
-
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    _fileGuid = value;
-                }
+                _authoring = value;
             }
         }
 
-        public string FileTitle
+        public AttributeContent Attributes
         {
             get
             {
-                return _fileTitle;
-            }
-
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    _fileTitle = value;
-                }
+                return _attributes;
             }
         }
 
-        public string FileDate
+        public KeywordContent Keywords
         {
             get
             {
-                return _fileDate;
-            }
-
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    _fileDate = value;
-                }
+                return _keywords;
             }
         }
 
-        public int ItemCount
+        public virtual int ItemCount
         {
             get
             {
-                if (_listItems != null)
-                {
-                    return _listItems.Count;
-                }
-
                 return 0;
             }
         }
 
-        public IList<ConceptualItem> Items
+        public virtual ConceptualItem this[int index]
         {
             get
             {
-                if (_listItems != null)
-                {
-                    return new ReadOnlyCollection<ConceptualItem>(_listItems);
-                }
-
                 return null;
+            }
+        }
+
+        public ConceptualItem this[string topicId]
+        {
+            get
+            {
+                return this[topicId, false];
+            }
+        }
+
+        public virtual ConceptualItem this[string topicId, bool recursive]
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public virtual IList<ConceptualItem> Items
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
+
+        internal HashSet<string> ExcludesInternal
+        {
+            get
+            {
+                return _listExcludes;
             }
         }
 
@@ -348,43 +367,162 @@ namespace Sandcastle.Conceptual
 
         #region Public Methods
 
-        public bool CreateFiles(string dduexmlDir, string compDir)
+        public static ConceptualItem Create(string itemType)
         {
-            _documentFile  = null;
-            _companionFile = null;
+            if (String.IsNullOrEmpty(itemType))
+            {
+                return null;
+            }
 
-            if (!Directory.Exists(dduexmlDir))
+            switch (itemType.ToLower())
             {
-                Directory.CreateDirectory(dduexmlDir);
+                case "topic":
+                    return new ConceptualTopic();
+                case "related":
+                    return new ConceptualRelatedTopic();
+                case "marker":
+                    return new ConceptualMarkerTopic();
+                case "html":
+                    return new ConceptualHtmlTopic();
             }
-            if (!Directory.Exists(compDir))
+
+            return null;
+        }
+
+        public static ConceptualItem Create(ConceptualItemType itemType)
+        {
+            switch (itemType)
             {
-                Directory.CreateDirectory(compDir);
+                case ConceptualItemType.Topic:
+                    return new ConceptualTopic();
+                case ConceptualItemType.Related:
+                    return new ConceptualRelatedTopic();
+                case ConceptualItemType.Marker:
+                    return new ConceptualMarkerTopic();
+                case ConceptualItemType.Html:
+                    return new ConceptualHtmlTopic();
             }
-            if (String.IsNullOrEmpty(_fileName) ||
-                String.IsNullOrEmpty(_filePath) ||
-                !File.Exists(_filePath))
+
+            return null;
+        }
+
+        public virtual void BeginInit()
+        {
+            _isInitialized = false;
+        }
+
+        public virtual void EndInit()
+        {
+            ConceptualItemType itemType = this.ItemType;
+
+            if (itemType == ConceptualItemType.Related ||
+                itemType == ConceptualItemType.Topic)
+            {
+                this.OnLoadTopicMetadata();
+            }
+
+            _isInitialized = true;
+        }
+
+        public virtual bool CreateTopic(string ddueXmlDir, string ddueCompDir, 
+            string ddueHtmlDir)
+        {
+            return this.OnCreateTopic(ddueXmlDir, ddueCompDir, ddueHtmlDir);
+        }
+
+        public virtual void Add(ConceptualItem item)
+        {
+        }
+
+        public virtual void Insert(int index, ConceptualItem item)
+        {   
+        }
+
+        public virtual void Remove(int index)
+        {
+        }
+
+        public virtual void Remove(ConceptualItem item)
+        {
+        }
+
+        public virtual void Clear()
+        {
+        }
+
+        public virtual void AddExclude(string exclude)
+        {
+            if (String.IsNullOrEmpty(exclude))
+            {
+                return;
+            }
+
+            if (_listExcludes == null)
+            {
+                _listExcludes = new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+            }
+
+            _listExcludes.Add(exclude);
+        }
+
+        public virtual void RemoveExclude(string exclude)
+        {
+            if (String.IsNullOrEmpty(exclude))
+            {
+                return;
+            }
+
+            if (_listExcludes != null)
+            {
+                _listExcludes.Remove(exclude);
+            }
+        }
+
+        public virtual void ClearExclude()
+        {
+            _listExcludes = null;
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        #region OnCreateTopic Method
+
+        protected virtual bool OnCreateTopic(string ddueXmlDir,
+            string ddueCompDir, string ddueHtmlDir)
+        {
+            if (!Directory.Exists(ddueXmlDir))
+            {
+                Directory.CreateDirectory(ddueXmlDir);
+            }
+            if (!Directory.Exists(ddueCompDir))
+            {
+                Directory.CreateDirectory(ddueCompDir);
+            }
+            if (_filePath == null || !_filePath.Exists)
             {
                 return false;
             }
-            if (String.IsNullOrEmpty(_fileGuid) ||
-                String.IsNullOrEmpty(_fileTitle))
+            if (String.IsNullOrEmpty(_topicId) ||
+                String.IsNullOrEmpty(_topicTitle))
             {
-                ReadFileInfo();
+                OnLoadTopicMetadata();
             }
-            if (String.IsNullOrEmpty(_fileGuid) ||
-                String.IsNullOrEmpty(_fileTitle))
+            if (String.IsNullOrEmpty(_topicId) ||
+                String.IsNullOrEmpty(_topicTitle))
             {
                 return false;
             }
 
-            string documentPath = Path.Combine(dduexmlDir, _fileGuid + ".xml");
+            string documentPath = Path.Combine(ddueXmlDir, _topicId + ".xml");
             if (File.Exists(documentPath))
             {
                 File.SetAttributes(documentPath, FileAttributes.Normal);
                 File.Delete(documentPath);
             }
-            if (_includesTopic)
+            if (_includesTopicId)
             {
                 File.Copy(_filePath, documentPath, true);
                 File.SetAttributes(documentPath, FileAttributes.Normal);
@@ -404,7 +542,7 @@ namespace Sandcastle.Conceptual
 
                     textWriter.WriteLine(reader.ReadLine()); // write the XML declaration..
                     textWriter.WriteLine("<topic id=\"{0}\" revisionNumber=\"{1}\">",
-                       _fileGuid, _revNumber);
+                       _topicId, _revNumber);
 
                     while (reader.Peek() >= 0)
                     {
@@ -430,6 +568,352 @@ namespace Sandcastle.Conceptual
                 }
             }
 
+            string companionFile = Path.ChangeExtension(_filePath, ".cmp");            
+            string companionOutputFile = Path.Combine(ddueCompDir, _topicId + ".cmp.xml");
+
+            if (File.Exists(companionFile))
+            {
+                File.Copy(companionFile, companionOutputFile, true);
+            }
+            else
+            {
+                this.OnCreateCompanionFile(companionOutputFile, true);
+            }  
+
+            return true;
+        }
+
+        #endregion
+
+        #region OnLoadTopicMetadata Method
+
+        protected virtual bool OnLoadTopicMetadata()
+        {
+            if (_filePath == null || !_filePath.Exists)
+            {
+                return false;
+            }
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments               = true;
+            settings.IgnoreWhitespace             = true;
+            settings.IgnoreProcessingInstructions = true;
+
+            XmlReader reader = null;
+            try
+            {
+                reader = XmlReader.Create(_filePath, settings);
+
+                XmlNodeType nodeType = reader.MoveToContent();
+                Debug.Assert(nodeType == XmlNodeType.Element);
+                if (nodeType != XmlNodeType.Element)
+                {
+                    return false;
+                }
+
+                if (String.Equals(reader.Name, "topic", 
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _includesTopicId = true;
+
+                    _topicId = reader.GetAttribute("id");
+                    string strTemp = reader.GetAttribute("revisionNumber");
+                    if (!String.IsNullOrEmpty(strTemp))
+                    {
+                        _revNumber = Convert.ToInt32(strTemp);
+                    }
+
+                    string nodeName = null;
+                    while (reader.Read())
+                    {
+                        nodeType = reader.NodeType;
+                        nodeName = reader.Name;
+                        if (nodeType == XmlNodeType.Element)
+                        {
+                            if (ConceptualUtils.IsValidDocumentTag(nodeName))
+                            {
+                                this.OnDocumentType(nodeName);
+
+                                break;
+                            }
+                        }
+                        else if (nodeType == XmlNodeType.EndElement)
+                        {
+                            if (String.Equals(nodeName, "topic") ||
+                                ConceptualUtils.IsValidDocumentTag(nodeName))
+                            {
+                                this.OnDocumentType(nodeName);
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (ConceptualUtils.IsValidDocumentTag(reader.Name))
+                {
+                    _includesTopicId = false;
+
+                    this.OnDocumentType(reader.Name);
+                }    
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+            }
+
+            // If the companion file is available, load it...
+            string companionFile = Path.ChangeExtension(_filePath, ".cmp");
+
+            if (!File.Exists(companionFile))
+            {
+                return true;
+            }
+
+            try
+            {
+                reader = XmlReader.Create(companionFile, settings);
+
+                XmlNodeType nodeType = XmlNodeType.None;
+                string nodeName      = null;
+                string nodeText      = null;
+                while (reader.Read())
+                {
+                    nodeType = reader.NodeType;
+                    nodeName = reader.Name;
+                    if (nodeType == XmlNodeType.Element)
+                    {
+                        switch (nodeName)
+                        {
+                            case "title":
+                                nodeText = reader.ReadString().Trim();
+                                if (!String.IsNullOrEmpty(nodeText))
+                                {
+                                    _topicTitle = nodeText;
+                                }
+                                break;
+                            case "tableOfContentsTitle":
+                                nodeText = reader.ReadString().Trim();
+                                if (!String.IsNullOrEmpty(nodeText))
+                                {
+                                    _topicTocTitle = nodeText;
+                                }
+                                break;
+                            case "linkText":
+                                nodeText = reader.ReadString().Trim();
+                                if (!String.IsNullOrEmpty(nodeText))
+                                {
+                                    _topicLinkText = nodeText;
+                                }
+                                break;
+                            case "keyword":
+                                KeywordItem keyItem = new KeywordItem();
+                                keyItem.ReadXml(reader);
+                                if (!keyItem.IsEmpty)
+                                {
+                                    _keywords.Add(keyItem);
+                                }
+                                break;
+                            case "attribute":
+                                AttributeItem attrItem = new AttributeItem();
+                                attrItem.ReadXml(reader);
+                                if (!attrItem.IsEmpty)
+                                {
+                                    _attributes.Add(attrItem);
+                                }
+                                break;
+                            case "authoring":
+                                break;
+                        }
+                    }
+                    else if (nodeType == XmlNodeType.EndElement)
+                    {
+                        if (String.Equals(nodeName, "metadata"))
+                        {
+                            this.OnDocumentType(nodeName);
+
+                            break;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region OnDocumentType Method
+
+        protected virtual void OnDocumentType(string documentTag)
+        {   
+            if (String.IsNullOrEmpty(_topicTypeId))
+            {
+                _topicTypeId = ConceptualUtils.ToTopicTypeId(documentTag);
+            }
+        }
+
+        #endregion
+
+        #region ReadXml Methods
+
+        protected virtual void OnReadXmlTag(XmlReader reader)
+        {   
+        }
+
+        protected virtual void OnReadExcludes(XmlReader reader)
+        {
+            //<excludes>
+            //    <exclude name="catId1"/>
+            //    <exclude name="catId2"/>
+            //</excludes>
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_listExcludes == null)
+            {
+                _listExcludes = new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+            }
+
+            string startName = reader.Name;
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "exclude",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string nodeText = reader.GetAttribute("name");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _listExcludes.Add(nodeText);
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected virtual void OnReadMetadata(XmlReader reader)
+        {
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            string startName = reader.Name;
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.Name)
+                    {
+                        case "keyword":
+                            KeywordItem keyItem = new KeywordItem();
+                            keyItem.ReadXml(reader);
+                            if (!keyItem.IsEmpty)
+                            {
+                                _keywords.Add(keyItem);
+                            }
+                            break;
+                        case "attribute":
+                            AttributeItem attrItem = new AttributeItem();
+                            attrItem.ReadXml(reader);
+                            if (!attrItem.IsEmpty)
+                            {
+                                _attributes.Add(attrItem);
+                            }
+                            break;
+                        case "authoring":
+                            break;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region WriteXml Methods
+
+        protected virtual void OnWriteXmlTag(XmlWriter writer)
+        {
+        }
+
+        protected virtual void OnWriteExcludes(XmlWriter writer)
+        {
+            writer.WriteStartElement("excludes");   // excludes
+            if (_listExcludes != null && _listExcludes.Count != 0)
+            {
+                foreach (string exclude in _listExcludes)
+                {
+                    if (!String.IsNullOrEmpty(exclude))
+                    {
+                        writer.WriteStartElement("exclude");
+                        writer.WriteAttributeString("name", exclude);
+                        writer.WriteEndElement();
+                    }
+                }
+            }
+            writer.WriteEndElement();               // excludes
+        }
+
+        protected virtual void OnWriteMetadata(XmlWriter writer)
+        {
+            ConceptualContent content = this.Content as ConceptualContent;
+            Debug.Assert(content != null);
+            if (content == null)
+            {
+                throw new InvalidOperationException(
+                    "A content is not associated with this topic.");
+            }
+
+            if (content.CompanionFiles)
+            {
+                string companionFile = Path.ChangeExtension(_filePath, ".cmp");
+                this.OnCreateCompanionFile(companionFile, false);
+            }
+            else
+            {
+                this.OnWriteMetadata(writer, false, false);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        private void OnCreateCompanionFile(string companionPath, bool isBuildOutput)
+        {   
             XmlWriterSettings settings  = new XmlWriterSettings();
 
             settings.Indent             = true;
@@ -437,194 +921,78 @@ namespace Sandcastle.Conceptual
             settings.OmitXmlDeclaration = false;
             settings.ConformanceLevel   = ConformanceLevel.Document;
 
-            string companionPath = Path.Combine(compDir, _fileGuid + ".cmp.xml");
-
             if (File.Exists(companionPath))
             {
                 File.SetAttributes(companionPath, FileAttributes.Normal);
                 File.Delete(companionPath);
             }
 
-            _documentFile  = documentPath;
-            _companionFile = companionPath;
-
             XmlWriter xmlWriter = XmlWriter.Create(companionPath, settings);
 
             xmlWriter.WriteStartDocument();
-            xmlWriter.WriteStartElement("metadata");
-            xmlWriter.WriteAttributeString("fileAssetGuid", _fileGuid);
-            xmlWriter.WriteAttributeString("assetTypeId", "CompanionFile");
 
-            xmlWriter.WriteStartElement("topic"); //topic
-            xmlWriter.WriteAttributeString("id", _fileGuid);
+            this.OnWriteMetadata(xmlWriter, true, isBuildOutput);
 
-            xmlWriter.WriteElementString("title", _fileTitle);
-
-            xmlWriter.WriteEndElement(); // topic
-
-            xmlWriter.WriteEndElement(); // metadata
             xmlWriter.WriteEndDocument();
 
             xmlWriter.Close();
+        }
 
-            if (_listItems != null && _listItems.Count > 0)
+        private void OnWriteMetadata(XmlWriter writer, bool isStandalone,
+            bool isBuildOutput)
+        {
+            writer.WriteStartElement("metadata"); // start - metadata
+            if (isStandalone)
             {
-                int itemCount = _listItems.Count;
-                for (int i = 0; i < itemCount; i++)
+                // We include identifiers in the standalone metadata...
+                writer.WriteAttributeString("fileAssetGuid", _topicId);
+                writer.WriteAttributeString("assetTypeId", "CompanionFile");
+
+                // We include the topic tag in only standalone metadata...
+                writer.WriteStartElement("topic"); // start - topic
+                writer.WriteAttributeString("id", _topicId);
+
+                writer.WriteElementString("title", _topicTitle);
+            }
+
+            if (!String.IsNullOrEmpty(_topicTocTitle))
+            {
+                writer.WriteElementString("tableOfContentsTitle", _topicTocTitle);
+            }
+            if (!String.IsNullOrEmpty(_topicLinkText))
+            {
+                writer.WriteElementString("linkText", _topicLinkText);
+            }
+
+            if (_attributes != null && _attributes.Count != 0)
+            {
+                for (int i = 0; i < _attributes.Count; i++)
                 {
-                    ConceptualItem item = _listItems[i];
-                    item.CreateFiles(dduexmlDir, compDir);
+                    _attributes[i].WriteXml(writer);
                 }
             }
 
-            return true;
-        }
-
-        public void DeleteFiles()
-        {   
-            if (!String.IsNullOrEmpty(_documentFile) && 
-                File.Exists(_documentFile))
+            if (_keywords != null && _keywords.Count != 0)
             {
-                File.SetAttributes(_documentFile, FileAttributes.Normal);
-                File.Delete(_documentFile);
-                _documentFile = null;
-            }
-            if (!String.IsNullOrEmpty(_companionFile) &&
-                File.Exists(_companionFile))
-            {
-                File.SetAttributes(_documentFile, FileAttributes.Normal);
-                File.Delete(_documentFile);
-                _companionFile = null;
-            }
-
-            if (_listItems != null && _listItems.Count > 0)
-            {
-                int itemCount = _listItems.Count;
-                for (int i = 0; i < itemCount; i++)
+                for (int i = 0; i < _keywords.Count; i++)
                 {
-                    ConceptualItem item = _listItems[i];
-                    item.DeleteFiles();
+                    _keywords[i].WriteXml(writer);
                 }
             }
-        }
 
-        public void Add(ConceptualItem item)
-        {
-            BuildExceptions.NotNull(item, "item");
-
-            if (_listItems == null)
-            {
-                _listItems = new BuildList<ConceptualItem>();
-            }
-
-            _listItems.Add(item);
-        }
-
-        public void Remove(int itemIndex)
-        {
-            if (_listItems == null || _listItems.Count == 0)
-            {
-                return;
-            }
-
-            _listItems.RemoveAt(itemIndex);
-        }
-
-        public void Remove(ConceptualItem item)
-        {
-            if (item == null)
-            {
-                return;
-            }
-            if (_listItems == null || _listItems.Count == 0)
-            {
-                return;
-            }
-
-            _listItems.Remove(item);
-        }
-
-        public void Clear()
-        {
-            if (_listItems != null)
-            {
-                _listItems = new BuildList<ConceptualItem>();
-            }
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ReadFileInfo()
-        {
-            XmlReader reader = null;
-            try
-            {
-                XmlReaderSettings settings = new XmlReaderSettings();
-                settings.IgnoreComments               = true;
-                settings.IgnoreWhitespace             = true;
-                settings.IgnoreProcessingInstructions = true;
-                
-                reader = XmlReader.Create(_filePath, settings);
-
-                string strTemp = null;
-                reader.MoveToContent();
-
-                if (String.Equals(reader.Name, "topic"))
-                {
-                    _fileGuid = reader.GetAttribute("id");
-                    strTemp   = reader.GetAttribute("revisionNumber");
-                    if (!String.IsNullOrEmpty(strTemp))
-                    {
-                        _revNumber = Convert.ToInt32(strTemp);
-                    }
-
-                    _includesTopic = true;
-
-                    return;
-                }
-                else
-                {   
-                    XmlNodeType nodeType = XmlNodeType.None;
-                    string nodeName      = null;
-                    while (reader.Read())
-                    {
-                        nodeType = reader.NodeType;
-                        if (nodeType == XmlNodeType.Element)
-                        {
-                            nodeName = reader.Name;
-                            if (String.Equals(nodeName, "topic"))
-                            {
-                                _fileGuid = reader.GetAttribute("id");
-                                strTemp = reader.GetAttribute("revisionNumber");
-                                if (!String.IsNullOrEmpty(strTemp))
-                                {
-                                    _revNumber = Convert.ToInt32(strTemp);
-                                }
-
-                                _includesTopic = true;
-                            }
-                        }
-                        else if (nodeType == XmlNodeType.EndElement)
-                        {
-                            nodeName = reader.Name;
-                            if (String.Equals(nodeName, "topic"))
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
-            finally
+            if (isStandalone)
             {   
-                if (reader != null)
+                writer.WriteEndElement();          // end - topic
+            }
+            if (!isBuildOutput)
+            {
+                if (_authoring != null)
                 {
-                    reader.Close();
+                    _authoring.WriteXml(writer);
                 }
             }
+
+            writer.WriteEndElement();             // end - metadata
         }
 
         #endregion
@@ -677,13 +1045,156 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region ICloneable Members
+        #region IXmlSerializable Members
 
-        public override ConceptualItem Clone()
+        public override void ReadXml(XmlReader reader)
         {
-            ConceptualItem item = new ConceptualItem(this);
+            BuildExceptions.NotNull(reader, "reader");
 
-            return item;
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+            if (!String.Equals(reader.Name, TagName, 
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string nodeText = reader.GetAttribute("id");
+            if (ConceptualUtils.IsValidId(nodeText))
+            {
+                _topicId = nodeText;
+            }
+            nodeText = reader.GetAttribute("visible");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                _isVisible = Convert.ToBoolean(nodeText);
+            }
+            nodeText = reader.GetAttribute("revision");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                _revNumber = Convert.ToInt32(nodeText);
+            }
+
+            string nodeName      = null;
+            XmlNodeType nodeType = XmlNodeType.None;
+            while (reader.Read())
+            {
+                nodeName = reader.Name;
+                nodeType = reader.NodeType;
+
+                if (nodeType == XmlNodeType.Element)
+                {   
+                    switch (nodeName)
+                    {
+                        case "title":
+                            nodeText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(nodeText))
+                            {
+                                _topicTitle = nodeText;
+                            }
+                            break;
+                        case "path":
+                            if (_filePath == null)
+                            {
+                                _filePath = new BuildFilePath();
+                            }
+                            _filePath.ReadXml(reader);
+                            break;
+                        case "excludes":
+                            this.OnReadExcludes(reader);
+                            break;
+                        case "metadata":
+                            this.OnReadMetadata(reader);
+                            break;
+                        case "topic":
+                            ConceptualItem topicItem = ConceptualItem.Create(
+                                reader.GetAttribute("type")); 
+                            if (topicItem != null)
+                            {
+                                topicItem.Content = this.Content;
+                                topicItem.BeginInit();
+                                topicItem.ReadXml(reader);
+                                topicItem.EndInit();
+
+                                this.Add(topicItem);
+                            }
+                            break;
+                        default:
+                            this.OnReadXmlTag(reader);
+                            break;
+                    }
+                }
+                else if (nodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(nodeName, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            //<topic id="2aca5da4-6f94-43a0-9817-5f413d16f100" type="topic" visible="True" revision="1">
+            //    <title>Sandcastle For .NET</title>
+            //    <path value="Sandcastle.aml">$(DXROOT)\SampleDir\Sandcastle.aml</path>
+            //    <excludes>
+            //        <exclude name="catId1"/>
+            //        <exclude name="catId2"/>
+            //    </excludes>
+            //    <metadata>
+            //        <keywords>
+            //            <keyword type="K" value=""/>
+            //        </keywords>
+            //        <attributes>
+            //            <attribute name="attrName1" value="attrValue1"/>
+            //        </attributes>
+            //    </metadata>
+            //</topic>
+
+            writer.WriteStartElement(TagName);  // topic
+            writer.WriteAttributeString("id", _topicId);
+            writer.WriteAttributeString("type", this.ItemType.ToString());
+            writer.WriteAttributeString("visible", _isVisible.ToString());
+            writer.WriteAttributeString("revision",
+                this.TopicRevisions.ToString());
+
+            writer.WriteElementString("title", _topicTitle);
+
+            _filePath.WriteXml(writer);
+
+            this.OnWriteExcludes(writer);
+
+            this.OnWriteMetadata(writer);
+
+            this.OnWriteXmlTag(writer);
+
+            for (int i = 0; i < this.ItemCount; i++)
+            {
+                this[i].WriteXml(writer);
+            }
+
+            writer.WriteEndElement();           // topic
+        }
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        string IBuildNamedItem.Name
+        {
+            get 
+            {
+                return _topicId; 
+            }
         }
 
         #endregion

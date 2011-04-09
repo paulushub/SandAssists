@@ -30,21 +30,6 @@ namespace Sandcastle.Conceptual
         {
         }
 
-        public ConceptualEngine(BuildSettings settings)
-            : base(settings)
-        {
-        }
-
-        public ConceptualEngine(BuildLoggers logger)
-            : base(logger)
-        {
-        }
-
-        public ConceptualEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context) : base(settings, logger, context)
-        {
-        }
-
         #endregion
 
         #region Public Properties
@@ -89,9 +74,12 @@ namespace Sandcastle.Conceptual
 
         public void Add(ConceptualGroup group)
         {
-            if (group == null)
+            BuildExceptions.NotNull(group, "group");
+
+            if (group.IsEmpty || group.Exclude)
             {
-                return;
+                throw new BuildException(
+                    "The build engine requires a valid build group.");
             }
 
             if (_listGroups == null)
@@ -106,9 +94,14 @@ namespace Sandcastle.Conceptual
 
         #region Initialize Method
 
-        public override void Initialize(BuildSettings settings)
+        public override void Initialize(BuildContext context)
         {
-            base.Initialize(settings);
+            if (this.IsInitialized)
+            {
+                return;
+            }
+
+            base.Initialize(context);
             if (!this.IsInitialized)
             {
                 return;
@@ -148,9 +141,11 @@ namespace Sandcastle.Conceptual
             {
                 ConceptualGroup group = _listGroups[i];
 
-                if (group == null || group.IsEmpty || group.Exclude)
+                BuildGroupContext groupContext = context.GroupContexts[group.Id];
+                if (groupContext == null)
                 {
-                    continue;
+                    throw new BuildException(
+                        "The group context is not provided, and it is required by the build system.");
                 }
 
                 string indexText = String.Empty;
@@ -159,29 +154,33 @@ namespace Sandcastle.Conceptual
                     indexText = (i + 1).ToString();
                 }
 
-                group["$SharedContentFile"] =
+                groupContext["$SharedContentFile"] =
                     String.Format("TopicsSharedContent{0}.xml", indexText);
-                group["$TocFile"] =
+                groupContext["$TocFile"] =
                     String.Format("TopicsToc{0}.xml", indexText);
-                group["$ManifestFile"] =
+                groupContext["$ManifestFile"] =
                     String.Format("TopicsManifest{0}.xml", indexText);
-                group["$ConfigurationFile"] =
+                groupContext["$ConfigurationFile"] =
                     String.Format("TopicsBuildAssembler{0}.config", indexText);
-                group["$BuildManifestFile"] =
-                    String.Format("TopicsProjectManifest{0}.xml", indexText);
-                group["$BuildTocFile"] =
-                    String.Format("Toc{0}.xml", indexText);
-                group["$BuildTocTechReviewFile"] =
-                    String.Format("TocTechReview{0}.xml", indexText);
-                group["$MetadataFile"] =
-                    String.Format("ContentMetadata{0}.xml", indexText);
-                group["$ProjSettings"] =
-                    String.Format("ProjectSettings{0}.xml", indexText);
-                group["$ProjSettingsLoc"] =
-                    String.Format("ProjectSettings{0}.loc.xml", indexText);
-                group["$GroupIndex"] = indexText;
+                groupContext["$MetadataFile"] =
+                    String.Format("TopicsMetadata{0}.xml", indexText);
+                groupContext["$ProjSettings"] =
+                    String.Format("TopicsProjectSettings{0}.xml", indexText);
+                groupContext["$ProjSettingsLoc"] =
+                    String.Format("TopicsProjectSettings{0}.loc.xml", indexText);
+                groupContext["$VersionFile"] =
+                    String.Format("TopicsVersions{0}.xml", indexText);
+                groupContext["$TokenFile"] = String.Format("TopicsTokens{0}.xml", indexText);
+                groupContext["$IndexFile"] = String.Format("TopicsIndex{0}.xml", indexText);
+
+                groupContext["$DdueXmlDir"] = String.Format("DdueXml{0}", indexText);
+                groupContext["$DdueXmlCompDir"] = String.Format("DdueXmlComp{0}", indexText);
+                groupContext["$DdueHtmlDir"] = String.Format("DdueHtml{0}", indexText);
+
+                groupContext["$GroupIndex"] = indexText;
                 
-                group.Initialize(this.Context);
+                group.Initialize(context);
+
                 if (!group.IsInitialized)
                 {
                     this.IsInitialized = false;
@@ -192,12 +191,27 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region CreateSteps Method
+        #region CreateInitialSteps Method
 
         public override BuildStep CreateInitialSteps(BuildGroup group)
         {
             ConceptualGroup curGroup = group as ConceptualGroup;
             if (curGroup == null)
+            {
+                throw new BuildException("The build engine requires conceptual group.");
+            }
+
+            //this.CreateSteps(listSteps, curGroup);
+            if (_listFormats == null || _listFormats.Count == 0)
+            {
+                return null;
+            }
+
+            BuildSettings settings = this.Settings;
+            BuildStyle outputStyle = settings.Style;
+            string sandcastleDir   = settings.StylesDirectory;
+
+            if (String.IsNullOrEmpty(sandcastleDir))
             {
                 return null;
             }
@@ -207,7 +221,86 @@ namespace Sandcastle.Conceptual
             listSteps.LogTitle    = String.Empty;
             listSteps.LogTimeSpan = true;
 
-            this.CreateSteps(listSteps, curGroup);
+            // 1. Initialize the conceptual topics...
+            StepConceptualInit stepInit = new StepConceptualInit(curGroup);
+            stepInit.Message  = "Initializing and generating conceptual contents";
+            stepInit.LogTitle = String.Empty;
+
+            listSteps.Add(stepInit);
+
+            string helpStyle  = BuildStyleUtils.StyleFolder(
+                outputStyle.StyleType);
+            string workingDir = this.Context.WorkingDirectory;
+
+            // 2. Ensure that we have a valid list of folders...
+            IList<string> listFolders = new List<string>();
+            IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
+            int folderCount = listFolders.Count;
+
+            // 3. Handle the resources...
+            StepDirectoryCopy copyResources = new StepDirectoryCopy(
+                workingDir);
+            copyResources.LogTitle = String.Empty;
+            copyResources.Message  = "Copying user-defined resources.";
+            IList<ResourceContent> resourceContents = group.ResourceContents;
+            if (resourceContents != null && resourceContents.Count != 0)
+            {
+                int contentCount = resourceContents.Count;
+                for (int j = 0; j < contentCount; j++)
+                {
+                    ResourceContent resourceContent = resourceContents[j];
+                    if (resourceContent == null || resourceContent.Count == 0)
+                    {
+                        continue;
+                    }
+                    IList<ResourceItem> listResources = resourceContent.Items;
+                    if (listResources == null || listResources.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    int itemCount = listResources.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ResourceItem resource = listResources[i];
+                        if (resource != null && !resource.IsEmpty)
+                        {
+                            string destFolder = resource.Destination;
+                            copyResources.Add(resource.Source, destFolder);
+
+                            // Add this to the output folders so that it is copied
+                            // to the final output/build directories...
+                            if (destFolder.StartsWith("Output", 
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                DirectoryInfo info = new DirectoryInfo(destFolder);
+                                destFolder = info.Name;
+                                if (!String.IsNullOrEmpty(destFolder) &&
+                                    !dicFolders.ContainsKey(destFolder))
+                                {
+                                    dicFolders.Add(destFolder, true);
+                                    listFolders.Add(destFolder);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (copyResources.IsValid)
+            {
+                listSteps.Add(copyResources);
+            }
+            else
+            {
+                StepNone placeHolder = new StepNone();
+                placeHolder.LogTitle = String.Empty;
+                placeHolder.Message  = "Copying user-defined resources.";
+                listSteps.Add(placeHolder);
+            }
+
+            _listFolders = listFolders;  
 
             if (listSteps.Count != 0)
             {
@@ -217,22 +310,32 @@ namespace Sandcastle.Conceptual
             return null;
         }
 
+        #endregion
+
+        #region CreateFinalSteps Method
+
         public override BuildStep CreateFinalSteps(BuildGroup group)
         {
-            ConceptualGroup curGroup = group as ConceptualGroup;
-            if (curGroup == null)
+            if (group.GroupType != BuildGroupType.Conceptual)
             {
-                return null;
+                throw new BuildException("The build engine requires conceptual group.");
             }
 
             BuildContext context   = this.Context;
             BuildSettings settings = this.Settings;
 
-            string manifestFile      = group["$ManifestFile"];
-            string buildManifestFile = group["$BuildManifestFile"];
-            string configFile        = group["$ConfigurationFile"];
-            string tocFile           = group["$TocFile"];
-            string buildTocFile      = group["$BuildTocFile"];
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            string manifestFile      = groupContext["$ManifestFile"];
+            string buildManifestFile = groupContext["$BuildManifestFile"];
+            string configFile        = groupContext["$ConfigurationFile"];
+            string tocFile           = groupContext["$TocFile"];
+            string buildTocFile      = groupContext["$BuildTocFile"];
 
             string workingDir = context.WorkingDirectory;
 
@@ -288,7 +391,16 @@ namespace Sandcastle.Conceptual
                         _curGroup = group;
 
                         BuildMultiStep listSteps = new BuildMultiStep();
-                        this.CreateSteps(listSteps, group);
+                        BuildStep initialSteps = this.CreateInitialSteps(group);
+                        if (initialSteps != null)
+                        {
+                            listSteps.Add(initialSteps);
+                        }
+                        BuildStep finalSteps = this.CreateFinalSteps(group);
+                        if (finalSteps != null)
+                        {
+                            listSteps.Add(finalSteps);
+                        }
 
                         buildResult = this.RunSteps(listSteps.Steps);
 
@@ -365,159 +477,6 @@ namespace Sandcastle.Conceptual
         #endregion
 
         #region Private Methods
-
-        #region CreateSteps Methods
-
-        private void CreateSteps(BuildMultiStep listSteps, ConceptualGroup group)
-        {
-            if (_listFormats == null || _listFormats.Count == 0)
-            {
-                return;
-            }
-
-            BuildSettings settings = this.Settings;
-            BuildStyle outputStyle = settings.Style;
-            string sandcastleDir   = settings.StylesDirectory;
-
-            if (String.IsNullOrEmpty(sandcastleDir))
-            {
-                return;
-            }
-
-            string helpStyle  = BuildStyleUtils.StyleFolder(
-                outputStyle.StyleType);
-            string workingDir = this.Context.WorkingDirectory;
-
-            // 1. Ensure that we have a valid list of folders...
-            IList<string> listFolders = new List<string>();
-            IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
-            int folderCount = listFolders.Count;
-
-            // 2. Handle the resources...
-            StepDirectoryCopy copyResources = new StepDirectoryCopy(
-                workingDir);
-            copyResources.LogTitle = String.Empty;
-            copyResources.Message  = "Copying user-defined resources.";
-            IList<ResourceContent> resourceContents = group.ResourceContents;
-            if (resourceContents != null && resourceContents.Count != 0)
-            {
-                int contentCount = resourceContents.Count;
-                for (int j = 0; j < contentCount; j++)
-                {
-                    ResourceContent resourceContent = resourceContents[j];
-                    if (resourceContent == null || resourceContent.Count == 0)
-                    {
-                        continue;
-                    }
-                    IList<ResourceItem> listResources = resourceContent.Items;
-                    if (listResources == null || listResources.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    int itemCount = listResources.Count;
-
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        ResourceItem resource = listResources[i];
-                        if (resource != null && !resource.IsEmpty)
-                        {
-                            string destFolder = resource.Destination;
-                            copyResources.Add(resource.Source, destFolder);
-
-                            // Add this to the output folders so that it is copied
-                            // to the final output/build directories...
-                            if (destFolder.StartsWith("Output", 
-                                StringComparison.OrdinalIgnoreCase))
-                            {
-                                DirectoryInfo info = new DirectoryInfo(destFolder);
-                                destFolder = info.Name;
-                                if (!String.IsNullOrEmpty(destFolder) &&
-                                    !dicFolders.ContainsKey(destFolder))
-                                {
-                                    dicFolders.Add(destFolder, true);
-                                    listFolders.Add(destFolder);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (copyResources.IsValid)
-            {
-                listSteps.Add(copyResources);
-            }
-            else
-            {
-                StepNone placeHolder = new StepNone();
-                placeHolder.LogTitle = String.Empty;
-                placeHolder.Message  = "Copying user-defined resources.";
-                listSteps.Add(placeHolder);
-            }
-
-            _listFolders = listFolders;
-
-            this.CreateTopicSteps(listSteps, group, sandcastleDir, helpStyle);
-        }
-
-        #endregion
-
-        #region CreateTopicSteps Method
-
-        private void CreateTopicSteps(BuildMultiStep listSteps, 
-            ConceptualGroup group, string sandcastleDir, string helpStyle)            
-        {
-            BuildContext context   = this.Context;
-            BuildSettings settings = this.Settings;
-
-            string manifestFile      = group["$ManifestFile"];
-            string buildManifestFile = group["$BuildManifestFile"];
-            string configFile        = group["$ConfigurationFile"];
-            string tocFile           = group["$TocFile"];
-            string buildTocFile      = group["$BuildTocFile"];
-
-            BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = context.WorkingDirectory;
-
-            string tempText = null;
-
-            // 3. Create the conceptual manifest
-            // XslTransform.exe 
-            // /xsl:"%DXROOT%\ProductionTransforms\dsmanifesttomanifest.xsl" 
-            //        buildmanifest.proj.xml /out:manifest.xml
-            string application = Path.Combine(context.SandcastleToolsDirectory, 
-                "XslTransform.exe");
-            tempText = Path.Combine(sandcastleDir,
-                @"ProductionTransforms\dsmanifesttomanifest.xsl");
-            string arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}", 
-                tempText, buildManifestFile, manifestFile);
-            StepXslTransform manifestProcess = new StepXslTransform(workingDir,
-                application, arguments);
-            manifestProcess.LogTitle = String.Empty;
-            manifestProcess.Message  = "Xsl Transformation - Creating conceptual manifest";
-            manifestProcess.CopyrightNotice = 2;
-            
-            listSteps.Add(manifestProcess);
-
-            // 4. Create the conceptual table of contents
-            // XslTransform.exe 
-            // /xsl:"%DXROOT%\ProductionTransforms\dstoctotoc.xsl" 
-            //       extractedfiles\toc.xml /out:toc.xml
-            tempText = Path.Combine(sandcastleDir, 
-                @"ProductionTransforms\dstoctotoc.xsl");
-            arguments = String.Format("/xsl:\"{0}\" Extractedfiles\\{1} /out:{2}",
-                tempText, buildTocFile, tocFile);
-            StepXslTransform tocProcess = new StepXslTransform(workingDir,
-                application, arguments);
-            tocProcess.LogTitle = String.Empty;
-            tocProcess.Message  = "Xsl Transformation - Creating conceptual TOC";
-            tocProcess.CopyrightNotice = 2;
-
-            listSteps.Add(tocProcess);
-        }
-
-        #endregion
 
         #endregion
 

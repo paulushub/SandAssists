@@ -248,11 +248,11 @@ namespace Sandcastle.Steps
 
                 Process hxregProcess = new Process();
                 ProcessStartInfo hxregInfo = hxregProcess.StartInfo;
-                hxregInfo.FileName = _registrar;
-                hxregInfo.Arguments = arguments;
+                hxregInfo.FileName         = _registrar;
+                hxregInfo.Arguments        = arguments;
                 hxregInfo.WorkingDirectory = helpPath;
-                hxregInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                hxregInfo.ErrorDialog = false;
+                hxregInfo.WindowStyle      = ProcessWindowStyle.Hidden;
+                hxregInfo.ErrorDialog      = false;
 
                 if (logger != null)
                 {

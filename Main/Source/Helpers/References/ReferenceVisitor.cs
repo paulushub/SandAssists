@@ -127,7 +127,11 @@ namespace Sandcastle.References
             }
         }
 
-        public BuildContext Context
+        #endregion
+
+        #region Protected Properties
+
+        protected BuildContext Context
         {
             get
             {
@@ -135,7 +139,7 @@ namespace Sandcastle.References
             }
         }
 
-        public ReferenceGroup Group
+        protected ReferenceGroup Group
         {
             get
             {
@@ -143,7 +147,7 @@ namespace Sandcastle.References
             }
         }
 
-        public ReferenceEngineSettings EngineSettings
+        protected ReferenceEngineSettings EngineSettings
         {
             get
             {

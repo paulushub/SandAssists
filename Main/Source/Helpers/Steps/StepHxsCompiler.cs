@@ -370,13 +370,14 @@ namespace Sandcastle.Steps
 
                 ProcessStartInfo startInfo = process.StartInfo;
 
-                startInfo.FileName = this.Application;
-                startInfo.Arguments = this.Arguments;
-                startInfo.UseShellExecute = this.UseShellExecute;
+                startInfo.FileName         = this.Application;
+                startInfo.Arguments        = this.Arguments;
+                startInfo.UseShellExecute  = this.UseShellExecute;
                 startInfo.WorkingDirectory = this.WorkingDirectory;
+                startInfo.CreateNoWindow   = true;
 
                 startInfo.RedirectStandardOutput = false;
-                startInfo.RedirectStandardError = true;
+                startInfo.RedirectStandardError  = true;
                 process.StandardInput.Close();
 
                 // Now, start the process - there will still not be output till...

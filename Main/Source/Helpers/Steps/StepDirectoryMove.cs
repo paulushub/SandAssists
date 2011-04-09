@@ -121,7 +121,7 @@ namespace Sandcastle.Steps
 
                     if (logger != null)
                     {
-                        if (String.IsNullOrEmpty(dirSource) == false)
+                        if (!String.IsNullOrEmpty(dirSource))
                         {
                             StringBuilder builder = new StringBuilder();
                             builder.Append("Moving - ");
@@ -152,7 +152,7 @@ namespace Sandcastle.Steps
                         }
                     }
 
-                    if (Directory.Exists(dirSource) == false)
+                    if (!Directory.Exists(dirSource))
                     {
                         if (logger != null)
                         {
@@ -164,7 +164,7 @@ namespace Sandcastle.Steps
                         continue;
                     }
 
-                    if (Directory.Exists(dirDest) == true)
+                    if (Directory.Exists(dirDest))
                     {
                         if (_isOverride)
                         {

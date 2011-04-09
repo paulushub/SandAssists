@@ -8,68 +8,148 @@ using System.Collections.Generic;
 namespace Sandcastle.Conceptual
 {
     [Serializable]
-    public class ConceptualTableOfContents
+    public sealed class ConceptualTableOfContents : ConceptualGroupVisitor
     {
+        #region Public Fields
+
+        /// <summary>
+        /// Gets the unique name of this group visitor.
+        /// </summary>
+        /// <value>
+        /// A string specifying the unique name of this group visitor.
+        /// </value>
+        public const string VisitorName =
+            "Sandcastle.Conceptual.ConceptualTableOfContents";
+
+        #endregion
+
         #region Private Fields
 
         private string  _docWriter;
         private string  _docEditor;
         private string  _docManager;
 
-        private ConceptualGroup _curGroup;
+        private ConceptualGroup _group;
 
         #endregion
 
         #region Constructors and Destructor
 
+        /// <overloads>
+        /// Initializes a new instance of the <see cref="ConceptualTableOfContents"/> class.
+        /// </overloads>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConceptualTableOfContents"/> class
+        /// to the default values.
+        /// </summary>
         public ConceptualTableOfContents()
-        {   
+            : this(VisitorName)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConceptualTableOfContents"/> class
+        /// with the specified group visitor name.
+        /// </summary>
+        /// <param name="visitorName">
+        /// A <see cref="System.String"/> specifying the name of this group visitor.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="visitorName"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// If the <paramref name="visitorName"/> is empty.
+        /// </exception>
+        private ConceptualTableOfContents(string visitorName)
+            : base(visitorName)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConceptualTableOfContents"/> class
+        /// with parameters copied from the specified instance of the 
+        /// <see cref="ConceptualTableOfContents"/> class, a copy constructor.
+        /// </summary>
+        /// <param name="source">
+        /// An instance of the <see cref="ConceptualTableOfContents"/> class from which the
+        /// initialization parameters or values will be copied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
+        /// </exception>
+        public ConceptualTableOfContents(ConceptualTableOfContents source)
+            : base(source)
+        {
         }
 
         #endregion
 
-        #region Public Methods
+        #region Protected Methods
 
-        public void Write(ConceptualGroup group, BuildSettings settings)
+        protected override void OnVisit(ConceptualGroup group)
         {
             BuildExceptions.NotNull(group, "group");
 
-            _curGroup   = group;
-            _docWriter  = _curGroup.DocumentWriter;
-            _docEditor  = _curGroup.DocumentEditor;
-            _docManager = _curGroup.DocumentManager;
+            if (!this.IsInitialized)
+            {
+                throw new BuildException(
+                    "ConceptualTableOfContents: The conceptual table of contents generator is not initialized.");
+            }
 
-            WriteContents(false);
-            WriteContents(true);
+            BuildContext context = this.Context;
+            BuildLogger logger   = context.Logger;
+
+            _group   = group;
+            _docWriter  = _group.DocumentWriter;
+            _docEditor  = _group.DocumentEditor;
+            _docManager = _group.DocumentManager;
+
+            if (logger != null)
+            {
+                logger.WriteLine("Begin - Creating Conceptual Table of Contents.",
+                    BuildLoggerLevel.Info);
+            }
+
+            WriteContents();
+
+            if (logger != null)
+            {
+                logger.WriteLine("Completed - Creating Conceptual Table of Contents.",
+                    BuildLoggerLevel.Info);
+            }
         }
 
         #endregion
 
+        #region Private Methods
+
         #region WriteContents Method
 
-        private void WriteContents(bool isTechReview)
+        private void WriteContents()
         {
-            Guid fileAsset = _curGroup.DocumentID;
-            string workingDir = _curGroup.WorkingDirectory;
-            IList<ConceptualItem> listItems = _curGroup.Items;
+            BuildGroupContext groupContext = this.Context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            Guid fileAsset    = _group.DocumentID;
+            string workingDir = _group.WorkingDirectory;
+            ConceptualContent topicItems = _group.Content;
+            if (topicItems == null || topicItems.IsEmpty)
+            {
+                return;
+            }
             XmlWriter writer  = null;
 
             try
             {
-                string tocDir = Path.Combine(workingDir, "Extractedfiles");
-                if (!Directory.Exists(tocDir))
+                if (!Directory.Exists(workingDir))
                 {
-                    Directory.CreateDirectory(tocDir);
+                    Directory.CreateDirectory(workingDir);
                 }
-                string tocPath = null;
-                if (isTechReview)
-                {
-                    tocPath = Path.Combine(tocDir, _curGroup["$BuildTocTechReviewFile"]);
-                }
-                else
-                {
-                    tocPath = Path.Combine(tocDir, _curGroup["$BuildTocFile"]);
-                }
+                string tocPath = Path.Combine(workingDir, groupContext["$TocFile"]);
 
                 XmlWriterSettings settings = new XmlWriterSettings();
 
@@ -87,21 +167,12 @@ namespace Sandcastle.Conceptual
                 writer = XmlWriter.Create(tocPath, settings);
 
                 writer.WriteStartDocument();
-                writer.WriteStartElement("tableOfContents"); // start-tableOfContents
-                writer.WriteAttributeString("fileAssetGuid", fileAsset.ToString());
-                if (isTechReview)
-                {
-                    writer.WriteAttributeString("assetTypeId", "TocTechReview");
-                }
-                else
-                {
-                    writer.WriteAttributeString("assetTypeId", "Toc");
-                }
+                writer.WriteStartElement("topics"); // start-topics
 
-                int itemCount = listItems.Count;
+                int itemCount = topicItems.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
-                    ConceptualItem projItem = listItems[i];
+                    ConceptualItem projItem = topicItems[i];
                     if (projItem == null || projItem.IsEmpty)
                     {
                         continue;
@@ -111,24 +182,17 @@ namespace Sandcastle.Conceptual
                     if (subCount == 0)
                     {
                         writer.WriteStartElement("topic"); // start-topic
-                        writer.WriteAttributeString("isCategoryOnly", "False");
-                        writer.WriteAttributeString("id", projItem.FileGuid);
-                        if (isTechReview)
-                        {
-                            //Writer="PS" Editor="PS" Manager="PS"
-                            writer.WriteAttributeString("Writer", _docWriter);
-                            writer.WriteAttributeString("Editor", _docEditor);
-                            writer.WriteAttributeString("Manager", _docManager);
-                        }
-                        writer.WriteEndElement(); // end-topic
+                        writer.WriteAttributeString("id", projItem.TopicId);
+                        writer.WriteAttributeString("file", projItem.TopicId);
+                        writer.WriteEndElement();          // end-topic
                     }
                     else
                     {
-                        WriteNode(projItem, writer, isTechReview);
+                        WriteNode(projItem, writer);
                     }
                 }
 
-                writer.WriteEndElement(); // end-tableOfContents
+                writer.WriteEndElement(); // end-topics
                 writer.WriteEndDocument();
             }
             finally
@@ -145,20 +209,12 @@ namespace Sandcastle.Conceptual
 
         #region WriteNode Method
 
-        private void WriteNode(ConceptualItem topicItem,
-            XmlWriter writer, bool isTechReview)
+        private void WriteNode(ConceptualItem topicItem, XmlWriter writer)
         {
             writer.WriteStartElement("topic"); // start-topic
 
-            writer.WriteAttributeString("isCategoryOnly", "False");
-            writer.WriteAttributeString("id", topicItem.FileGuid);
-            if (isTechReview)
-            {
-                //Writer="PS" Editor="PS" Manager="PS"
-                writer.WriteAttributeString("Writer", _docWriter);
-                writer.WriteAttributeString("Editor", _docEditor);
-                writer.WriteAttributeString("Manager", _docManager);
-            }
+            writer.WriteAttributeString("id", topicItem.TopicId);
+            writer.WriteAttributeString("file", topicItem.TopicId);
 
             int subTopics = topicItem.ItemCount;
             if (subTopics != 0)
@@ -176,25 +232,38 @@ namespace Sandcastle.Conceptual
                     if (subCount == 0)
                     {
                         writer.WriteStartElement("topic"); // start-topic
-                        writer.WriteAttributeString("isCategoryOnly", "False");
-                        writer.WriteAttributeString("id", projItem.FileGuid);
-                        if (isTechReview)
-                        {
-                            //Writer="PS" Editor="PS" Manager="PS"
-                            writer.WriteAttributeString("Writer", _docWriter);
-                            writer.WriteAttributeString("Editor", _docEditor);
-                            writer.WriteAttributeString("Manager", _docManager);
-                        }
-                        writer.WriteEndElement(); // end-topic
+                        writer.WriteAttributeString("id",   projItem.TopicId);
+                        writer.WriteAttributeString("file", projItem.TopicId);
+                        writer.WriteEndElement();          // end-topic
                     }
                     else
                     {
-                        WriteNode(projItem, writer, isTechReview);
+                        WriteNode(projItem, writer);
                     }
                 }
             }
 
-            writer.WriteEndElement(); // end-topic
+            writer.WriteEndElement();          // end-topic
+        }
+
+        #endregion
+
+        #endregion
+
+        #region ICloneable Members
+
+        /// <summary>
+        /// This creates a new build object that is a deep copy of the current 
+        /// instance.
+        /// </summary>
+        /// <returns>
+        /// A new build object that is a deep copy of this instance.
+        /// </returns>
+        public override ConceptualGroupVisitor Clone()
+        {
+            ConceptualTableOfContents visitor = new ConceptualTableOfContents(this);
+
+            return visitor;
         }
 
         #endregion

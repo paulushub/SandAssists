@@ -188,6 +188,13 @@ namespace Sandcastle.Steps
 
             BuildContext context     = this.Context;
 
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             BuildLogger logger       = context.Logger;
             BuildSettings settings   = context.Settings;
             BuildStyle outputStyle   = settings.Style;
@@ -213,7 +220,7 @@ namespace Sandcastle.Steps
             {
                 configFile = Path.Combine(configDir, 
                     BuildStyleUtils.StyleFolder(styleType) + ".config");
-                finalConfigFile = Path.Combine(workingDir, group["$ConfigurationFile"]);
+                finalConfigFile = Path.Combine(workingDir, groupContext["$ConfigurationFile"]);
             }
             if (!File.Exists(configFile))
             {
@@ -251,6 +258,13 @@ namespace Sandcastle.Steps
             BuildLogger logger     = context.Logger;
             BuildSettings settings = context.Settings;
 
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             string workingDir = context.WorkingDirectory;
             string configDir  = settings.ConfigurationDirectory;
             if (String.IsNullOrEmpty(workingDir))
@@ -276,7 +290,7 @@ namespace Sandcastle.Steps
                 if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
                 {
                     configFile  = Path.Combine(configDir,  "Conceptual.config");
-                    finalConfig = Path.Combine(workingDir, group["$ConfigurationFile"]);
+                    finalConfig = Path.Combine(workingDir, groupContext["$ConfigurationFile"]);
                 }
                 if (!File.Exists(configFile))
                 {

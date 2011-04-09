@@ -4,16 +4,29 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.Contents
 {
     [Serializable]
     public sealed class MediaContent : BuildContent<MediaItem, MediaContent>
     {
+        #region Public Fields
+
+        public const string TagName = "mediaContent";
+
+        #endregion
+
         #region Private Fields
 
-        private string _contentsName;
-        private string _contentsPath;
-        private string _contentsFile;
+        private bool _isLoaded;
+
+        private string             _contentId;
+        private Version            _contentVersion;
+
+        private BuildFilePath      _contentFile;
+        private BuildDirectoryPath _contentDir;
+
         private string _outputBase;
         private string _outputPath;
         private string _outputLink;
@@ -36,37 +49,57 @@ namespace Sandcastle.Contents
                 _dicItems = keyedList.Dictionary;
             }
 
-            _outputPath = "string('media')";
-            _outputLink = "media";
-            _outputBase = @".\Output";
+            _outputPath     = "string('media')";
+            _outputLink     = "media";
+            _outputBase     = @".\Output";
+            _contentId      = Guid.NewGuid().ToString();
+            _contentVersion = new Version(1, 0);
         }
 
-        public MediaContent(string contentsFile)
+        public MediaContent(string contentFile)
+            : this(contentFile, String.Empty)
+        {
+        }
+
+        public MediaContent(string contentFile, string contentDir)
             : this()
         {
-            _contentsName = String.Empty;
-            if (String.IsNullOrEmpty(contentsFile) == false)
+            BuildExceptions.PathMustExist(contentFile, "contentFile");
+
+            if (String.IsNullOrEmpty(contentDir))
             {
-                _contentsPath = Path.GetDirectoryName(contentsFile);
+                contentDir  = Path.GetDirectoryName(contentFile);
             }
-            _contentsFile = contentsFile;
+
+            _contentFile    = new BuildFilePath(contentFile);
+            _contentDir     = new BuildDirectoryPath(contentDir);
         }
 
         public MediaContent(MediaContent source)
             : base(source)
         {
-            _contentsName = source._contentsName;
-            _contentsPath = source._contentsPath;
-            _contentsFile = source._contentsFile;
-            _outputPath   = source._outputPath;
-            _outputLink   = source._outputLink;
-            _outputBase   = source._outputBase;
-            _dicItems     = source._dicItems;
+            _isLoaded       = source._isLoaded;
+            _contentId      = source._contentId;
+            _contentDir     = source._contentDir;
+            _contentFile    = source._contentFile;
+            _outputPath     = source._outputPath;
+            _outputLink     = source._outputLink;
+            _outputBase     = source._outputBase;
+            _dicItems       = source._dicItems;
+            _contentVersion = source._contentVersion;
         }
 
         #endregion
 
         #region Public Properties
+
+        public string Id
+        {
+            get
+            {
+                return _contentId;
+            }
+        }
 
         public MediaItem this[string mediaId]
         {
@@ -100,7 +133,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_contentsFile) == false)
+                if (!String.IsNullOrEmpty(_contentFile))
                 {
                     return false;
                 }
@@ -109,39 +142,38 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string ContentsName
+        public bool IsLoaded
         {
-            get 
-            { 
-                return _contentsName; 
-            }
-            set 
-            { 
-                _contentsName = value; 
-            }
-        }
-        
-        public string ContentsPath
-        {
-            get 
-            { 
-                return _contentsPath; 
-            }
-            set 
-            { 
-                _contentsPath = value; 
+            get
+            {
+                return _isLoaded;
             }
         }
 
-        public string ContentsFile
+        public BuildFilePath ContentFile
         {
             get 
             { 
-                return _contentsFile; 
+                return _contentFile; 
             }
             set 
-            { 
-                _contentsFile = value; 
+            {
+                if (value != null)
+                {
+                    _contentFile = value;
+                }
+            }
+        }
+
+        public BuildDirectoryPath ContentDir
+        {
+            get
+            {
+                return _contentDir;
+            }
+            set
+            {
+                _contentDir = value;
             }
         }
 
@@ -193,6 +225,157 @@ namespace Sandcastle.Contents
         #endregion
 
         #region Public Method
+
+        #region Load Method
+
+        public void Load()
+        {
+            if (String.IsNullOrEmpty(_contentFile))
+            {
+                return;
+            }
+
+            if (_contentDir == null)
+            {
+                _contentDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            //BuildPathResolver resolver = BuildPathResolver.Create(
+            //    Path.GetDirectoryName(_contentFile));
+            BuildPathResolver resolver = BuildPathResolver.Create(_contentDir,
+                _contentId);
+
+            this.Load(resolver);
+        }
+
+        public void Load(BuildPathResolver resolver)
+        {
+            BuildExceptions.NotNull(resolver, "resolver");
+
+            if (_isLoaded)
+            {
+                return;
+            }
+
+            if (String.IsNullOrEmpty(_contentFile) ||
+                File.Exists(_contentFile) == false)
+            {
+                return;
+            }
+
+            if (_contentDir == null)
+            {
+                _contentDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            XmlReader reader = null;
+
+            try
+            {
+                XmlReaderSettings settings = new XmlReaderSettings();
+
+                settings.IgnoreComments               = true;
+                settings.IgnoreWhitespace             = true;
+                settings.IgnoreProcessingInstructions = true;
+
+                reader = XmlReader.Create(_contentFile, settings);
+
+                lock (BuildPathResolver.Push(resolver))
+                {
+                    this.ReadXml(reader);
+
+                    BuildPathResolver.Pop();
+                }
+
+                _isLoaded = true;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader = null;
+                }
+            }
+        }
+
+        public void Reload()
+        {
+            _isLoaded = false;
+
+            this.Load();
+        }
+
+        #endregion
+
+        #region Save Method
+
+        public void Save()
+        {
+            if (String.IsNullOrEmpty(_contentFile))
+            {
+                return;
+            }
+
+            if (_contentDir == null)
+            {
+                _contentDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            //BuildPathResolver resolver = BuildPathResolver.Create(
+            //    Path.GetDirectoryName(_contentFile));
+            BuildPathResolver resolver = BuildPathResolver.Create(_contentDir,
+                _contentId);
+
+            this.Save(resolver);
+        }
+
+        public void Save(BuildPathResolver resolver)
+        {
+            BuildExceptions.NotNull(resolver, "resolver");
+
+            XmlWriterSettings settings  = new XmlWriterSettings();
+            settings.Indent             = true;
+            settings.IndentChars        = new string(' ', 4);
+            settings.Encoding           = Encoding.UTF8;
+            settings.OmitXmlDeclaration = false;
+
+            XmlWriter writer = null;
+            try
+            {
+                writer = XmlWriter.Create(_contentFile, settings);
+
+                lock (BuildPathResolver.Push(resolver))
+                {
+                    writer.WriteStartDocument();
+
+                    this.WriteXml(writer);
+
+                    writer.WriteEndDocument();
+
+                    BuildPathResolver.Pop();
+                }
+
+                // The file content is now same as the memory, so it can be
+                // considered loaded...
+                _isLoaded = true;
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Item Methods
 
         public override void Add(MediaItem item)
         {
@@ -281,14 +464,153 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #endregion
+
         #region IXmlSerializable Members
 
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, MediaItem.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        MediaItem item = new MediaItem();
+                        item.ReadXml(reader);
+
+                        this.Add(item);
+                    }
+                    else if (String.Equals(reader.Name, "mediaContent",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string nodeText = reader.GetAttribute("id");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _contentId = nodeText;
+                        }
+                        nodeText = reader.GetAttribute("version");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _contentVersion = new Version(nodeText);
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "location",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        BuildPathResolver pathResolver = BuildPathResolver.Resolver;
+
+                        if (!reader.IsEmptyElement && String.Equals(
+                            pathResolver.Id, _contentId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader.NodeType == XmlNodeType.Element)
+                                {
+                                    if (String.Equals(reader.Name, BuildDirectoryPath.TagName,
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        // The location is relative to the content
+                                        // file, so we reset the current...
+                                        pathResolver.Uninitialize();
+                                        pathResolver.Initialize(Path.GetDirectoryName(_contentFile));
+
+                                        BuildDirectoryPath contentDir = 
+                                            new BuildDirectoryPath();
+                                        contentDir.ReadXml(reader);
+
+                                        if (contentDir.IsValid)
+                                        {
+                                            // Now, set it to the content directory...
+                                            pathResolver.Uninitialize();
+                                            pathResolver.Initialize(contentDir.Path);
+                                        }
+                                    }
+                                }
+                                else if (reader.NodeType == XmlNodeType.EndElement)
+                                {
+                                    if (String.Equals(reader.Name, "location",
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void WriteXml(XmlWriter writer)
         {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName); // mediaContent
+            writer.WriteAttributeString("id", _contentId);
+            writer.WriteAttributeString("version", _contentVersion.ToString(2));
+
+            writer.WriteStartElement("location"); // location
+            if (!_contentDir.IsDirectoryOf(_contentFile))
+            {
+                //_contentDir.WriteXml(writer);
+                writer.WriteStartElement(BuildDirectoryPath.TagName);
+                string hintPath = _contentDir.HintPath;
+                if (String.IsNullOrEmpty(hintPath))
+                {
+                    writer.WriteAttributeString("value", 
+                        PathUtils.GetRelativePath(Path.GetDirectoryName(_contentFile),
+                        _contentDir.Path));
+                }
+                else
+                {
+                    writer.WriteAttributeString("value", _contentDir.Name);
+                    writer.WriteString(hintPath);
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();             // location
+
+            writer.WriteStartElement("items"); // items
+            for (int i = 0; i < this.Count; i++)
+            {
+                this[i].WriteXml(writer);      
+            }
+            writer.WriteEndElement();          // items
+
+            writer.WriteEndElement();          // mediaContent
         }
 
         #endregion
@@ -301,17 +623,17 @@ namespace Sandcastle.Contents
 
             this.Clone(content, new BuildKeyedList<MediaItem>());
 
-            if (_contentsName != null)
+            if (_contentId != null)
             {
-                content._contentsName = String.Copy(_contentsName);
+                content._contentId = String.Copy(_contentId);
             }
-            if (_contentsPath != null)
+            if (_contentDir != null)
             {
-                content._contentsPath = String.Copy(_contentsPath);
+                content._contentDir = _contentDir.Clone();
             }
-            if (_contentsFile != null)
+            if (_contentFile != null)
             {
-                content._contentsFile = String.Copy(_contentsFile);
+                content._contentFile = _contentFile.Clone();
             }
             if (_outputBase != null)
             {

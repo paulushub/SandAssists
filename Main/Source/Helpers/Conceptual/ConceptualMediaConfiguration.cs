@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
+
+using Sandcastle.Contents;
 
 namespace Sandcastle.Conceptual
 {
@@ -22,8 +25,8 @@ namespace Sandcastle.Conceptual
 
         #region Private Fields
 
-        private string _outputDir;
-        private string _workingDir;
+        [NonSerialized]
+        private BuildFormat _format;
 
         #endregion
 
@@ -75,34 +78,13 @@ namespace Sandcastle.Conceptual
             ConceptualMediaConfiguration source)
             : base(source)
         {
-            _outputDir = source._outputDir;
-            _workingDir = source._workingDir;
+            //_outputDir = source._outputDir;
+            //_workingDir = source._workingDir;
         }
 
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        /// Gets or sets the working directory of the IntelliSense component.
-        /// This is the directory where the IntelliSense output is generated.
-        /// </summary>
-        /// <value>
-        /// A string specifying the output directory of the IntelliSense 
-        /// component. The default is <see langword="null"/>, and the default
-        /// directory is used.
-        /// </value>
-        public string WorkingDirectory
-        {
-            get
-            {
-                return _workingDir;
-            }
-            set
-            {
-                _workingDir = value;
-            }
-        }
 
         /// <summary>
         /// Gets the source of the build component supported by this configuration.
@@ -115,7 +97,7 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                return BuildComponentType.Sandcastle;
+                return BuildComponentType.SandcastleAssist;
             }
         }
 
@@ -130,7 +112,7 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                return "Microsoft.Ddue.Tools.IntellisenseComponent";
+                return "Sandcastle.Components.ConceptualMediaComponent";
             }
         }
 
@@ -247,13 +229,26 @@ namespace Sandcastle.Conceptual
 
             if (this.IsInitialized)
             {
-                _outputDir = context.BaseDirectory;
+                if (_format == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
             }
+        }
+
+        public void Initialize(BuildContext context, BuildFormat format)
+        {
+            BuildExceptions.NotNull(format, "format");
+
+            _format = format;
+
+            this.Initialize(context);
         }
 
         public override void Uninitialize()
         {
-            _outputDir = null;
+            _format = null;
 
             base.Uninitialize();
         }
@@ -281,15 +276,57 @@ namespace Sandcastle.Conceptual
         /// </remarks>
         public override bool Configure(BuildGroup group, XmlWriter writer)
         {
-            BuildExceptions.NotNull(group, "group");
+            BuildExceptions.NotNull(group,  "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            if (!this.Enabled)
+            if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
             }
 
-            return false;
+            IList<MediaContent> listMedia = group.MediaContents;
+            if (listMedia == null || listMedia.Count == 0)
+            {
+                return false;
+            }
+
+            // The HtmlHelp3 supports a different media link format...
+            BuildFormatType formatType = _format.FormatType;
+            writer.WriteComment(" Include the conceptual media links files ");
+
+            //<targets input="..\TestLibrary\Media" baseOutput=".\Output" 
+            //       outputPath="string('media')" link="../media" 
+            //       map="..\TestLibrary\Media\MediaContent.xml" />
+            int contentCount = listMedia.Count;
+            for (int i = 0; i < contentCount; i++)
+            {
+                MediaContent mediaContent = listMedia[i];
+                if (mediaContent == null || mediaContent.IsEmpty)
+                {
+                    continue;
+                }
+                string mediaDir = mediaContent.ContentDir;
+                if (String.IsNullOrEmpty(mediaDir))
+                {
+                    mediaDir = Path.GetExtension(mediaContent.ContentFile);
+                }
+                writer.WriteStartElement("targets");
+                writer.WriteAttributeString("input", mediaDir);
+                writer.WriteAttributeString("baseOutput", mediaContent.OutputBase);
+                writer.WriteAttributeString("outputPath", mediaContent.OutputPath);
+                if (formatType == BuildFormatType.HtmlHelp3)
+                {
+                    writer.WriteAttributeString("link", mediaContent.OutputLink);
+                }
+                else
+                {
+                    writer.WriteAttributeString("link", "../" + mediaContent.OutputLink);
+                }
+                writer.WriteAttributeString("map", mediaContent.ContentFile);
+                writer.WriteEndElement();
+            }
+
+            return true;
         }
 
         #endregion

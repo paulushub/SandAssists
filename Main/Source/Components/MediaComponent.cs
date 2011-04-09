@@ -1,3 +1,8 @@
+// Copyright (C) Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.IO;
 using System.Text;
@@ -7,6 +12,8 @@ using System.Xml;
 using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools;
+
+using Sandcastle.Components.MediaLinks;
 
 namespace Sandcastle.Components
 {
@@ -50,14 +57,14 @@ namespace Sandcastle.Components
             {
                 string input = targetsNode.GetAttribute("input", String.Empty);
                 if (String.IsNullOrEmpty(input))
-                    WriteMessage(MessageLevel.Error,
+                    this.WriteMessage(MessageLevel.Error,
                         "Each targets element must have an input attribute specifying a directory containing art files.");
 
                 input = Environment.ExpandEnvironmentVariables(input);
 
                 if (!Directory.Exists(input))
                 {
-                    WriteMessage(MessageLevel.Error, String.Format(
+                    this.WriteMessage(MessageLevel.Error, String.Format(
                         "The art input directory '{0}' does not exist.", input));
                 }
 
@@ -73,7 +80,7 @@ namespace Sandcastle.Components
                     "outputPath", String.Empty);
                 if (string.IsNullOrEmpty(outputPathValue))
                 {
-                    WriteMessage(MessageLevel.Error,
+                    this.WriteMessage(MessageLevel.Error,
                         "Each targets element must have an output attribute specifying a directory in which to place referenced art files.");
                 }
                 XPathExpression outputXPath = XPathExpression.Compile(
@@ -86,7 +93,7 @@ namespace Sandcastle.Components
                 string map = targetsNode.GetAttribute("map", String.Empty);
                 if (String.IsNullOrEmpty(map))
                 {
-                    WriteMessage(MessageLevel.Error,
+                    this.WriteMessage(MessageLevel.Error,
                         "Each targets element must have a map attribute specifying a file that maps art ids to files in the input directory.");
                 }
                 map = Environment.ExpandEnvironmentVariables(map);
@@ -105,11 +112,11 @@ namespace Sandcastle.Components
                 XPathExpression relativeToXPath = String.IsNullOrEmpty(
                     relativeTo) ? null : XPathExpression.Compile(relativeTo);
 
-                AddTargets(map, input, baseOutputPath, outputXPath, linkValue,
+                this.AddTargets(map, input, baseOutputPath, outputXPath, linkValue,
                     formatXPath, relativeToXPath);
             }
 
-            WriteMessage(MessageLevel.Info, String.Format(
+            this.WriteMessage(MessageLevel.Info, String.Format(
                 "Indexed {0} art targets.", _artTargets.Count));
         }
 
@@ -117,16 +124,16 @@ namespace Sandcastle.Components
 
         #region Public Properties
 
-        protected MediaTarget this[string name]
+        protected MediaTarget this[string id]
         {
             get
             {
-                if (String.IsNullOrEmpty(name) || !_artTargets.ContainsKey(name))
+                if (String.IsNullOrEmpty(id) || !_artTargets.ContainsKey(id))
                 {
                     return null;
                 }
 
-                return _artTargets[name];
+                return _artTargets[id];
             }
         }
 
@@ -136,15 +143,27 @@ namespace Sandcastle.Components
 
         #endregion
 
-        #region Protected Methods
+        #region Private Methods
 
-        protected void AddTargets(string map, string input, string baseOutputPath,
+        private void AddTargets(string map, string input, string baseOutputPath,
             XPathExpression outputXPath, string link, XPathExpression formatXPath,
             XPathExpression relativeToXPath)
         {  
             XPathDocument document = new XPathDocument(map);
 
-            XPathNodeIterator items = document.CreateNavigator().Select("/*/item");
+            XPathNodeIterator items = document.CreateNavigator().Select("//item");
+            if (items == null || items.Count == 0)
+            {
+                return;
+            }
+            // Check the required condition, which works for all cases...
+            if (!input.EndsWith("\\"))
+            {
+                input += "\\";
+            }
+
+            Type mediaType = typeof(MediaType);
+            Type mediaUnit = typeof(MediaSizeUnit);
 
             foreach (XPathNavigator item in items)
             {
@@ -164,11 +183,32 @@ namespace Sandcastle.Components
                 id = id.ToLower();
                 string name = Path.GetFileName(file);
 
-                MediaTarget target = new MediaTarget();
+                MediaTarget target    = new MediaTarget();
                 target.Id             = id;
-                target.InputPath      = Path.Combine(input, file);
+                target.InputPath      = Path.GetFullPath(Path.Combine(input, file));
                 target.baseOutputPath = baseOutputPath;
                 target.OutputXPath    = outputXPath;
+
+                string mediaText = item.GetAttribute("type", String.Empty);
+                if (!String.IsNullOrEmpty(mediaText))
+                {
+                    target.Media = (MediaType)Enum.Parse(mediaType, mediaText, true);
+                }
+                mediaText = item.GetAttribute("unit", String.Empty);
+                if (!String.IsNullOrEmpty(mediaText))
+                {
+                    target.Unit = (MediaSizeUnit)Enum.Parse(mediaUnit, mediaText, true);
+                }
+                mediaText = item.GetAttribute("width", String.Empty);
+                if (!String.IsNullOrEmpty(mediaText))
+                {
+                    target.Width = Convert.ToInt32(mediaText);
+                }
+                mediaText = item.GetAttribute("height", String.Empty);
+                if (!String.IsNullOrEmpty(mediaText))
+                {
+                    target.Height = Convert.ToInt32(mediaText);
+                }
 
                 if (string.IsNullOrEmpty(name))
                 {
@@ -184,37 +224,24 @@ namespace Sandcastle.Components
                 target.FormatXPath     = formatXPath;
                 target.RelativeToXPath = relativeToXPath;
 
+                XPathNavigator imageNode = item.SelectSingleNode("image");
+                if (imageNode != null)
+                {
+                    string useMap = imageNode.GetAttribute("usemap", String.Empty);
+                    if (!String.IsNullOrEmpty(useMap) && useMap[0] == '#')
+                    {
+                        XPathNavigator imageMap = item.SelectSingleNode("map");
+                        if (imageMap != null && useMap.EndsWith(
+                            imageMap.GetAttribute("name", String.Empty)))
+                        {
+                            target.UseMap = useMap;
+                            target.Map    = imageMap.OuterXml;
+                        }
+                    }
+                }
+
                 _artTargets[id] = target;
             }
-        }
-
-        #endregion
-
-        #region MediaTarget Class
-
-        protected sealed class MediaTarget
-        {
-            public MediaTarget()
-            {   
-            }
-
-            public string Id;
-
-            public string InputPath;
-
-            public string baseOutputPath;
-
-            public XPathExpression OutputXPath;
-
-            public string LinkPath;
-
-            public string Text;
-
-            public string Name;
-
-            public XPathExpression FormatXPath;
-
-            public XPathExpression RelativeToXPath;
         }
 
         #endregion

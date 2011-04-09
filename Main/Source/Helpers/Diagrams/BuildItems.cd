@@ -1,26 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildItem&lt;T&gt;" Collapsed="true">
-    <Position X="2.5" Y="0.75" Width="1.75" />
+    <Position X="2.5" Y="2.25" Width="1.75" />
     <TypeIdentifier />
     <Lollipop Position="0.971" />
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualItem" Collapsed="true">
-    <Position X="0.5" Y="3.25" Width="1.75" />
+    <Position X="2.5" Y="4" Width="1.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
+    <AssociationLine Name="ItemType" Type="Sandcastle.Conceptual.ConceptualItemType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="4.437" />
+        <Point X="1.375" Y="4.437" />
+        <Point X="1.375" Y="3.345" />
+      </Path>
+    </AssociationLine>
     <AssociationLine Name="Items" Type="Sandcastle.Conceptual.ConceptualItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="0.5" Y="3.562" />
-        <Point X="0.125" Y="3.562" />
-        <Point X="0.125" Y="4.255" />
-        <Point X="1.375" Y="4.255" />
-        <Point X="1.375" Y="3.88" />
+        <Point X="2.5" Y="4.187" />
+        <Point X="1.843" Y="4.187" />
+        <Point X="1.843" Y="3.503" />
+        <Point X="3.062" Y="3.503" />
+        <Point X="3.062" Y="4" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAJCAAFAAAAASASEyAhKBkAECAgCFIBIQFBAIABAShA=</HashCode>
+      <HashCode>AAJAAKEQACAgyAQKiAACBAASAAAAEcAKQAACZgBgygI=</HashCode>
       <FileName>Conceptual\ConceptualItem.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -29,41 +36,82 @@
     <ShowAsCollectionAssociation>
       <Property Name="Items" />
     </ShowAsCollectionAssociation>
+    <Lollipop Position="1.138" />
   </Class>
   <Class Name="Sandcastle.References.ReferenceItem" Collapsed="true">
-    <Position X="2.5" Y="3.25" Width="1.75" />
+    <Position X="0.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABAAAAAEAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAIBA=</HashCode>
       <FileName>References\ReferenceItem.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualMetadataItem" Collapsed="true">
-    <Position X="0.5" Y="2" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAEAAACAAAAQYAAgABAAAigQBEAkKAAAAABAAEgABI=</HashCode>
-      <FileName>Conceptual\ConceptualMetadataItem.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualCategoryItem" Collapsed="true">
-    <Position X="4" Y="2" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAgAAAEgAgAAAQCAAAAAIAAAAAAgAAAABA=</HashCode>
-      <FileName>Conceptual\ConceptualCategoryItem.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="1.231" />
-  </Class>
   <Class Name="Sandcastle.References.ReferenceXPathItem" Collapsed="true">
-    <Position X="4.5" Y="3.25" Width="2" />
+    <Position X="4.5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AJBAAAAQAAGCAAAAgAAAAAAACAgAAIQQCAAggAAAABA=</HashCode>
       <FileName>References\ReferenceXPathItem.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="Sandcastle.Conceptual.ConceptualItemType">
-    <Position X="0.5" Y="4.75" Width="1.75" />
+  <Class Name="Sandcastle.Conceptual.ConceptualHtmlTopic" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAIAAAAAAAAAAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualHtmlTopic.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualMarkerTopic" Collapsed="true">
+    <Position X="4.5" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualMarkerTopic.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualRelatedTopic" Collapsed="true">
+    <Position X="0.5" Y="6.5" Width="2" />
+    <AssociationLine Name="TopicType" Type="Sandcastle.Conceptual.ConceptualTopicType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.5" Y="7.13" />
+        <Point X="1.5" Y="8.688" />
+        <Point X="2.75" Y="8.688" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAhA=</HashCode>
+      <FileName>Conceptual\ConceptualRelatedTopic.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TopicType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualTopic" Collapsed="true">
+    <Position X="5" Y="6.5" Width="1.5" />
+    <AssociationLine Name="TopicType" Type="Sandcastle.Conceptual.ConceptualTopicType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="7.13" />
+        <Point X="5.75" Y="8.688" />
+        <Point X="4.75" Y="8.688" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAIAAAEAAAAgCAAAiAAABEAAAAAAAIAABQAAAABAAhA=</HashCode>
+      <FileName>Conceptual\ConceptualTopic.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TopicType" />
+    </ShowAsAssociation>
+  </Class>
+  <Enum Name="Sandcastle.Conceptual.ConceptualItemType">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAQAAAAAABAAAAAAAACEEAAA=</HashCode>
       <FileName>Conceptual\ConceptualItemType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.Conceptual.ConceptualTopicType">
+    <Position X="2.75" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IQAQAAAAAQIAQAAAAAAIAABAAQACQAEAAiQAABEEAgA=</HashCode>
+      <FileName>Conceptual\ConceptualTopicType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Tahoma" Size="8.25" />

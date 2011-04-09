@@ -352,7 +352,7 @@ namespace Sandcastle.Formats
             FormatChmConverter converter = new FormatChmConverter(_options.HtmlDirectory,
                 _outhtmldir, _options.Metadata, _plusTree);
 
-            converter.Process(_logger);
+            converter.Process(_context);
         }
     }
 }

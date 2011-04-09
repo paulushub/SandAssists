@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sandcastle.Conceptual
 {
@@ -8,7 +6,10 @@ namespace Sandcastle.Conceptual
     public enum ConceptualItemType
     {
         None    = 0,
-        MamlDoc = 1,
-        HtmlDoc = 2
+        Topic   = 1,
+        Related = 2,
+        Marker  = 3,
+        Html    = 4,
+        Custom  = 5
     }
 }

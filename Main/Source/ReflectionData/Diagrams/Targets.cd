@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.ReflectionData.Target" Collapsed="true">
+    <Position X="2.25" Y="3" Width="1.5" />
+    <AssociationLine Name="LinkType" Type="Sandcastle.ReflectionData.ReferenceLinkType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="3.375" />
+        <Point X="4.125" Y="3.375" />
+        <Point X="4.125" Y="4.312" />
+        <Point X="5.25" Y="4.312" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="DefaultLinkType" Type="Sandcastle.ReflectionData.ReferenceLinkType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="3.219" />
+        <Point X="6.125" Y="3.219" />
+        <Point X="6.125" Y="4" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BAICAAQAAAAAIBAAQCAAAAACAAAFAAAABAAAoAAAAgA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TargetType" />
+      <Property Name="LinkType" />
+      <Property Name="DefaultLinkType" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.008" />
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.NamespaceTarget" Collapsed="true">
+    <Position X="1" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAQAAAAAQCAAAEAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TypeTarget" Collapsed="true">
+    <Position X="3.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAIABAQAAAAAQKAAAEIAAAAAAAgAAEAQA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.EnumerationTarget" Collapsed="true">
+    <Position X="3" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAIBAAQAAAAAACAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.MemberTarget" Collapsed="true">
+    <Position X="2.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAABAAAAAAIAAAQAAAAAQCAAAEAAAAAQAAgAAEAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ConstructorTarget" Collapsed="true">
+    <Position X="1" Y="5.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAQAAAAAACAAAAAAAAAIAAgACAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.ProcedureTarget" Collapsed="true">
+    <Position X="3.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAMAAAQBAAAAACAAAAAAAAAAAAgAEAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.EventTarget" Collapsed="true">
+    <Position X="1.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAQAAAAAACAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.PropertyTarget" Collapsed="true">
+    <Position X="3.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAJAAAQAAAAAACAAAAAAAAAIAAgACAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.MethodTarget" Collapsed="true">
+    <Position X="5.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAJABAQCAAAAAiAAAAAAAAAIAAgACAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.Parameter" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAQCAAAFAAAAAQAAgAAAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.Specialization" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABBAAAAAAAACAAAgAAAAIAIAgAAAAAA=</HashCode>
+      <FileName>References.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Sandcastle.ReflectionData.TargetCollectionXmlUtilities" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ggAREAhIggACAIBAKASEAAEghAQIAZIBBAEAAAIAJAA=</HashCode>
+      <FileName>TargetCollectionXmlUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.ReflectionData.TargetType" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAgAAAgAAAAAgAIIAACAQAAAQEAAAA=</HashCode>
+      <FileName>Targets.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.ReflectionData.ReferenceLinkType" Collapsed="true">
+    <Position X="5.25" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABACAAAAAQAAAAAAAAABAAAAAABAAAAAAAEAAAEAAAA=</HashCode>
+      <FileName>References.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

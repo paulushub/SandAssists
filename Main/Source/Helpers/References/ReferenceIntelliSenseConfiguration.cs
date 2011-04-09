@@ -285,7 +285,7 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            if (!this.Enabled)
+            if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
             }

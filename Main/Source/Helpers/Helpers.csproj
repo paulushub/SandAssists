@@ -84,6 +84,10 @@
   <ItemGroup>
     <Compile Include="BuildComponentConfiguration.cs" />
     <Compile Include="BuildConfiguration.cs" />
+    <Compile Include="BuildGroupContext.cs" />
+    <Compile Include="BuildGroupTocInfo.cs" />
+    <Compile Include="BuildGroupVisitor.cs" />
+    <Compile Include="Conceptual\ConceptualGroupContext.cs" />
     <Compile Include="BuildSource.cs" />
     <Compile Include="BuildComponentType.cs" />
     <Compile Include="BuildEngineSettings.cs" />
@@ -95,15 +99,25 @@
     <Compile Include="BuildLogoPlacement.cs" />
     <Compile Include="BuildMisspelledWord.cs" />
     <Compile Include="BuildOptions.cs" />
+    <Compile Include="BuildSourceContext.cs" />
     <Compile Include="BuildSpellChecker.cs" />
     <Compile Include="BuildSpellCheckResult.cs" />
     <Compile Include="BuildStyleUtils.cs" />
     <Compile Include="BuildSyntaxType.cs" />
+    <Compile Include="BuildTocContext.cs" />
+    <Compile Include="BuildTocInfo.cs" />
+    <Compile Include="BuildTocInfoType.cs" />
+    <Compile Include="BuildTopicTocInfo.cs" />
+    <Compile Include="Conceptual\ConceptualAuthoring.cs" />
     <Compile Include="Conceptual\ConceptualCloneConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualCodeConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualComponentConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualDocProjSource.cs" />
     <Compile Include="Conceptual\ConceptualEngineSettings.cs" />
+    <Compile Include="Conceptual\ConceptualGroupTocInfo.cs" />
+    <Compile Include="Conceptual\ConceptualGroupVisitor.cs" />
+    <Compile Include="Conceptual\ConceptualHtmlTopic.cs" />
     <Compile Include="Conceptual\ConceptualIntelliSenseConfiguration.cs" />
     <Compile Include="BuildConverter.cs" />
     <Compile Include="BuildDocumenter.cs" />
@@ -125,11 +139,20 @@
     <Compile Include="BuildVisitor.cs" />
     <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
     <Compile Include="Conceptual\ConceptualLinkConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualMarkerTopic.cs" />
     <Compile Include="Conceptual\ConceptualMathConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualMediaConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualPostTransConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualPreTransConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualReferenceLinkConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualRelatedTopic.cs" />
+    <Compile Include="Conceptual\ConceptualSharedConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualShfbSource.cs" />
+    <Compile Include="Conceptual\ConceptualSource.cs" />
     <Compile Include="Conceptual\ConceptualTocFilter.cs" />
+    <Compile Include="Conceptual\ConceptualTopic.cs" />
+    <Compile Include="Conceptual\ConceptualTopicType.cs" />
+    <Compile Include="Conceptual\ConceptualXsdDocSource.cs" />
     <Compile Include="Configurators\AssemblerConfigurator.cs" />
     <Compile Include="BuildConfigurator.cs" />
     <Compile Include="BuildContext.cs" />
@@ -137,23 +160,19 @@
     <Compile Include="BuildFilter.cs" />
     <Compile Include="BuildMultiStep.cs" />
     <Compile Include="BuildStepType.cs" />
-    <Compile Include="Conceptual\ConceptualCategoryContent.cs" />
     <Compile Include="Conceptual\ConceptualConfigurator.cs" />
     <Compile Include="Conceptual\ConceptualGroup.cs" />
     <Compile Include="Conceptual\ConceptualItem.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Conceptual\ConceptualItemType.cs" />
-    <Compile Include="Conceptual\ConceptualCategoryItem.cs" />
     <Compile Include="Conceptual\ConceptualCategoryFilter.cs" />
     <Compile Include="Conceptual\ConceptualContent.cs" />
     <Compile Include="Conceptual\ConceptualFilter.cs" />
     <Compile Include="Conceptual\ConceptualRevisionFilter.cs" />
-    <Compile Include="Conceptual\ConceptualSiteMap.cs" />
     <Compile Include="Conceptual\ConceptualEngine.cs" />
-    <Compile Include="Conceptual\ConceptualBuildManifest.cs" />
-    <Compile Include="Conceptual\ConceptualMetadataContent.cs" />
-    <Compile Include="Conceptual\ConceptualMetadataItem.cs" />
+    <Compile Include="Conceptual\ConceptualManifest.cs" />
+    <Compile Include="Conceptual\ConceptualMetadata.cs" />
     <Compile Include="Configurators\ConfiguratorKeywords.cs" />
     <Compile Include="Configurators\GenericConfigurator.cs" />
     <Compile Include="Configurators\IncludeConfigurator.cs" />
@@ -185,13 +204,23 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="References\ReferenceAjaxDocSource.cs" />
     <Compile Include="References\ReferenceAutoDocConfiguration.cs" />
     <Compile Include="References\ReferenceCloneConfiguration.cs" />
     <Compile Include="References\ReferenceCodeConfiguration.cs" />
     <Compile Include="References\ReferenceComponentConfiguration.cs" />
     <Compile Include="References\ReferenceConfiguration.cs" />
+    <Compile Include="References\ReferenceDocProjSource.cs" />
     <Compile Include="References\ReferenceDocumentType.cs" />
     <Compile Include="References\ReferenceEngineSettings.cs" />
+    <Compile Include="References\ReferenceGroupContext.cs" />
+    <Compile Include="References\ReferenceGroupTocInfo.cs" />
+    <Compile Include="References\ReferenceGroupVisitor.cs" />
+    <Compile Include="References\ReferenceNDocSource.cs" />
+    <Compile Include="References\ReferenceScriptSharpSource.cs" />
+    <Compile Include="References\ReferenceSharedConfiguration.cs" />
+    <Compile Include="References\ReferenceShfbSource.cs" />
+    <Compile Include="References\ReferenceSource.cs" />
     <Compile Include="References\ReferenceTocExcludeConfiguration.cs" />
     <Compile Include="References\ReferenceFilterType.cs" />
     <Compile Include="References\ReferenceFormatAssembler.cs" />
@@ -215,14 +244,22 @@
     <Compile Include="References\ReferenceTocLayoutVisitor.cs" />
     <Compile Include="References\ReferenceTocVisitor.cs" />
     <Compile Include="References\ReferenceNamespaceFilter.cs" />
+    <Compile Include="References\ReferenceVersionContent.cs" />
+    <Compile Include="References\ReferenceVersionItem.cs" />
+    <Compile Include="References\ReferenceVersionSource.cs" />
     <Compile Include="References\ReferenceVisibilityConfiguration.cs" />
     <Compile Include="References\ReferenceVisibilityVisitor.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
+    <Compile Include="References\ReferenceVsNetSource.cs" />
     <Compile Include="References\ReferenceXPathItem.cs" />
     <Compile Include="References\ReferenceXPathConfiguration.cs" />
     <Compile Include="References\ReferenceXPathVisitor.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
+    <Compile Include="Steps\StepConceptualInit.cs" />
+    <Compile Include="Steps\StepReferenceInit.cs" />
+    <Compile Include="Steps\StepReferenceManifest.cs" />
+    <Compile Include="Steps\StepReferenceModel.cs" />
     <Compile Include="Steps\StepReferenceRefine.cs" />
     <Compile Include="Steps\StepReferenceToc.cs" />
     <Compile Include="Steps\StepSleep.cs" />
@@ -237,7 +274,7 @@
     <Compile Include="Steps\StepHxsCompiler.cs" />
     <Compile Include="Steps\StepHxsViewerClose.cs" />
     <Compile Include="Steps\StepHxsViewerStart.cs" />
-    <Compile Include="Steps\StepMrefBuilder.cs" />
+    <Compile Include="Steps\StepReflectionBuilder.cs" />
     <Compile Include="Steps\StepXslTransform.cs" />
     <Compile Include="Conceptual\ConceptualTopicIdFilter.cs" />
     <Compile Include="Conceptual\ConceptualUtils.cs" />
@@ -285,11 +322,14 @@
     <None Include="Diagrams\BuildEngines.cd" />
     <None Include="Diagrams\BuildFilters.cd" />
     <None Include="Diagrams\BuildGroups.cd" />
+    <None Include="Diagrams\BuildGroupVisitors.cd" />
     <None Include="Diagrams\BuildItems.cd" />
     <None Include="Diagrams\BuildObjects.cd" />
     <None Include="Diagrams\BuildSettings.cd" />
+    <None Include="Diagrams\BuildSources.cd" />
     <None Include="Diagrams\BuildSteps.cd" />
     <None Include="Diagrams\BuildFormats.cd" />
+    <None Include="Diagrams\BuildTocInfo.cd" />
     <None Include="Diagrams\BuildVisitors.cd" />
   </ItemGroup>
   <ItemGroup>

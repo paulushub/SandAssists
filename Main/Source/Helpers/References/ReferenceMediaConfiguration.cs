@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
+
+using Sandcastle.Formats;
+using Sandcastle.Contents;
 
 namespace Sandcastle.References
 {
@@ -24,6 +28,11 @@ namespace Sandcastle.References
         #endregion
 
         #region Private Fields
+
+        [NonSerialized]
+        private BuildSettings _settings;
+        [NonSerialized]
+        private BuildContext  _context;
 
         #endregion
 
@@ -220,10 +229,26 @@ namespace Sandcastle.References
         public override void Initialize(BuildContext context)
         {
             base.Initialize(context);
+
+            if (this.IsInitialized)
+            {
+                _settings = context.Settings;
+                Debug.Assert(_settings != null);
+                if (_settings == null || _settings.Style == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
+
+                _context  = context;
+            }
         }
 
         public override void Uninitialize()
         {
+            _settings = null;
+            _context  = null;
+
             base.Uninitialize();
         }
 
@@ -253,9 +278,61 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            //writer.WriteStartElement("output");  //start: output
-            //writer.WriteAttributeString("directory", "");
-            //writer.WriteEndElement();            //end: output
+            if (!this.Enabled || !this.IsInitialized)
+            {
+                return false;
+            }
+
+            IList<MediaContent> listMedia = group.MediaContents;
+            if (listMedia == null || listMedia.Count == 0)
+            {
+                return false;
+            }
+
+            bool useInclude = false;
+            FormatMhv mhvFormat = 
+                _settings.Formats[BuildFormatType.HtmlHelp3] as FormatMhv;
+            if (mhvFormat != null && mhvFormat.Enabled)
+            {
+                useInclude = true;
+            }
+                useInclude = true;
+
+            writer.WriteStartElement("options");  // start: options
+            writer.WriteAttributeString("useInclude", useInclude.ToString());
+            writer.WriteEndElement();             // end: options
+
+            // The HtmlHelp3 supports a different media link format...
+            BuildFormatType formatType = BuildFormatType.None;
+
+            int contentCount = listMedia.Count;
+            for (int i = 0; i < contentCount; i++)
+            {
+                MediaContent mediaContent = listMedia[i];
+                if (mediaContent == null || mediaContent.IsEmpty)
+                {
+                    continue;
+                }
+                string mediaDir = mediaContent.ContentDir;
+                if (String.IsNullOrEmpty(mediaDir))
+                {
+                    mediaDir = Path.GetExtension(mediaContent.ContentFile);
+                }
+                writer.WriteStartElement("targets");
+                writer.WriteAttributeString("input", mediaDir);
+                writer.WriteAttributeString("baseOutput", mediaContent.OutputBase);
+                writer.WriteAttributeString("outputPath", mediaContent.OutputPath);
+                if (formatType == BuildFormatType.HtmlHelp3)
+                {
+                    writer.WriteAttributeString("link", mediaContent.OutputLink);
+                }
+                else
+                {
+                    writer.WriteAttributeString("link", "../" + mediaContent.OutputLink);
+                }
+                writer.WriteAttributeString("map", mediaContent.ContentFile);
+                writer.WriteEndElement();
+            }
 
             return true;
         }

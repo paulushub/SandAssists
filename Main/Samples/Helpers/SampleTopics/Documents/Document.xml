@@ -3,7 +3,6 @@
     <developerConceptualDocument
     xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
     xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!--<title>Quick Start</title>-->
     <summary>
         <para>
             A quick start tutorial for the Sandcastle Conceptual Help
@@ -21,6 +20,18 @@
         <mediaLink>
             <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
         </mediaLink>
+        <para>
+            This will demonstrate the use of image maps...
+        </para>
+        <mediaLink>
+            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f813"/>
+        </mediaLink>         
+        <para>
+            This will demonstrate the use YouTube video...
+        </para>
+        <mediaLink>
+            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f814"/>
+        </mediaLink>         
     </introduction>
     
     <section address="section1">

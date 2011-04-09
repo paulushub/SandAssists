@@ -464,6 +464,15 @@ namespace Sandcastle.Components
                             int snipIndex = snipNavigator.ValueAsInt;
                             SnippetItem item = codeController[snipIndex];
 
+                            if (item == null)
+                            {
+                                this.WriteMessage(MessageLevel.Warn,
+                                    "A code snippet specified could not be found. See next message for details.");
+
+                                snipNavigator.DeleteSelf();
+                                continue;
+                            }
+
                             string codeText = item.Text;
                             if (!String.IsNullOrEmpty(codeText))
                             {

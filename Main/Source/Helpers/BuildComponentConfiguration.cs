@@ -350,7 +350,7 @@ namespace Sandcastle
         private bool            _isInitialized;
         private BuildEngineType _engineType;
 
-        private BuildMultiMap<string, BuildComponentConfiguration> _multiMap;
+        private BuildMultiSet<string, BuildComponentConfiguration> _multiMap;
 
         #endregion
 
@@ -378,7 +378,7 @@ namespace Sandcastle
         public BuildComponentConfigurationList(BuildEngineType engineType)
         {
             _engineType = engineType;
-            _multiMap   = new BuildMultiMap<string, BuildComponentConfiguration>();
+            _multiMap   = new BuildMultiSet<string, BuildComponentConfiguration>();
 
             this.Changed += new EventHandler<
                 BuildListEventArgs<BuildComponentConfiguration>>(OnComponentConfigurationListChanged);
@@ -457,11 +457,6 @@ namespace Sandcastle
             {
                 BuildComponentConfiguration config = this[i];
                 config.Initialize(context);
-
-                if (!config.IsInitialized)
-                {
-                    return;
-                }
             }
 
             _isInitialized = true;
@@ -599,7 +594,7 @@ namespace Sandcastle
             if (_multiMap == null)
             {
                 _multiMap = 
-                    new BuildMultiMap<string, BuildComponentConfiguration>();
+                    new BuildMultiSet<string, BuildComponentConfiguration>();
             }
 
             switch (e.ChangeType)

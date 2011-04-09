@@ -6,6 +6,7 @@ namespace Sandcastle.Configurators
     {
         public const string Skeleton           = "%Skeleton%";
         public const string Tokens             = "%Tokens%";
+        public const string TokensReplaced     = "%TokensReplaced%";
         public const string CodeSnippets       = "%CodeSnippets%";
         public const string Transforms         = "%Transforms%";
         public const string MediaLinks         = "%MediaLinks%";

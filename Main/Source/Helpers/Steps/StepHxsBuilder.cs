@@ -533,6 +533,7 @@ namespace Sandcastle.Steps
             startInfo.FileName         = "XslTransform.exe";
             startInfo.Arguments        = arguments;
             startInfo.UseShellExecute  = false;
+            startInfo.CreateNoWindow   = true;
             startInfo.WorkingDirectory = workingDir;
             startInfo.RedirectStandardOutput = true;
 
@@ -679,9 +680,10 @@ namespace Sandcastle.Steps
                 @"ProductionTransforms\TocToHxSContents.xsl");
             string arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}\\{3}.HxT",
                 tempText, _helpToc, _helpFolder, _helpName);
-            startInfo.FileName = "XslTransform.exe";
-            startInfo.Arguments = arguments;
-            startInfo.UseShellExecute = false;
+            startInfo.FileName         = "XslTransform.exe";
+            startInfo.Arguments        = arguments;
+            startInfo.UseShellExecute  = false;
+            startInfo.CreateNoWindow   = true;
             startInfo.WorkingDirectory = this.WorkingDirectory;
             startInfo.RedirectStandardOutput = true;
 

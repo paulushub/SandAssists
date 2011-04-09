@@ -17,6 +17,10 @@
     <file name="FormulaGallery.xml" title="Formula Gallery"/>
     <file name="CodeTest.xml" title="Code Tests"/>
     <file name="Testing.xml" title="Testing"/>
+    <file name="EmbedPdf.xml" title="Embedded PDF Document"/>
+    <file name="EmbedXps.xml" title="Embedded XPS Document"/>
+    <file name="EmbedFlash.xml" title="Embedded Flash Media"/>
+    <file name="EmbedSilverlight.xml" title="Embedded Silverlight Media"/>
     <file name="Tutorials\Tutorial.xml" title="Getting Started">
         <file name="Tutorials\Introduction.xml" title="Introduction"/>
         <file name="Tutorials\QuickStart.xml" title="Quick Start"/>

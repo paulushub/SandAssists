@@ -8,6 +8,7 @@ namespace Sandcastle.References
     /// <summary>
     /// This provides build settings that are specific to the reference build process.
     /// </summary>
+    [Serializable]
     public sealed class ReferenceEngineSettings : BuildEngineSettings
     {
         #region Private Fields
@@ -15,7 +16,6 @@ namespace Sandcastle.References
         private bool                  _fixComments;
 
         private bool                  _rootContainer;
-        private string                _rootTitle;
 
         private SharedContent         _sharedContent;
         private IncludeContent        _includeContent;
@@ -35,12 +35,11 @@ namespace Sandcastle.References
             : base("Sandcastle.ReferenceEngineSettings", BuildEngineType.Reference)
         {  
             _rootContainer  = false;
-            _rootTitle      = "Programmer's Reference";
 
             _refNamer       = ReferenceNamer.Orcas;
             _refNaming      = ReferenceNamingMethod.Guid;
 
-            _sharedContent  = new SharedContent("References", String.Empty);
+            _sharedContent  = new SharedContent("References");
             _includeContent = new IncludeContent("References");
 
             IBuildNamedList<BuildConfiguration> configurations = this.Configurations;
@@ -99,6 +98,12 @@ namespace Sandcastle.References
                 ReferenceMediaConfiguration mediaComponent =
                     new ReferenceMediaConfiguration();
 
+                ReferenceLinkConfiguration linkComponent =
+                    new ReferenceLinkConfiguration();
+
+                ReferenceSharedConfiguration sharedComponent =
+                    new ReferenceSharedConfiguration();
+
                 componentConfigurations.Add(autoDocument);
                 componentConfigurations.Add(missingTags);
                 componentConfigurations.Add(intelliSense);
@@ -107,6 +112,8 @@ namespace Sandcastle.References
                 componentConfigurations.Add(codeComponent);
                 componentConfigurations.Add(mathComponent);
                 componentConfigurations.Add(mediaComponent);
+                componentConfigurations.Add(linkComponent);
+                componentConfigurations.Add(sharedComponent);
             }
         }
 
@@ -125,36 +132,11 @@ namespace Sandcastle.References
         public ReferenceEngineSettings(ReferenceEngineSettings source)
             : base(source)
         {
-            _rootTitle     = source._rootTitle;
             _rootContainer = source._rootContainer;
             _refNaming     = source._refNaming;
             _refNamer      = source._refNamer;
             _fixComments   = source._fixComments;
             _sharedContent = source._sharedContent;
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        public override void Initialize(BuildContext context)
-        {
-            base.Initialize(context);
-
-            if (this.RootNamespaceContainer)
-            {
-                string tempText = this.RootNamespaceTitle;
-
-                if (!String.IsNullOrEmpty(tempText))
-                {
-                    _sharedContent.Add(new SharedItem("rootTopicTitle", tempText));
-                }
-            }
-        }
-
-        public override void Uninitialize()
-        {
-            base.Uninitialize();
         }
 
         #endregion
@@ -217,18 +199,6 @@ namespace Sandcastle.References
             set
             {
                 _rootContainer = value;
-            }
-        }
-
-        public string RootNamespaceTitle
-        {
-            get
-            {
-                return _rootTitle;
-            }
-            set
-            {
-                _rootTitle = value;
             }
         }
 
@@ -473,6 +443,62 @@ namespace Sandcastle.References
                 return (ReferenceMediaConfiguration)configurations[
                     ReferenceMediaConfiguration.ConfigurationName];
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ReferenceLinkConfiguration Links
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ReferenceLinkConfiguration)configurations[
+                    ReferenceLinkConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ReferenceSharedConfiguration Shared
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ReferenceSharedConfiguration)configurations[
+                    ReferenceSharedConfiguration.ConfigurationName];
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public override void Initialize(BuildContext context)
+        {
+            base.Initialize(context);
+        }
+
+        public override void Uninitialize()
+        {
+            base.Uninitialize();
         }
 
         #endregion

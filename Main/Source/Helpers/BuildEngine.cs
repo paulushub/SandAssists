@@ -21,8 +21,7 @@ namespace Sandcastle
         #region Private Fields
 
         private bool          _isInitialized;
-        private bool          _ownsLogger;
-        private BuildLoggers  _logger;
+        private BuildLogger   _logger;
         private BuildContext  _context;
         private BuildSettings _settings;
 
@@ -41,58 +40,7 @@ namespace Sandcastle
         /// to the default properties or values.
         /// </summary>
         protected BuildEngine()
-            : this(null, null, null)
         {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="settings"></param>
-        protected BuildEngine(BuildSettings settings)
-            : this(settings, null, null)
-        {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="logger"></param>
-        protected BuildEngine(BuildLoggers logger)
-            : this(null, logger, null)
-        {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="logger"></param>
-        /// <param name="context"></param>
-        /// <param name="configuration"></param>
-        protected BuildEngine(BuildSettings settings, BuildLoggers logger, 
-            BuildContext context)
-        {
-            _settings      = settings;
-            _logger        = logger;
-            _context       = context;
-
-            if (_settings == null)
-            {
-                _settings = new BuildSettings();
-            }
-
-            if (_context == null)
-            {
-                _context = new BuildContext();
-            }
-
-            if (_logger == null)
-            {
-                _logger = new BuildLoggers();
-                _ownsLogger = true;
-            }
-
             _configContent = new ConfiguratorContent();
         }
 
@@ -125,38 +73,6 @@ namespace Sandcastle
         public abstract BuildEngineType EngineType
         {
             get;
-        }
-
-        /// <summary>
-        /// Gets the current settings of the build process.
-        /// </summary>
-        /// <value>
-        /// A <see cref="BuildSettings"/> specifying the current settings of the 
-        /// build process. This is <see langword="null"/> if the
-        /// configuration process is not initiated.
-        /// </value>
-        public BuildSettings Settings
-        {
-            get 
-            { 
-                return _settings; 
-            }
-        }
-
-        public BuildContext Context
-        {
-            get
-            {
-                return _context;
-            }
-        }
-
-        public BuildLoggers Logger
-        {
-            get
-            {
-                return _logger;
-            }
         }
 
         public ConfiguratorItem this[int itemIndex]
@@ -196,6 +112,42 @@ namespace Sandcastle
 
         #endregion
 
+        #region Protected Properties
+
+        /// <summary>
+        /// Gets the current settings of the build process.
+        /// </summary>
+        /// <value>
+        /// A <see cref="BuildSettings"/> specifying the current settings of the 
+        /// build process. This is <see langword="null"/> if the
+        /// configuration process is not initiated.
+        /// </value>
+        protected BuildSettings Settings
+        {
+            get
+            {
+                return _settings;
+            }
+        }
+
+        protected BuildContext Context
+        {
+            get
+            {
+                return _context;
+            }
+        }
+
+        protected BuildLogger Logger
+        {
+            get
+            {
+                return _logger;
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         #region CreateSteps Method
@@ -207,44 +159,24 @@ namespace Sandcastle
 
         #region Initialize Method
 
-        public virtual void Initialize(BuildSettings settings, BuildLoggers logger)
-        {
-            if (logger != null)
-            {
-                _logger = logger;
-            }
-
-            this.Initialize(settings);
-        }
-
-        public virtual void Initialize(BuildSettings settings)
+        public virtual void Initialize(BuildContext context)
         {
             if (_isInitialized)
             {
                 return;
             }
 
-            if (settings == null)
-            {
-                settings = _settings;
-            }
+            BuildExceptions.NotNull(context, "context");
 
-            BuildExceptions.NotNull(settings, "settings");
-
-            _isInitialized = false;
-
-            if (_logger == null)
-            {
-                _logger = new BuildLoggers();
-                _ownsLogger = true;
-            }
+            _context  = context;
+            _settings = context.Settings;
+            _logger   = context.Logger;
 
             if (_logger.IsInitialized == false)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
 
-            _settings         = settings;
             //string workingDir = _settings.WorkingDirectory;
             //if (String.IsNullOrEmpty(workingDir))
             //{
@@ -289,10 +221,9 @@ namespace Sandcastle
                                  
         public virtual void Uninitialize()
         {
-            if (_ownsLogger && (_logger != null))
-            {
-                _logger.Uninitialize();
-            }
+            _context  = null;
+            _settings = null;
+            _logger   = null;
 
             _isInitialized = false;
         }
@@ -530,11 +461,6 @@ namespace Sandcastle
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_ownsLogger && (_logger != null))
-            {
-                _logger.Dispose();
-            }
-            _logger = null;
         }
 
         #endregion

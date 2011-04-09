@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
@@ -31,6 +32,11 @@ namespace Sandcastle.References
 
         private string _snippetSeparator;
         private BuildCacheStorageType _snippetStorage;
+ 
+        [NonSerialized]
+        private BuildContext  _context;
+        [NonSerialized]
+        private BuildSettings _settings;
 
         #endregion
 
@@ -314,10 +320,19 @@ namespace Sandcastle.References
         public override void Initialize(BuildContext context)
         {
             base.Initialize(context);
+
+            if (this.IsInitialized)
+            {
+                _context  = context;
+                _settings = context.Settings;
+            }
         }
 
         public override void Uninitialize()
         {
+            _context  = null;
+            _settings = null;
+
             base.Uninitialize();
         }
 
@@ -347,13 +362,25 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            if (!this.Enabled)
+            if (!this.Enabled || !this.IsInitialized)
+            {
+                return false;
+            }
+
+            Debug.Assert(_settings != null, "The settings object is required.");
+            if (_settings == null || _context == null)
+            {
+                return false;
+            }
+            BuildStyle buildStyle = _settings.Style;
+            Debug.Assert(buildStyle != null, "The style object cannot be null (or Nothing).");
+            if (buildStyle == null)
             {
                 return false;
             }
 
             //<component type="Sandcastle.Components.ReferenceCodeComponent" assembly="$(SandAssistComponent)">
-            //    <options mode="IndirectIris" tabSize="4" lineNumbers="true" outlining="false"/>
+            //    <options mode="IndirectIris" tabSize="4" lineNumbers="true" outlining="false" storage="Sqlite" separator="..."/>
             //
             //    <!--The following options are for processing codeReference tags in the 
             //    reference help.
@@ -361,10 +388,6 @@ namespace Sandcastle.References
             //    minimum memory usage etc.
             //  
             //    $codeSnippets   
-            //      @process: * Indicates whether or not to process the codeReference.
-            //                * If true, the codeReference tags are process by this component
-            //                * Default: false
-            //             
             //      @storage: * Indicates where the code snippets should be stored after loading
             //                * Possible values are
             //                     - Memory: the snippets are stored in memory similar to 
@@ -374,42 +397,102 @@ namespace Sandcastle.References
             //      @separator: * For multi-parts snippets, this defines the separator... 
             //                  * Default: ...-->
             //
-            //    <!--<codeSnippets process="true" storage="Sqlite" separator="...">
+            //    <!--<codeSnippets>
             //        <codeSnippet source=".\CodeSnippetSample.xml" format="Sandcastle" />
             //    </codeSnippets>-->
             //    <SandcastleItem name="%CodeSnippets%" />
             //</component>
                                                   
             writer.WriteStartElement("options");  //start: options
-            writer.WriteAttributeString("mode", _highlightMode);
-            writer.WriteAttributeString("tabSize", _tabSize.ToString());
+            writer.WriteAttributeString("mode",        _highlightMode);
+            writer.WriteAttributeString("tabSize",     _tabSize.ToString());
             writer.WriteAttributeString("lineNumbers", _showLineNumbers.ToString());
-            writer.WriteAttributeString("outlining", _showOutlining.ToString());
+            writer.WriteAttributeString("outlining",   _showOutlining.ToString());
+            writer.WriteAttributeString("storage",     _snippetStorage.ToString());
+            writer.WriteAttributeString("separator",   _snippetSeparator);
             writer.WriteEndElement();             //end: options
 
-            IList<SnippetContent> listSnippets = group.SnippetContents;
+            IList<CodeSnippetContent> listSnippets = group.SnippetContents;
             if (listSnippets != null && listSnippets.Count != 0)
             {
                 writer.WriteStartElement("codeSnippets");  // start - codeSnippets
-                writer.WriteAttributeString("process", "true");
-                writer.WriteAttributeString("storage", _snippetStorage.ToString());
-                writer.WriteAttributeString("separator", _snippetSeparator);
 
                 int contentCount = listSnippets.Count;
                 for (int i = 0; i < contentCount; i++)
                 {
-                    SnippetContent snippetContent = listSnippets[i];
+                    CodeSnippetContent snippetContent = listSnippets[i];
                     if (snippetContent == null || snippetContent.IsEmpty)
                     {
                         continue;
                     }
                     writer.WriteStartElement("codeSnippet"); // start - codeSnippet
-                    writer.WriteAttributeString("source", snippetContent.ContentsFile);
+                    writer.WriteAttributeString("source", snippetContent.ContentFile);
                     writer.WriteAttributeString("format", "Sandcastle");
                     writer.WriteEndElement();                // end - codeSnippet
                 }
 
                 writer.WriteEndElement();                  // end - codeSnippets
+            }
+
+            SnippetContent snippets = buildStyle.Snippets;
+            if (snippets != null && snippets.Count != 0)
+            {
+                writer.WriteStartElement("codeSources");  // start - codeSources
+
+                for (int i = 0; i < snippets.Count; i++)
+                {
+                    SnippetItem snippetItem = snippets[i];
+                    if (snippetItem == null || snippetItem.IsEmpty)
+                    {
+                        continue;
+                    }
+                    writer.WriteStartElement("codeSource"); // start - codeSource
+                    writer.WriteAttributeString("source", snippetItem.Source);
+                    writer.WriteAttributeString("format", "Sandcastle");
+                    writer.WriteEndElement();                // end - codeSource
+                }
+
+                // The excludedUnits is required by the SnippetComponent, 
+                // we maintain that...
+                writer.WriteStartElement("excludedUnits"); // start - excludedUnits
+                IList<string> excludedUnits = snippets.ExcludedUnitFolders;
+                if (excludedUnits != null && excludedUnits.Count != 0)
+                {
+                    for (int i = 0; i < excludedUnits.Count; i++)
+                    {
+                        string unitFolder = excludedUnits[i];
+                        if (String.IsNullOrEmpty(unitFolder))
+                        {
+                            continue;
+                        }
+                        writer.WriteStartElement("unitFolder"); // start - unitFolder
+                        writer.WriteAttributeString("name", unitFolder);
+                        writer.WriteEndElement();               // end - unitFolder
+                    }
+                }
+                writer.WriteEndElement();                  // end - excludedUnits 
+
+                writer.WriteStartElement("languages"); // start - languages
+                IList<SnippetLanguage> languages = snippets.Languages;
+                if (languages != null && languages.Count != 0)
+                {
+                    for (int i = 0; i < languages.Count; i++)
+                    {
+                        SnippetLanguage language = languages[i];
+                        if (!language.IsValid)
+                        {
+                            continue;
+                        }
+                        writer.WriteStartElement("language"); // start - language
+                        writer.WriteAttributeString("unit", language.Unit);
+                        writer.WriteAttributeString("languageId", language.LanguageId);
+                        writer.WriteAttributeString("extension", language.Extension);
+                        writer.WriteEndElement();               // end - language
+                    }
+                }
+                writer.WriteEndElement();              // end - languages  
+
+                writer.WriteEndElement();                  // end - codeSources
             }
 
             return true;

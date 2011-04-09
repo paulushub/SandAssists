@@ -36,6 +36,15 @@ namespace Sandcastle
             {
                 return (_group != null && _format != null && _settings != null);
             }
+            protected set
+            {   
+                if (!value)
+                {
+                    _group    = null;
+                    _format   = null;
+                    _settings = null;
+                }
+            }
         }
 
         public BuildGroup Group
@@ -80,6 +89,11 @@ namespace Sandcastle
             BuildExceptions.NotNull(format,   "format");
             BuildExceptions.NotNull(settings, "group");
             BuildExceptions.NotNull(group,    "group");
+
+            if (this.IsInitialized)
+            {
+                return;
+            }
 
             _group    = group;
             _format   = format;

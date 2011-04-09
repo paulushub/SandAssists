@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sandcastle.Contents;
 
@@ -9,6 +8,7 @@ namespace Sandcastle.Conceptual
     /// This provides build settings that are specific to the conceptual 
     /// build process.
     /// </summary>
+    [Serializable]
     public sealed class ConceptualEngineSettings : BuildEngineSettings
     {
         #region Private Fields
@@ -27,7 +27,7 @@ namespace Sandcastle.Conceptual
         public ConceptualEngineSettings()
             : base("Sandcastle.ConceptualEngineSettings", BuildEngineType.Conceptual)
         {
-            _sharedContent  = new SharedContent("Conceptual", String.Empty);
+            _sharedContent  = new SharedContent("Conceptual");
             _includeContent = new IncludeContent("Conceptual");
 
             IBuildNamedList<BuildComponentConfiguration> componentConfigurations
@@ -55,6 +55,15 @@ namespace Sandcastle.Conceptual
                 ConceptualMediaConfiguration mediaComponent =
                     new ConceptualMediaConfiguration();
 
+                ConceptualLinkConfiguration topicLinkComponent =
+                    new ConceptualLinkConfiguration();
+
+                ConceptualReferenceLinkConfiguration referenceLinkComponent =
+                    new ConceptualReferenceLinkConfiguration();
+
+                ConceptualSharedConfiguration sharedComponent =
+                    new ConceptualSharedConfiguration();
+
                 componentConfigurations.Add(preTrans);
                 componentConfigurations.Add(intelliSense);
                 componentConfigurations.Add(codeComponent);
@@ -62,6 +71,9 @@ namespace Sandcastle.Conceptual
                 componentConfigurations.Add(mediaComponent);
                 componentConfigurations.Add(postTrans);
                 componentConfigurations.Add(cloneDocument);
+                componentConfigurations.Add(topicLinkComponent);
+                componentConfigurations.Add(referenceLinkComponent);
+                componentConfigurations.Add(sharedComponent);
             }
         }
 
@@ -185,6 +197,111 @@ namespace Sandcastle.Conceptual
                 }
                 return (ConceptualMediaConfiguration)configurations[
                     ConceptualMediaConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ConceptualLinkConfiguration ConceptualLinks
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ConceptualLinkConfiguration)configurations[
+                    ConceptualLinkConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ConceptualReferenceLinkConfiguration ReferenceLinks
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ConceptualReferenceLinkConfiguration)configurations[
+                    ConceptualReferenceLinkConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ConceptualSharedConfiguration Shared
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ConceptualSharedConfiguration)configurations[
+                    ConceptualSharedConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ConceptualPreTransConfiguration PreTrans
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ConceptualPreTransConfiguration)configurations[
+                    ConceptualPreTransConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ConceptualPostTransConfiguration PostTrans
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ConceptualPostTransConfiguration)configurations[
+                    ConceptualPostTransConfiguration.ConfigurationName];
             }
         }
 

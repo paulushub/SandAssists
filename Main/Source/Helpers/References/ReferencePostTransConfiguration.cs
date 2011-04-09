@@ -284,7 +284,14 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            if (!this.Enabled)
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
             }
@@ -405,14 +412,16 @@ namespace Sandcastle.References
             feeback.Configure(group, writer);
 
             // Write roots to namespaces conversion handler...
+            writer.WriteStartElement("rootNamespaces"); // start: rootNamespaces
+            writer.WriteAttributeString("id", group.Id);
+
             string rootNamespacesFile = Path.Combine(_context.WorkingDirectory,
-                group["$RootNamespaces"]);
+                groupContext["$RootNamespaces"]);
             if (File.Exists(rootNamespacesFile))
             {
-                writer.WriteStartElement("rootNamespaces"); // start: rootNamespaces
                 writer.WriteAttributeString("source", rootNamespacesFile);
-                writer.WriteEndElement();                   //end: rootNamespaces
             }
+            writer.WriteEndElement();                   //end: rootNamespaces
 
             return true;
         }

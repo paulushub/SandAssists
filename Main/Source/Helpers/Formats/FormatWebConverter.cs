@@ -43,7 +43,7 @@ namespace Sandcastle.Formats
             _readerSettings = new XmlReaderSettings();
             _readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
             _readerSettings.IgnoreWhitespace = false;
-            _readerSettings.IgnoreComments = true;
+            _readerSettings.IgnoreComments   = false;
 
             _writerSettings = new XmlWriterSettings();
             _writerSettings.Indent = false;
@@ -210,6 +210,12 @@ namespace Sandcastle.Formats
                                 writer.WriteValue(reader.Value);
                                 break;
 
+                            case XmlNodeType.CDATA:
+                                writer.WriteWhitespace(Environment.NewLine);
+                                writer.WriteCData(reader.Value);
+                                writer.WriteWhitespace(Environment.NewLine);
+                                break;
+
                             case XmlNodeType.EndElement:
                                 writer.WriteFullEndElement();
                                 break;
@@ -217,6 +223,10 @@ namespace Sandcastle.Formats
                             case XmlNodeType.Whitespace:
                             case XmlNodeType.SignificantWhitespace:
                                 writer.WriteWhitespace(reader.Value);
+                                break;
+
+                            case XmlNodeType.Comment:
+                                writer.WriteComment(reader.Value);
                                 break;
 
                             default:

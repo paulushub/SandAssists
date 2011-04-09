@@ -240,6 +240,7 @@ namespace Sandcastle.Steps
                 startInfo.FileName         = _application;
                 startInfo.Arguments        = _arguments;
                 startInfo.UseShellExecute  = _shellExecute;
+                startInfo.CreateNoWindow   = true;
                 startInfo.WorkingDirectory = this.WorkingDirectory;
 
                 startInfo.RedirectStandardInput = false;

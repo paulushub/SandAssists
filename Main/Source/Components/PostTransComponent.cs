@@ -22,15 +22,16 @@ namespace Sandcastle.Components
         private List<string>      _listStyles;
         private List<string>      _listScripts;
 
-        private BuildComponentStyle      _builderStyle;
+        private BuildComponentStyle _builderStyle;
 
         private XPathExpression   _headSelector;
+        private XPathExpression   _stylesSelector;
+        private XPathExpression   _scriptsSelector;
         private XPathExpression   _islandSelector;
         private XPathExpression   _includeSelector;
 
         private XPathExpression _feedbackRowSelector;
-        private XPathExpression _feedbackSpanSelector;
-
+        private XPathExpression _feedbackSpanSelector; 
 
         private List<MsAttribute> _listAttributes;
 
@@ -167,8 +168,10 @@ namespace Sandcastle.Components
                     "//span[@name='SandInclude' and @class='tgtSentence']");
 
                 // This is overkill, but we keep it until feature review...
-                _headSelector   = XPathExpression.Compile("//head");
-                _islandSelector = XPathExpression.Compile("//head/xml");
+                _headSelector    = XPathExpression.Compile("//head");
+                _stylesSelector  = XPathExpression.Compile("(//head/link[@rel='stylesheet' and @type='text/css'])[last()]");
+                _scriptsSelector = XPathExpression.Compile("(//head/script[@type='text/javascript'])[last()]");
+                _islandSelector  = XPathExpression.Compile("//head/xml"); 
             }
             catch (Exception ex)
             {
@@ -491,15 +494,29 @@ namespace Sandcastle.Components
                 return;
             }
 
-            XPathNavigator navigator = docNavigator.SelectSingleNode(_headSelector);
+            bool scriptsExist = true;
+            XPathNavigator navigator = docNavigator.SelectSingleNode(_scriptsSelector);
             if (navigator == null)
             {
-                return;
+                navigator = docNavigator.SelectSingleNode(_headSelector);
+                if (navigator == null)
+                {
+                    return;
+                }                    
+                scriptsExist = false;
             }
 
             int itemCount = _listScripts.Count;
 
-            XmlWriter xmlWriter = navigator.AppendChild();
+            XmlWriter xmlWriter = null;
+            if (scriptsExist)
+            {
+                xmlWriter = navigator.InsertAfter();
+            }
+            else
+            {
+                xmlWriter = navigator.AppendChild();
+            }
 
             for (int i = 0; i < itemCount; i++)
             {
@@ -539,15 +556,29 @@ namespace Sandcastle.Components
                 return;
             }
 
-            XPathNavigator navigator = docNavigator.SelectSingleNode(_headSelector);
+            bool stylesExist = true;
+            XPathNavigator navigator = docNavigator.SelectSingleNode(_stylesSelector);
             if (navigator == null)
             {
-                return;
+                navigator = docNavigator.SelectSingleNode(_headSelector);
+                if (navigator == null)
+                {
+                    return;
+                }
+                stylesExist = false;
             }
 
             int itemCount = _listStyles.Count;
 
-            XmlWriter xmlWriter = navigator.AppendChild();
+            XmlWriter xmlWriter = null;
+            if (stylesExist)
+            {
+                xmlWriter = navigator.InsertAfter();
+            }
+            else
+            {
+                xmlWriter = navigator.AppendChild();
+            }
 
             for (int i = 0; i < itemCount; i++)
             {

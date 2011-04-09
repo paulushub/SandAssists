@@ -1,14 +1,22 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 
 namespace Sandcastle.Contents
 {
     [Serializable]
     public sealed class TokenItem : BuildItem<TokenItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "item";
+
+        #endregion
+
         #region Private Fields
 
-        private string _key;
-        private string _value;
+        private string _itemId;
+        private string _itemValue;
 
         #endregion
 
@@ -23,15 +31,15 @@ namespace Sandcastle.Contents
         {
             BuildExceptions.NotNullNotEmpty(key, "key");
 
-            _key   = key;
-            _value = value;
+            _itemId    = key;
+            _itemValue = value;
         }
 
         public TokenItem(TokenItem source)
             : base(source)
         {
-            _key   = source._key;
-            _value = source._value;
+            _itemId    = source._itemId;
+            _itemValue = source._itemValue;
         }
 
         #endregion
@@ -42,7 +50,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_key))
+                if (String.IsNullOrEmpty(_itemId))
                 {
                     return true;
                 }
@@ -55,7 +63,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                return _key;
+                return _itemId;
             }
         }
 
@@ -63,11 +71,11 @@ namespace Sandcastle.Contents
         {
             get
             {
-                return _value;
+                return _itemValue;
             }
             set
             {
-                _value = value;
+                _itemValue = value;
             }
         }
 
@@ -81,11 +89,11 @@ namespace Sandcastle.Contents
             {
                 return false;
             }
-            if (!String.Equals(this._key, other._key))
+            if (!String.Equals(this._itemId, other._itemId))
             {
                 return false;
             }
-            if (!String.Equals(this._value, other._value))
+            if (!String.Equals(this._itemValue, other._itemValue))
             {
                 return false;
             }
@@ -107,16 +115,74 @@ namespace Sandcastle.Contents
         public override int GetHashCode()
         {
             int hashCode = 11;
-            if (_key != null)
+            if (_itemId != null)
             {
-                hashCode ^= _key.GetHashCode();
+                hashCode ^= _itemId.GetHashCode();
             }
-            if (_value != null)
+            if (_itemValue != null)
             {
-                hashCode ^= _value.GetHashCode();
+                hashCode ^= _itemValue.GetHashCode();
             }
 
             return hashCode;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _itemValue = reader.GetAttribute("id");
+                _itemValue = reader.ReadInnerXml();
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - attribute
+            writer.WriteAttributeString("id", _itemId);
+            writer.WriteRaw(_itemValue);
+            writer.WriteEndElement();           // end - attribute
         }
 
         #endregion
@@ -126,13 +192,13 @@ namespace Sandcastle.Contents
         public override TokenItem Clone()
         {
             TokenItem item = new TokenItem(this);
-            if (_key != null)
+            if (_itemId != null)
             {
-                item._key = String.Copy(_key);
+                item._itemId = String.Copy(_itemId);
             }
-            if (_value != null)
+            if (_itemValue != null)
             {
-                item._value = String.Copy(_value);
+                item._itemValue = String.Copy(_itemValue);
             }
 
             return item;
@@ -146,7 +212,7 @@ namespace Sandcastle.Contents
         {
             get 
             { 
-                return _key; 
+                return _itemId; 
             }
         }
 

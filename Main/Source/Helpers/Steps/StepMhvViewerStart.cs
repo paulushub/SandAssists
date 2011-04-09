@@ -956,6 +956,14 @@ namespace Sandcastle.Steps
             string helpUrl     = null;
             // 3. The startup help ID will normally be saved in the context, get it...
             string helpStartId = context["$HelpTocRoot"];
+            string tempText    = context["$HelpHierarchicalToc"];
+
+            if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+                Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                helpStartId = context["$HelpHierarchicalTocRoot"];
+            }
+
             if (String.IsNullOrEmpty(helpStartId))
             {
                 helpUrl = String.Format(

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Text;
+using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -9,12 +10,20 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class TocItem : BuildItem<TocItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "tocItem";
+
+        #endregion
+
         #region Private Fields
 
+        private bool   _isRecursive;
         private string _name;
-        private string _path;
-        private string _project;
-        private BuildList<TocItem> _listItems;
+        private string _tocId;
+        private string _sourceId;
+        private TocItemSourceType _sourceType;
+        private BuildKeyedList<TocItem> _listItems;
 
         #endregion
 
@@ -23,29 +32,33 @@ namespace Sandcastle.Contents
         public TocItem()
             : this(Guid.NewGuid().ToString(), String.Empty)
         {
-            _project = String.Empty;
         }
 
-        public TocItem(string name, string path)
+        public TocItem(string name, string tocItemId)
         {
             BuildExceptions.NotNullNotEmpty(name, "name");
-            BuildExceptions.NotNull(path, "path");
 
-            _name = name;
-            _path = path;
-        }
+            if (String.IsNullOrEmpty(tocItemId))
+            {
+                tocItemId = Guid.NewGuid().ToString();
+            }
 
-        public TocItem(string name, string path, string project)
-            : this(name, path)
-        {
-            _project = project;
+            _isRecursive = true;
+            _name        = name;
+            _tocId       = tocItemId;
+            _sourceId    = String.Empty;
+            _sourceType  = TocItemSourceType.None;
         }
 
         public TocItem(TocItem source)
             : base(source)
         {
-            _name = source._name;
-            _path = source._path;
+            _name        = source._name;
+            _tocId       = source._tocId;
+            _sourceId    = source._sourceId;
+            _sourceType  = source._sourceType;
+            _listItems   = source._listItems;
+            _isRecursive = source._isRecursive;
         }
 
         #endregion
@@ -56,7 +69,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_name))
+                if (String.IsNullOrEmpty(_name) || _sourceType == TocItemSourceType.None)
                 {
                     return true;
                 }
@@ -73,11 +86,11 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string File
+        public string Id
         {
             get
             {
-                return _path;
+                return _tocId;
             }
             set
             {
@@ -85,15 +98,15 @@ namespace Sandcastle.Contents
                 {
                     value = String.Empty;
                 }
-                _path = value;
+                _tocId = value;
             }
         }
 
-        public string Project
+        public string SourceId
         {
             get
             {
-                return _project;
+                return _sourceId;
             }
             set
             {
@@ -101,9 +114,34 @@ namespace Sandcastle.Contents
                 {
                     value = String.Empty;
                 }
-                _project = value;
+                _sourceId = value;
             }
         }
+
+        public TocItemSourceType SourceType
+        {
+            get
+            {
+                return _sourceType;
+            }
+            set
+            {
+                _sourceType = value;
+            }
+        }
+
+        public bool SourceRecursive
+        {
+            get
+            {
+                return _isRecursive;
+            }
+            set
+            {
+                _isRecursive = value;
+            }
+        }
+
 
         public TocItem this[int index]
         {
@@ -112,6 +150,19 @@ namespace Sandcastle.Contents
                 if (_listItems != null)
                 {
                     return _listItems[index];
+                }
+
+                return null;
+            }
+        }
+
+        public TocItem this[string name]
+        {
+            get
+            {
+                if (_listItems != null)
+                {
+                    return _listItems[name];
                 }
 
                 return null;
@@ -154,10 +205,23 @@ namespace Sandcastle.Contents
 
             if (_listItems == null)
             {
-                _listItems = new BuildList<TocItem>();
+                _listItems = new BuildKeyedList<TocItem>();
             }
 
+            Debug.Assert(this.Content != null);
+            item.Content = this.Content;
+
             _listItems.Add(item);
+        }
+
+        public void Insert(int index, TocItem item)
+        {
+            BuildExceptions.NotNull(item, "item");
+
+            Debug.Assert(this.Content != null);
+            item.Content = this.Content;
+
+            _listItems.Insert(index, item);
         }
 
         public void Remove(int itemIndex)
@@ -188,7 +252,7 @@ namespace Sandcastle.Contents
         {
             if (_listItems != null)
             {
-                _listItems = new BuildList<TocItem>();
+                _listItems = new BuildKeyedList<TocItem>();
             }
         }
 
@@ -228,13 +292,140 @@ namespace Sandcastle.Contents
             {
                 hashCode ^= _name.GetHashCode();
             }
-            if (_path != null)
+            if (_tocId != null)
             {
-                hashCode ^= _path.GetHashCode();
+                hashCode ^= _tocId.GetHashCode();
             }
 
             return hashCode;
         }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _name        = reader.GetAttribute("name");
+            _tocId       = reader.GetAttribute("tocId");
+            _sourceId    = reader.GetAttribute("sourceId");
+            switch (reader.GetAttribute("name").ToLower())
+            {
+                case "topic":
+                    _sourceType = TocItemSourceType.Topic;
+                    break;
+                case "group":
+                    _sourceType = TocItemSourceType.Group;
+                    break;
+                case "namespace":
+                    _sourceType = TocItemSourceType.Namespace;
+                    break;
+                case "namespaceroot":
+                    _sourceType = TocItemSourceType.NamespaceRoot;
+                    break;
+                default:
+                    _sourceType = TocItemSourceType.None;
+                    break;
+            }
+            _isRecursive = Convert.ToBoolean(reader.GetAttribute("recursive"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_listItems == null)
+            {
+                _listItems = new BuildKeyedList<TocItem>();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {   
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        TocItem item = new TocItem();
+
+                        this.Add(item);
+
+                        item.ReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - item
+            writer.WriteAttributeString("name",       _name);
+            writer.WriteAttributeString("tocId",      _tocId);
+            writer.WriteAttributeString("sourceId",   _sourceId);
+            writer.WriteAttributeString("sourceType", _sourceType.ToString());
+            writer.WriteAttributeString("recursive",  _isRecursive.ToString());
+
+            if (_listItems != null && _listItems.Count != 0)
+            {
+                for (int i = 0; i < _listItems.Count; i++)
+                {
+                    _listItems[i].WriteXml(writer);
+                }
+            }
+
+            writer.WriteEndElement();           // end - item
+        }
+
 
         #endregion
 
@@ -247,9 +438,9 @@ namespace Sandcastle.Contents
             {
                 item._name = String.Copy(_name);
             }
-            if (_path != null)
+            if (_tocId != null)
             {
-                item._path = String.Copy(_path);
+                item._tocId = String.Copy(_tocId);
             }
 
             return item;

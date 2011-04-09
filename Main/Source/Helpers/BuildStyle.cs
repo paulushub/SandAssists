@@ -76,6 +76,7 @@ namespace Sandcastle
         private BuildStyleType     _styleType;
 
         private ScriptContent      _scripts;
+        private SnippetContent     _snippets;
         private StyleSheetContent  _styleSheets;
 
         private MathPackageContent _mathPackages;
@@ -111,6 +112,7 @@ namespace Sandcastle
             _styleType    = type;
             _scripts      = new ScriptContent("CommonScripts");
             _styleSheets  = new StyleSheetContent("CommonStyleSheets");
+            _snippets     = new SnippetContent();
 
             _mathPackages = new MathPackageContent();
             _mathCommands = new MathCommandContent();
@@ -186,6 +188,7 @@ namespace Sandcastle
             _stylePresent = source._stylePresent;
             _styleType    = source._styleType;
             _scripts      = source._scripts;
+            _snippets     = source._snippets;
             _styleSheets  = source._styleSheets;
             _mathPackages = source._mathPackages;
             _mathCommands = source._mathCommands;
@@ -299,6 +302,14 @@ namespace Sandcastle
             get
             {
                 return _scripts;
+            }
+        }
+
+        public SnippetContent Snippets
+        {
+            get
+            {
+                return _snippets;
             }
         }
 
@@ -540,6 +551,10 @@ namespace Sandcastle
             if (_scripts != null)
             {
                 style._scripts = _scripts.Clone();
+            }
+            if (_snippets != null)
+            {
+                style._snippets = _snippets.Clone();
             }
             if (_styleSheets != null)
             {

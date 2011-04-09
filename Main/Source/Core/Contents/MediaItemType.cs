@@ -24,14 +24,22 @@ namespace Sandcastle.Contents
         /// <summary>
         /// Indicates the Adobe Flash media type.
         /// </summary>
-        Flash       = 4,
+        Flash       = 3,
         /// <summary>
         /// Indicates the Microsoft Silverlight media type.
         /// </summary>
-        Silverlight = 5,
+        Silverlight = 4,
         /// <summary>
-        /// Indicates the image/picture gallery media collection type.
+        /// Indicates the YouType media type.
         /// </summary>
-        Gallery     = 6
+        YouTube     = 5,
+        /// <summary>
+        /// Indicates the Adobe Portable Document Format (PDF) media type.
+        /// </summary>
+        Pdf         = 6,
+        /// <summary>
+        /// Indicates the Microsoft XML Paper Specification format (XPS) media type.
+        /// </summary>
+        Xps         = 7
     }
 }

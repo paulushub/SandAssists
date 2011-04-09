@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="ec7d5bba-9570-4e4f-a1ba-77dc7b3cd1c4" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+        <introduction>
+            <para>
+                This is a test of container or root topic created using custom TOC.
+            </para>
+        </introduction>
+
+        <section address="section1">
+            <title>Section - Quick Start 1</title>
+            <content>
+                <para>
+                    Hello, Conceptual Help!
+                </para>
+            </content>
+        </section>
+
+        <section address="section2">
+            <title>Section - Quick Start 2</title>
+            <content>
+                <para>
+                    Hello, Conceptual Help!
+                </para>
+            </content>
+        </section>
+
+        <relatedTopics>
+        </relatedTopics>
+    </developerConceptualDocument>
+</topic>

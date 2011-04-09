@@ -13,32 +13,27 @@ namespace Sandcastle
     [Serializable]
     public abstract class BuildGroup : BuildObject<BuildGroup>, IBuildNamedItem
     {
-        #region Private Static Fields
-
-        private static int _groupCount = 0;
-
-        #endregion
-
         #region Private Fields
 
         private bool   _isExcluded;
         private bool   _isTocExcluded;
         private bool   _isInitialized;
 
-        private Guid   _groupId;
+        private string  _groupId;
 
         private string _groupName;
         private string _groupTitle;
         private string _workingDir;
         private string _runningTitle;
 
-        private List<LinkContent>     _listLinks;
-        private List<TokenContent>    _listTokens;
-        private List<MediaContent>    _listMedia;
-        private List<SharedContent>   _listShared;
-        private List<SnippetContent>  _listSnippets;
-        private List<ResourceContent> _listResources;
-        private Dictionary<string, string> _properties;
+        private BuildList<LinkContent>        _listLinks;
+        private BuildList<TokenContent>       _listTokens;
+        private BuildList<MediaContent>       _listMedia;
+        private BuildList<SharedContent>      _listShared;
+        private BuildList<ResourceContent>    _listResources;
+        private BuildList<CodeSnippetContent> _listSnippets;
+
+        private Dictionary<string, string>    _properties;
 
         #endregion
 
@@ -52,17 +47,29 @@ namespace Sandcastle
         /// default parameters.
         /// </summary>
         protected BuildGroup()
+            : this(Guid.NewGuid().ToString())
         {
-            _groupCount++;
+        }
 
-            _groupName     = "Group" + _groupCount.ToString();
-            _groupId       = Guid.NewGuid();
-            _listLinks     = new List<LinkContent>();
-            _listMedia     = new List<MediaContent>();
-            _listTokens    = new List<TokenContent>();
-            _listShared    = new List<SharedContent>();
-            _listSnippets  = new List<SnippetContent>();
-            _listResources = new List<ResourceContent>();
+        protected BuildGroup(string groupName)
+            : this(groupName, Guid.NewGuid().ToString())
+        {
+        }
+
+        protected BuildGroup(string groupName, string groupId)
+        {
+            BuildExceptions.NotNullNotEmpty(groupName, "groupName");
+            BuildExceptions.NotNullNotEmpty(groupId,   "groupId");
+
+            _groupName     = groupName;
+            _groupId       = groupId;
+            _listLinks     = new BuildList<LinkContent>();
+            _listMedia     = new BuildList<MediaContent>();
+            _listTokens    = new BuildList<TokenContent>();
+            _listShared    = new BuildList<SharedContent>();
+            _listSnippets  = new BuildList<CodeSnippetContent>();
+            _listResources = new BuildList<ResourceContent>();
+
             _properties    = new Dictionary<string, string>(
                 StringComparer.OrdinalIgnoreCase);
         }
@@ -81,6 +88,10 @@ namespace Sandcastle
         protected BuildGroup(BuildGroup source)
             : base(source)
         {
+            _groupId       = source._groupId;
+            _groupName     = source._groupName;
+            _properties    = source._properties;
+
             _listLinks     = source._listLinks;
             _listMedia     = source._listMedia;
             _listTokens    = source._listTokens;
@@ -129,7 +140,7 @@ namespace Sandcastle
         /// <value>
         /// A <see cref="System.Guid"/> specifying the unique identifier of this group.
         /// </value>
-        public Guid Identifier
+        public string Id
         {
             get
             {
@@ -316,7 +327,7 @@ namespace Sandcastle
         /// <value>
         /// 
         /// </value>
-        public IList<SnippetContent> SnippetContents
+        public IList<CodeSnippetContent> SnippetContents
         {
             get
             {
@@ -493,7 +504,7 @@ namespace Sandcastle
 
             if (_listLinks == null)
             {
-                _listLinks = new List<LinkContent>();
+                _listLinks = new BuildList<LinkContent>();
             }
             LinkContent defaultContent = null;
             if (_listLinks.Count == 0)
@@ -518,7 +529,7 @@ namespace Sandcastle
 
             if (_listLinks == null)
             {
-                _listLinks = new List<LinkContent>();
+                _listLinks = new BuildList<LinkContent>();
             }
             LinkContent defaultContent = null;
             if (_listLinks.Count == 0)
@@ -540,7 +551,7 @@ namespace Sandcastle
 
             if (_listLinks == null)
             {
-                _listLinks = new List<LinkContent>();
+                _listLinks = new BuildList<LinkContent>();
             }
 
             _listLinks.Add(content);
@@ -560,7 +571,7 @@ namespace Sandcastle
 
             if (_listResources == null)
             {
-                _listResources = new List<ResourceContent>();
+                _listResources = new BuildList<ResourceContent>();
             }
             ResourceContent defaultContent = null;
             if (_listResources.Count == 0)
@@ -582,7 +593,7 @@ namespace Sandcastle
 
             if (_listResources == null)
             {
-                _listResources = new List<ResourceContent>();
+                _listResources = new BuildList<ResourceContent>();
             }
 
             _listResources.Add(content);
@@ -598,7 +609,7 @@ namespace Sandcastle
 
             if (_listMedia == null)
             {
-                _listMedia = new List<MediaContent>();
+                _listMedia = new BuildList<MediaContent>();
             }
 
             _listMedia.Add(content);
@@ -614,7 +625,7 @@ namespace Sandcastle
 
             if (_listTokens == null)
             {
-                _listTokens = new List<TokenContent>();
+                _listTokens = new BuildList<TokenContent>();
             }
 
             _listTokens.Add(content);
@@ -630,7 +641,7 @@ namespace Sandcastle
 
             if (_listShared == null)
             {
-                _listShared = new List<SharedContent>();
+                _listShared = new BuildList<SharedContent>();
             }
 
             _listShared.Add(content);
@@ -647,7 +658,7 @@ namespace Sandcastle
             }
 
             return listShared;
-        }     
+        }
 
         public virtual IList<RuleItem> PrepareSharedRule()
         {
@@ -658,13 +669,13 @@ namespace Sandcastle
 
         #region Snippets Methods
 
-        public virtual void AddSnippet(SnippetContent content)
+        public virtual void AddSnippet(CodeSnippetContent content)
         {
             BuildExceptions.NotNull(content, "content");
 
             if (_listSnippets == null)
             {
-                _listSnippets = new List<SnippetContent>();
+                _listSnippets = new BuildList<CodeSnippetContent>();
             }
 
             _listSnippets.Add(content);
@@ -774,6 +785,18 @@ namespace Sandcastle
         }
 
         #endregion
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        string IBuildNamedItem.Name
+        {
+            get 
+            { 
+                return _groupId; 
+            }
+        }
 
         #endregion
     }

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
+
+using Sandcastle.Contents;
 
 namespace Sandcastle.References
 {
@@ -22,6 +26,13 @@ namespace Sandcastle.References
         #endregion
 
         #region Private Fields
+
+        [NonSerialized]
+        private BuildFormat   _format;
+        [NonSerialized]
+        private BuildSettings _settings;
+        [NonSerialized]
+        private BuildContext _context;
 
         #endregion
 
@@ -231,6 +242,48 @@ namespace Sandcastle.References
 
         #region Public Methods
 
+        public override void Initialize(BuildContext context)
+        {
+            base.Initialize(context);
+
+            if (this.IsInitialized)
+            {
+                if (_format == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
+
+                _settings = context.Settings;
+                Debug.Assert(_settings != null);
+                if (_settings == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
+
+                _context = context;
+            }
+        }
+
+        public void Initialize(BuildContext context, BuildFormat format)
+        {
+            BuildExceptions.NotNull(format, "format");
+
+            _format = format;
+
+            this.Initialize(context);
+        }
+
+        public override void Uninitialize()
+        {
+            _format   = null;
+            _settings = null;
+            _context  = null;
+
+            base.Uninitialize();
+        }
+
         /// <summary>
         /// The creates the configuration information or settings required by the
         /// target component for the build process.
@@ -254,16 +307,101 @@ namespace Sandcastle.References
         /// </remarks>
         public override bool Configure(BuildGroup group, XmlWriter writer)
         {
-            //writer.WriteStartElement("options");  //start: options
-            //writer.WriteAttributeString("mode", "IndirectIris");
-            //writer.WriteAttributeString("tabSize", "4");
-            //writer.WriteAttributeString("numberLines", "False");
-            //writer.WriteAttributeString("outlining", "False");
-            //writer.WriteEndElement();             //end: options
+            BuildExceptions.NotNull(group, "group");
+            BuildExceptions.NotNull(writer, "writer");
 
-            //writer.WriteStartElement("SandcastleItem");  //start: SandcastleItem
-            //writer.WriteAttributeString("name", "%CodeSnippets%");
-            //writer.WriteEndElement();                    //end: SandcastleItem
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            if (!this.Enabled || !this.IsInitialized)
+            {
+                return false;
+            }
+
+            writer.WriteStartElement("options");   // start - options
+            writer.WriteAttributeString("locale", 
+                _settings.CultureInfo.Name.ToLower());
+            writer.WriteAttributeString("linkTarget",
+                "_" + _format.ExternalLinkTarget.ToString().ToLower());
+            writer.WriteEndElement();              // end - options
+
+            // For now, lets simply write the default...
+            writer.WriteStartElement("targets");
+            writer.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
+            writer.WriteAttributeString("recurse", "true");
+            writer.WriteAttributeString("files", "*.xml");
+            writer.WriteAttributeString("type",
+                _format.ExternalLinkType.ToString().ToLower());
+            writer.WriteEndElement();
+
+            BuildLinkType linkType = _format.LinkType;
+
+            IList<LinkContent> listTokens = group.LinkContents;
+            if (listTokens != null && listTokens.Count != 0)
+            {
+                int contentCount = listTokens.Count;
+                for (int i = 0; i < contentCount; i++)
+                {
+                    LinkContent content = listTokens[i];
+                    if (content == null || content.IsEmpty)
+                    {
+                        continue;
+                    }
+
+                    int itemCount = content.Count;
+                    for (int j = 0; j < itemCount; j++)
+                    {
+                        LinkItem item = content[j];
+                        if (item == null || item.IsEmpty)
+                        {
+                            continue;
+                        }
+
+                        writer.WriteStartElement("targets");
+
+                        if (item.IsDirectory)
+                        {
+                            writer.WriteAttributeString("base", item.LinkDirectory);
+                            writer.WriteAttributeString("recurse",
+                                item.Recursive.ToString());
+                            writer.WriteAttributeString("files", @"*.xml");
+                        }
+                        else
+                        {
+                            string linkFile = item.LinkFile;
+                            string linkDir  = Path.GetDirectoryName(linkFile);
+                            if (String.IsNullOrEmpty(linkDir))
+                            {
+                                linkDir = @".\";
+                            }
+                            else
+                            {
+                                linkFile = Path.GetFileName(linkFile);
+                            }
+                            writer.WriteAttributeString("base", linkDir);
+                            writer.WriteAttributeString("recurse", "false");
+                            writer.WriteAttributeString("files", linkFile);
+                        }
+
+                        writer.WriteAttributeString("type",
+                            linkType.ToString().ToLower());
+                        writer.WriteEndElement();
+                    }
+                }
+            }
+
+            //<targets base=".\" recurse="false"  
+            //   files=".\reflection.xml" type="local" />        
+            writer.WriteStartElement("targets");
+            writer.WriteAttributeString("base", @".\");
+            writer.WriteAttributeString("recurse", "false");
+            writer.WriteAttributeString("files", @".\" + groupContext["$ReflectionFile"]);
+            writer.WriteAttributeString("type", linkType.ToString().ToLower());
+            writer.WriteEndElement();
 
             return true;
         }

@@ -61,10 +61,28 @@ namespace Sandcastle.Components.Codes
 
         #region Public Properties
 
+        public int Count
+        {
+            get
+            {
+                if (_listSnippets != null)
+                {
+                    return _listSnippets.Count;
+                }
+
+                return 0;
+            }
+        }
+
         public SnippetItem this[int index]
         {
             get
             {
+                if (index >= _listSnippets.Count)
+                {
+                    return null;
+                }
+
                 if (_listSnippets != null)
                 {
                     return _listSnippets[index];

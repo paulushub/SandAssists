@@ -42,6 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Media\Contents1.jpg" />
+    <Content Include="Media\Contents2.jpg" />
+    <Content Include="Media\Contents3.jpg" />
+    <Content Include="Media\Contents4.jpg" />
+    <Content Include="Media\HelpUpdate.jpg" />
+    <Content Include="Media\HelpUpdate9.jpg" />
+    <Content Include="Media\IndexFilter.jpg" />
+    <Content Include="Media\MSDExplore.jpg" />
+    <Content Include="Media\RegisterFlow.jpg" />
+    <Content Include="Media\SearchFilter.jpg" />
     <Content Include="Topics.xml" />
     <Content Include="Documents\AttributeGroups.xml" />
     <Content Include="Documents\ComplexTypes.xml" />
@@ -66,10 +76,13 @@
     <Content Include="Documents\SimpleTypes\Template.xml" />
     <Content Include="Documents\SimpleTypes\YesNoType.xml" />
     <Content Include="Documents\VersionHistory.xml" />
-    <Content Include="Media\MediaContent.xml" />
+    <None Include="MediaContent.media" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Topics.sandtopics" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

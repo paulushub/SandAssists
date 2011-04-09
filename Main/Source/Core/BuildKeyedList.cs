@@ -25,6 +25,7 @@ namespace Sandcastle
         #region Private Fields
 
         private int _version;
+        private bool _suspendIndex;
         private Dictionary<string, int> _dicItems;
 
         #endregion
@@ -156,6 +157,79 @@ namespace Sandcastle
             }
         }
 
+        public void Add(IEnumerable<T> collection)
+        {
+            if (collection == null)
+            {
+                return;
+            }
+
+            using (IEnumerator<T> enumerator = collection.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    this.Add(enumerator.Current);
+                }
+            }
+        }
+
+        public void Insert(int index, IList<T> items)
+        {
+            if (items == null || items.Count == 0)
+            {
+                return;
+            }
+            if (items.Count == 1)
+            {
+                base.Insert(index, items[0]);
+                return;
+            }
+
+            _suspendIndex = true;
+
+            int itemCount = items.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                this.Insert(index++, items[i]);
+            }
+
+            // Recreate the index...
+            _dicItems = new Dictionary<string, int>();
+            for (int i = 0; i < this.Count; i++)
+            {
+                _dicItems[this[i].Name] = i;
+            }
+
+            _suspendIndex = false;
+        }
+
+        public void Insert(int index, IEnumerable<T> collection)
+        {
+            if (collection == null)
+            {
+                return;
+            }
+
+            _suspendIndex = true;
+
+            using (IEnumerator<T> enumerator = collection.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    this.Insert(index++, enumerator.Current);
+                }
+            }
+
+            // Recreate the index...
+            _dicItems = new Dictionary<string, int>();
+            for (int i = 0; i < this.Count; i++)
+            {
+                _dicItems[this[i].Name] = i;
+            }
+
+            _suspendIndex = false;
+        }
+
         /// <summary>
         /// Determines whether this list contains a specified key.
         /// </summary>
@@ -227,15 +301,34 @@ namespace Sandcastle
             }
             else
             {
-                base.InsertItem(index, newItem);
-                _dicItems.Add(itemName, index);
-
-                _version++;
-
-                if (Changed != null)
+                if (_suspendIndex)
                 {
-                    Changed(this, new BuildListEventArgs<T>(
-                        BuildListChangeType.Added, newItem, null, index));
+                    base.InsertItem(index, newItem);
+                }
+                else
+                {
+                    if (index >= this.Count)
+                    {
+                        base.InsertItem(index, newItem);
+                        _dicItems.Add(itemName, index);
+                    }
+                    else
+                    {
+                        base.InsertItem(index, newItem);
+
+                        for (int i = index; i < this.Count; i++)
+                        {
+                            _dicItems[this[i].Name] = i;
+                        }
+                    }
+
+                    _version++;
+
+                    if (Changed != null)
+                    {
+                        Changed(this, new BuildListEventArgs<T>(
+                            BuildListChangeType.Added, newItem, null, index));
+                    }
                 }
             }
         }
@@ -308,7 +401,12 @@ namespace Sandcastle
             T removedItem = Items[index];
             base.RemoveItem(index);
 
-            _dicItems.Remove(removedItem.Name);
+            // Recreate the index...
+            _dicItems = new Dictionary<string, int>();
+            for (int i = 0; i < this.Count; i++)
+            {
+                _dicItems[this[i].Name] = i;
+            }
 
             if (Changed != null)
             {

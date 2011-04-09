@@ -9,9 +9,17 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class TokenContent : BuildContent<TokenItem, TokenContent>
     {
+        #region Public Fields
+
+        public const string TagName = "content";
+
+        #endregion
+
         #region Private Fields
 
-        private string _contentsFile;
+        private bool   _isLoaded;
+        private BuildFilePath _contentFile;
+
         [NonSerialized]
         private IDictionary<string, int> _dicItems;
 
@@ -32,24 +40,19 @@ namespace Sandcastle.Contents
         }
 
         public TokenContent(string contentFile)
-            : base(new BuildKeyedList<TokenItem>())
+            : this()
         {
-            _contentsFile = contentFile;
+            BuildExceptions.PathMustExist(contentFile, "contentFile");
 
-            BuildKeyedList<TokenItem> keyedList =
-                this.List as BuildKeyedList<TokenItem>;
-
-            if (keyedList != null)
-            {
-                _dicItems = keyedList.Dictionary;
-            }
+            _contentFile = new BuildFilePath(contentFile);
         }
 
         public TokenContent(TokenContent source)
             : base(source)
         {
-            _contentsFile = source._contentsFile;
-            _dicItems     = source._dicItems;
+            _isLoaded    = source._isLoaded;
+            _contentFile = source._contentFile;
+            _dicItems    = source._dicItems;
         }
 
         #endregion
@@ -60,7 +63,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_contentsFile) == false)
+                if (String.IsNullOrEmpty(_contentFile) == false)
                 {
                     return false;
                 }
@@ -69,15 +72,26 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string ContentsFile
+        public bool IsLoaded
         {
             get
             {
-                return _contentsFile;
+                return _isLoaded;
+            }
+        }
+
+        public BuildFilePath ContentFile
+        {
+            get
+            {
+                return _contentFile;
             }
             set
             {
-                _contentsFile = value;
+                if (value != null)
+                {
+                    _contentFile = value;
+                }
             }
         }
 
@@ -112,6 +126,95 @@ namespace Sandcastle.Contents
         #endregion
 
         #region Public Method
+
+        #region Load Method
+
+        public void Load()
+        {
+            if (_isLoaded)
+            {
+                return;
+            }
+
+            if (String.IsNullOrEmpty(_contentFile) ||
+                File.Exists(_contentFile) == false)
+            {
+                return;
+            }
+
+            XmlReader reader = null;
+
+            try
+            {
+                XmlReaderSettings settings = new XmlReaderSettings();
+
+                settings.IgnoreComments               = true;
+                settings.IgnoreWhitespace             = true;
+                settings.IgnoreProcessingInstructions = true;
+
+                reader = XmlReader.Create(_contentFile, settings);
+
+                this.ReadXml(reader);
+
+                _isLoaded = true;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader = null;
+                }
+            }
+        }
+
+        public void Reload()
+        {
+            _isLoaded = false;
+
+            this.Load();
+        }
+
+        #endregion
+
+        #region Save Method
+
+        public void Save()
+        {
+            XmlWriterSettings settings  = new XmlWriterSettings();
+            settings.Indent             = true;
+            settings.Encoding           = Encoding.UTF8;
+            settings.IndentChars        = new string(' ', 4);
+            settings.OmitXmlDeclaration = false;
+
+            XmlWriter writer = null;
+            try
+            {
+                writer = XmlWriter.Create(_contentFile, settings);
+
+                writer.WriteStartDocument();
+
+                this.WriteXml(writer);
+
+                writer.WriteEndDocument();
+
+                // The file content is now same as the memory, so it can be
+                // considered loaded...
+                _isLoaded = true;
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Item Methods
 
         public override void Add(TokenItem item)
         {
@@ -200,14 +303,76 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #endregion
+
         #region IXmlSerializable Members
 
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, TokenItem.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        TokenItem item = new TokenItem();
+                        item.ReadXml(reader);
+
+                        this.Add(item);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void WriteXml(XmlWriter writer)
         {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);
+            writer.WriteAttributeString("xml", "space", String.Empty, "preserve");
+            writer.WriteAttributeString("xmlns", "ddue", String.Empty,
+                "http://ddue.schemas.microsoft.com/authoring/2003/5");
+            writer.WriteAttributeString("xmlns", "xlink", String.Empty,
+                "http://www.w3.org/1999/xlink");
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                this[i].WriteXml(writer);
+            }
+
+            writer.WriteEndElement();
         }
 
         #endregion
@@ -220,9 +385,9 @@ namespace Sandcastle.Contents
 
             this.Clone(content, new BuildKeyedList<TokenItem>());
 
-            if (_contentsFile != null)
+            if (_contentFile != null)
             {
-                content._contentsFile = String.Copy(_contentsFile);
+                content._contentFile = _contentFile.Clone();
             }
 
             return content;

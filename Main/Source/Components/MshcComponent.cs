@@ -61,6 +61,7 @@ namespace Sandcastle.Components
         private static class TocAttr
         {
             public const string Id               = "id";
+            public const string File             = "file";
         }
 
         // Microsoft Help 2.0 namespace info
@@ -342,8 +343,17 @@ namespace Sandcastle.Components
                 string id = current.GetAttribute(TocAttr.Id, String.Empty);
                 if (!String.IsNullOrEmpty(id))
                 {
+                    // For the root namespace container, we change the id to
+                    // the group id, which is same as the file name...
+                    if (String.Equals(id, "R:Project", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        id = current.GetAttribute(TocAttr.File, String.Empty);
+                    }
+
                     TocInfo info = new TocInfo(parent, parentVersion, ++i);
                     _toc.Add(id, info);
+
                     LoadToc(current, id, _topicVersion);
                 }
             }

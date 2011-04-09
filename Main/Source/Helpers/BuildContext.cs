@@ -7,9 +7,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 
-using Sandcastle.Loggers;
 using Sandcastle.Utilities;
-using Sandcastle.Configurators;
 
 namespace Sandcastle
 {
@@ -44,6 +42,11 @@ namespace Sandcastle
         private BuildSystem     _buildSystem;
         private BuildSettings   _settings;
 
+        private BuildTocContext _tocContext;
+
+        private IBuildNamedList<BuildGroup> _listGroups;
+        private IBuildNamedList<BuildGroupContext> _groupContexts;
+
         private EventWaitHandle _waitHandle;
         private Dictionary<string, string> _properties;
 
@@ -55,7 +58,7 @@ namespace Sandcastle
         /// 
         /// </summary>
         public BuildContext()
-            : this(BuildSystem.Console)
+            : this(BuildSystem.Console, BuildType.Testing)
         {
         }
 
@@ -63,14 +66,16 @@ namespace Sandcastle
         /// 
         /// </summary>
         /// <param name="system"></param>
-        public BuildContext(BuildSystem system)
+        public BuildContext(BuildSystem system, BuildType type)
         {
-            _buildType   = BuildType.Development;
+            _buildType   = type;
             _buildState  = BuildState.None;
             _buildSystem = system;
             _waitHandle  = new ManualResetEvent(false);
             _properties  = new Dictionary<string, string>(
                StringComparer.OrdinalIgnoreCase);
+
+            _tocContext  = new BuildTocContext();
 
             // Reset to the default properties
             this.Reset();
@@ -175,10 +180,6 @@ namespace Sandcastle
             { 
                 return _buildType; 
             }
-            set 
-            { 
-                _buildType = value; 
-            }
         }
 
         public BuildLogger Logger
@@ -203,9 +204,13 @@ namespace Sandcastle
             { 
                 return _buildSystem; 
             }
-            set 
-            { 
-                _buildSystem = value; 
+        }
+
+        public BuildTocContext TocContext
+        {
+            get
+            {
+                return _tocContext;
             }
         }
 
@@ -286,6 +291,22 @@ namespace Sandcastle
             set
             {
                 _isBuildSuccess = value;
+            }
+        }
+
+        public IBuildNamedList<BuildGroup> Groups
+        {
+            get
+            {
+                return _listGroups;
+            }
+        }
+
+        public IBuildNamedList<BuildGroupContext> GroupContexts
+        {
+            get
+            {
+                return _groupContexts;
             }
         }
 
@@ -389,6 +410,22 @@ namespace Sandcastle
             }
         }
 
+        public virtual void BeginGroups(IBuildNamedList<BuildGroup> groups,
+            IBuildNamedList<BuildGroupContext> contexts)
+        {
+            BuildExceptions.NotNull(groups,   "groups");
+            BuildExceptions.NotNull(contexts, "contexts");
+
+            _listGroups    = groups;
+            _groupContexts = contexts;
+        }
+
+        public virtual void EndGroups()
+        {
+            _listGroups    = null;
+            _groupContexts = null;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -405,6 +442,9 @@ namespace Sandcastle
 
             BuildExceptions.NotNull(logger,   "logger");
             BuildExceptions.NotNull(settings, "settings");
+
+            Debug.Assert(_listGroups != null && _listGroups.Count != 0);
+            Debug.Assert(_groupContexts != null && _groupContexts.Count != 0);
 
             _logger             = logger;
             _settings           = settings;
@@ -454,6 +494,8 @@ namespace Sandcastle
                 _isInitialized = this.ValidateSandcastle();
             }
 
+            _tocContext.Initialize(this);
+
             _isInitialized = true;
         }
 
@@ -467,6 +509,8 @@ namespace Sandcastle
             _logger        = null;
             _settings      = null;
             _isInitialized = false;
+
+            _tocContext.Uninitialize();
         }
 
         public virtual void SetState(BuildState state)
@@ -524,70 +568,6 @@ namespace Sandcastle
             BuildExceptions.NotNull(buildStep, "buildStep");
 
             return true;
-        }
-
-        public virtual BuildLogger CreateLogger(BuildSettings settings)
-        {
-            string workingDir  = _baseWorkingDir;
-            string logFileName = settings.LogFileName;
-
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = _workingDir;
-                if (String.IsNullOrEmpty(workingDir))
-                {
-                    workingDir = settings.WorkingDirectory;
-                }
-            }
-
-            if (!String.IsNullOrEmpty(logFileName))
-            {
-                if (!String.IsNullOrEmpty(workingDir) && Directory.Exists(workingDir))
-                {
-                    string logFullPath = Path.Combine(workingDir, logFileName);
-
-                    try
-                    {
-                        if (File.Exists(logFullPath))
-                        {
-                            File.SetAttributes(logFullPath, FileAttributes.Normal);
-                            File.Delete(logFullPath);
-                        }
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-            }
-
-            if (String.IsNullOrEmpty(workingDir) || 
-                _buildSystem == BuildSystem.Console)
-            {
-                if (String.IsNullOrEmpty(logFileName) == false || settings.UseLogFile)
-                {
-                    ConsoleLogger logger = new ConsoleLogger(logFileName);
-                    logger.KeepLog = settings.KeepLogFile;
-                    
-                    return logger;
-                }
-                else
-                {
-                    return new ConsoleLogger();
-                }
-            }
-            else
-            {
-                if (String.IsNullOrEmpty(logFileName) == false || settings.UseLogFile)
-                {
-                    FileLogger logger = new FileLogger(logFileName);
-                    logger.KeepLog = settings.KeepLogFile;
-
-                    return logger;
-                }
-            }
-
-            return null;
         }
 
         #endregion

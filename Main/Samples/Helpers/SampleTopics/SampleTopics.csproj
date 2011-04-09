@@ -42,7 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeSnippetSample.xml" />
+    <None Include="CodeSnippetSample.snippets" />
+    <Content Include="Documents\RootNamespaces.xml" />
+    <Content Include="Documents\EmbedSilverlight.xml" />
+    <Content Include="Documents\EmbedFlash.xml" />
+    <Content Include="Documents\EmbedXps.xml" />
+    <Content Include="Documents\EmbedPdf.xml" />
+    <Content Include="Documents\RootTopic.xml" />
+    <Content Include="Documents\TestHtmlDocument.htm" />
     <Content Include="Images\Nativity3WiseMen.png" />
     <Content Include="Images\NativityHerrodAndSon.jpg" />
     <Content Include="Images\NativityScene.jpg" />
@@ -55,19 +62,22 @@
     <Content Include="Media\ChevronMore.png" />
     <Content Include="Media\ChevronMoreHovered.png" />
     <Content Include="Media\ChevronMorePressed.png" />
+    <Content Include="Media\Codes.png" />
     <Content Include="Media\ConceptsStruct.png" />
     <Content Include="Media\Contents1.jpg" />
     <Content Include="Media\Contents2.jpg" />
     <Content Include="Media\Contents2a.jpg" />
     <Content Include="Media\Contents3.jpg" />
     <Content Include="Media\Contents4.jpg" />
+    <Content Include="Media\DialUseCase.swf" />
+    <Content Include="Media\digitalClock.xap" />
     <Content Include="Media\Error.png" />
     <Content Include="Media\HelpUpdate.jpg" />
     <Content Include="Media\HelpUpdate9.jpg" />
     <Content Include="Media\IndexFilter.jpg" />
     <Content Include="Media\Information.png" />
     <Content Include="Media\Introduction.png" />
-    <Content Include="Media\MediaContent.xml" />
+    <None Include="MediaContent.media" />
     <Content Include="Media\MSDExplore.jpg" />
     <Content Include="Media\NativityBanner.jpg" />
     <Content Include="Media\pubproperty.gif" />
@@ -80,6 +90,7 @@
     <Content Include="Media\SecurityQuestion.png" />
     <Content Include="Media\SecuritySuccess.png" />
     <Content Include="Media\SecurityWarning.png" />
+    <Content Include="Media\SilverlightApplication2.xap" />
     <Content Include="Media\SmallError.png" />
     <Content Include="Media\SmallInformation.png" />
     <Content Include="Media\SmallQuestion.png" />
@@ -90,6 +101,7 @@
     <Content Include="Media\SmallSecurityWarning.png" />
     <Content Include="Media\SmallWarning.png" />
     <Content Include="Media\Warning.png" />
+    <Content Include="Documents\References.xml" />
     <Content Include="Topics.xml" />
     <Content Include="Documents\CodeTest.xml" />
     <Content Include="Documents\Document.xml" />
@@ -131,6 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeSnippets.xsd" />
+    <None Include="Media\PdfTest.pdf" />
+    <None Include="Media\XpsTest.xps" />
+    <None Include="Topics.sandtopics" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

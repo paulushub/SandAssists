@@ -70,16 +70,26 @@ namespace Sandcastle
             if (argObject == null)
             {
                 throw new ArgumentNullException(argName,
-                    String.Format("The file path '{0}' cannot be null (or Nothing).",
+                    String.Format("The path '{0}' cannot be null (or Nothing).",
                     argName));
             }
             if (argObject.Length == 0)
             {
-                throw new ArgumentException("The file path is not valid.", argName);
+                throw new ArgumentException("The path is not valid.", argName);
             }
-            if (File.Exists(argObject) == false)
+            if (Path.HasExtension(argObject))
             {
-                throw new ArgumentException("The file path must exists.", argName);
+                if (File.Exists(argObject) == false)
+                {
+                    throw new ArgumentException("The file path must exists.", argName);
+                }
+            }
+            else
+            {
+                if (Directory.Exists(argObject) == false)
+                {
+                    throw new ArgumentException("The directory path must exists.", argName);
+                }
             }
         }
     }

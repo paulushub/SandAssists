@@ -3,7 +3,7 @@
 .irisContainer td.lineNumbers { border-style:dotted;border-width:0 1px 0 0;border-color:silver;text-align:right;background-color:#ffffff;padding:5px 3px 5px 10px; }
 .irisContainer td.lineNumbers pre { text-align:right;color:#2b91af; }
 table.irisContainer { margin:5px auto;background-color:#ffffff;border-style:solid;border-width:1px;border-color:silver;font-size:13px;padding:0; }
-.irisContainer pre { font-family:Monospace, Courier New, Courier;line-height:1.2em;margin:0;padding:0; }
+.irisContainer pre { font-family:Consolas, Monospace, Courier New, Courier;line-height:1.2em;margin:0;padding:0; }
 .irisContainer td.highlighted { padding:5px 5px;background-color:#ffffff; }
 .irisContainer pre span { font-size-adjust:none;font-style:normal;font-variant:normal;font-weight:normal;vertical-align:bottom; }
 

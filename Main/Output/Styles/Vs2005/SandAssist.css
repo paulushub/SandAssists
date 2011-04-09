@@ -93,3 +93,41 @@ div.mathDiv td.mathRight
 {
     color: #808080;
 }
+
+div.mediaLeft {
+	text-align: left;
+	margin: 1em;
+}
+
+div.mediaRight {
+	text-align: right;
+	margin: 1em;
+}
+
+div.mediaMiddle {
+	text-align: center;
+	margin: 1em;
+}
+
+div.mediaTitle
+{
+	font-weight: bold;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	font-size:100%;
+	color:#003399;
+}
+
+div.mediaTitleWithLead
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+	font-size:100%;
+	color:#003399;
+}
+
+span.mediaTitleLead
+{
+  font-weight: bold;
+  margin-right: .5em;
+}

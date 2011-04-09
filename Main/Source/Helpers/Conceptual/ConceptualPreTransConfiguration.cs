@@ -25,6 +25,13 @@ namespace Sandcastle.Conceptual
 
         #region Private Fields
 
+        private int  _outlineDepth;
+
+        private bool _resolveTokens;
+        private bool _outlineTokens;
+        private bool _lineBreakTokens;
+        private bool _tableIconColumnTokens;
+
         [NonSerialized]
         private BuildContext  _context;
         [NonSerialized]
@@ -62,6 +69,12 @@ namespace Sandcastle.Conceptual
         private ConceptualPreTransConfiguration(string optionsName)
             : base(optionsName)
         {
+            // Set the default values...
+            _outlineDepth          = 3;
+            _resolveTokens         = true;
+            _outlineTokens         = true;
+            _lineBreakTokens       = true;
+            _tableIconColumnTokens = true;
         }
 
         /// <summary>
@@ -80,6 +93,11 @@ namespace Sandcastle.Conceptual
             ConceptualPreTransConfiguration source)
             : base(source)
         {
+            _resolveTokens         = source._resolveTokens;
+            _outlineTokens         = source._outlineTokens;
+            _outlineDepth          = source._outlineDepth;
+            _lineBreakTokens       = source._lineBreakTokens;
+            _tableIconColumnTokens = source._tableIconColumnTokens;
         }
 
         #endregion
@@ -219,6 +237,66 @@ namespace Sandcastle.Conceptual
             }
         }
 
+        public bool ResolveTokens
+        {
+            get
+            {
+                return _resolveTokens;
+            }
+            set
+            {
+                _resolveTokens = value;
+            }
+        }
+
+        public bool ResolveOutlineTokens
+        {
+            get
+            {
+                return _outlineTokens;
+            }
+            set
+            {
+                _outlineTokens = value;
+            }
+        }
+
+        public int ResolveOutlineDepth
+        {
+            get
+            {
+                return _outlineDepth;
+            }
+            set
+            {
+                _outlineDepth = value;
+            }
+        }
+
+        public bool ResolveLineBreakTokens
+        {
+            get
+            {
+                return _lineBreakTokens;
+            }
+            set
+            {
+                _lineBreakTokens = value;
+            }
+        }
+
+        public bool ResolveTableIconColumnTokens
+        {
+            get
+            {
+                return _tableIconColumnTokens;
+            }
+            set
+            {
+                _tableIconColumnTokens = value;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -284,11 +362,28 @@ namespace Sandcastle.Conceptual
             //    <autoOutline enabled="true" depth="3" />
             //</component>
 
+            writer.WriteComment(" Resolve tokens, <ddue:token>...</ddue:token>, removing any an used token. ");
+            writer.WriteStartElement("resolveTokens");  //start: resolveTokens
+            writer.WriteAttributeString("enabled", _resolveTokens.ToString());
+
             writer.WriteComment(" Replaces <token>autoOutline</token> with an <autoOutline xmlns=\"\"/> node. ");
             writer.WriteStartElement("autoOutline");  //start: autoOutline
-            writer.WriteAttributeString("enabled", "true");
-            writer.WriteAttributeString("depth", "3");
+            writer.WriteAttributeString("enabled", _outlineTokens.ToString());
+            if (_outlineDepth > 0)
+            {
+                writer.WriteAttributeString("depth", _outlineDepth.ToString());
+            }
             writer.WriteEndElement();                 //end: autoOutline
+
+            writer.WriteStartElement("lineBreak");    //start: lineBreak
+            writer.WriteAttributeString("enabled", _lineBreakTokens.ToString());
+            writer.WriteEndElement();                 //end: lineBreak
+
+            writer.WriteStartElement("iconColumn");   //start: iconColumn
+            writer.WriteAttributeString("enabled", _tableIconColumnTokens.ToString());
+            writer.WriteEndElement();                 //end: iconColumn
+
+            writer.WriteEndElement();                   //end: resolveTokens
 
             return true;
         }

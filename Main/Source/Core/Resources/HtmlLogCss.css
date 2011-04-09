@@ -39,6 +39,10 @@
 	        background: #F5FAFA;
 	        color: #797268;
         } 
+        td.nl {
+	        background: #F5FAFA;
+	        color: #797268;
+        } 
         th.spec {
 	        border-left: 1px solid #C1DAD7;
 	        border-top: 0;

@@ -73,7 +73,7 @@ namespace Sandcastle.Conceptual
                 return false;
             }
 
-            bool isFiltered = _dicTopicId.ContainsKey(item.FileGuid);
+            bool isFiltered = _dicTopicId.ContainsKey(item.TopicId);
 
             return this.Inverse ? !isFiltered : isFiltered;
         }

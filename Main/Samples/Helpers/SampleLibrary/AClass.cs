@@ -7,7 +7,50 @@ namespace ANamespace
     /// <isnew/> This is a sample class summary, AClass.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// An implementation of the <see cref="BClass"/> class.
+    /// </para>
+    /// <para>
+    /// Here we have decided to embed an image 
+    /// <mediaLinkInline>
+    /// <image href="2aca5da4-6f94-43a0-9817-5f413d16f803"/>
+    /// </mediaLinkInline>
+    /// to make the experience cool. Another way is to embed the image like
+    /// this <mediaLinkInline href="2aca5da4-6f94-43a0-9817-5f413d16f805"/>.
+    /// </para>
+    /// <para>
+    /// The following are the illustrations of the displayed media:
+    /// </para>
+    /// <para>Image with the default caption:</para>
+    /// <mediaLink>
+    ///    <caption>A caption of the image.</caption>
+    ///    <image href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+    /// </mediaLink>
+    /// <para>Image with a lead caption, will be displayed at the top.</para>
+    /// <mediaLink>
+    ///    <caption lead="Figure 1">A caption of the image.</caption>
+    ///    <image href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+    /// </mediaLink>
+    /// <para>
+    /// Image with a lead caption placed at the bottom.
+    /// </para>
+    /// <mediaLink>
+    ///    <caption placement="after" lead="Figure 1">A caption of the image.</caption>
+    ///    <image href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+    /// </mediaLink>
+    /// <para>With the image centered, and the caption at the bottom.</para>
+    /// <mediaLink placement="center">
+    ///    <caption location="bottom" lead="Figure 1">A caption of the image.</caption>
+    ///    <image href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+    /// </mediaLink>
+    /// <para>
+    /// You can use the shorter syntax for an image without a caption.
+    /// </para>
+    /// <mediaLink placement="right" href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+    /// <para>
+    /// Finally, we use image with image up.
+    /// </para>
+    /// <mediaLink placement="center" href="2aca5da4-6f94-43a0-9817-5f413d16f813"/>
     /// </remarks>
     [Serializable]
     public class AClass : BClass, IAClass

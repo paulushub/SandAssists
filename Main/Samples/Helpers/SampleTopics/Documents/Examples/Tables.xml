@@ -22,10 +22,10 @@
             <title>Creating A Simple Table</title>
             <content>
                 <table>
-                    <title>Windows Vista Editions</title>
+                    <title address="iconRowTitle1">Windows Vista Editions</title>
                     <tableHeader>
                         <row>
-                            <entry>
+                            <entry address="iconRow1">
                                 <para></para>
                             </entry>
                             <entry>
@@ -321,6 +321,9 @@
                 </table>
             </content>
         </section>
+
+        <relatedTopics>            
+        </relatedTopics>
         
     </developerConceptualDocument>
 </topic>

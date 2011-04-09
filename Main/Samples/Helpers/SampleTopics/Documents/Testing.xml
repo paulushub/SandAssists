@@ -26,6 +26,13 @@
             <para>
                 TODO: Hello, Conceptual Help!
             </para>
+            <para>
+                <externalLink>
+                    <linkText>Download WpfRibbonBrowserApplication Sample</linkText>
+                    <linkAlternateText>Download WpfRibbonBrowserApplication Sample</linkAlternateText>
+                    <linkUri>images/WpfRibbonBrowserApplication1.zip</linkUri>
+                </externalLink>
+            </para>
             <!--<codeReference>
                 {source="..\Examples\WholeDemo.vb" region="Example 1" lang="vb"}
             </codeReference>

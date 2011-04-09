@@ -254,6 +254,8 @@ namespace Sandcastle.Conceptual
             // 3. The conceptual tokens...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Tokens,
                 new Action<string, XPathNavigator>(OnTokensItem));
+            this.RegisterConfigurationItem(ConfiguratorKeywords.TokensReplaced,
+                new Action<string, XPathNavigator>(OnTokensReplacedItem));
             // 4. The conceptual metadata keyword...
             this.RegisterConfigurationItem(ConfiguratorKeywords.MetadataKeywords,
                 new Action<string, XPathNavigator>(OnMetadataKeywordsItem));
@@ -269,9 +271,6 @@ namespace Sandcastle.Conceptual
             // 8. The conceptual transform...
             this.RegisterConfigurationItem(ConfiguratorKeywords.Transforms,
                 new Action<string, XPathNavigator>(OnTransformsItem));
-            // 9. The conceptual code snippets...
-            this.RegisterConfigurationItem(ConfiguratorKeywords.CodeSnippets,
-                new Action<string, XPathNavigator>(OnCodeSnippetsItem));
             //// . The conceptual ...
             //this.RegisterItem(ConfigItems,
             //    new ConfigItemHandler(OnItem));
@@ -399,12 +398,20 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnTopicsContentsItem(string keyword, XPathNavigator navigator)
-        {
+        {   
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             // <data files=".\DdueXml\*.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
             xmlWriter.WriteStartElement("data");
-            xmlWriter.WriteAttributeString("files", @".\DdueXml\*.xml");
+            xmlWriter.WriteAttributeString("files", String.Format(
+                @".\{0}\*.xml", groupContext["$DdueXmlDir"]));
             xmlWriter.WriteEndElement();
 
             xmlWriter.Close();
@@ -428,15 +435,44 @@ namespace Sandcastle.Conceptual
                     "There is not build group to provide the media/arts contents.");
             }
 
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             XmlWriter xmlWriter = navigator.InsertAfter();
 
             IList<TokenContent> listTokens = _group.TokenContents;
             if (listTokens == null || listTokens.Count == 0)
             {
+                // Create an empty tokens file...
+                string workingDir = _group.WorkingDirectory;
+                string tokenPath  = Path.Combine(workingDir, groupContext["$TokenFile"]);
+
+                XmlWriterSettings settings   = new XmlWriterSettings();
+                settings.Indent              = true;
+                settings.OmitXmlDeclaration  = false;
+                settings.Encoding            = Encoding.UTF8;
+                using (XmlWriter tokenWriter = XmlWriter.Create(tokenPath, settings))
+                {
+                    tokenWriter.WriteStartElement("items");
+                    tokenWriter.WriteAttributeString("xml", "space", String.Empty, "preserve");
+                    tokenWriter.WriteAttributeString("xmlns", "ddue", String.Empty,
+                        "http://ddue.schemas.microsoft.com/authoring/2003/5");
+                    tokenWriter.WriteAttributeString("xmlns", "xlink", String.Empty,
+                        "http://www.w3.org/1999/xlink");
+
+                    tokenWriter.WriteComment(" There is no token items. ");
+
+                    tokenWriter.WriteEndElement();
+                }   
+
                 // <content file="%DXROOT%\Data\tokens.xml" />
                 // For now, lets simply write the default...
                 xmlWriter.WriteStartElement("content");
-                xmlWriter.WriteAttributeString("file", @"%DXROOT%\Data\tokens.xml");
+                xmlWriter.WriteAttributeString("file", tokenPath);
                 xmlWriter.WriteEndElement();
             }
             else
@@ -450,7 +486,7 @@ namespace Sandcastle.Conceptual
                         continue;
                     }
                     xmlWriter.WriteStartElement("content");
-                    xmlWriter.WriteAttributeString("file", tokenContent.ContentsFile);
+                    xmlWriter.WriteAttributeString("file", tokenContent.ContentFile);
                     xmlWriter.WriteEndElement();
                 }
             }
@@ -461,14 +497,14 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region OnCodeSnippetsItem Method
+        #region OnTokensReplacedItem Method
 
         /// <summary>
         /// This specifies the token items used by the conceptual topics.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected void OnCodeSnippetsItem(string keyword, XPathNavigator navigator)
+        protected void OnTokensReplacedItem(string keyword, XPathNavigator navigator)
         {
             if (_group == null)
             {
@@ -476,38 +512,27 @@ namespace Sandcastle.Conceptual
                     "There is not build group to provide the media/arts contents.");
             }
 
-            //<codeSnippets process="true" storage="Sqlite" separator="...">
-            //  <codeSnippet source=".\CodeSnippetSample.xml" format="Sandcastle" />
-            //</codeSnippets>
+            bool replaceTokens = true;
 
-            XmlWriter xmlWriter      = navigator.InsertAfter();
-
-            IList<SnippetContent> listSnippets = _group.SnippetContents;
-            if (listSnippets != null && listSnippets.Count != 0)
+            ConceptualPreTransConfiguration preTrans = _engineSettings.PreTrans;
+            if (preTrans != null && preTrans.ResolveTokens)
             {
-                xmlWriter.WriteStartElement("codeSnippets");  // start - codeSnippets
-                xmlWriter.WriteAttributeString("process", "true");
-                xmlWriter.WriteAttributeString("storage", "Sqlite");
-                xmlWriter.WriteAttributeString("separator", "...");
-
-                int contentCount = listSnippets.Count;
-                for (int i = 0; i < contentCount; i++)
-                {
-                    SnippetContent snippetContent = listSnippets[i];
-                    if (snippetContent == null || snippetContent.IsEmpty)
-                    {
-                        continue;
-                    }
-                    xmlWriter.WriteStartElement("codeSnippet"); // start - codeSnippet
-                    xmlWriter.WriteAttributeString("source", snippetContent.ContentsFile);
-                    xmlWriter.WriteAttributeString("format", "Sandcastle");
-                    xmlWriter.WriteEndElement();                // end - codeSnippet
-                }
-
-                xmlWriter.WriteEndElement();                  // end - codeSnippets
+                replaceTokens = false;
             }
 
-            xmlWriter.Close();
+            if (replaceTokens)
+            {   
+                XmlWriter xmlWriter = navigator.InsertAfter();
+
+                // <replace elements="/*//ddue:token[text()!='autoOutline']" item="string(.)" />
+                xmlWriter.WriteStartElement("replace");
+                xmlWriter.WriteAttributeString("elements", @"/*//ddue:token[text()!='autoOutline']");
+                xmlWriter.WriteAttributeString("item", "string(.)");
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.Close();
+            }
+
             navigator.DeleteSelf();
         }
 
@@ -521,13 +546,21 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnMetadataKeywordsItem(string keyword, XPathNavigator navigator)
-        {
+        {   
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             //<copy base=".\XmlComp" file="concat($key,'.cmp.xml')" 
             //      source="/metadata/topic[@id=$key]/*" target="/document/metadata" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
             xmlWriter.WriteStartElement("copy");
-            xmlWriter.WriteAttributeString("base",   @".\XmlComp");
+            xmlWriter.WriteAttributeString("base",   String.Format(
+                @".\{0}", groupContext["$DdueXmlCompDir"]));
             xmlWriter.WriteAttributeString("file",   @"concat($key,'.cmp.xml')");
             xmlWriter.WriteAttributeString("source", @"/metadata/topic[@id=$key]/*");
             xmlWriter.WriteAttributeString("target", @"/document/metadata");
@@ -548,12 +581,19 @@ namespace Sandcastle.Conceptual
         /// <param name="args"></param>
         protected void OnMetadataAttributesItem(string keyword, XPathNavigator navigator)
         {
-            // <data files=".\ExtractedFiles\ContentMetadata.xml" />
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            // <data files=".\ContentMetadata.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
             xmlWriter.WriteStartElement("data");
             xmlWriter.WriteAttributeString("files", String.Format(
-                @".\ExtractedFiles\{0}", _group["$MetadataFile"]));
+                @".\{0}", groupContext["$MetadataFile"]));
             xmlWriter.WriteEndElement();
 
             xmlWriter.Close();
@@ -571,11 +611,36 @@ namespace Sandcastle.Conceptual
         /// <param name="args"></param>
         protected void OnMetadataVersionItem(string keyword, XPathNavigator navigator)
         {
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            // Create an empty version metadata file...
+            string workingDir  = _group.WorkingDirectory;
+            string versionPath = Path.Combine(workingDir, groupContext["$VersionFile"]);
+
+            XmlWriterSettings settings   = new XmlWriterSettings();
+            settings.Indent              = true;
+            settings.OmitXmlDeclaration  = false;
+            settings.Encoding            = Encoding.UTF8;
+            using (XmlWriter tokenWriter = XmlWriter.Create(versionPath, settings))
+            {
+                tokenWriter.WriteStartElement("metadata");
+
+                tokenWriter.WriteComment(" There is no version metadata. ");
+
+                tokenWriter.WriteEndElement();
+            }   
+
+
             // <data files="Version.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
             xmlWriter.WriteStartElement("data");
-            xmlWriter.WriteAttributeString("files", @"Version.xml");
+            xmlWriter.WriteAttributeString("files", versionPath);
             xmlWriter.WriteEndElement();
 
             xmlWriter.Close();
@@ -592,13 +657,20 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnMetadataSettingsItem(string keyword, XPathNavigator navigator)
-        {
-            // <data files=".\ExtractedFiles\Projectsettings.xml" />
+        {   
+            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            // <data files=".\Projectsettings.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
             // For now, lets simply write the default...
             xmlWriter.WriteStartElement("data");
             xmlWriter.WriteAttributeString("files", String.Format(
-                @".\ExtractedFiles\{0}", _group["$ProjSettings"]));
+                @".\{0}", groupContext["$ProjSettings"]));
             xmlWriter.WriteEndElement();
 
             xmlWriter.Close();

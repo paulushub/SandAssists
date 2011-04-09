@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mediaContent id="405fa5d9-4ac5-4e0e-ab75-7fc2fd6d58af" version="1.0">
+    <location>
+        <path value=".\Media" />
+    </location>
+    <items>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f800">
+            <image file="NativityScene.jpg">
+                <altText>Nativity Scene</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f801">
+            <image file="NativityBanner.jpg">
+                <altText>Nativity Banner</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f802">
+            <image file="NativityWiseMen.png">
+                <altText>Nativity: Three Wise Men</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f803">
+            <image file="pubproperty.gif">
+                <altText>Properties</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f804">
+            <image file="Warning.png">
+                <altText>Warming</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f805">
+            <image file="SmallWarning.png">
+                <altText>Warming</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f806">
+            <image file="Information.png">
+                <altText>Information</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f807">
+            <image file="Question.png">
+                <altText>Question</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f808">
+            <image file="Error.png">
+                <altText>Error</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f809">
+            <image file="ArrowNormal.png">
+                <altText>Arrow Normal</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f810">
+            <image file="QuickStart.png">
+                <altText>Quick Start</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f811">
+            <image file="Introduction.png">
+                <altText>Introduction</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f812">
+            <image file="ConceptsStruct.png">
+                <altText>Conceptual Content Schema</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f813">
+            <image file="Codes.png" usemap="#Codes" resolveMapLinks="False">
+                <altText>Testing Image Maps</altText>
+            </image>
+            <map name="Codes">
+                <area title="public class CodeFormatter : Iris.Highlighting.XmlFormatter" shape="rect" coords="249,129,392,189" />
+                <area title="public class Iris.Highlighting.XmlFormatter : Iris.Highlighting.ICodeFormatter&#xA;Highlights text using XML tags to indicate the mode for each fragment of text." shape="rect" coords="249,33,392,81" />
+                <area title="public sealed class CodeController" shape="rect" coords="249,225,392,273" />
+                <area title="None = 0" shape="rect" coords="24,154,175,169" />
+                <area title="Snippets = 1" shape="rect" coords="24,170,175,185" />
+                <area title="DirectIris = 2" shape="rect" coords="24,185,175,200" />
+                <area title="IndirectIris = 3" shape="rect" coords="24,201,175,216" />
+                <area title="public enum CodeHighlightMode : int" shape="rect" coords="9,105,176,226" />
+                <area title="Unlike the References build, the Conceptual build is not flexible so we provide various modes for optimized performance and outputs." shape="rect" coords="9,9,175,88" />
+                <area title="CodeFormatter inherits from Iris.Highlighting.XmlFormatter" shape="rect" coords="321,82,321,129" />
+                <area title="CodeFormatter has a property named Mode of type CodeHighlightMode." shape="rect" coords="177,159,248,159" />
+                <area title="CodeController has a property named Mode of type CodeHighlightMode." shape="rect" coords="93,227,248,261" />
+            </map>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f814" type="YouTube">
+            <image file="M-80QD5Zjyc">
+                <altText>Copy the embed code from YouTube</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f815" type="Pdf" width="100" height="100" unit="Percent">
+            <image file="PdfTest.pdf">
+                <altText>Testing PDF document media type.</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f816" type="Xps" width="100" height="100" unit="Percent">
+            <image file="XpsTest.xps">
+                <altText>Testing XPS document media type.</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f817" type="Flash" width="550" height="400" unit="Pixel">
+            <image file="DialUseCase.swf">
+                <altText>Testing Flash media type.</altText>
+            </image>
+        </item>
+        <item id="2aca5da4-6f94-43a0-9817-5f413d16f818" type="Silverlight" width="100" height="100" unit="Percent">
+            <image file="SilverlightApplication2.xap">
+                <altText>Testing Silverlight media type.</altText>
+            </image>
+        </item>
+    </items>
+</mediaContent>

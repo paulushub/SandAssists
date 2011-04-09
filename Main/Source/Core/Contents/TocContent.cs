@@ -9,14 +9,14 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class TocContent : BuildContent<TocItem, TocContent>
     {
+        #region Public Fields
+
+        public const string TagName = "tocContent";
+
+        #endregion
+
         #region Private Fields
 
-        private bool                     _isRoot;
-        private bool                     _isExcluded;
-        private string                   _groupName;
-        private string                   _contentsFile;
-        private TocGroupType             _groupType;
-        private BuildList<TocContent>    _listChildren;
         [NonSerialized]
         private IDictionary<string, int> _dicItems;
 
@@ -34,56 +34,11 @@ namespace Sandcastle.Contents
             {
                 _dicItems = keyedList.Dictionary;
             }
-
-            _groupName    = String.Empty;
-            _groupType    = TocGroupType.None;
-        }
-
-        public TocContent(string contentsFile)
-            : this()
-        {
-            _contentsFile = contentsFile;
-        }
-
-        public TocContent(bool isRootNamespace, string contentsFile)
-            : base(TocContent.CreateList(isRootNamespace))
-        {
-            _isRoot       = isRootNamespace;
-            _contentsFile = contentsFile;
-
-            _groupName = String.Empty;
-            _groupType = TocGroupType.None;
-
-            if (!isRootNamespace)
-            {
-                BuildKeyedList<TocItem> keyedList =
-                    this.List as BuildKeyedList<TocItem>;
-
-                if (keyedList != null)
-                {
-                    _dicItems = keyedList.Dictionary;
-                }
-            }
-        }
-
-        public TocContent(string groupName, TocGroupType groupType)
-            : this()
-        {
-            BuildExceptions.NotNullNotEmpty(groupName, "groupName");
-
-            _groupName    = groupName;
-            _groupType    = groupType;
         }
 
         public TocContent(TocContent source)
             : base(source)
         {
-            _isRoot       = source._isRoot;
-            _isExcluded   = source._isExcluded;
-            _groupName    = source._groupName;
-            _contentsFile = source._contentsFile;
-            _groupType    = source._groupType;
-            _listChildren = source._listChildren;
             _dicItems     = source._dicItems;
         }
 
@@ -95,82 +50,22 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (_groupType != TocGroupType.None)
+                if (base.IsEmpty)
                 {
-                    return String.IsNullOrEmpty(_groupName);
+                    return true;
                 }
 
-                if (String.IsNullOrEmpty(_contentsFile) == false)
+                int validRoots = 0;
+                for (int i = 0; i < this.Count; i++)
                 {
-                    return false;
+                    TocItem item = this[i];
+                    if (!item.IsEmpty)
+                    {
+                        validRoots++;
+                    }
                 }
 
-                return base.IsEmpty;
-            }
-        }
-
-        public bool IsGroupToc
-        {
-            get
-            {
-                if (_isRoot)
-                {
-                    return false;
-                }
-                if (_groupType != TocGroupType.None)
-                {
-                    return !String.IsNullOrEmpty(_groupName);
-                }
-
-                return false;
-            }
-        }
-
-        public bool IsRootNamespaceToc
-        {
-            get
-            {
-                return _isRoot;
-            }
-        }
-
-        public bool Exclude
-        {
-            get
-            {
-                return _isExcluded;
-            }
-            set
-            {
-                _isExcluded = value;
-            }
-        }
-
-        public string ContentsFile
-        {
-            get
-            {
-                return _contentsFile;
-            }
-            set
-            {
-                _contentsFile = value;
-            }
-        }
-        
-        public string GroupName
-        {
-            get
-            {
-                return _groupName;
-            }
-        }
-        
-        public TocGroupType GroupType
-        {
-            get
-            {
-                return _groupType;
+                return (validRoots == 0);
             }
         }
 
@@ -198,29 +93,15 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (_isRoot)
-                {
-                    return false;
-                }
-
                 return true;
             }
         }
 
-        /// <summary>
-        /// Gets a collection that contains the first-level child nodes of the 
-        /// current node.
-        /// </summary>
-        public IList<TocContent> Children
+        public override bool IsHierarchical
         {
             get
             {
-                if (_listChildren == null)
-                {
-                    _listChildren = new BuildList<TocContent>();
-                }
-
-                return _listChildren;
+                return true;
             }
         }
 
@@ -336,28 +217,69 @@ namespace Sandcastle.Contents
 
         #endregion
 
-        #region Private Static Methods
-
-        private static IList<TocItem> CreateList(bool isRootNamespace)
-        {
-            if (isRootNamespace)
-            {   
-                return new ReadOnlyCollection<TocItem>(new List<TocItem>());
-            }
-
-            return new BuildKeyedList<TocItem>();
-        }
-
-        #endregion
-
         #region IXmlSerializable Members
 
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, TocItem.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        TocItem item = new TocItem();
+                        item.ReadXml(reader);
+
+                        this.Add(item);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void WriteXml(XmlWriter writer)
         {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                this[i].WriteXml(writer);
+            }
+
+            writer.WriteEndElement();
         }
 
         #endregion
@@ -367,11 +289,6 @@ namespace Sandcastle.Contents
         public override TocContent Clone()
         {
             TocContent content = new TocContent(this);
-
-            if (_contentsFile != null)
-            {
-                content._contentsFile = String.Copy(_contentsFile);
-            }
 
             this.Clone(content, new BuildKeyedList<TocItem>());
 

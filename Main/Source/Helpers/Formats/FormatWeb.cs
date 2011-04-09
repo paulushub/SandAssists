@@ -187,10 +187,10 @@ namespace Sandcastle.Formats
                 listSteps.Add(dirCopy);
 
                 string tocTopics = context["$HelpTocFile"];
-                string tempText = context["$HierarchicalToc"];
+                string tempText = context["$HelpHierarchicalToc"];
 
                 if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                    "true", StringComparison.OrdinalIgnoreCase))
+                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
                 {
                     tocTopics = context["$HelpHierarchicalTocFile"];
                 }

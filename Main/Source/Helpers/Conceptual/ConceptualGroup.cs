@@ -14,6 +14,12 @@ namespace Sandcastle.Conceptual
     [Serializable]
     public class ConceptualGroup : BuildGroup
     {
+        #region Private Static Fields
+
+        private static int _groupCount = 1;
+
+        #endregion
+
         #region Private Fields
 
         private Guid _docID;
@@ -27,20 +33,10 @@ namespace Sandcastle.Conceptual
         private string _docEditor;
         private string _docManager;
 
-        private string _defaultTopic;
-
-        private string _contentsDir;
-        private string _contentsFile;
-
         private Version _fileVersion;
 
-        // main files creates
-        private string _buildManifestFile;
-
-        private List<ConceptualItem> _listItems;
-
-        private ConceptualMetadataContent  _metadata;
-        private ConceptualCategoryContent  _categories;
+        private ConceptualSource  _source;
+        private ConceptualContent _topicContent;
 
         #endregion
 
@@ -54,6 +50,18 @@ namespace Sandcastle.Conceptual
         /// default parameters.
         /// </summary>
         public ConceptualGroup()
+            : this("ConceptualGroup" + _groupCount.ToString(), Guid.NewGuid().ToString())
+        {
+            _groupCount++;
+        }
+
+        public ConceptualGroup(string groupName)
+            : this(groupName, Guid.NewGuid().ToString())
+        {
+        }
+
+        public ConceptualGroup(string groupName, string groupId)
+            : base(groupName, groupId)
         {
             _fileVersion   = new Version(1, 0, 0, 0);
             _projectTitle  = "ProjectTitle";
@@ -61,9 +69,6 @@ namespace Sandcastle.Conceptual
             _docID         = Guid.NewGuid();
             _projectID     = Guid.NewGuid();
             _repositoryID  = Guid.NewGuid();
-
-            _metadata      = new ConceptualMetadataContent();
-            _categories    = new ConceptualCategoryContent();
         }
 
         /// <summary>
@@ -97,12 +102,12 @@ namespace Sandcastle.Conceptual
         {
             get
             {
-                if (_listItems == null || _listItems.Count == 0)
+                if (_source != null && _source.IsValid)
                 {
-                    return true;
+                    return false;
                 }
 
-                return false;
+                return (_topicContent == null || _topicContent.IsEmpty);
             }
         }
 
@@ -266,48 +271,6 @@ namespace Sandcastle.Conceptual
         /// <value>
         /// 
         /// </value>
-        public IList<ConceptualItem> Items
-        {
-            get
-            {
-                return _listItems;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public ConceptualCategoryContent Categories
-        {
-            get
-            {
-                return _categories;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public ConceptualMetadataContent Metadata
-        {
-            get
-            {
-                return _metadata;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
         public Version FileVersion
         {
             get
@@ -323,33 +286,27 @@ namespace Sandcastle.Conceptual
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public string DefaultTopic
+        public ConceptualSource Source
         {
             get
             {
-                return _defaultTopic;
+                return _source;
             }
             set
             {
-                _defaultTopic = value;
+                _source = value;
             }
         }
 
-        #endregion
-
-        #region Internal Properties
-
-        internal string ManifestFile
+        public ConceptualContent Content
         {
             get
             {
-                return _buildManifestFile;
+                return _topicContent;
+            }
+            set
+            {
+                _topicContent = value;
             }
         }
 
@@ -357,14 +314,10 @@ namespace Sandcastle.Conceptual
 
         #region Public Methods
 
-        #region AddItems Method
+        #region CreateContent Method
 
-        public bool AddItems(string contentsDir, string contentsFile)
+        public bool CreateContent(string contentsDir, string contentsFile)
         {
-            _contentsDir  = null;
-            _contentsFile = null;
-            _listItems    = null;
-
             if (String.IsNullOrEmpty(contentsDir))
             {
                 return false;
@@ -384,19 +337,10 @@ namespace Sandcastle.Conceptual
                 return false;
             }
 
-            _contentsDir  = contentsDir;
-            _contentsFile = contentsFile;
+            _topicContent = new ConceptualContent(contentsFile, contentsDir); 
+            _topicContent.Load();
 
-            if (_listItems == null)
-            {
-                _listItems = new List<ConceptualItem>();
-            }
-
-            ConceptualContent contents = new ConceptualContent(contentsFile, contentsDir);
-            
-            contents.Read(this);
-
-            return true;
+            return _topicContent.IsLoaded;
         }
 
         #endregion
@@ -405,7 +349,15 @@ namespace Sandcastle.Conceptual
 
         public override void Initialize(BuildContext context)
         {
+            BuildGroupContext groupContext = context.GroupContexts[this.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             base.Initialize(context);
+
             BuildSettings settings = context.Settings;
             string workingDir = this.WorkingDirectory;
 
@@ -415,74 +367,44 @@ namespace Sandcastle.Conceptual
                 this.WorkingDirectory = workingDir;
             }
 
-            if (String.IsNullOrEmpty(_contentsDir) ||
-                !Directory.Exists(_contentsDir))
+            string ddueXmlDir  = Path.Combine(workingDir, groupContext["$DdueXmlDir"]);
+            string ddueCompDir = Path.Combine(workingDir, groupContext["$DdueXmlCompDir"]);
+            string ddueHtmlDir = Path.Combine(workingDir, groupContext["$DdueHtmlDir"]);
+
+            if (_source != null && _source.IsValid)
+            {
+                BuildSourceContext sourceContext = new BuildSourceContext();
+                sourceContext.TopicsDir          = ddueXmlDir;
+                sourceContext.TopicsCompanionDir = ddueCompDir;
+                sourceContext.TopicsFile         = Path.Combine(workingDir, 
+                    this.Name + BuildFileExts.ConceptualContentExt);
+
+                sourceContext.Initialize(this.Name, workingDir, false);
+
+                _topicContent = _source.Create();
+            }                                    
+
+            if (_topicContent == null || _topicContent.IsEmpty)
             {
                 this.IsInitialized = false;
                 return;
             }
-            if (String.IsNullOrEmpty(_contentsDir) ||
-                !Directory.Exists(_contentsDir))
+
+            _projectTitle = settings.HelpTitle;
+            _projectName  = settings.HelpName;
+
+            if (!Directory.Exists(ddueXmlDir))
             {
-                this.IsInitialized = false;
-                return;
+                Directory.CreateDirectory(ddueXmlDir);
             }
-            if (String.IsNullOrEmpty(_contentsFile) ||
-                !File.Exists(_contentsFile))
+            if (!Directory.Exists(ddueCompDir))
             {
-                this.IsInitialized = false;
-                return;
+                Directory.CreateDirectory(ddueCompDir);
             }
-            if (_listItems == null || _listItems.Count == 0)
+            if (!Directory.Exists(ddueHtmlDir))
             {
-                this.IsInitialized = false;
-                return;
+                Directory.CreateDirectory(ddueHtmlDir);
             }
-
-            string dduexmlDir = Path.Combine(workingDir, "DdueXml");
-            string compDir    = Path.Combine(workingDir, "XmlComp");
-
-            if (!Directory.Exists(dduexmlDir))
-            {
-                Directory.CreateDirectory(dduexmlDir);
-            }
-            if (!Directory.Exists(compDir))
-            {
-                Directory.CreateDirectory(compDir);
-            }
-
-            int itemCount = _listItems.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                ConceptualItem projItem = _listItems[i];
-                if (projItem == null)
-                {
-                    continue;
-                }
-
-                projItem.CreateFiles(dduexmlDir, compDir);
-            }
-
-            // 1. Write the table of contents
-            ConceptualTableOfContents tableOfContents = new ConceptualTableOfContents();
-            tableOfContents.Write(this, settings);
-
-            // 2. Write the project settings
-            ConceptualSettingsLoc projectSettings = new ConceptualSettingsLoc();
-            projectSettings.Write(this, settings);
-
-            // 3. Write the project content metadata
-            if (_metadata == null)
-            {
-                _metadata = new ConceptualMetadataContent();
-            }
-            _metadata.Write(this, settings);
-
-            // 4. Write the project build manifest
-            ConceptualBuildManifest buildManifest = new ConceptualBuildManifest();
-            buildManifest.Write(this, settings);
-
-            _buildManifestFile = buildManifest.FilePath;
         }
 
         #endregion
@@ -491,58 +413,9 @@ namespace Sandcastle.Conceptual
 
         public override void Uninitialize()
         {
-            _contentsDir  = null;
-            _contentsFile = null;
-            _listItems    = null;
-
-            _buildManifestFile = null;
+            _topicContent = null;
 
             base.Uninitialize();
-        }
-
-        #endregion
-
-        #region Category Methods
-
-        public void AddCategory(string name, string description)
-        {
-            this.AddCategory(new ConceptualCategoryItem(name, description));
-        }
-
-        public void AddCategory(ConceptualCategoryItem category)
-        {
-            BuildExceptions.NotNull(category, "category");
-
-            if (_categories == null)
-            {
-                _categories = new ConceptualCategoryContent();
-            }
-
-            _categories.Add(category);
-        }
-
-        public void RemoveCategory(int index)
-        {
-            if (_categories != null)
-            {
-                _categories.Remove(index);
-            }
-        }
-
-        public void RemoveCategory(ConceptualCategoryItem category)
-        {
-            if (_categories != null && category != null)
-            {
-                _categories.Remove(category);
-            }
-        }
-
-        public void ClearCategories()
-        {
-            if (_categories != null)
-            {
-                _categories.Clear();
-            }
         }
 
         #endregion

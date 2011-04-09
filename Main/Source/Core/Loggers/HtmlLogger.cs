@@ -159,9 +159,11 @@ namespace Sandcastle.Loggers
             {
                 _xmlWriter.WriteStartElement("tr");  // tr
                 _xmlWriter.WriteStartElement("td");  // td
+                _xmlWriter.WriteAttributeString("class", "nl");
                 _xmlWriter.WriteString(".");
                 _xmlWriter.WriteEndElement();        // td
                 _xmlWriter.WriteStartElement("td");  // td
+                _xmlWriter.WriteAttributeString("class", "nl");
                 _xmlWriter.WriteString("");
                 _xmlWriter.WriteEndElement();        // td
                 _xmlWriter.WriteEndElement();        // tr
@@ -224,6 +226,7 @@ namespace Sandcastle.Loggers
 
                 _xmlWriter.WriteStartElement("tr");  // tr
                 _xmlWriter.WriteStartElement("th");  // th
+                _xmlWriter.WriteAttributeString("style", "width:64px");
                 _xmlWriter.WriteString("Level");
                 _xmlWriter.WriteEndElement();        // th
                 _xmlWriter.WriteStartElement("th");  // th
@@ -254,6 +257,7 @@ namespace Sandcastle.Loggers
                 _xmlWriter.WriteStartElement("td");  // td
                 if (level == BuildLoggerLevel.None)
                 {
+                    _xmlWriter.WriteAttributeString("class", "nl");
                     _xmlWriter.WriteString(".");
                 }
                 else
@@ -262,6 +266,10 @@ namespace Sandcastle.Loggers
                 }
                 _xmlWriter.WriteEndElement();        // td
                 _xmlWriter.WriteStartElement("td");  // td
+                if (level == BuildLoggerLevel.None)
+                {
+                    _xmlWriter.WriteAttributeString("class", "nl");
+                }
                 _xmlWriter.WriteString(outputText);
                 _xmlWriter.WriteEndElement();        // td
                 _xmlWriter.WriteEndElement();        // tr

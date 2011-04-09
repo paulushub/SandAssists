@@ -14,11 +14,10 @@ namespace Sandcastle.Formats
     {
         #region Private Fields
 
-        private int    _tocParent;
-        private int    _topicVersion;
-        private int    _tocParentVersion;
-        private bool   _selfbranded;
-        private string _tocFile;
+        private int  _tocParent;
+        private int  _topicVersion;
+        private int  _tocParentVersion;
+        private bool _selfbranded;
 
         #endregion
 
@@ -271,18 +270,6 @@ namespace Sandcastle.Formats
             }
         }
 
-        public string TocFile
-        {
-            get 
-            { 
-                return _tocFile; 
-            }
-            internal set 
-            { 
-                _tocFile = value; 
-            }
-        }
-
         #endregion
 
         #region Public Methods
@@ -390,7 +377,6 @@ namespace Sandcastle.Formats
             _topicVersion           = 100;
             _tocParentVersion       = 100; 
             _selfbranded            = true;
-            _tocFile                = BuildToc.HelpToc;
 
             base.CloseViewerBeforeBuild = false;
 

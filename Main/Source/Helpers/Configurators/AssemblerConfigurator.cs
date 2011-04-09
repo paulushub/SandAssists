@@ -594,14 +594,14 @@ namespace Sandcastle.Configurators
             xmlWriter.WriteEndElement();            // end - color
         }
 
-        protected static IList<SnippetContent> GetSnippetContents(BuildGroup group)
+        protected static IList<CodeSnippetContent> GetSnippetContents(BuildGroup group)
         {
             if (group == null)
             {
                 return null;
             }
 
-            IList<SnippetContent> listSnippets = group.SnippetContents;
+            IList<CodeSnippetContent> listSnippets = group.SnippetContents;
 
             if (listSnippets == null || listSnippets.Count == 0)
             {
@@ -609,12 +609,12 @@ namespace Sandcastle.Configurators
             }
 
             int itemCount = listSnippets.Count;
-            List<SnippetContent> validSnippets = new List<SnippetContent>(
+            List<CodeSnippetContent> validSnippets = new List<CodeSnippetContent>(
                 itemCount);
 
             for (int i = 0; i < itemCount; i++)
             {
-                SnippetContent content = listSnippets[i];
+                CodeSnippetContent content = listSnippets[i];
                 if (content != null && content.IsEmpty == false)
                 {
                     if (content.Count == 0)

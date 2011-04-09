@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -19,12 +20,14 @@ namespace Sandcastle
     /// The underlying value type of the <see cref="BuildContent{T, U}"/> generic type. 
     /// </typeparam>
     [Serializable]
-    public abstract class BuildContent<T, U> : BuildObject, ICloneable, IXmlSerializable
+    public abstract class BuildContent<T, U> : BuildObject, IBuildContent
         where T : BuildItem<T>
         where U : BuildContent<T, U>        
     {
         #region Private Fields
 
+        private bool     _isModified;
+        private bool     _isInitialized;
         private IList<T> _listItems;
 
         #endregion
@@ -40,8 +43,8 @@ namespace Sandcastle
         /// class with the default parameters.
         /// </summary>
         protected BuildContent()
+            : this(new BuildList<T>())
         {
-            _listItems = new BuildList<T>();
         }
 
         /// <summary>
@@ -79,6 +82,12 @@ namespace Sandcastle
 
             _listItems = source._listItems;
         }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler ModifiedChanged;
 
         #endregion
 
@@ -121,12 +130,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_listItems != null)
-                {
-                    return new ReadOnlyCollection<T>(_listItems);
-                }
-
-                return null;
+                return _listItems;
             }
         }
 
@@ -139,6 +143,14 @@ namespace Sandcastle
         }
 
         public virtual bool IsKeyed
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public virtual bool IsHierarchical
         {
             get
             {
@@ -166,6 +178,8 @@ namespace Sandcastle
         {
             BuildExceptions.NotNull(item, "item");
 
+            item.Content = this;
+
             _listItems.Add(item);
         }
 
@@ -183,6 +197,8 @@ namespace Sandcastle
         public virtual void Insert(int index, T item)
         {
             BuildExceptions.NotNull(item, "item");
+
+            item.Content = this;
 
             _listItems.Insert(index, item);
         }
@@ -227,6 +243,64 @@ namespace Sandcastle
             }
 
             _listItems.Clear();
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected virtual void OnModifiedChanged()
+        {
+            EventHandler handler = this.ModifiedChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion
+
+        #region IBuildContent Members
+
+        public bool IsInitialized
+        {
+            get
+            {
+                return _isInitialized;
+            }
+            protected set
+            {
+                _isInitialized = value;
+            }
+        }
+
+        public bool Modified
+        {
+            get
+            {
+                return _isModified;
+            }
+            set
+            {
+                _isModified = value;
+
+                if (_isInitialized)
+                {
+                    this.OnModifiedChanged();
+                } 
+            }
+        }
+
+        public virtual void ItemModified(IBuildItem item)
+        {
+            if (!_isInitialized)
+            {
+                return;
+            }
+
+            _isModified = true;
+
+            this.OnModifiedChanged();
         }
 
         #endregion
@@ -319,6 +393,36 @@ namespace Sandcastle
         object ICloneable.Clone()
         {
             return this.Clone();
+        }
+
+        #endregion
+
+        #region ISupportInitialize Members
+
+        public virtual void BeginInit()
+        {
+            _isInitialized = false;
+        }
+
+        public virtual void EndInit()
+        {
+            _isInitialized = true;
+            _isModified    = false;
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         #endregion

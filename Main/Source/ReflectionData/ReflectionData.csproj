@@ -105,6 +105,11 @@
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
+    <None Include="Diagrams\ReferenceLinks.cd" />
+    <None Include="Diagrams\References.cd" />
+    <None Include="Diagrams\TargetCollections.cd" />
+    <None Include="Diagrams\TargetMsdnResolvers.cd" />
+    <None Include="Diagrams\Targets.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

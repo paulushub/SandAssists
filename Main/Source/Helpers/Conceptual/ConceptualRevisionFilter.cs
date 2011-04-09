@@ -76,7 +76,7 @@ namespace Sandcastle.Conceptual
                 return false;
             }
 
-            bool isFiltered = (item.RevisionNumber == _revNumber);
+            bool isFiltered = (item.TopicRevisions == _revNumber);
 
             return this.Inverse ? !isFiltered : isFiltered;
         }

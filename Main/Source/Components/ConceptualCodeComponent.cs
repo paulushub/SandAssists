@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using System.Text;
@@ -26,107 +27,28 @@ namespace Sandcastle.Components
         private CustomContext   _codeContext;
         private XPathExpression _codeSelector;
 
-        // For the <codeReference> sections...
-        private bool            _codeRefProcess;
-        private string          _codeRefSeparator;
-        private SnippetStorage  _codeRefStorage;
-
         private CustomContext   _codeRefContext;  //TODO--Needed this too?
         private XPathExpression _codeRefSelector;
-        private SnippetProvider _codeRefProvider;
 
         #endregion
 
         #region Constructors and Destructor
 
         public ConceptualCodeComponent(BuildAssembler assembler,
-            XPathNavigator configuration) : base(assembler, configuration)
+            XPathNavigator configuration) : base(assembler, configuration, true)
         {
             _codeRefStorage   = SnippetStorage.Database; //Default to database storage...
             _codeRefSeparator = "\n...\n\n";
+
             try
             {
-                // <codeSnippets process="true" storage="Memory" separator="...">
-                //   <examples file="CodeSnippetFile.xml" format="Sandcastle" />
-                // </codeSnippets> 
-                XPathNavigator navigator = configuration.SelectSingleNode("codeSnippets");
-                if (navigator != null)
-                {
-                    string attribute = navigator.GetAttribute("process", String.Empty);
-                    if (String.IsNullOrEmpty(attribute) == false)
-                    {
-                        _codeRefProcess = Convert.ToBoolean(attribute);
-                    }
-                    attribute = navigator.GetAttribute("storage", String.Empty);
-                    if (String.IsNullOrEmpty(attribute) == false)
-                    {
-                        _codeRefStorage = (SnippetStorage)Enum.Parse(
-                            typeof(SnippetStorage), attribute, true);
-                    }
-                    attribute = navigator.GetAttribute("separator", String.Empty);
-                    if (attribute != null) // it could be empty...
-                    {
-                        _codeRefSeparator = String.Format("\n{0}\n\n", attribute);
-                    }
+                this.ParseSources(configuration, true);
 
-                    if (_codeRefProcess)
-                    {
-                        Type compType = this.GetType();
-                        MessageHandler msgHandler = assembler.MessageHandler;
-                        if (_codeRefStorage == SnippetStorage.Memory)
-                        {
-                            _codeRefProvider = new SnippetMemoryProvider(compType,
-                                msgHandler);
-                        }
-                        else if (_codeRefStorage == SnippetStorage.Database)
-                        {
-                            _codeRefProvider = new SnippetSqliteProvider(compType,
-                                msgHandler);
-                        }
-
-                        if (_codeRefProvider != null)
-                        {
-                            // Indicate a start the code snippet registration process
-                            _codeRefProvider.StartRegister(true);
-
-                            SnippetXmlReader snippetReader = new SnippetXmlReader(
-                                this.TabSize, compType, msgHandler);
-                            XPathNodeIterator iterator = navigator.Select("codeSnippet");
-                            foreach (XPathNavigator xNavigator in iterator)
-                            {
-                                string snippetSource = Environment.ExpandEnvironmentVariables(
-                                    xNavigator.GetAttribute("source", String.Empty));
-                                if (String.IsNullOrEmpty(snippetSource))
-                                {
-                                    this.WriteMessage(MessageLevel.Error, 
-                                        "The examples element does not contain a source attribute.");
-                                }
-
-                                snippetReader.Read(snippetSource, _codeRefProvider);
-                            }
-
-                            snippetReader.Dispose();
-                            snippetReader = null;
-
-                            // Indicate a completion of the code snippet registration
-                            _codeRefProvider.FinishRegister();
-
-                            base.WriteMessage(MessageLevel.Info, 
-                                String.Format("Loaded {0} code snippets",
-                                _codeRefProvider.Count));
-                        }
-
-                        // Do we really have snippets?
-                        _codeRefProcess = (_codeRefProvider != null && 
-                            _codeRefProvider.Count > 0);
-
-                        _codeRefContext = new CustomContext();
-                        _codeRefContext.AddNamespace("ddue",
-                            "http://ddue.schemas.microsoft.com/authoring/2003/5");
-                        _codeRefSelector = XPathExpression.Compile("//ddue:codeReference");
-                        _codeRefSelector.SetContext(_codeRefContext);
-                    }
-                }
+                _codeRefContext = new CustomContext();
+                _codeRefContext.AddNamespace("ddue",
+                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
+                _codeRefSelector = XPathExpression.Compile("//ddue:codeReference");
+                _codeRefSelector.SetContext(_codeRefContext);
 
                 _codeContext = new CustomContext();
                 _codeContext.AddNamespace("ddue",
@@ -148,11 +70,19 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
+            CodeController codeController = CodeController.GetInstance("conceptual");
+            if (codeController == null)
+            {
+                return;
+            }
+
+            codeController.UnregisterAll();
+
             try
             {
                 ApplyCodes(document, key);
 
-                if (_codeRefProcess)
+                if (_codeRefEnabled)
                 {
                     ApplyCodeRefs(document, key);
                 }
@@ -263,7 +193,6 @@ namespace Sandcastle.Components
                 }
                 else if (highlightMode == CodeHighlightMode.IndirectIris)
                 {
-                    // <xsl:when test="@class='tgtSentence' or @class='srcSentence'">
                     xmlWriter.WriteStartElement("span");
                     xmlWriter.WriteAttributeString("name", "SandAssist");
                     xmlWriter.WriteAttributeString("class", "tgtSentence");
@@ -342,6 +271,7 @@ namespace Sandcastle.Components
                 }
 
                 SnippetInfo[] arrayInfo = Snippet.ParseReference(input);
+                Debug.Assert(arrayInfo != null && arrayInfo.Length != 0);
                 if (arrayInfo.Length == 1)
                 {
                     ApplySnippetInfo(navigator, arrayInfo[0], input);
@@ -388,7 +318,6 @@ namespace Sandcastle.Components
                     }
                     else if (highlightMode == CodeHighlightMode.IndirectIris)
                     {
-                        // <xsl:when test="@class='tgtSentence' or @class='srcSentence'">
                         xmlWriter.WriteStartElement("span");
                         xmlWriter.WriteAttributeString("name", "SandAssist");
                         xmlWriter.WriteAttributeString("class", "tgtSentence");
@@ -444,8 +373,6 @@ namespace Sandcastle.Components
                 return;
             }
 
-            codeController.UnregisterAll();
-
             IList<SnippetItem> listItems = null;
             int infoCount = arrayInfo.Length;
             Dictionary<string, List<SnippetItem>> dicLangItems =
@@ -474,8 +401,6 @@ namespace Sandcastle.Components
                 }
             }
 
-            int snippetIndex = 0;
-
             XmlWriter xmlWriter = navigator.InsertAfter();
             xmlWriter.WriteStartElement("snippets");
             xmlWriter.WriteAttributeString("reference", input);
@@ -503,7 +428,6 @@ namespace Sandcastle.Components
                 }
                 else if (highlightMode == CodeHighlightMode.IndirectIris)
                 {
-                    // <xsl:when test="@class='tgtSentence' or @class='srcSentence'">
                     xmlWriter.WriteStartElement("span");
                     xmlWriter.WriteAttributeString("name", "SandAssist");
                     xmlWriter.WriteAttributeString("class", "tgtSentence");
@@ -520,9 +444,8 @@ namespace Sandcastle.Components
                         xmlWriter.WriteStartElement("span");
                         xmlWriter.WriteAttributeString("name", "SandAssist");
                         xmlWriter.WriteAttributeString("class", "srcSentence");
-                        xmlWriter.WriteValue(snippetIndex);
+                        xmlWriter.WriteValue(codeController.Count);
                         xmlWriter.WriteEndElement();
-                        snippetIndex++;
 
                         codeController.Register(listItems[j]);
                     }

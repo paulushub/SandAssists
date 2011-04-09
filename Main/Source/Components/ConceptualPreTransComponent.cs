@@ -14,10 +14,13 @@ namespace Sandcastle.Components
         #region Private Fields
 
         private int             _autoOutlineDepth;
-        private bool            _autoOutline;
 
-        private CustomContext   _xsltContext;
-        private XPathExpression _xpathSelector;
+        private bool            _isTokensEnabled;
+        private bool            _enableAutoOutlines;
+        private bool            _enableLineBreaks;
+        private bool            _enableIconColumns;
+
+        private XPathExpression _tokensSelector;
 
         #endregion
 
@@ -29,29 +32,64 @@ namespace Sandcastle.Components
         {
             try
             {
-                _autoOutlineDepth = 0;
-                _autoOutline = false;
-                XPathNavigator navigator = configuration.SelectSingleNode("autoOutline");
+                _isTokensEnabled    = false;
+
+                _autoOutlineDepth   = 0;
+                _enableAutoOutlines = false;
+                _enableLineBreaks   = false;
+                _enableIconColumns  = false;
+
+                XPathNavigator navigator = configuration.SelectSingleNode("resolveTokens");
                 if (navigator != null)
                 {
-                    string outlineText = navigator.GetAttribute("enabled", String.Empty);
-                    if (String.IsNullOrEmpty(outlineText) == false)
+                    _isTokensEnabled = true;
+
+                    string tempText = navigator.GetAttribute("enabled", String.Empty);
+                    if (String.IsNullOrEmpty(tempText))
                     {
-                        _autoOutline = Convert.ToBoolean(outlineText);
+                        _isTokensEnabled = Convert.ToBoolean(tempText);
                     }
-                    outlineText = navigator.GetAttribute("depth", String.Empty);
-                    if (String.IsNullOrEmpty(outlineText) == false)
+                    XPathNavigator outlineNode = navigator.SelectSingleNode("autoOutline");
+                    if (outlineNode != null)
                     {
-                        _autoOutlineDepth = Convert.ToInt32(outlineText);
+                        tempText = outlineNode.GetAttribute("enabled", String.Empty);
+                        if (String.IsNullOrEmpty(tempText) == false)
+                        {
+                            _enableAutoOutlines = Convert.ToBoolean(tempText);
+                        }
+                        tempText = outlineNode.GetAttribute("depth", String.Empty);
+                        if (String.IsNullOrEmpty(tempText) == false)
+                        {
+                            _autoOutlineDepth = Convert.ToInt32(tempText);
+                        }
                     }
+                    XPathNavigator lineBreakNode = navigator.SelectSingleNode("lineBreak");
+                    if (lineBreakNode != null)
+                    {
+                        tempText = lineBreakNode.GetAttribute("enabled", String.Empty);
+                        if (String.IsNullOrEmpty(tempText) == false)
+                        {
+                            _enableLineBreaks = Convert.ToBoolean(tempText);
+                        }
+                    }
+                    XPathNavigator iconColumnNode = navigator.SelectSingleNode("iconColumn");
+                    if (iconColumnNode != null)
+                    {
+                        tempText = iconColumnNode.GetAttribute("enabled", String.Empty);
+                        if (String.IsNullOrEmpty(tempText) == false)
+                        {
+                            _enableIconColumns = Convert.ToBoolean(tempText);
+                        }
+                    }
+
+                    CustomContext xsltContext = new CustomContext();
+                    xsltContext.AddNamespace("ddue",
+                        "http://ddue.schemas.microsoft.com/authoring/2003/5");
+
+                    _tokensSelector = XPathExpression.Compile("/*//ddue:token");
+                    //_tokensSelector = XPathExpression.Compile("/*//ddue:token[text()='autoOutline']");
+                    _tokensSelector.SetContext(xsltContext);   
                 }
-
-                _xsltContext = new CustomContext();
-                _xsltContext.AddNamespace("ddue",
-                    "http://ddue.schemas.microsoft.com/authoring/2003/5");
-
-                _xpathSelector = XPathExpression.Compile("/*//ddue:token[text()='autoOutline']");
-                _xpathSelector.SetContext(_xsltContext);
             }
             catch (Exception ex)
             {
@@ -69,9 +107,12 @@ namespace Sandcastle.Components
             {
                 base.Apply(document, key);
 
-                if (_autoOutline)
+
+                if (_isTokensEnabled)
                 {
-                    ApplyAutoOutline(document);
+                    XPathNavigator documentNavigator = document.CreateNavigator();
+
+                    this.ApplyTokens(documentNavigator);
                 }
             }
             catch (Exception ex)
@@ -84,43 +125,72 @@ namespace Sandcastle.Components
 
         #region Private Methods
 
-        private void ApplyAutoOutline(XmlDocument document)
+        private void ApplyTokens(XPathNavigator documentNavigator)
         {
-            XPathNavigator docNavigator = document.CreateNavigator();
-
-            XPathNodeIterator iterator = docNavigator.Select(_xpathSelector);
-            XPathNavigator navigator = null;
-            XPathNavigator[] arrNavigator =
-                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
-
-            if (arrNavigator == null)
+            XPathNodeIterator iterator = documentNavigator.Select(_tokensSelector);
+            if (iterator == null || iterator.Count == 0)
             {
                 return;
             }
+            XPathNavigator[] navigators =
+                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
 
-            int itemCount = arrNavigator.Length;
+            int itemCount = navigators.Length;
             for (int i = 0; i < itemCount; i++)
             {
-                navigator = arrNavigator[i];
-                if (navigator == null)
-                {
-                    continue;
-                }
+                XPathNavigator navigator = navigators[i];
 
                 string nodeText = navigator.Value;
+                if (nodeText != null)
+                {
+                    nodeText = nodeText.Trim();
+                }
+
                 if (!String.IsNullOrEmpty(nodeText))
                 {
-                    XmlWriter writer = navigator.InsertAfter();
-                    writer.WriteStartElement("autoOutline", "");
-                    //navigator.ReplaceSelf("<autoOutline xmlns=\"\"/>");
-                    if (_autoOutlineDepth > 0)
+                    if (_enableAutoOutlines && nodeText.Equals("autoOutline",
+                        StringComparison.OrdinalIgnoreCase))
                     {
-                        writer.WriteString(_autoOutlineDepth.ToString());
+                        XmlWriter writer = navigator.InsertAfter();
+
+                        writer.WriteStartElement("autoOutline", "");
+                        if (_autoOutlineDepth > 0)
+                        {
+                            writer.WriteString(_autoOutlineDepth.ToString());
+                        }
+                        writer.WriteEndElement();
+
+                        writer.Close();
                     }
-                    writer.WriteEndElement();
-                    writer.Close();
-                    navigator.DeleteSelf();
+                    else if (_enableLineBreaks && nodeText.Equals("lineBreak",
+                         StringComparison.OrdinalIgnoreCase))
+                    {
+                        XmlWriter writer = navigator.InsertAfter();
+
+                        writer.WriteStartElement("span");
+                        writer.WriteAttributeString("name", "SandTokens");
+                        writer.WriteAttributeString("class", "tgtSentence");
+                        writer.WriteString("lineBreak");
+                        writer.WriteEndElement();
+
+                        writer.Close();
+                    }
+                    else if (_enableIconColumns && nodeText.Equals("iconColumn",
+                         StringComparison.OrdinalIgnoreCase))
+                    {
+                        XmlWriter writer = navigator.InsertAfter();
+
+                        writer.WriteStartElement("span");
+                        writer.WriteAttributeString("name", "SandTokens");
+                        writer.WriteAttributeString("class", "tgtSentence");
+                        writer.WriteString("iconColumn");
+                        writer.WriteEndElement();
+
+                        writer.Close();
+                    }
                 }
+
+                navigator.DeleteSelf();
             }
         }
 

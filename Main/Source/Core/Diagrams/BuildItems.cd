@@ -3,7 +3,7 @@
   <Class Name="Sandcastle.BuildItem&lt;T&gt;" Collapsed="true">
     <Position X="2.5" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAABAIgAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <HashCode>AAAAAAAAAhAAABAJgAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
       <FileName>BuildItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.971" />
@@ -31,11 +31,11 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Sandcastle.Contents.SnippetItem" Collapsed="true">
-    <Position X="4" Y="8" Width="1.5" />
+  <Class Name="Sandcastle.Contents.CodeSnippetItem" Collapsed="true">
+    <Position X="1" Y="12.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABAAAAAGAgAAAAAgBgAAAAAAAgAAIAAEAAACAgAABA=</HashCode>
-      <FileName>Contents\SnippetItem.cs</FileName>
+      <FileName>Contents\CodeSnippetItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.LinkItem" Collapsed="true">
@@ -54,7 +54,7 @@
     <Lollipop Position="1.023" />
   </Class>
   <Class Name="Sandcastle.Contents.SharedItem" Collapsed="true">
-    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABBAAIAAAAAAAAQAgACAAAAAAAgAAIAAAAAgAAAAAFA=</HashCode>
       <FileName>Contents\SharedItem.cs</FileName>
@@ -65,18 +65,26 @@
     <Lollipop Position="0.929" />
   </Class>
   <Class Name="Sandcastle.Contents.MediaItem" Collapsed="true">
-    <Position X="0.5" Y="1.5" Width="1.5" />
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <AssociationLine Name="MediaUnits" Type="Sandcastle.Contents.MediaSizeUnit" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="1.815" />
+        <Point X="7.188" Y="1.815" />
+        <Point X="7.188" Y="2.5" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AABAAIBCAAAAAAgAgAAABAAAAQgAAMAAAAAAAAAAABA=</HashCode>
+      <HashCode>AABAApBCAAAAAAgAgAAABAAAAQgAAMAAAAAAAAAAABA=</HashCode>
       <FileName>Contents\MediaItem.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="MediaType" />
+      <Property Name="MediaUnits" />
     </ShowAsAssociation>
     <Lollipop Position="0.929" />
   </Class>
   <Class Name="Sandcastle.Contents.StyleSheetItem" Collapsed="true">
-    <Position X="4" Y="5.75" Width="1.5" />
+    <Position X="4" Y="5.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABAIABAIQCgBAAEgAACAAQAAIgAAIAAAAAAAAAAABA=</HashCode>
       <FileName>Contents\StyleSheetItem.cs</FileName>
@@ -116,12 +124,12 @@
     <Lollipop Position="1.096" />
   </Class>
   <Class Name="Sandcastle.Contents.ScriptItem" Collapsed="true">
-    <Position X="2.5" Y="1.5" Width="1.75" />
+    <Position X="4" Y="8" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABAIABAAQCgBAAEkACCAAQAAAgAAIAAAAAAAAAAABA=</HashCode>
       <FileName>Contents\ScriptItem.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.752" />
+    <Lollipop Position="1.117" />
   </Class>
   <Class Name="Sandcastle.Contents.ConfiguratorItem" Collapsed="true">
     <Position X="1" Y="9.25" Width="1.75" />
@@ -150,7 +158,7 @@
   <Class Name="Sandcastle.Contents.MathCommandItem" Collapsed="true">
     <Position X="3.75" Y="11.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>BBBAIAARAAAAAAAAgAAAAAQBAAAAAIAAYAAgAAAAABA=</HashCode>
+      <HashCode>ABBAIAAAAAAAAAAAgAAAAAQAAAAAAIAAYAAgAAAAABA=</HashCode>
       <FileName>Contents\MathCommandItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.169" />
@@ -158,22 +166,61 @@
   <Class Name="Sandcastle.Contents.MathPackageItem" Collapsed="true">
     <Position X="1" Y="11.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AABAAgAAAAAAAAAAgAAAAAAAAgAEAIAAAAAAAABAABA=</HashCode>
+      <HashCode>AABAAgAAAAAAAAAAggAAAAAAAgAEAIAAAAAAAABAABA=</HashCode>
       <FileName>Contents\MathPackageItem.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="Sandcastle.Contents.MediaItemType" Collapsed="true">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+  <Class Name="Sandcastle.Contents.SnippetItem" Collapsed="true">
+    <Position X="4" Y="12.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAEAABAAAAAAABAAAAAAAAEIAAg=</HashCode>
+      <HashCode>AABAAAAAAkAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAABA=</HashCode>
+      <FileName>Contents\SnippetItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Contents.KeywordItem" Collapsed="true">
+    <Position X="2.5" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AABACAAAAAAAAgQAgAAAAAAAAAAAAIAAAAFAAAAAABA=</HashCode>
+      <FileName>Contents\KeywordItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Index" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Contents.CategoryItem" Collapsed="true">
+    <Position X="2.5" Y="13.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIAgAIAEgAgAAAQCAAAAAIAAAAAAgAAAABA=</HashCode>
+      <FileName>Contents\CategoryItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.023" />
+  </Class>
+  <Enum Name="Sandcastle.Contents.MediaItemType" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAEAAAAAAAAAABAAAAAAAAEIAAg=</HashCode>
       <FileName>Contents\MediaItemType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Sandcastle.Contents.SharedItemFormat" Collapsed="true">
-    <Position X="4.75" Y="0.5" Width="1.75" />
+    <Position X="0.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAAAAAAAAAgAAAAAAAAAAAEAAAAAAAAAEAAAA=</HashCode>
       <FileName>Contents\SharedItemFormat.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.Contents.KeywordType" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMIGAAAA=</HashCode>
+      <FileName>Contents\KeywordType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.Contents.MediaSizeUnit" Collapsed="true">
+    <Position X="6.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAEAgAAAAAABAAAAAAAAAAAAAAAACAEAAAA=</HashCode>
+      <FileName>Contents\MediaSizeUnit.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Tahoma" Size="8.25" />

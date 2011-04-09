@@ -79,6 +79,10 @@
     <Reference Include="Sandcastle.Iris, Version=0.1.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Sandcastle.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=26d176bb73235da5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -114,8 +118,14 @@
     <Compile Include="Codes\CodeFormatter.cs" />
     <Compile Include="ConceptualCodeComponent.cs" />
     <Compile Include="Codes\CodeHighlightMode.cs" />
+    <Compile Include="ContentComponent.cs" />
     <Compile Include="Copiers\CopyComponentEx.cs" />
     <Compile Include="Copiers\InheritDocCopyComponent.cs" />
+    <Compile Include="MediaContentComponent.cs" />
+    <Compile Include="MediaLinks\MediaSizeUnit.cs" />
+    <Compile Include="MediaLinks\MediaTarget.cs" />
+    <Compile Include="ScriptContentComponent.cs" />
+    <Compile Include="Snippets\SnippetLanguage.cs" />
     <Compile Include="TargetController.cs" />
     <Compile Include="CopyFromIndexCommand.cs" />
     <Compile Include="CopyFromIndexComponent.cs" />
@@ -147,7 +157,7 @@
     <Compile Include="Maths\MathTeXCommand.cs" />
     <Compile Include="Maths\MathTeXPackage.cs" />
     <Compile Include="MediaComponent.cs" />
-    <Compile Include="MediaLinks\MediaItem.cs" />
+    <Compile Include="MediaLinks\MediaType.cs" />
     <Compile Include="MshcComponent.cs" />
     <Compile Include="Others\VersionInfo.cs" />
     <Compile Include="PauseComponent.cs" />
@@ -199,11 +209,6 @@
     <None Include="Diagrams\Indexed.cd" />
     <None Include="Diagrams\Maths.cd" />
     <None Include="Diagrams\OtherBuildComponents.cd" />
-    <None Include="Diagrams\ReferenceLinks.cd" />
-    <None Include="Diagrams\References.cd" />
-    <None Include="Diagrams\TargetCollections.cd" />
-    <None Include="Diagrams\TargetMsdnResolvers.cd" />
-    <None Include="Diagrams\Targets.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -214,10 +219,6 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Docs\N.Sandcastle.Builders.xml" />
-    <Content Include="Docs\P.Sandcastle.Builders.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ReflectionData\ReflectionData.csproj">
       <Project>{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}</Project>
       <Name>ReflectionData</Name>
@@ -225,10 +226,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Codes\Docs\" />
-    <Folder Include="Maths\Docs\" />
-    <Folder Include="MediaLinks\Docs\" />
-    <Folder Include="Snippets\Docs\" />
+    <Content Include="Resources\SilverlightError.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

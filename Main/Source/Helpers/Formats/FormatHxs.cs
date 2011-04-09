@@ -546,10 +546,10 @@ namespace Sandcastle.Formats
 
                 // 2. Creating the project file...
                 string tocTopics = context["$HelpTocFile"];
-                string tempText = context["$HierarchicalToc"];
+                string tempText = context["$HelpHierarchicalToc"];
 
                 if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                    "true", StringComparison.OrdinalIgnoreCase))
+                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
                 {
                     tocTopics = context["$HelpHierarchicalTocFile"];
                 }

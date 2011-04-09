@@ -13,7 +13,7 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private Dictionary<T, HashSet<V>> _dictionary;
+        private Dictionary<T, List<V>> _dictionary;
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace Sandcastle
 
         public BuildMultiMap()
         {
-            _dictionary = new Dictionary<T, HashSet<V>>();
+            _dictionary = new Dictionary<T, List<V>>();
         }
 
         #endregion
@@ -55,13 +55,13 @@ namespace Sandcastle
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public HashSet<V> this[T key]
+        public IList<V> this[T key]
         {
             get
             {
                 BuildExceptions.NotNull(key, "key");
 
-                HashSet<V> list;
+                List<V> list;
                 if (_dictionary.TryGetValue(key, out list))
                 {
                     return list;
@@ -85,14 +85,14 @@ namespace Sandcastle
             BuildExceptions.NotNull(key, "key");
             BuildExceptions.NotNull(value, "value");
 
-            HashSet<V> list;
+            List<V> list;
             if (_dictionary.TryGetValue(key, out list))
             {
                 list.Add(value);
             }
             else
             {
-                list = new HashSet<V>();
+                list = new List<V>();
                 list.Add(value);
                 _dictionary[key] = list;
             }
@@ -110,7 +110,7 @@ namespace Sandcastle
             BuildExceptions.NotNull(value, "value");
 
             bool isContained  = false;
-            HashSet<V> values = null;
+            List<V> values = null;
             if (this.TryGetValue(key, out values) && values != null)
             {
                 isContained = values.Contains(value);
@@ -123,7 +123,7 @@ namespace Sandcastle
         {
             BuildExceptions.NotNull(key, "key");
 
-            HashSet<V> values = null;
+            List<V> values = null;
             if (this.TryGetValue(key, out values) && values != null)
             {
                 values.Remove(value);
@@ -149,7 +149,7 @@ namespace Sandcastle
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>       
-        private bool TryGetValue(T key, out HashSet<V> value)
+        private bool TryGetValue(T key, out List<V> value)
         {
             return _dictionary.TryGetValue(key, out value);
         }

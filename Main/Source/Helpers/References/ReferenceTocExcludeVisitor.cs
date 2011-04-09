@@ -93,6 +93,14 @@ namespace Sandcastle.References
                 return;
             }
 
+            ReferenceGroupContext groupContext =
+                context.GroupContexts[group.Id] as ReferenceGroupContext;
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             _tocExclude = engineSettings.TocExclude;
             Debug.Assert(_tocExclude != null);
 
@@ -102,7 +110,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            IList<string> commentFiles = group.CommentFiles;
+            IList<string> commentFiles = groupContext.CommentFiles;
             if (commentFiles != null && commentFiles.Count != 0)
             {
                 _listTocExcludes = new BuildList<string>();

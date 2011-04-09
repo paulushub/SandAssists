@@ -4,6 +4,8 @@ using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.Contents;
+
 namespace Sandcastle.References
 {
     [Serializable]
@@ -11,12 +13,15 @@ namespace Sandcastle.References
     {
         #region Private Fields
 
+        private DependencyContent _depencencies;
+
         #endregion
 
         #region Constructors and Destructor
 
         public ReferenceContent()
         {
+            _depencencies = new DependencyContent();
         }
 
         public ReferenceContent(ReferenceContent source)
@@ -27,6 +32,49 @@ namespace Sandcastle.References
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public DependencyContent Dependencies
+        {
+            get
+            {
+                return _depencencies;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void AddItem(string comments, string assembly)
+        {
+            if (String.IsNullOrEmpty(comments) && String.IsNullOrEmpty(assembly))
+            {
+                return;
+            }
+
+            this.Add(new ReferenceItem(comments, assembly));
+        }
+
+        public void AddDependency(string assembly)
+        {
+            if (String.IsNullOrEmpty(assembly))
+            {
+                return;
+            }
+            if (_depencencies == null)
+            {
+                _depencencies = new DependencyContent();
+            }
+
+            _depencencies.Add(new DependencyItem(
+                Path.GetFileName(assembly), assembly));
+        }
 
         #endregion
 

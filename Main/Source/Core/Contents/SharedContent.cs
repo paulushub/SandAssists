@@ -12,7 +12,8 @@ namespace Sandcastle.Contents
         #region Private Fields
 
         private string _contentName;
-        private string _contentsFile;
+        private BuildFilePath _contentFile;
+
 
         [NonSerialized]
         private IDictionary<string, int> _dicItems;
@@ -31,28 +32,41 @@ namespace Sandcastle.Contents
             {
                 _dicItems = keyedList.Dictionary;
             }
+
+            _contentName = Guid.NewGuid().ToString();
+        }
+
+        public SharedContent(string contentName)
+            : this()
+        {
+            if (!String.IsNullOrEmpty(contentName))
+            {
+                _contentName = contentName;
+            }
         }
 
         public SharedContent(string contentName, string contentFile)
-            : base(new BuildKeyedList<SharedItem>())
+            : this()
         {
-            _contentName  = contentName;
-            _contentsFile = contentFile;
+            BuildExceptions.PathMustExist(contentFile, "contentFile");
 
-            BuildKeyedList<SharedItem> keyedList =
-                this.List as BuildKeyedList<SharedItem>;
-
-            if (keyedList != null)
+            _contentFile = new BuildFilePath(contentFile);
+            if (!String.IsNullOrEmpty(contentName))
             {
-                _dicItems = keyedList.Dictionary;
+                _contentName = contentName;
+            }
+            else
+            {
+                _contentName = Path.GetFileNameWithoutExtension(contentFile);
             }
         }
 
         public SharedContent(SharedContent source)
             : base(source)
         {
-            _contentsFile = source._contentsFile;
-            _dicItems     = source._dicItems;
+            _contentName = source._contentName;
+            _contentFile = source._contentFile;
+            _dicItems    = source._dicItems;
         }
 
         #endregion
@@ -63,7 +77,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_contentsFile) == false)
+                if (String.IsNullOrEmpty(_contentFile) == false)
                 {
                     return false;
                 }
@@ -80,15 +94,18 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string ContentsFile
+        public BuildFilePath ContentFile
         {
             get
             {
-                return _contentsFile;
+                return _contentFile;
             }
             set
             {
-                _contentsFile = value;
+                if (value != null)
+                {
+                    _contentFile = value;
+                }
             }
         }
 
@@ -231,9 +248,13 @@ namespace Sandcastle.Contents
 
             this.Clone(content, new BuildKeyedList<SharedItem>());
 
-            if (_contentsFile != null)
+            if (_contentName != null)
             {
-                content._contentsFile = String.Copy(_contentsFile);
+                content._contentName = String.Copy(_contentName);
+            }
+            if (_contentFile != null)
+            {
+                content._contentFile = _contentFile.Clone();
             }
 
             return content;

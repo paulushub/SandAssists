@@ -48,7 +48,7 @@
         <Point X="1.875" Y="3.63" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="SnippetContents" Type="Sandcastle.Contents.SnippetContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="SnippetContents" Type="Sandcastle.Contents.CodeSnippetContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="3.75" Y="4" />
         <Point X="3.75" Y="2.8" />
@@ -149,7 +149,7 @@
       <FileName>Conceptual\ConceptualMetadataContent.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Contents.SnippetContent" Collapsed="true">
+  <Class Name="Sandcastle.Contents.CodeSnippetContent" Collapsed="true">
     <Position X="0.5" Y="1.75" Width="2.5" />
     <TypeIdentifier />
   </Class>

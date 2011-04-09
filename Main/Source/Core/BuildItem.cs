@@ -10,9 +10,15 @@ namespace Sandcastle
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public abstract class BuildItem<T> : BuildObject, IEquatable<T>, ICloneable, IXmlSerializable
+    public abstract class BuildItem<T> : BuildObject, IEquatable<T>, IBuildItem
         where T : BuildItem<T>
     {
+        #region Private Fields
+
+        private IBuildContent _content;
+
+        #endregion
+
         #region Constructors and Destructor
 
         protected BuildItem()
@@ -22,6 +28,34 @@ namespace Sandcastle
         protected BuildItem(BuildItem<T> source)
         {
             BuildExceptions.NotNull(source, "source");
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected virtual void OnItemChanged()
+        {   
+            if (_content != null && _content.IsInitialized)
+            {
+                _content.ItemModified(this);
+            }
+        }
+
+        #endregion
+
+        #region IBuildItem Members
+
+        public IBuildContent Content
+        {
+            get
+            {
+                return _content;
+            }
+            set
+            {
+                _content = value;
+            }
         }
 
         #endregion

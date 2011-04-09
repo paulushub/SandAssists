@@ -1,3 +1,8 @@
+// Copyright (C) Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.IO;
 using System.Text;
@@ -67,28 +72,35 @@ namespace Sandcastle.Components
                 _msdnResolver = TargetMsdnController.Controller;
             }
 
+            XPathNavigator optionsNode = 
+                configuration.SelectSingleNode("options");
+            if (optionsNode == null)
+            {
+                optionsNode = configuration;
+            }
+
             // base-url is an xpath expression applied against the current document to pick up the save location of the
             // document. If specified, local links will be made relative to the base-url.
-            string baseUrlValue = configuration.GetAttribute("base-url", String.Empty);
+            string baseUrlValue = optionsNode.GetAttribute("base-url", String.Empty);
             if (!String.IsNullOrEmpty(baseUrlValue))
                 _baseUrl = XPathExpression.Compile(baseUrlValue);
 
             // url-format is a string format that is used to format the value of local href attributes. The default is
             // "{0}.htm" for backwards compatibility.
-            string hrefFormatValue = configuration.GetAttribute("href-format", String.Empty);
+            string hrefFormatValue = optionsNode.GetAttribute("href-format", String.Empty);
             if (!String.IsNullOrEmpty(hrefFormatValue))
                 _hrefFormat = hrefFormatValue;
 
             // the container XPath can be replaced; this is useful
-            string containerValue = configuration.GetAttribute("container", String.Empty);
+            string containerValue = optionsNode.GetAttribute("container", String.Empty);
             if (!String.IsNullOrEmpty(containerValue))
                 TargetCollectionXmlUtilities.ContainerExpression = containerValue;
 
-            string localeValue = configuration.GetAttribute("locale", String.Empty);
+            string localeValue = optionsNode.GetAttribute("locale", String.Empty);
             if (!String.IsNullOrEmpty(localeValue) && _msdnResolver != null)
                 _msdnResolver.Locale = localeValue;
 
-            string targetValue = configuration.GetAttribute("linkTarget", String.Empty);
+            string targetValue = optionsNode.GetAttribute("linkTarget", String.Empty);
             if (!String.IsNullOrEmpty(targetValue))
                 _linkTarget = targetValue;
 

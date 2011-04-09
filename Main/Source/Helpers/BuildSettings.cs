@@ -4,7 +4,6 @@ using System.Xml;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
-using System.ComponentModel;
 using System.Collections.Generic;
 
 using Sandcastle.Formats;
@@ -60,7 +59,7 @@ namespace Sandcastle
     /// </list>
     /// </remarks>
     [Serializable]
-    public class BuildSettings : BuildOptions<BuildSettings>, ISupportInitialize
+    public class BuildSettings : BuildOptions<BuildSettings>
     {
         #region Private Fields
 
@@ -95,6 +94,8 @@ namespace Sandcastle
         private AttributeContent  _attributeContent;
 
         private CultureInfo       _outputCulture;
+
+        private BuildToc          _outputToc;
         private BuildStyle        _outputStyle;
         private BuildFeedback     _outputFeedback;
         private BuildFramework    _outputFramework;
@@ -126,6 +127,8 @@ namespace Sandcastle
 
             _helpName        = "Documentation";
             _helpTitle       = "Sandcastle Documentation";
+     
+            _outputToc         = new BuildToc();
             _outputStyle     = new BuildStyle();
             _listFormats     = new BuildFormatList();
 
@@ -135,7 +138,7 @@ namespace Sandcastle
 
             _verbosity       = BuildLoggerVerbosity.Minimal;
 
-            _sharedContent      = new SharedContent("Default", String.Empty);
+            _sharedContent      = new SharedContent("Default");
             _attributeContent   = new AttributeContent();
             _includeContent     = new IncludeContent("Default");
 
@@ -210,21 +213,6 @@ namespace Sandcastle
         #endregion
 
         #region Public Properties
-
-        public CultureInfo CultureInfo
-        {
-            get
-            {
-                return _outputCulture;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _outputCulture = value;
-                }
-            }
-        }
 
         public string HelpName
         {
@@ -354,6 +342,21 @@ namespace Sandcastle
             set 
             {
                 _syntaxUsage = value; 
+            }
+        }
+
+        public CultureInfo CultureInfo
+        {
+            get
+            {
+                return _outputCulture;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _outputCulture = value;
+                }
             }
         }
 
@@ -577,6 +580,21 @@ namespace Sandcastle
             }
         }
 
+        public BuildToc Toc
+        {
+            get
+            {
+                return _outputToc;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _outputToc = value;
+                }
+            }
+        }
+
         public BuildStyle Style
         {
             get
@@ -765,6 +783,16 @@ namespace Sandcastle
                 return;
             }
 
+            _outputToc.Initialize(context);
+            _outputStyle.Initialize(context);
+            _outputFeedback.Initialize(context);
+            _outputFramework.Initialize(context);
+
+            for (int i = 0; i < _listEngineSettings.Count; i++)
+            {
+                _listEngineSettings[i].Initialize(context);
+            }
+
             // 2. Process the locale
             CultureInfo culture = this.CultureInfo;
             string tempText = culture.Name.ToLower(culture);
@@ -799,20 +827,19 @@ namespace Sandcastle
             }
 
             // For the feedback...
-            BuildFeedback feedBack = this.Feedback;
             // 1. Process the email...
-            _sharedContent.Add(new SharedItem("feedbackEmail", feedBack.EmailAddress));
+            _sharedContent.Add(new SharedItem("feedbackEmail", _outputFeedback.EmailAddress));
             // 2. Process the product...
-            _sharedContent.Add(new SharedItem("feedbackProduct", feedBack.Product));
+            _sharedContent.Add(new SharedItem("feedbackProduct", _outputFeedback.Product));
             // 3. Process the product...
-            _sharedContent.Add(new SharedItem("feedbackCompany", feedBack.Company));
+            _sharedContent.Add(new SharedItem("feedbackCompany", _outputFeedback.Company));
             // 4. Process the copyright...
-            tempText = feedBack.Copyright;
+            tempText = _outputFeedback.Copyright;
             if (!String.IsNullOrEmpty(tempText))
             {
                 _sharedContent.Add(new SharedItem("copyrightStatement",
                     "<include item=\"copyrightText\"/>"));
-                string copyUri = feedBack.CopyrightLink;
+                string copyUri = _outputFeedback.CopyrightLink;
                 if (!String.IsNullOrEmpty(copyUri))
                 {
                     tempText = String.Format("<a href=\"{0}\">{1}</a>",
@@ -820,15 +847,6 @@ namespace Sandcastle
                 }
                 _sharedContent.Add(new SharedItem("copyrightText", tempText));
             }
-
-            for (int i = 0; i < _listEngineSettings.Count; i++)
-            {
-                _listEngineSettings[i].Initialize(context);
-            }
-
-            _outputStyle.Initialize(context);
-            _outputFeedback.Initialize(context);
-            _outputFramework.Initialize(context);
         }
 
         public override void Uninitialize()
@@ -838,6 +856,7 @@ namespace Sandcastle
                 _listEngineSettings[i].Uninitialize();
             }
 
+            _outputToc.Uninitialize();
             _outputStyle.Uninitialize();
             _outputFeedback.Uninitialize();
             _outputFramework.Uninitialize();
