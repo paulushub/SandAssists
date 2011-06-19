@@ -26,8 +26,8 @@ namespace Sandcastle.Components
 
         private bool             _showText;
         private bool             _showBrokenLinkText;
-        private LinkType         _baseLinkType;
-        private TargetController _targetController;
+        private ConceptualLinkType         _baseLinkType;
+        private ConceptualTargetController _targetController;
 
         #endregion
 
@@ -37,8 +37,8 @@ namespace Sandcastle.Components
             XPathNavigator configuration)
             : base(assembler, configuration)
         {
-            _baseLinkType     = LinkType.Null;
-            _targetController = TargetController.Instance;
+            _baseLinkType     = ConceptualLinkType.Null;
+            _targetController = ConceptualTargetController.GetInstance("conceptual");
 
             XPathNavigator optionsNode = configuration.SelectSingleNode("options");
             if (optionsNode != null)
@@ -54,7 +54,7 @@ namespace Sandcastle.Components
                     try
                     {
                         // convert the link type to an enumeration member
-                        _baseLinkType = (LinkType)Enum.Parse(typeof(LinkType),
+                        _baseLinkType = (ConceptualLinkType)Enum.Parse(typeof(ConceptualLinkType),
                             tempText, true);
                     }
                     catch (ArgumentException)
@@ -123,10 +123,10 @@ namespace Sandcastle.Components
                         "Every targets element must have a type attribute that specifies what kind of link to create to targets found in that directory.");
 
                 // convert the link type to an enumeration member
-                LinkType type = LinkType.None;
+                ConceptualLinkType type = ConceptualLinkType.None;
                 try
                 {
-                    type = (LinkType)Enum.Parse(typeof(LinkType), typeValue, true);
+                    type = (ConceptualLinkType)Enum.Parse(typeof(ConceptualLinkType), typeValue, true);
                 }
                 catch (ArgumentException)
                 {
@@ -136,7 +136,7 @@ namespace Sandcastle.Components
 
                 // We have all the required information; create a TargetDirectory 
                 // and add it to our collection
-                TargetDirectory targetDirectory = new TargetDirectory(baseValue, 
+                ConceptualTargetDirectory targetDirectory = new ConceptualTargetDirectory(baseValue, 
                     urlExpression, textExpression, type);
                 _targetController.Add(targetDirectory);   
             }
@@ -171,7 +171,7 @@ namespace Sandcastle.Components
                 // determine url, text, and link type
                 string url       = null;
                 string text      = null;
-                LinkType type    = LinkType.None;
+                ConceptualLinkType type    = ConceptualLinkType.None;
                 bool isValidLink = validGuid.IsMatch(link.Target);
                 if (isValidLink)
                 {
@@ -215,7 +215,7 @@ namespace Sandcastle.Components
                 }
 
                 // Override the type, if valid...
-                if (_baseLinkType != LinkType.Null && type != LinkType.None)
+                if (_baseLinkType != ConceptualLinkType.Null && type != ConceptualLinkType.None)
                 {
                     type = _baseLinkType;
                 }
@@ -224,20 +224,20 @@ namespace Sandcastle.Components
                 XmlWriter writer = linkNode.InsertAfter();
                 switch (type)
                 {
-                    case LinkType.None:
+                    case ConceptualLinkType.None:
                         writer.WriteStartElement("span");
                         writer.WriteAttributeString("class", "nolink");
                         break;
-                    case LinkType.Local:
+                    case ConceptualLinkType.Local:
                         writer.WriteStartElement("a");
                         writer.WriteAttributeString("href", url);
                         break;
-                    case LinkType.Index:
+                    case ConceptualLinkType.Index:
                         writer.WriteStartElement("mshelp", "link", "http://msdn.microsoft.com/mshelp");
                         writer.WriteAttributeString("keywords", link.Target.ToLower());
                         writer.WriteAttributeString("tabindex", "0");
                         break;
-                    case LinkType.Id:
+                    case ConceptualLinkType.Id:
                         string xhelp = String.Format("ms-xhelp://?Id={0}", link.Target);
                         writer.WriteStartElement("a");
                         writer.WriteAttributeString("href", xhelp);
@@ -269,12 +269,12 @@ namespace Sandcastle.Components
             }
             catch (ArgumentException e)
             {
-                WriteMessage(MessageLevel.Error, String.Format(
+                this.WriteMessage(MessageLevel.Error, String.Format(
                     "'{0}' is not a valid XPath expression. The error message is: {1}", xpath, e.Message));
             }
             catch (XPathException e)
             {
-                WriteMessage(MessageLevel.Error, String.Format(
+                this.WriteMessage(MessageLevel.Error, String.Format(
                     "'{0}' is not a valid XPath expression. The error message is: {1}", xpath, e.Message));
             }
             return (expression);
@@ -291,436 +291,6 @@ namespace Sandcastle.Components
                 return (String.Format("[{0}]", target));
             }
         }
-
-        #endregion
-
-        #region Private Inner Types
-
-        // different types of links
-
-        private enum LinkType
-        {
-            Null  = -1,
-            None  = 0,	  // not active
-            Local = 1,	  // a href
-            Index = 2,    // mshelp:link keyword
-            Id    = 3     // ms-xhelp link
-            //Regex       // regular expression with match/replace
-        }
-
-        #region TargetDirectory Class
-
-        // A representation of a targets directory, along with all the associated 
-        // expressions used to find target metadata files in it, and extract urls 
-        // and link text from those files
-        private sealed class TargetDirectory
-        {
-            private string   _directory; 
-            private LinkType _type;
-
-            private XPathExpression _fileExpression;
-            private XPathExpression _urlExpression;
-            private XPathExpression _textExpression;
-
-            public TargetDirectory(string directory, LinkType type)
-            {
-                if (directory == null)
-                    throw new ArgumentNullException("directory");
-
-                this._directory = directory;
-                this._type      = type;
-
-                _fileExpression = XPathExpression.Compile(
-                    "concat($target,'.cmp.htm')");
-
-                _urlExpression  = XPathExpression.Compile(
-                    "concat(/metadata/topic/@id,'.htm')");
-
-                _textExpression = XPathExpression.Compile(
-                    "string(/metadata/topic/title)");
-            }
-
-            public TargetDirectory(string directory,
-                XPathExpression urlExpression, XPathExpression textExpression,
-                LinkType type) : this(directory, type)
-            {
-                if (urlExpression == null)
-                    throw new ArgumentNullException("urlExpression");
-                if (textExpression == null)
-                    throw new ArgumentNullException("textExpression");
-
-                this._urlExpression  = urlExpression;
-                this._textExpression = textExpression;
-            }
-
-            public string Directory
-            {
-                get
-                {
-                    return (_directory);
-                }
-            }
-
-            public XPathExpression UrlExpression
-            {
-                get
-                {
-                    return (_urlExpression);
-                }
-            }
-
-            public XPathExpression TextExpression
-            {
-                get
-                {
-                    return (_textExpression);
-                }
-            }       
-
-            public LinkType LinkType
-            {
-                get
-                {
-                    return (_type);
-                }
-            }
-
-            private XPathDocument GetDocument(string file)
-            {
-                string path = Path.Combine(_directory, file);
-                if (File.Exists(path))
-                {
-                    XPathDocument document = new XPathDocument(path);
-                    return (document);
-                }
-                else
-                {
-                    return (null);
-                }
-            }
-
-            public TargetInfo GetTargetInfo(string file)
-            {
-                XPathDocument document = GetDocument(file);
-                if (document == null)
-                {
-                    return (null);
-                }
-                else
-                {
-                    XPathNavigator context = document.CreateNavigator();
-
-                    string url = context.Evaluate(_urlExpression).ToString();
-                    string text = context.Evaluate(_textExpression).ToString();
-
-                    return new TargetInfo(url, text, _type);
-                }
-            }
-
-            public TargetInfo GetTargetInfo(XPathNavigator linkNode, 
-                CustomContext context)
-            {   
-                // compute the metadata file name to open
-                XPathExpression localFileExpression = _fileExpression.Clone();
-                localFileExpression.SetContext(context);
-                string file = linkNode.Evaluate(localFileExpression).ToString();
-                if (String.IsNullOrEmpty(file)) 
-                    return (null);
-
-                // load the metadata file
-                XPathDocument metadataDocument = GetDocument(file);
-                if (metadataDocument == null) 
-                    return (null);
-
-                // query the metadata file for the target url and link text
-                XPathNavigator metadataNode = metadataDocument.CreateNavigator();
-                XPathExpression localUrlExpression = _urlExpression.Clone();
-                localUrlExpression.SetContext(context);
-                string url = metadataNode.Evaluate(localUrlExpression).ToString();
-                XPathExpression localTextExpression = _textExpression.Clone();
-                localTextExpression.SetContext(context);
-                string text = metadataNode.Evaluate(localTextExpression).ToString();
-
-                // return this information
-                return new TargetInfo(url, text, _type);
-            }
-        }
-
-        #endregion
-
-        #region TargetDirectoryCollection Class
-
-        // our collection of targets directories
-        private sealed class TargetDirectoryCollection
-        {
-            private List<TargetDirectory> targetDirectories;
-
-            public TargetDirectoryCollection() 
-            {
-                targetDirectories = new List<TargetDirectory>();
-            }
-
-            public int Count
-            {
-                get
-                {
-                    return (targetDirectories.Count);
-                }
-            }
-
-            public void Add(TargetDirectory targetDirectory)
-            {
-                targetDirectories.Add(targetDirectory);
-            }
-
-            public TargetInfo GetTargetInfo(string file)
-            {
-                foreach (TargetDirectory targetDirectory in targetDirectories)
-                {
-                    TargetInfo info = targetDirectory.GetTargetInfo(file);
-                    if (info != null) 
-                        return (info);
-                }
-                return (null);
-            }
-
-            public TargetInfo GetTargetInfo(XPathNavigator linkNode, 
-                CustomContext context)
-            {
-                foreach (TargetDirectory targetDirectory in targetDirectories)
-                {
-                    TargetInfo info = targetDirectory.GetTargetInfo(
-                        linkNode, context);
-                    if (info != null) 
-                        return (info);
-                }
-                return (null);
-            }
-        }
-
-        #endregion
-
-        #region TargetInfo Class
-
-        // A representation of a resolved target, containing all the 
-        // information necessary to actually write out the link
-        private sealed class TargetInfo
-        {
-            private string url;
-            private string text;
-            private LinkType type;
-
-            public TargetInfo(string url, string text, LinkType type)
-            {
-                if (url == null) 
-                    throw new ArgumentNullException("url");
-                if (text == null) 
-                    throw new ArgumentNullException("url");
-                this.url = url;
-                this.text = text;
-                this.type = type;
-            }
-
-            public string Url
-            {
-                get
-                {
-                    return (url);
-                }
-            }
-
-            public string Text
-            {
-                get
-                {
-                    return (text);
-                }
-            }
-
-            public LinkType Type
-            {
-                get
-                {
-                    return (type);
-                }
-            }
-        }
-
-        #endregion
-
-        #region TargetController Class
-
-        private sealed class TargetController
-        {
-            private static TargetController _controller;
-
-            private static int CacheSize = 1000;
-
-            private Dictionary<string, TargetInfo> _targetStorage;
-            private TargetDirectoryCollection _targetDirectories;
-
-            private Dictionary<string, bool> _storedDirectories;
-
-            private TargetController()
-            {
-                _targetDirectories = new TargetDirectoryCollection();
-                _targetStorage     = new Dictionary<string, TargetInfo>(
-                    CacheSize, StringComparer.OrdinalIgnoreCase);
-
-                _storedDirectories = new Dictionary<string, bool>(
-                    StringComparer.OrdinalIgnoreCase);
-            }
-
-            public int Count
-            {
-                get
-                {
-                    return _targetDirectories.Count;
-                }
-            }
-
-            // a simple caching system for target names  
-            public TargetInfo this[string target]
-            {     
-                get
-                {
-                    TargetInfo info = null;
-                    if (!_targetStorage.TryGetValue(target, out info))
-                    {
-                        info = _targetDirectories.GetTargetInfo(
-                            target + ".cmp.xml");
-
-                        if (_targetStorage.Count >= CacheSize)
-                            _targetStorage.Clear();
-
-                        _targetStorage.Add(target, info);
-                    }
-
-                    return (info); 
-                }
-            }
-
-            public static TargetController Instance
-            {
-                get
-                {
-                    if (_controller == null)
-                    {
-                        _controller = new TargetController();
-                    }
-
-                    return _controller;
-                }
-            }
-
-            public void Add(TargetDirectory targetDir)
-            {
-                if (targetDir == null)
-                {
-                    return;
-                }
-
-                string dirPath = StripEndBackSlash(targetDir.Directory);
-                if (String.IsNullOrEmpty(dirPath))
-                {
-                    return;
-                }
-                if (_storedDirectories.ContainsKey(dirPath))
-                {
-                    return;
-                }
-
-                _targetDirectories.Add(targetDir);
-                _storedDirectories.Add(dirPath, true);
-            }
-
-            private static string StripEndBackSlash(string dir)
-            {
-                if (String.IsNullOrEmpty(dir))
-                {
-                    return dir;
-                }
-
-                if (dir.EndsWith("\\"))
-                    return dir.Substring(0, dir.Length - 1);
-                else
-                    return dir;
-            }       
-        }
-
-        #endregion
-
-        #region ConceptualLinkInfo Class
-
-        // a representation of a conceptual link
-        private sealed class ConceptualLinkInfo
-        {
-            private string _target;
-            private string _text;
-            private string _anchor;
-
-            private ConceptualLinkInfo() 
-            { 
-            }
-
-            public string Target
-            {
-                get
-                {
-                    return _target;
-                }
-            }
-
-            public string Text
-            {
-                get
-                {
-                    return _text;
-                }
-            }
-
-            public string Anchor
-            {
-                get
-                {
-                    return _anchor;
-                }
-            }
-
-            public bool IsAnchored
-            {
-                get
-                {
-                    return (!String.IsNullOrEmpty(_anchor) && _anchor.Length > 1);
-                }
-            }
-
-            public static ConceptualLinkInfo Create(XPathNavigator node)
-            {
-                BuildComponentExceptions.NotNull(node, "node");
-
-                ConceptualLinkInfo info = new ConceptualLinkInfo();
-
-                string tempText = node.GetAttribute("target", String.Empty);
-                int anchorStart = tempText.IndexOf("#");
-                if (anchorStart > 0)
-                {                       
-                    // We retrieve the anchor text with the #...
-                    info._anchor = tempText.Substring(anchorStart); 
-                    info._target = tempText.Substring(0, anchorStart);
-                }
-                else
-                {
-                    info._target = tempText;
-                }
-
-                info._text     = node.ToString().Trim();
-
-                return info;
-            }
-        }
-
-        #endregion
 
         #endregion
     }

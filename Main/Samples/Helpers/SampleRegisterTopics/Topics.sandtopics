@@ -13,125 +13,125 @@
     <topics default="6aca5da4-6f94-43a0-9817-5f413d16f110">
         <topic id="6aca5da4-6f94-43a0-9817-5f413d16f110" type="Topic" visible="True" revision="1">
             <title>Help 2.x Files Registration</title>
-            <path value=".\Documents\HelpRegister.xml" />
+            <path value=".\Documents\HelpRegister.aml" />
             <excludes />
             <metadata />
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f111" type="Topic" visible="True" revision="1">
                 <title>Registration Configuration File</title>
-                <path value=".\Documents\ConfigurationFile.xml" />
+                <path value=".\Documents\ConfigurationFile.aml" />
                 <excludes />
                 <metadata />
             </topic>
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f112" type="Topic" visible="True" revision="1">
                 <title>Running Registration Tool</title>
-                <path value=".\Documents\Running.xml" />
+                <path value=".\Documents\Running.aml" />
                 <excludes />
                 <metadata />
             </topic>
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f113" type="Topic" visible="True" revision="1">
                 <title>Help Registration Sample</title>
-                <path value=".\Documents\HelpSample.xml" />
+                <path value=".\Documents\HelpSample.aml" />
                 <excludes />
                 <metadata />
             </topic>
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f115" type="Topic" visible="True" revision="1">
                 <title>License Agreement</title>
-                <path value=".\Documents\License.xml" />
+                <path value=".\Documents\License.aml" />
                 <excludes />
                 <metadata />
             </topic>
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f114" type="Topic" visible="True" revision="1">
                 <title>Version History</title>
-                <path value=".\Documents\VersionHistory.xml" />
+                <path value=".\Documents\VersionHistory.aml" />
                 <excludes />
                 <metadata />
             </topic>
             <topic id="6aca5da4-6f94-43a0-9817-5f413d16f001" type="Topic" visible="True" revision="1">
                 <title>Help 2.x Registration Xml Schema References</title>
-                <path value=".\Documents\References.xml" />
+                <path value=".\Documents\References.aml" />
                 <excludes />
                 <metadata />
                 <topic id="6aca5da4-6f94-43a0-9817-5f413d16f002" type="Topic" visible="True" revision="1">
                     <title>Elements</title>
-                    <path value=".\Documents\Elements.xml" />
+                    <path value=".\Documents\Elements.aml" />
                     <excludes />
                     <metadata />
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f010" type="Topic" visible="True" revision="1">
                         <title>child Element</title>
-                        <path value=".\Documents\Elements\Child.xml" />
+                        <path value=".\Documents\Elements\Child.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f011" type="Topic" visible="True" revision="1">
                         <title>file Element</title>
-                        <path value=".\Documents\Elements\File.xml" />
+                        <path value=".\Documents\Elements\File.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f012" type="Topic" visible="True" revision="1">
                         <title>filter Element</title>
-                        <path value=".\Documents\Elements\Filter.xml" />
+                        <path value=".\Documents\Elements\Filter.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f013" type="Topic" visible="True" revision="1">
                         <title>namespace Element</title>
-                        <path value=".\Documents\Elements\Namespace.xml" />
+                        <path value=".\Documents\Elements\Namespace.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f014" type="Topic" visible="True" revision="1">
                         <title>namespace/plugin Element</title>
-                        <path value=".\Documents\Elements\Namespace.Plugin.xml" />
+                        <path value=".\Documents\Elements\Namespace.Plugin.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f015" type="Topic" visible="True" revision="1">
                         <title>plugin Element</title>
-                        <path value=".\Documents\Elements\Plugin.xml" />
+                        <path value=".\Documents\Elements\Plugin.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f016" type="Topic" visible="True" revision="1">
                         <title>register Element</title>
-                        <path value=".\Documents\Elements\Register.xml" />
+                        <path value=".\Documents\Elements\Register.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                 </topic>
                 <topic id="6aca5da4-6f94-43a0-9817-5f413d16f003" type="Topic" visible="True" revision="1">
                     <title>Complex Types</title>
-                    <path value=".\Documents\ComplexTypes.xml" />
+                    <path value=".\Documents\ComplexTypes.aml" />
                     <excludes />
                     <metadata />
                 </topic>
                 <topic id="6aca5da4-6f94-43a0-9817-5f413d16f004" type="Topic" visible="True" revision="1">
                     <title>Simple Types</title>
-                    <path value=".\Documents\SimpleTypes.xml" />
+                    <path value=".\Documents\SimpleTypes.aml" />
                     <excludes />
                     <metadata />
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f030" type="Topic" visible="True" revision="1">
                         <title>LangIdType Simple Type</title>
-                        <path value=".\Documents\SimpleTypes\LangIdType.xml" />
+                        <path value=".\Documents\SimpleTypes\LangIdType.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                     <topic id="6aca5da4-6f94-43a0-9817-5f413d16f031" type="Topic" visible="True" revision="1">
                         <title>YesNoType Simple Type</title>
-                        <path value=".\Documents\SimpleTypes\YesNoType.xml" />
+                        <path value=".\Documents\SimpleTypes\YesNoType.aml" />
                         <excludes />
                         <metadata />
                     </topic>
                 </topic>
                 <topic id="6aca5da4-6f94-43a0-9817-5f413d16f006" type="Topic" visible="True" revision="1">
                     <title>Element Groups</title>
-                    <path value=".\Documents\ElementGroups.xml" />
+                    <path value=".\Documents\ElementGroups.aml" />
                     <excludes />
                     <metadata />
                 </topic>
                 <topic id="6aca5da4-6f94-43a0-9817-5f413d16f005" type="Topic" visible="True" revision="1">
                     <title>Attribute Groups</title>
-                    <path value=".\Documents\AttributeGroups.xml" />
+                    <path value=".\Documents\AttributeGroups.aml" />
                     <excludes />
                     <metadata />
                 </topic>

@@ -296,7 +296,6 @@ namespace Sandcastle.References
             {
                 useInclude = true;
             }
-                useInclude = true;
 
             writer.WriteStartElement("options");  // start: options
             writer.WriteAttributeString("useInclude", useInclude.ToString());

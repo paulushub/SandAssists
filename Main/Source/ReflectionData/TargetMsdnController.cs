@@ -10,10 +10,12 @@ namespace Sandcastle.ReflectionData
         #region Private Fields
 
         private static string UrlFormat = "http://msdn2.microsoft.com/{0}/library/{1}";
+        private static string UrlFormatVersion = "http://msdn2.microsoft.com/{0}/library/{1}(v={2})";
 
         private static TargetMsdnController _controller;
 
         private string               _locale;
+        private string               _version;
         private MemoryMsdnResolver   _memoryResolver;
         private DatabaseMsdnResolver _databaseResolver;
 
@@ -68,6 +70,27 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public string Version
+        {
+            get
+            {
+                return _version;
+            }
+            set
+            {
+                _version = value;
+
+                if (_memoryResolver != null)
+                {
+                    _memoryResolver.Version = value;
+                }
+                if (_databaseResolver != null)
+                {
+                    _databaseResolver.Version = value;
+                }
+            }
+        }
+
         public string this[string id]
         {
             get
@@ -77,21 +100,35 @@ namespace Sandcastle.ReflectionData
                 if (_databaseResolver != null && _databaseResolver.Exists)
                 {
                     endpoint = _databaseResolver[id];
-                    if (!String.IsNullOrEmpty(endpoint))
-                    {
-                        return String.Format(UrlFormat, _locale, endpoint);
-                    }
-                }
+                 }
                 if (_memoryResolver != null)
                 {
                     // We use the GetUrl so that the result is cached...
                     endpoint = _memoryResolver.GetUrl(id);
-                    if (!String.IsNullOrEmpty(endpoint))
+                }
+                if (!String.IsNullOrEmpty(endpoint))
+                {
+                    // For the Expression SDK...
+                    if (id.IndexOf("Microsoft.Expression", 
+                        StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        id.IndexOf("System.Windows.Interactivity",
+                        StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return String.Format(UrlFormatVersion, _locale,
+                            endpoint, "expression.40");
+                    }
+
+                    if (String.IsNullOrEmpty(_version))
                     {
                         return String.Format(UrlFormat, _locale, endpoint);
                     }
+                    else
+                    {
+                        return String.Format(UrlFormatVersion, _locale,
+                            endpoint, _version);
+                    }
                 }
-
+                
                 return endpoint;
             }
         }

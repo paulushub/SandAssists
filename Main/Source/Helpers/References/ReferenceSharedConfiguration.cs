@@ -378,7 +378,7 @@ namespace Sandcastle.References
                     configurator.Contents.Add(formatShared);
                 }
 
-                IList<SharedItem> groupShared = group.PrepareShared();
+                IList<SharedItem> groupShared = group.PrepareShared(_context);
                 if (groupShared != null && groupShared.Count > 0)
                 {
                     configurator.Contents.Add(groupShared);
@@ -434,6 +434,17 @@ namespace Sandcastle.References
                 }
 
                 configurator.Uninitialize();
+            }
+
+            ReferenceGroup refGroup = (ReferenceGroup)group;
+
+            if (!refGroup.IsSingleVersion)
+            {
+                writer.WriteComment(" Shared items from the version information. ");
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("file", Path.Combine(workingDir,
+                    groupContext["$ApiVersionsSharedContentFile"]));
+                writer.WriteEndElement();
             }
 
             return true;

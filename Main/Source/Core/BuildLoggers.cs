@@ -15,7 +15,18 @@ namespace Sandcastle
     /// <seealso cref="BuildEngine.Logger"/>
     public sealed class BuildLoggers : BuildLogger
     {
+        #region Public Fields
+
+        public const string LoggerName     = "Sandcastle.Loggers.BuildLoggers";
+
+        public const string LoggerFileName = "BuildLogFile.log";
+
+        #endregion   
+
         #region Private Fields
+
+        private int _totalWarnings;
+        private int _totalErrors;
 
         private List<BuildLogger> _listLoggers;
 
@@ -62,13 +73,14 @@ namespace Sandcastle
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.Container.Logger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.BuildLoggers</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.Container.Logger";
+                return LoggerName;
             }
         }
 
@@ -111,6 +123,35 @@ namespace Sandcastle
             }
         }
 
+        public int TotalWarnings
+        {
+            get
+            {
+                return _totalWarnings;
+            }
+        }
+
+
+        public int TotalErrors
+        {
+            get
+            {
+                return _totalErrors;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -118,6 +159,9 @@ namespace Sandcastle
         public override void Initialize(string logWorkingDir, string logTitle)
         {
             base.Initialize(logWorkingDir, logTitle);
+
+            _totalWarnings = 0;
+            _totalErrors   = 0;
 
             if (_listLoggers != null)
             {
@@ -211,6 +255,15 @@ namespace Sandcastle
                 return;
             }
 
+            if (level == BuildLoggerLevel.Warn)
+            {
+                _totalWarnings++;
+            }
+            else if (level == BuildLoggerLevel.Error)
+            {
+                _totalErrors++;
+            }
+
             int itemCount = _listLoggers.Count;
             for (int i = 0; i < itemCount; i++)
             {
@@ -234,6 +287,15 @@ namespace Sandcastle
             if (_listLoggers == null || this.Enabled == false)
             {
                 return;
+            }
+
+            if (level == BuildLoggerLevel.Warn)
+            {
+                _totalWarnings++;
+            }
+            else if (level == BuildLoggerLevel.Error)
+            {
+                _totalErrors++;
             }
 
             int itemCount = _listLoggers.Count;

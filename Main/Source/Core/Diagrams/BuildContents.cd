@@ -11,35 +11,28 @@
   <Class Name="Sandcastle.Contents.TokenContent" Collapsed="true">
     <Position X="0.5" Y="2.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEJAAAAAAAAAAACACAAABAACAAEAAAAAAAAgkABQABA=</HashCode>
+      <HashCode>AEJBgIAAAABAAAAIKAAABAACAAEAAAAACAAggABQCBA=</HashCode>
       <FileName>Contents\TokenContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.CodeSnippetContent" Collapsed="true">
     <Position X="4.5" Y="2.5" Width="3" />
     <TypeIdentifier>
-      <HashCode>AABAAAAAAAAAAACAAAAAAAACAAAAAAAAAAAAkAAAABA=</HashCode>
+      <HashCode>AABBgIAAAABAAAAIIAAAAAACAAAAAAAACAAAgAAACBA=</HashCode>
       <FileName>Contents\CodeSnippetContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.MediaContent" Collapsed="true">
     <Position X="0.5" Y="3.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AFJAAACBAAAQAACACAAABAACQAGAAAAEAAAgmABQAhg=</HashCode>
+      <HashCode>AEJDgIABADBAACAIKAAABAACQAGAAgAECAAggABQChg=</HashCode>
       <FileName>Contents\MediaContent.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Contents.LinkContent" Collapsed="true">
-    <Position X="5.25" Y="3.5" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
-      <FileName>Contents\LinkContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.SharedContent" Collapsed="true">
     <Position X="0.5" Y="8.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AEJAAAAAAAAAAACACAAABAQCAAEAAAAAAAAkkABQABA=</HashCode>
+      <HashCode>AEJAAAAAAABAAAAAKAAABAQCAAEAAAAAAAAkgABQABA=</HashCode>
       <FileName>Contents\SharedContent.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -60,7 +53,7 @@
   <Class Name="Sandcastle.Contents.AttributeContent" Collapsed="true">
     <Position X="4.75" Y="9.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQABA=</HashCode>
+      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQCBA=</HashCode>
       <FileName>Contents\AttributeContent.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -95,12 +88,12 @@
   <Class Name="Sandcastle.Contents.TocContent" Collapsed="true">
     <Position X="0.5" Y="5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AEJgAAAAAAAAAACACcAEBACCAAEAAAAAABQgkABQABE=</HashCode>
+      <HashCode>AEJAAAAAAAAAAACACAAABAACAAEAAAAAAAAggABQCBA=</HashCode>
       <FileName>Contents\TocContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.ScriptContent" Collapsed="true">
-    <Position X="5.25" Y="5" Width="2.25" />
+    <Position X="4.5" Y="3.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AFYAIABAAAAgAAAECAAABAQCAAEAAAAAAAAggAhQABA=</HashCode>
       <FileName>Contents\ScriptContent.cs</FileName>
@@ -130,7 +123,7 @@
   <Class Name="Sandcastle.Contents.MathCommandContent" Collapsed="true">
     <Position X="4.5" Y="12.25" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQABA=</HashCode>
+      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQCBA=</HashCode>
       <FileName>Contents\MathCommandContent.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -145,28 +138,28 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAACBA=</HashCode>
       <FileName>Contents\MathPackageContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.SnippetContent" Collapsed="true">
     <Position X="0.5" Y="7.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAAAAkAAAAAAAACAIAAAAAAAAAAgAAAABA=</HashCode>
+      <HashCode>AAAAIAAACAAAAAkAAAAAAAQCAIAAAAAAAAAAgAAACBA=</HashCode>
       <FileName>Contents\SnippetContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.KeywordContent" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAACBA=</HashCode>
       <FileName>Contents\KeywordContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.CategoryContent" Collapsed="true">
     <Position X="5" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQABA=</HashCode>
+      <HashCode>AEIAAAAAAAAAAAAACAAABAACAAEAAAAAAAAggABQCBA=</HashCode>
       <FileName>Contents\CategoryContent.cs</FileName>
     </TypeIdentifier>
   </Class>

@@ -150,6 +150,8 @@ namespace Sandcastle.References
             //<targets base=".\" recurse="false"  
             //   files=".\reflection.xml" type="local" />        
             //</component>
+            //writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ResolveReferenceLinksComponent");
+            //writer.WriteAttributeString("assembly", "$(SandcastleComponent)");
 
             writer.WriteComment(" Resolve reference links ");
             writer.WriteStartElement("component");    // start - component
@@ -178,13 +180,15 @@ namespace Sandcastle.References
             {
                 return;
             }
-            string tocTopics = context["$HelpTocFile"];
-            string tempText  = context["$HelpHierarchicalToc"];
-
-            if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+            BuildTocContext tocContext = context.TocContext;
+            string tocFile = tocContext.GetValue("$" + format.Name);
+            if (!String.IsNullOrEmpty(tocFile) && File.Exists(tocFile))
             {
-                tocTopics = context["$HelpHierarchicalTocFile"];
+                tocFile = Path.GetFileName(tocFile);
+            }
+            else
+            {
+                tocFile = context["$HelpTocFile"];
             }
 
             FormatMhv mshcFormat = (FormatMhv)format;
@@ -204,7 +208,7 @@ namespace Sandcastle.References
                 mshcFormat.Selfbranded.ToString());
             writer.WriteAttributeString("topic-version", 
                 mshcFormat.TopicVersion.ToString());
-            writer.WriteAttributeString("toc-file", @".\" + tocTopics);
+            writer.WriteAttributeString("toc-file", @".\" + tocFile);
             writer.WriteAttributeString("toc-parent", 
                 mshcFormat.TocParent.ToString());
             writer.WriteAttributeString("toc-parent-version",

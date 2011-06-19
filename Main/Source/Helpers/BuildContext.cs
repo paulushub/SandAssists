@@ -27,6 +27,8 @@ namespace Sandcastle
 
         #region Private Fields
 
+        private int             _processedTopics;
+
         private bool            _isInitialized;
         private bool            _isBuildSuccess;
 
@@ -42,13 +44,14 @@ namespace Sandcastle
         private BuildSystem     _buildSystem;
         private BuildSettings   _settings;
 
+        private BuildProperties _properties;
+
         private BuildTocContext _tocContext;
 
         private IBuildNamedList<BuildGroup> _listGroups;
         private IBuildNamedList<BuildGroupContext> _groupContexts;
 
-        private EventWaitHandle _waitHandle;
-        private Dictionary<string, string> _properties;
+        public List<BuildTuple<BuildFormatType, string>> _buildOutputs;
 
         #endregion
 
@@ -68,14 +71,13 @@ namespace Sandcastle
         /// <param name="system"></param>
         public BuildContext(BuildSystem system, BuildType type)
         {
-            _buildType   = type;
-            _buildState  = BuildState.None;
-            _buildSystem = system;
-            _waitHandle  = new ManualResetEvent(false);
-            _properties  = new Dictionary<string, string>(
-               StringComparer.OrdinalIgnoreCase);
+            _buildType    = type;
+            _buildState   = BuildState.None;
+            _buildSystem  = system;
+            _properties   = new BuildProperties();
 
-            _tocContext  = new BuildTocContext();
+            _tocContext   = new BuildTocContext();
+            _buildOutputs = new List<BuildTuple<BuildFormatType, string>>();
 
             // Reset to the default properties
             this.Reset();
@@ -113,22 +115,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -163,6 +153,14 @@ namespace Sandcastle
             get
             {
                 return _isInitialized;
+            }
+        }
+
+        public int ProcessedTopics
+        {
+            get
+            {
+                return _processedTopics;
             }
         }
 
@@ -214,11 +212,30 @@ namespace Sandcastle
             }
         }
 
-        public WaitHandle BuildWait
+        public string StylesDirectory
         {
             get
             {
-                return _waitHandle;
+                string sandcastleDir = this.SandcastleDirectory;
+                sandcastleDir = Environment.ExpandEnvironmentVariables(sandcastleDir);
+                sandcastleDir = Path.GetFullPath(sandcastleDir);
+
+                if (_settings != null)
+                {
+                    BuildStyle outputStyle = _settings.Style;
+                    string stylesDir = outputStyle.Directory;
+                    if (!String.IsNullOrEmpty(stylesDir))
+                    {
+                        stylesDir = Environment.ExpandEnvironmentVariables(stylesDir);
+                        stylesDir = Path.GetFullPath(stylesDir);
+                        if (Directory.Exists(stylesDir))
+                        {
+                            sandcastleDir = stylesDir;
+                        }
+                    }
+                }
+
+                return sandcastleDir;
             }
         }
 
@@ -281,6 +298,49 @@ namespace Sandcastle
             }
         }
 
+        public string DataDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                if (_settings == null)
+                {
+                    return null;
+                }
+
+                string dataDir = Path.Combine(_settings.SandAssistDirectory, 
+                    "Data");
+
+                if (!Directory.Exists(dataDir))
+                {
+                    Directory.CreateDirectory(dataDir);
+                }
+
+                return dataDir;
+            }
+        }
+
+        public string ReflectionDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                string dataDir = this.DataDirectory;
+                if (String.IsNullOrEmpty(dataDir))
+                {
+                    return null;
+                }
+
+                string reflectionDir = Path.Combine(dataDir, "Reflection");
+
+                if (!Directory.Exists(reflectionDir))
+                {
+                    Directory.CreateDirectory(reflectionDir);
+                }
+
+                return reflectionDir;
+            }
+        }    
 
         public bool BuildResult
         {
@@ -307,6 +367,19 @@ namespace Sandcastle
             get
             {
                 return _groupContexts;
+            }
+        }
+
+        public IList<BuildTuple<BuildFormatType, string>> Outputs
+        {
+            get
+            {
+                if (_buildOutputs != null)
+                {
+                    return _buildOutputs.AsReadOnly();
+                }
+
+                return null;
             }
         }
 
@@ -440,6 +513,8 @@ namespace Sandcastle
                 return;
             }
 
+            _processedTopics = 0;
+
             BuildExceptions.NotNull(logger,   "logger");
             BuildExceptions.NotNull(settings, "settings");
 
@@ -496,6 +571,14 @@ namespace Sandcastle
 
             _tocContext.Initialize(this);
 
+            if (_groupContexts != null && _groupContexts.Count != 0)
+            {
+                for (int i = 0; i < _groupContexts.Count; i++)
+                {
+                    _groupContexts[i].Initialize(this);
+                }
+            }
+
             _isInitialized = true;
         }
 
@@ -511,31 +594,39 @@ namespace Sandcastle
             _isInitialized = false;
 
             _tocContext.Uninitialize();
+
+            if (_groupContexts != null && _groupContexts.Count != 0)
+            {
+                for (int i = 0; i < _groupContexts.Count; i++)
+                {
+                    _groupContexts[i].Uninitialize();
+                }
+            }
+        }
+
+        public void AddProcessedTopics(int processedTopics)
+        {
+            if (processedTopics > 0)
+            {
+                _processedTopics += processedTopics;
+            }
+        }
+
+        public void AddOutput(BuildFormatType formatType, string outputFile)
+        {
+            BuildExceptions.PathMustExist(outputFile, "outputFile");
+
+            if (_buildOutputs == null)
+            {
+                _buildOutputs = new List<BuildTuple<BuildFormatType, string>>();
+            }
+
+            _buildOutputs.Add(BuildTuple.Create(formatType, outputFile));
         }
 
         public virtual void SetState(BuildState state)
         {
             _buildState = state;
-            if (state == BuildState.Cancelled)
-            {
-                if (_waitHandle != null)
-                {
-                    _waitHandle.Set();
-                }
-            }
-        }
-
-        public virtual bool StepCreated(BuildStep buildStep)
-        {
-            BuildExceptions.NotNull(buildStep, "buildStep");
-
-            if (_buildState == BuildState.Cancelled ||
-                _buildState == BuildState.Error)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public virtual bool StepStarts(BuildStep buildStep)
@@ -546,11 +637,6 @@ namespace Sandcastle
                 _buildState == BuildState.Error)
             {
                 return false;
-            }
-
-            if (_waitHandle != null)
-            {
-                return _waitHandle.Reset();
             }
 
             return true;
@@ -615,11 +701,6 @@ namespace Sandcastle
 
         protected void Dispose(bool disposing)
         {
-            if (_waitHandle != null)
-            {
-                _waitHandle.Close();
-                _waitHandle = null;
-            }
         }
 
         #endregion

@@ -185,6 +185,14 @@ namespace Sandcastle.Steps
                     if (_options != null)
                     {
                         _options.TocStyle = _tocStyle;
+
+                        BuildTocContext tocContext = context.TocContext;
+                        string tocFile = tocContext.GetValue("$" + _format.Name);
+                        if (!String.IsNullOrEmpty(tocFile) && File.Exists(tocFile))
+                        {
+                            _options.TocFile = Path.GetFileName(tocFile);
+                        }
+                                        
                         FormatChmHelper chmHelper = new FormatChmHelper(_options);
                         chmHelper.Run(context);
                     }

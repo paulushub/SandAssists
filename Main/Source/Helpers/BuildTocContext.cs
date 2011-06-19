@@ -13,6 +13,8 @@ namespace Sandcastle
         private bool _isLoaded;
         private bool _isInitialized;
 
+        private BuildProperties _properties;
+
         private BuildKeyedList<BuildGroupTocInfo> _listItems;
         private BuildKeyedList<BuildTopicTocInfo> _relatedTopics;
 
@@ -28,6 +30,8 @@ namespace Sandcastle
 
         public BuildTocContext()
         {
+            _properties    = new BuildProperties();
+
             _listItems     = new BuildKeyedList<BuildGroupTocInfo>();
             _relatedTopics = new BuildKeyedList<BuildTopicTocInfo>();
 
@@ -36,6 +40,7 @@ namespace Sandcastle
 
         public BuildTocContext(BuildTocContext source)
         {
+            _properties    = source._properties;
             _isLoaded      = source._isLoaded;
             _isInitialized = source._isInitialized;
             _context       = source._context;
@@ -133,6 +138,16 @@ namespace Sandcastle
         #endregion
 
         #region Public Method
+
+        public string GetValue(string key)
+        {
+            return _properties[key];
+        }
+
+        public void SetValue(string key, string value)
+        {
+            _properties[key] = value;
+        }
 
         #region Initialization Methods
 
@@ -335,6 +350,14 @@ namespace Sandcastle
         {
             BuildTocContext content = new BuildTocContext(this);
 
+            if (_properties != null)
+            {
+                content._properties = _properties.Clone();
+            }
+            if (_listItems != null)
+            {
+                content._listItems = _listItems.Clone();
+            }
             if (_relatedTopics != null)
             {
                 content._relatedTopics = _relatedTopics.Clone();

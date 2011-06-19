@@ -3,12 +3,20 @@
 namespace Sandcastle.References
 {
     [Serializable]
-    public sealed class ReferenceVersionSource : ReferenceSource
+    public sealed class ReferenceVersionSource : ReferenceSource, IBuildNamedItem
     {
         #region Public Static Fields
 
         public const string SourceName =
             "Sandcastle.References.ReferenceVersionSource";
+
+        #endregion
+
+        #region Private Fields
+
+        private string           _label;
+        private string           _sourceId;
+        private ReferenceContent _content;
 
         #endregion
 
@@ -22,7 +30,20 @@ namespace Sandcastle.References
         /// with the default parameters.
         /// </summary>
         public ReferenceVersionSource()
+            : this("Ver" + Guid.NewGuid().ToString().Replace("-", String.Empty))
         {
+        }
+
+        public ReferenceVersionSource(string sourceId)
+        {
+            if (String.IsNullOrEmpty(sourceId))
+            {
+                _sourceId = "Ver" + Guid.NewGuid().ToString().Replace("-", String.Empty);
+            }
+            else
+            {
+                _sourceId = sourceId;
+            }
         }
 
         /// <summary>
@@ -40,6 +61,9 @@ namespace Sandcastle.References
         public ReferenceVersionSource(ReferenceVersionSource source)
             : base(source)
         {
+            _label    = source._label;
+            _sourceId = source._sourceId;
+            _content  = source._content;
         }
 
         #endregion
@@ -58,7 +82,52 @@ namespace Sandcastle.References
         {
             get
             {
-                return false;
+                if (String.IsNullOrEmpty(_label) || 
+                    _content == null || _content.IsEmpty)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return _sourceId;
+            }
+        }
+
+        public string VersionLabel
+        {
+            get
+            {
+                return _label;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _label = value.Trim();
+                }
+                else
+                {
+                    _label = String.Empty;
+                }
+            }
+        }
+
+        public ReferenceContent Content
+        {
+            get
+            {
+                return _content;
+            }
+            set
+            {
+                _content = value;
             }
         }
 
@@ -68,7 +137,19 @@ namespace Sandcastle.References
 
         public override ReferenceContent Create()
         {
-            return null;
+            return _content;
+        }
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        string IBuildNamedItem.Name
+        {
+            get
+            {
+                return _sourceId;
+            }
         }
 
         #endregion
@@ -78,6 +159,19 @@ namespace Sandcastle.References
         public override BuildSource Clone()
         {
             ReferenceVersionSource source = new ReferenceVersionSource(this);
+
+            if (_label != null)
+            {
+                source._label = String.Copy(_label);
+            }
+            if (_sourceId != null)
+            {
+                source._sourceId = String.Copy(_sourceId);
+            }
+            if (_content != null)
+            {
+                source._content = _content.Clone();
+            }
 
             return source;
         }

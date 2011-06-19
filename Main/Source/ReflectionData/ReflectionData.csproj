@@ -47,7 +47,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Sandcastle.BTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6c2bf89a8baa2754, processorArchitecture=MSIL">
+    <Reference Include="Sandcastle.Esent, Version=1.7.0.0, Culture=neutral, PublicKeyToken=408b92a24af6a3fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
@@ -57,12 +57,6 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>

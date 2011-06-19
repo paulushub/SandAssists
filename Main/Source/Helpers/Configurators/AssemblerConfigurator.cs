@@ -25,8 +25,13 @@ namespace Sandcastle.Configurators
         private string _sourceFile;
         private string _destFile;
         private string _sandcastleDir;
+
+        private BuildGroup _group;
+
+        private BuildContext _context;
+
+        private BuildProperties     _dicConfigMap;
         private ConfiguratorContent _configContent;
-        private Dictionary<string, string> _dicConfigMap;
 
         #endregion
 
@@ -40,9 +45,7 @@ namespace Sandcastle.Configurators
             _reIsConfigValue = new Regex(@"^\$\(([^\$\(\)]*)\)$", 
                 RegexOptions.Compiled);
             // 1. Create the dictionary for mapping the handlers...
-            _dicConfigMap = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
-
+            _dicConfigMap  = new BuildProperties();
             _configContent = new ConfiguratorContent();
 
             // 2. Create the default component handlers...
@@ -81,9 +84,25 @@ namespace Sandcastle.Configurators
         /// build process. This is <see langword="null"/> if the
         /// configuration process is not initiated.
         /// </value>
-        protected abstract BuildSettings Settings
+        protected BuildSettings Settings
         {
-            get;
+            get
+            {
+                if (_context != null)
+                {
+                    return _context.Settings;
+                }
+
+                return null;
+            }
+        }
+
+        protected BuildContext Context
+        {
+            get
+            {
+                return _context;
+            }
         }
 
         #endregion
@@ -102,6 +121,8 @@ namespace Sandcastle.Configurators
                 this.IsInitialized = false;
                 return;
             }
+
+            _context = context;
 
             _sandcastleDir = context.SandcastleDirectory;
 
@@ -165,6 +186,7 @@ namespace Sandcastle.Configurators
                 throw new BuildException("There is not initialization.");
             }
 
+            _group      = buildGroup;
             _sourceFile = sourceFile;
             _destFile   = destFile;
             string destDir = Path.GetDirectoryName(destFile);
@@ -196,14 +218,7 @@ namespace Sandcastle.Configurators
                 return null;
             }
 
-            string assemblyFile = null;
-
-            if (_dicConfigMap.TryGetValue(keyword, out assemblyFile))
-            {
-                return assemblyFile;
-            }
-
-            return null;
+            return _dicConfigMap[keyword];
         }
 
         public virtual bool ContainsComponents(string keyword)
@@ -321,8 +336,6 @@ namespace Sandcastle.Configurators
 
             int nodeCount = nodeList.Count;
 
-            string configKey   = null;
-            string configValue = null;
             for (int i = 0; i < nodeCount; i++)
             {
                 XmlNode nodeItem = nodeList[i];
@@ -332,11 +345,8 @@ namespace Sandcastle.Configurators
                     string attrValue = attrAssembly.Value;
                     if (_reIsConfigValue.IsMatch(attrValue))
                     {
-                        configKey = attrValue.Substring(2, attrValue.Length - 3);
-                        if (_dicConfigMap.TryGetValue(configKey, out configValue))
-                        {
-                            attrAssembly.Value = configValue;
-                        }
+                        string configKey = attrValue.Substring(2, attrValue.Length - 3);
+                        attrAssembly.Value = _dicConfigMap[configKey];
                     }
                 }
             }
@@ -389,13 +399,13 @@ namespace Sandcastle.Configurators
 
         protected virtual void WriteSyntaxTypes(XmlWriter xmlWriter, bool includeUsage)
         {
-            BuildSettings settings = this.Settings;
+            BuildSettings settings = _context.Settings;
             if (settings == null)
             {
                 return;
             }
 
-            BuildSyntaxType syntaxType = settings.SyntaxType;
+            BuildSyntaxType syntaxType = _group.SyntaxType;
             if (syntaxType == BuildSyntaxType.None)
             {
                 return;
@@ -478,13 +488,13 @@ namespace Sandcastle.Configurators
 
         protected virtual void WriteSyntaxGenerators(XmlWriter xmlWriter, bool includeUsage)
         {
-            BuildSettings settings = this.Settings;
+            BuildSettings settings = _context.Settings;
             if (settings == null)
             {
                 return;
             }
 
-            BuildSyntaxType syntaxType = settings.SyntaxType;
+            BuildSyntaxType syntaxType = _group.SyntaxType;
             if (syntaxType == BuildSyntaxType.None)
             {
                 return;
@@ -574,6 +584,31 @@ namespace Sandcastle.Configurators
                 xmlWriter.WriteAttributeString("files", Path.Combine(_sandcastleDir,
                     @"Presentation\Shared\configuration\xamlSyntax.config"));
                 xmlWriter.WriteEndElement();             // end - filter
+
+                // If the group XAML configuration is created, we use it...
+                BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+                if (groupContext == null)
+                {
+                    throw new BuildException(
+                        "The group context is not provided, and it is required by the build system.");
+                }
+                string xamlConfig = groupContext["$XamlSyntaxFile"];
+
+                if (!String.IsNullOrEmpty(xamlConfig))
+                {
+                    if (!Path.IsPathRooted(xamlConfig))
+                    {
+                        xamlConfig = Path.Combine(_context.WorkingDirectory,
+                            xamlConfig);
+                    }
+
+                    if (File.Exists(xamlConfig))
+                    {   
+                        xmlWriter.WriteStartElement("filter");   // start - filter
+                        xmlWriter.WriteAttributeString("files", xamlConfig);
+                        xmlWriter.WriteEndElement();             // end - filter
+                    }
+                }   
 
                 xmlWriter.WriteEndElement();                // end - generator
             }

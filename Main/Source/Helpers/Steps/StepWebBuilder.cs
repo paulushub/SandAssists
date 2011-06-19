@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
@@ -11,6 +12,7 @@ namespace Sandcastle.Steps
         #region Private Fields
 
         private string _helpDir;
+        private FormatWeb _format;
         private FormatWebOptions _options;
 
         #endregion
@@ -53,6 +55,18 @@ namespace Sandcastle.Steps
             }
         }
 
+        public FormatWeb Format
+        {
+            get
+            {
+                return _format;
+            }
+            set
+            {
+                _format = value;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -64,6 +78,12 @@ namespace Sandcastle.Steps
                 return false;
             }
 
+            BuildTocContext tocContext = context.TocContext;
+            string tocFile = tocContext.GetValue("$" + _format.Name);
+            if (!String.IsNullOrEmpty(tocFile) && File.Exists(tocFile))
+            {
+                _options.HelpTocFile = Path.GetFileName(tocFile);
+            }  
             FormatWebHelper helper = new FormatWebHelper(_options);
 
             return helper.Run(context);

@@ -151,7 +151,10 @@ namespace Sandcastle
             _startTime = startTime;
 
             // 1. Prepare all the build directories...
-            this.BeginDocumentation();
+            this.OnBeginDocumentation();
+
+            // 2. Prepare all the loggers...
+            this.OnBeginLogging(); 
 
             try
             {
@@ -222,32 +225,60 @@ namespace Sandcastle
 
         public virtual void Uninitialize()
         {
-            DateTime startTime = DateTime.Now;
-
             _logger.WriteLine("Completion of the documentation.",
                 BuildLoggerLevel.Started);
 
-            this.EndDocumentation();
-
             try
             {
+                this.OnEndDocumentation();
+
                 this.OnUninitialize();
 
-                DateTime endTime = DateTime.Now;
-                _endTime = endTime;
+                _endTime = DateTime.Now;
 
-                TimeSpan timeElapsed = endTime - startTime;
+                TimeSpan timeElapsed = _endTime - _startTime;
 
-                _logger.WriteLine("Successfully completed in: " + 
-                    timeElapsed.ToString(), BuildLoggerLevel.Info);
+                if (_isBuildSuccess)
+                {
+                    IList<BuildTuple<BuildFormatType, string>> listOutputs
+                        = Context.Outputs;
+                    if (listOutputs != null && listOutputs.Count != 0)
+                    {
+                        for (int i = 0; i < listOutputs.Count; i++)
+                        {
+                            BuildTuple<BuildFormatType, string> outputFile
+                                = listOutputs[i]; 
 
-                _logger.WriteLine("Build completed at: " +
-                    _endTime.ToString(), BuildLoggerLevel.Info);
+                            _logger.WriteLine("Output File: " + outputFile.Second,
+                                BuildLoggerLevel.Info);
+                        }
 
-                timeElapsed = _endTime - _startTime;
+                        _logger.WriteLine("Total number of output Files: " + 
+                            listOutputs.Count, BuildLoggerLevel.Info);
+                    }
 
-                _logger.WriteLine("Total time of completion: " +
-                    timeElapsed.ToString(), BuildLoggerLevel.Info);
+                    _logger.WriteLine("Total number of topics processed: " +
+                        _context.ProcessedTopics, BuildLoggerLevel.Info);
+
+                    _logger.WriteLine("Total number of warnings: " +
+                        _logger.TotalWarnings, BuildLoggerLevel.Info);
+                    _logger.WriteLine("Total number of errors: " +
+                        _logger.TotalErrors, BuildLoggerLevel.Info);
+
+                    _logger.WriteLine("Total time of completion: " +
+                        timeElapsed.ToString(), BuildLoggerLevel.Info);
+
+                    _logger.WriteLine("Build completed at: " +
+                        _endTime.ToString(), BuildLoggerLevel.Info);
+                }
+                else
+                {
+                    _logger.WriteLine("Documentation failed due to error after: " +
+                        timeElapsed.ToString(), BuildLoggerLevel.Info);
+
+                    _logger.WriteLine("Build stopped at: " +
+                        _endTime.ToString(), BuildLoggerLevel.Info);
+                }
             }
             catch (Exception ex)
             {
@@ -257,53 +288,9 @@ namespace Sandcastle
             {
                 _logger.WriteLine("Completion of the documentation.",
                     BuildLoggerLevel.Ended);
-            } 
-
-            try
-            {
-                _logger.Uninitialize();
-            }
-            catch
-            {              	
             }
 
-            //if (_settings == null)
-            //{
-            //    return;
-            //}
-
-            // Move the log file to the output directory...
-            //if (!String.IsNullOrEmpty(_logFile) && File.Exists(_logFile))
-            //{
-            //    try
-            //    {
-            //        if (_settings.KeepLogFile)
-            //        {
-            //            string outputDir = _context.OutputDirectory;
-            //            if (String.IsNullOrEmpty(outputDir) == false)
-            //            {
-            //                outputDir = Environment.ExpandEnvironmentVariables(
-            //                    outputDir);
-            //                outputDir = Path.GetFullPath(outputDir);
-            //                string logFile = Path.Combine(outputDir,
-            //                    _settings.LogFile);
-
-            //                File.SetAttributes(_logFile, FileAttributes.Normal);
-            //                File.Move(_logFile, logFile);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            File.SetAttributes(_logFile, FileAttributes.Normal);
-            //            File.Delete(_logFile);
-            //        }
-            //    }
-            //    catch
-            //    {
-            //    }
-            //}
-
-            //_logFile = null;
+            this.OnEndLogging();
         }
 
         #endregion
@@ -312,9 +299,9 @@ namespace Sandcastle
 
         #region Protected Methods
 
-        #region Begin/EndDocumentation Methods
+        #region OnBegin/EndDocumentation Methods
 
-        protected virtual void BeginDocumentation()
+        protected virtual void OnBeginDocumentation()
         {
             _conceptuals = 0;
             _references  = 0;
@@ -365,15 +352,9 @@ namespace Sandcastle
 
             _context.BeginDirectories(_settings);
             _context.BeginGroups(_listGroups, _groupContexts);
-
-            // 2. Initialize the logger...
-            if (!_logger.IsInitialized)
-            {
-                _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
-            }
         }
 
-        protected virtual void EndDocumentation()
+        protected virtual void OnEndDocumentation()
         {
             _context.EndGroups();
             _context.EndDirectories(_settings);
@@ -381,7 +362,7 @@ namespace Sandcastle
 
         #endregion
 
-        #region Build Method
+        #region OnBuild Method
 
         protected virtual bool OnBuild()
         {
@@ -411,7 +392,7 @@ namespace Sandcastle
 
             try
             {
-                _isBuildSuccess = this.RunSteps(_listSteps);
+                _isBuildSuccess = this.OnRunSteps();
             }
             catch (Exception ex)
             {
@@ -426,6 +407,178 @@ namespace Sandcastle
             }
 
             return _isBuildSuccess;
+        }
+
+        #endregion
+
+        #region OnBegin/EndLogging Method
+
+        protected virtual void OnBeginLogging()
+        {        
+            BuildLogging logging = _settings.Logging;
+
+            // 1. Create any requested logger...
+            IList<string> loggerNames = logging.Loggers;
+            if (loggerNames != null && loggerNames.Count != 0)
+            {
+                for (int i = 0; i < loggerNames.Count; i++)
+                {
+                    string loggerName = loggerNames[i];
+                    if (String.IsNullOrEmpty(loggerName))
+                    {
+                        continue;
+                    }
+
+                    switch (loggerName)
+                    {
+                        case NoneLogger.LoggerName:
+                            _logger.Add(new NoneLogger());
+                            break;
+                        case ConsoleLogger.LoggerName:
+                            _logger.Add(new ConsoleLogger(logging.UseFile));
+                            break;
+                        case FileLogger.LoggerName:
+                            _logger.Add(new FileLogger());
+                            break;
+                        case HtmlLogger.LoggerName:
+                            _logger.Add(new HtmlLogger());
+                            break;
+                        case XmlLogger.LoggerName:
+                            _logger.Add(new XmlLogger());
+                            break;
+                        case XamlLogger.LoggerName:
+                            _logger.Add(new XamlLogger());
+                            break;
+                        case BuildLoggers.LoggerName:
+                            _logger.Add(new BuildLoggers());
+                            break;
+                        default:
+                            //TODO-PAUL: Add support for custom loggers...
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+
+            // 2. If there is no logger, we try creating a default logger...
+            if (_logger.Count == 0)
+            {
+                BuildLogger defLogger = this.OnCreateLogger();
+                if (defLogger != null)
+                {
+                    _logger.Add(defLogger);
+                }
+            }
+
+            // 3. Update the logger settings...
+            bool keepLogFile = logging.KeepFile;
+            for (int i = 0; i < _logger.Count; i++)
+            {
+                BuildLogger logger = _logger[i];
+                if (logger != null)
+                {
+                    logger.KeepLog = keepLogFile;
+                }
+            }
+
+            // 4. Initialize the loggers...
+            if (!_logger.IsInitialized)
+            {
+                string logWorkingDir = null;
+                BuildDirectoryPath outputPath = logging.OutputPath;
+                if (outputPath != null && outputPath.IsValid)
+                {
+                    logWorkingDir = outputPath.Path;
+                }
+                else
+                {
+                    logWorkingDir = Path.Combine(_context.BaseDirectory, 
+                        BuildLogging.DefaultOutputDirectory);
+                }
+
+                if (!Directory.Exists(logWorkingDir))
+                {
+                    Directory.CreateDirectory(logWorkingDir);
+                }
+
+                _logger.Initialize(logWorkingDir, _settings.HelpTitle);
+            }
+        }
+
+        protected virtual void OnEndLogging()
+        {
+            try
+            {
+                _logger.Uninitialize();
+            }
+            catch
+            {
+                return;
+            }
+
+            //if (_settings == null)
+            //{
+            //    return;
+            //}
+
+            // Move the log file to the output directory...
+            //if (!String.IsNullOrEmpty(_logFile) && File.Exists(_logFile))
+            //{
+            //    try
+            //    {
+            //        if (_settings.KeepLogFile)
+            //        {
+            //            string outputDir = _context.OutputDirectory;
+            //            if (String.IsNullOrEmpty(outputDir) == false)
+            //            {
+            //                outputDir = Environment.ExpandEnvironmentVariables(
+            //                    outputDir);
+            //                outputDir = Path.GetFullPath(outputDir);
+            //                string logFile = Path.Combine(outputDir,
+            //                    _settings.LogFile);
+
+            //                File.SetAttributes(_logFile, FileAttributes.Normal);
+            //                File.Move(_logFile, logFile);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            File.SetAttributes(_logFile, FileAttributes.Normal);
+            //            File.Delete(_logFile);
+            //        }
+            //    }
+            //    catch
+            //    {
+            //    }
+            //}
+
+            //_logFile = null;
+        }
+
+        protected virtual BuildLogger OnCreateLogger()
+        {
+            BuildLogging logging = _settings.Logging;
+            string logFileName   = logging.FileName;
+
+            if ( _buildSystem == BuildSystem.Console)
+            {
+                if (!String.IsNullOrEmpty(logFileName))
+                {
+                    return new ConsoleLogger(logFileName, logging.UseFile);
+                }
+                else
+                {
+                    return new ConsoleLogger(logging.UseFile);
+                }
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(logFileName) || logging.UseFile)
+                {
+                    return new FileLogger(logFileName);
+                }
+            }
+
+            return null;
         }
 
         #endregion
@@ -456,17 +609,7 @@ namespace Sandcastle
 
             _settings.EndInit();
 
-            // 1. If there is no logger, we try creating a default logger...
-            if (_logger.Count == 0)
-            {
-                BuildLogger defLogger = this.OnCreateLogger();
-                if (defLogger != null)
-                {
-                    _logger.Add(defLogger);
-                }
-            }
-
-            // 2. If the logger is not initialized, we initialize it now...
+            // If the logger is not initialized, we initialize it now...
             if (!_logger.IsInitialized)
             {
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
@@ -561,76 +704,11 @@ namespace Sandcastle
             }
 
             _context["$HelpFormatCount"]         = _listFormats.Count.ToString();
-            _context["$HelpTocFile"]             = BuildToc.HelpToc;
+            _context["$HelpTocFile"]             = _settings.Toc.TocFile;
             _context["$HelpTocMarkers"]          = Boolean.FalseString;
-            _context["$HelpHierarchicalTocFile"] = BuildToc.HierarchicalToc;
             _context["$HelpHierarchicalToc"]     = Boolean.FalseString;
 
-            _isInitialized = this.CreateSteps();
-        }
-
-        protected virtual BuildLogger OnCreateLogger()
-        {
-            string workingDir  = _context.BaseDirectory;
-            string logFileName = _settings.LogFileName;
-
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = _context.WorkingDirectory;
-                if (String.IsNullOrEmpty(workingDir))
-                {
-                    workingDir = _settings.WorkingDirectory;
-                }
-            }
-
-            if (!String.IsNullOrEmpty(logFileName))
-            {
-                if (!String.IsNullOrEmpty(workingDir) && Directory.Exists(workingDir))
-                {
-                    string logFullPath = Path.Combine(workingDir, logFileName);
-
-                    try
-                    {
-                        if (File.Exists(logFullPath))
-                        {
-                            File.SetAttributes(logFullPath, FileAttributes.Normal);
-                            File.Delete(logFullPath);
-                        }
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-            }
-
-            if (String.IsNullOrEmpty(workingDir) ||
-                _buildSystem == BuildSystem.Console)
-            {
-                if (!String.IsNullOrEmpty(logFileName) || _settings.UseLogFile)
-                {
-                    ConsoleLogger logger = new ConsoleLogger(logFileName);
-                    logger.KeepLog = _settings.KeepLogFile;
-
-                    return logger;
-                }
-                else
-                {
-                    return new ConsoleLogger();
-                }
-            }
-            else
-            {
-                if (!String.IsNullOrEmpty(logFileName) || _settings.UseLogFile)
-                {
-                    FileLogger logger = new FileLogger(logFileName);
-                    logger.KeepLog    = _settings.KeepLogFile;
-
-                    return logger;
-                }
-            }
-
-            return null;
+            _isInitialized = this.OnCreateSteps();
         }
 
         #endregion
@@ -694,36 +772,36 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreateSteps Method
+        #region OnCreateSteps Method
 
-        protected virtual bool CreateSteps()
+        protected virtual bool OnCreateSteps()
         {
             try
             {
-                if (!this.CreatePreBuildSteps())
+                if (!this.OnCreatePreBuildSteps())
                 {
                     return false;
                 }
 
                 // 1. Create the initial build steps...
-                if (!this.CreateInitialSteps())
+                if (!this.OnCreateInitialSteps())
                 {
                     return false;
                 }
 
                 // 2. Create the table of contents and other steps...
-                if (!this.CreateMergingSteps())
+                if (!this.OnCreateMergingSteps())
                 {
                     return false;
                 }
 
                 // 3. Create the final build steps...
-                if (!this.CreateFinalSteps())
+                if (!this.OnCreateFinalSteps())
                 {
                     return false;
                 }
 
-                if (!this.CreatePostBuildSteps())
+                if (!this.OnCreatePostBuildSteps())
                 {
                     return false;
                 }
@@ -740,9 +818,9 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreateInitialSteps Method
+        #region OnCreateInitialSteps Method
 
-        protected virtual bool CreateInitialSteps()
+        protected virtual bool OnCreateInitialSteps()
         {
             if (_settings.BuildReferences &&
                 (_referenceEngine != null && _referenceEngine.IsInitialized))
@@ -833,9 +911,9 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreateMergingSteps Method
+        #region OnCreateMergingSteps Method
 
-        protected virtual bool CreateMergingSteps()
+        protected virtual bool OnCreateMergingSteps()
         {
             BuildEngineSettingsList listSettings = _settings.EngineSettings;
             Debug.Assert(listSettings != null,
@@ -889,10 +967,10 @@ namespace Sandcastle
                     for (int i = 0; i < itemCount; i++)
                     {
                         ConceptualGroup group = topicsGroups[i];
-                        if (group.ExcludeToc)
-                        {
-                            continue;
-                        }
+                        //if (group.ExcludeToc)
+                        //{
+                        //    continue;
+                        //}
 
                         BuildGroupContext groupContext = _groupContexts[group.Id];
                         if (groupContext == null)
@@ -905,7 +983,7 @@ namespace Sandcastle
                         if (!String.IsNullOrEmpty(topicsToc))
                         {
                             tocMerge.Add(topicsToc, BuildGroupType.Conceptual,
-                                group.Id, false);
+                                group.Id, false, group.ExcludeToc);
 
                             if (!Path.IsPathRooted(topicsToc))
                             {
@@ -914,6 +992,7 @@ namespace Sandcastle
 
                             ConceptualGroupTocInfo groupTocInfo = new ConceptualGroupTocInfo(
                                 group.Id, topicsToc);
+                            groupTocInfo.Exclude = group.ExcludeToc;
 
                             tocContext.Add(groupTocInfo);
 
@@ -945,10 +1024,10 @@ namespace Sandcastle
                     for (int i = 0; i < itemCount; i++)
                     {
                         ReferenceGroup group = apiGroups[i];
-                        if (group.ExcludeToc)
-                        {
-                            continue;
-                        }
+                        //if (group.ExcludeToc)
+                        //{
+                        //    continue;
+                        //}
 
                         BuildGroupContext groupContext = _groupContexts[group.Id];
                         if (groupContext == null)
@@ -969,17 +1048,19 @@ namespace Sandcastle
                         if (!String.IsNullOrEmpty(topicsToc))
                         {
                             tocMerge.Add(topicsToc, BuildGroupType.Reference,
-                                group.Id, Convert.ToBoolean(groupContext["$IsRooted"]));
+                                group.Id, Convert.ToBoolean(groupContext["$IsRooted"]),
+                                group.ExcludeToc);
 
                             if (!Path.IsPathRooted(topicsToc))
                             {
                                 topicsToc = Path.Combine(workingDir, topicsToc);
                             }
 
-                            ReferenceGroupTocInfo tocInfo = new ReferenceGroupTocInfo(
+                            ReferenceGroupTocInfo groupTocInfo = new ReferenceGroupTocInfo(
                                 group.Id, topicsToc);
+                            groupTocInfo.Exclude = group.ExcludeToc;
 
-                            tocContext.Add(tocInfo);
+                            tocContext.Add(groupTocInfo);
                         }
                     }
                 }
@@ -1003,9 +1084,9 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreateFinalSteps Method
+        #region OnCreateFinalSteps Method
 
-        protected virtual bool CreateFinalSteps()
+        protected virtual bool OnCreateFinalSteps()
         {
             HashSet<string> outputFolders = new HashSet<string>();
 
@@ -1169,16 +1250,16 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreatePreBuildSteps Method
+        #region OnCreatePreBuildSteps Method
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual bool CreatePreBuildSteps()
+        protected virtual bool OnCreatePreBuildSteps()
         {
             BuildStyle buildStyle = _settings.Style;
-            string sandcastleDir  = _settings.StylesDirectory;
+            string sandcastleDir  = _context.StylesDirectory;
             string sandassistDir  = _settings.SandAssistDirectory;
 
             if (String.IsNullOrEmpty(sandcastleDir) ||
@@ -1192,9 +1273,7 @@ namespace Sandcastle
             int formatCount = _listFormats.Count;
 
             // Ensure that we have a valid list of folders...
-            IList<string> listFolders = new List<string>();
-            IDictionary<string, bool> dicFolders = this.GetOutputFolders(listFolders);
-            int folderCount   = listFolders.Count;
+            HashSet<string> listFolders = this.OnOutputFolders();
 
             string baseDir    = _context.BaseDirectory;
             string workingDir = _context.WorkingDirectory;
@@ -1241,7 +1320,7 @@ namespace Sandcastle
                 _listSteps.Add(closeViewerSteps);
             }
 
-            //// Add the Intellisense directory for deletion, may not exists...
+            //// Add the IntelliSense directory for deletion, may not exists...
             //deleteDirs.Add("Intellisense");
             _listSteps.Add(deleteDirs);
 
@@ -1249,18 +1328,10 @@ namespace Sandcastle
             StepDirectoryCreate createDir = new StepDirectoryCreate(workingDir);
             createDir.LogTitle = "Creating standard and formats directories.";
             //createDir.Add("Intellisense");
-            for (int i = 0; i < folderCount; i++)
+            foreach (string folder in listFolders)
             {
-                createDir.Add(@"Output\" + listFolders[i]);
-            }
-            //for (int i = 0; i < formatCount; i++)
-            //{
-            //    BuildFormat format = _listFormats[i];
-            //    createDir.Add(Path.Combine("Output", format.FormatFolder));
-            //    createDir.Add(format.OutputFolder);
-            //    // We have to delete the any existing output folder...
-            //    deleteDirs.Add(format.OutputFolder);
-            //}
+                createDir.Add(@"Output\" + folder);
+            } 
             _listSteps.Add(createDir);
 
             // 4. Copy the resources files: icons, styles and scripts...
@@ -1306,13 +1377,13 @@ namespace Sandcastle
 
         #endregion
 
-        #region CreatePostBuildSteps Method
+        #region OnCreatePostBuildSteps Method
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual bool CreatePostBuildSteps()
+        protected virtual bool OnCreatePostBuildSteps()
         {
             string workingDir = _context.WorkingDirectory;
 
@@ -1373,14 +1444,14 @@ namespace Sandcastle
 
         #endregion
 
-        #region RunSteps Method
+        #region OnRunSteps Method
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="listSteps"></param>
         /// <returns></returns>
-        protected virtual bool RunSteps(IList<BuildStep> listSteps)
+        protected virtual bool OnRunSteps()
         {
             if (_settings == null || _context == null ||
                 _isInitialized == false)
@@ -1388,12 +1459,12 @@ namespace Sandcastle
                 return false;
             }
 
-            if (listSteps == null || listSteps.Count == 0)
+            if (_listSteps == null || _listSteps.Count == 0)
             {
                 return false;
             }
 
-            int stepCount = listSteps.Count;
+            int stepCount = _listSteps.Count;
 
             string currentDir = Environment.CurrentDirectory;
             bool buildResult = false;
@@ -1407,7 +1478,7 @@ namespace Sandcastle
                 // 1. Initialize all the build steps, and set them ready for build...
                 for (int i = 0; i < stepCount; i++)
                 {
-                    BuildStep buildStep = listSteps[i];
+                    BuildStep buildStep = _listSteps[i];
                     if (buildStep != null)
                     {
                         buildStep.Initialize(_context);
@@ -1432,7 +1503,7 @@ namespace Sandcastle
                 // 2. Now, run each build step, and monitor the results...
                 for (int i = 0; i < stepCount; i++)
                 {
-                    BuildStep buildStep = listSteps[i];
+                    BuildStep buildStep = _listSteps[i];
 
                     if (buildStep == null || buildStep.Enabled == false)
                     {
@@ -1466,7 +1537,7 @@ namespace Sandcastle
                 // 3. Finally, un-initialize all the build steps, allowing each to clean up...
                 for (int i = 0; i < stepCount; i++)
                 {
-                    BuildStep buildStep = listSteps[i];
+                    BuildStep buildStep = _listSteps[i];
                     if (buildStep != null)
                     {
                         buildStep.Uninitialize();
@@ -1492,44 +1563,41 @@ namespace Sandcastle
 
         #endregion
 
-        #region GetOutputFolders Method
+        #region OnOutputFolders Method
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="listFolders"></param>
         /// <returns></returns>
-        protected IDictionary<string, bool> GetOutputFolders(
-            IList<string> listFolders)
+        protected HashSet<string> OnOutputFolders()
         {
-            Dictionary<string, bool> dicFolders = new Dictionary<string, bool>(
+            HashSet<string> listFolders = new HashSet<string>(
                 StringComparer.OrdinalIgnoreCase);
 
             if (_settings == null)
             {
-                return dicFolders;
+                return listFolders;
             }
 
             IList<string> folders = _settings.OutputFolders;
 
             if (folders == null || folders.Count == 0)
             {
-                return dicFolders;
+                return listFolders;
             }
 
             int folderCount = folders.Count;
             for (int i = 0; i < folderCount; i++)
             {
                 string folder = folders[i];
-                if (String.IsNullOrEmpty(folder) == false &&
-                    dicFolders.ContainsKey(folder) == false)
+                if (!String.IsNullOrEmpty(folder))
                 {
-                    dicFolders.Add(folder, true);
                     listFolders.Add(folder);
                 }
             }
 
-            return dicFolders;
+            return listFolders;
         }
 
         #endregion

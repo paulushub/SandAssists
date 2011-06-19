@@ -59,6 +59,9 @@ namespace Sandcastle.Components
 
         protected void WriteMessage(MessageLevel level, Exception ex)
         {
+#if DEBUG
+            this.WriteMessage(level, ex.ToString());
+#else
             string message = ex.Message;
             if (String.IsNullOrEmpty(message))
             {
@@ -69,6 +72,7 @@ namespace Sandcastle.Components
                 this.WriteMessage(level, String.Format("Exception({0}) - {1}",
                     ex.GetType().Name, message));
             }
+#endif    
         }
 
         protected bool SetXmlStringValue(XPathNavigator navigator,

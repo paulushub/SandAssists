@@ -1,0 +1,435 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tests.Drawings</name>
+    </assembly>
+    <members>
+        <member name="T:Tests.Drawings.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Tests.Drawings.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Tests.Drawings.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:Tests.Drawings.DrawingRectangle">
+            <summary>
+            This is the rectangle drawing.
+            </summary>
+        </member>
+        <member name="T:Tests.Drawings.DrawingObject">
+            <summary>
+            The <see langword="abstract"/> base class for all drawings.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DrawingObject.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingObject"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingObject"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DrawingObject.#ctor(Tests.Drawings.DrawingObject)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingObject"/> class with parameter
+            copied from the specified <see cref="T:Tests.Drawings.DrawingObject"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Drawings.DrawingObject"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.DrawingObject.Draw(Tests.Shapes.ShapeBase,System.Windows.Media.DrawingContext)">
+            <summary>
+            Draws the specified shape to the given context.
+            </summary>
+            <param name="shape">
+            An instance of <see cref="T:Tests.Shapes.ShapeBase"/> specifying the shape to draw.
+            </param>
+            <param name="context">
+            An instance of <see cref="T:System.Windows.Media.DrawingContext"/> specifying the drawing context.
+            </param>
+        </member>
+        <member name="M:Tests.Drawings.DrawingRectangle.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingRectangle"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingRectangle"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DrawingRectangle.#ctor(Tests.Drawings.DrawingRectangle)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingRectangle"/> class with parameter
+            copied from the specified <see cref="T:Tests.Drawings.DrawingRectangle"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Drawings.DrawingRectangle"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.DrawingRectangle.Draw(Tests.Shapes.ShapeBase,System.Windows.Media.DrawingContext)">
+            <overloads>
+            Draws the specified shape to the given context.
+            </overloads>
+            <summary>
+            Draws the specified shape to the given context.
+            </summary>
+            <param name="shape">
+            An instance of <see cref="T:Tests.Shapes.ShapeBase"/> specifying the shape to draw.
+            </param>
+            <param name="context">
+            An instance of <see cref="T:System.Windows.Media.DrawingContext"/> specifying the drawing context.
+            </param>
+        </member>
+        <member name="M:Tests.Drawings.DrawingRectangle.Draw(Tests.Shapes.ShapeRectangle,System.Windows.Media.DrawingContext)">
+            <summary>
+            Draws the specified rectangle to the given context.
+            </summary>
+            <param name="shape">
+            An instance of <see cref="T:Tests.Shapes.ShapeRectangle"/> specifying the shape to draw.
+            </param>
+            <param name="context">
+            An instance of <see cref="T:System.Windows.Media.DrawingContext"/> specifying the drawing context.
+            </param>
+        </member>
+        <member name="T:Tests.Drawings.DrawingEllipse">
+            <summary>
+            This the ellipse drawing.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DrawingEllipse.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingEllipse"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingEllipse"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DrawingEllipse.#ctor(Tests.Drawings.DrawingEllipse)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Drawings.DrawingEllipse"/> class with parameter
+            copied from the specified <see cref="T:Tests.Drawings.DrawingEllipse"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Drawings.DrawingEllipse"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.DrawingEllipse.Draw(Tests.Shapes.ShapeBase,System.Windows.Media.DrawingContext)">
+            <overloads>
+            Draws the specified shape to the given context.
+            </overloads>
+            <summary>
+            Draws the specified shape to the given context.
+            </summary>
+            <param name="shape">
+            An instance of <see cref="T:Tests.Shapes.ShapeBase"/> specifying the shape to draw.
+            </param>
+            <param name="context">
+            An instance of <see cref="T:System.Windows.Media.DrawingContext"/> specifying the drawing context.
+            </param>
+        </member>
+        <member name="M:Tests.Drawings.DrawingEllipse.Draw(Tests.Shapes.ShapeEllipse,System.Windows.Media.DrawingContext)">
+            <summary>
+            Draws the specified ellipse to the given context.
+            </summary>
+            <param name="shape">
+            An instance of <see cref="T:Tests.Shapes.ShapeEllipse"/> specifying the shape to draw.
+            </param>
+            <param name="context">
+            An instance of <see cref="T:System.Windows.Media.DrawingContext"/> specifying the drawing context.
+            </param>
+        </member>
+        <member name="T:Tests.Drawings.DrawingControl">
+            <summary>
+            This is a test control.
+            </summary>
+            <remarks>
+            <para>
+            Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
+            </para>
+            Step 1a) 
+            <para>
+            Using this custom control in a XAML file that exists in the current project.
+            Add this XmlNamespace attribute to the root element of the markup file where it is 
+            to be used:
+            </para>
+            <para>
+                <c>xmlns:MyNamespace="clr-namespace:Tests.Drawings"</c>
+            </para>
+            <para>
+            Step 1b) Using this custom control in a XAML file that exists in a different project.
+            Add this XmlNamespace attribute to the root element of the markup file where it is 
+            to be used:
+            </para>
+            <para>
+                <c>xmlns:MyNamespace="clr-namespace:Tests.Drawings;assembly=Tests.Drawings"</c>
+            </para>
+            <para>
+            You will also need to add a project reference from the project where the XAML file lives
+            to this project and Rebuild to avoid compilation errors:
+            </para>
+            <para>
+                Right click on the target project in the Solution Explorer and
+                "Add Reference"->"Projects"->[Select this project]
+            </para>
+            <para>
+            Step 2)
+            </para>
+            <para>
+            Go ahead and use your control in the XAML file.
+            </para>
+            <para>
+            <![CDATA[
+                <Tests.Drawings:DrawingControl/>
+            ]]>
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Tests.Drawings.DependencyObjects">
+            <summary>
+            Testing for dependency properties and events.
+            </summary>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.BouyancyProperty">
+            <summary>
+            This is the Bouyancy dependency property definition.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DependencyObjects.SetBouyancy(System.Windows.UIElement,Tests.Drawings.DependencyObjects.Bouyancy)">
+            <summary>
+            Sets the value of the Bouyancy.
+            </summary>
+            <param name="element">The target element.</param>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Tests.Drawings.DependencyObjects.GetBouyancy(System.Windows.UIElement)">
+            <summary>
+            Gets the value of the Bouyancy.
+            </summary>
+            <param name="element">The source element.</param>
+            <returns>
+            The value of the <see cref="T:Tests.Drawings.DependencyObjects.Bouyancy"/>.
+            </returns>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.IsDirtyProperty">
+            <summary>
+            Is dirty dependency property definition.
+            </summary>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.StateProperty">
+            <summary>
+            The state dependency property definition.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.DependencyObjects.ValidateBouyancy(System.Object)">
+            <summary>
+            Validation
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Tests.Drawings.DependencyObjects.State">
+            <summary>
+            Gets or sets the state value.
+            </summary>
+        </member>
+        <member name="T:Tests.Drawings.DependencyObjects.Bouyancy">
+            <summary>
+            A test inner enumeration.
+            </summary>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.Bouyancy.Floats">
+            <summary>
+            For floats
+            </summary>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.Bouyancy.Sinks">
+            <summary>
+            For sinks
+            </summary>
+        </member>
+        <member name="F:Tests.Drawings.DependencyObjects.Bouyancy.Drifts">
+            <summary>
+            For drifts
+            </summary>
+        </member>
+        <member name="T:Tests.Drawings.Testing">
+            <summary>
+            Test class for Sandcastle .NET 4.0 support.
+            </summary>
+        </member>
+        <member name="M:Tests.Drawings.Testing.Handle(System.AggregateException,System.Func{System.Exception,System.Boolean},System.Boolean)">
+            <summary>
+            Invokes a handler on each <see cref="T:System.Exception"/> contained by this <see cref="T:System.AggregateException"/>.
+            </summary>
+            <param name="aggregateException">
+            The <see cref="T:System.AggregateException"/>.
+            </param>
+            <param name="predicate">
+            The predicate to execute for each exception. The predicate accepts as an argument the 
+            <see cref="T:System.Exception"/> to be processed and returns a boolean to indicate whether 
+            the exception was handled.
+            </param>
+            <param name="leaveStructureIntact">
+            <see langword="true"/> if the re-thrown <see cref="T:System.AggregateException"/>
+            should maintain the same hierarchy as the original.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            <para><paramref name="aggregateException"/> is <see langword="null"/>.</para>
+            <para>-or-</para>
+            <para><paramref name="predicate"/> is <see langword="null"/>.</para>
+            </exception>
+            <exception cref="T:System.AggregateException">
+            Not all of the inner exceptions were handled.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.Testing.Apply``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0)">
+            <summary>
+            Applies arguments to a function, and returns a simpler function.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument.
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument.
+            </typeparam>
+            <typeparam name="T4">
+            The type of the fourth argument.
+            </typeparam>
+            <typeparam name="T5">
+            The type of the fifth argument.
+            </typeparam>
+            <typeparam name="T6">
+            The type of the sixth argument.
+            </typeparam>
+            <typeparam name="T7">
+            The type of the seventh argument.
+            </typeparam>
+            <typeparam name="T8">
+            The type of the eighth argument.
+            </typeparam>
+            <typeparam name="TResult">
+            The type of the result.
+            </typeparam>
+            <param name="method">
+            The function to which the arguments are applied.
+            </param>
+            <param name="a1">
+            The first argument to apply.
+            </param>
+            <returns>
+            A function which applies the supplied arguments to the <paramref name="method"/>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="method"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.Testing.Apply``3(System.Func{``0,``1,``2},``0)">
+            <summary>
+            Applies arguments to a function, and returns a simpler function.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument.
+            </typeparam>
+            <typeparam name="TResult">
+            The type of the result.
+            </typeparam>
+            <param name="method">
+            The function to which the arguments are applied.
+            </param>
+            <param name="a1">
+            The first argument to apply.
+            </param>
+            <returns>
+            A function which applies the supplied arguments to the <paramref name="method"/>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="method"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Drawings.Testing.Select``2(System.Threading.Tasks.Task{``0},System.Func{``0,``1})">
+            <summary>
+            Applies a transformation to the result of a task.
+            </summary>
+            <typeparam name="TSource">
+            The type of the source task.
+            </typeparam>
+            <typeparam name="TResult">
+            The return type of the transformation.
+            </typeparam>
+            <param name="source">
+            The source task.
+            </param>
+            <param name="selector">
+            The function which transforms the result of the task.
+            </param>
+            <returns>
+            A task which returns the transformed result.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            <para><paramref name="source"/> is <see langword="null"/>.</para>
+            <para>-or-</para>
+            <para><paramref name="selector"/> is <see langword="null"/>.</para>
+            </exception>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -36,7 +36,7 @@ namespace Sandcastle
         private BuildMultiStep _replaceSteps;
         private BuildMultiStep _afterSteps;
         private BuildLoggerVerbosity _verbosity;
-        private Dictionary<string, string> _properties;
+        private BuildProperties _properties;
 
         [NonSerialized] 
         private BuildContext _context;
@@ -56,8 +56,7 @@ namespace Sandcastle
         {
             _isEnabled   = true;
             _logTimeSpan = true;
-            _properties  = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
+            _properties  = new BuildProperties();
         }
 
         /// <summary>
@@ -545,22 +544,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -589,15 +576,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.KeyCollection keyColl
-                        = _properties.Keys;
-
-                    return keyColl;
-                }
-
-                return null;
+                return _properties.Keys;
             }
         }
 
@@ -611,15 +590,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.ValueCollection valueColl
-                        = _properties.Values;
-
-                    return valueColl;
-                }
-
-                return null;
+                return _properties.Values;
             }
         }
 
@@ -689,7 +660,7 @@ namespace Sandcastle
             _context = context;
             if (_verbosity == BuildLoggerVerbosity.None)
             {
-                _verbosity = _context.Settings.Verbosity;
+                _verbosity = _context.Settings.Logging.Verbosity;
             }
 
             _isInitialized = true;
@@ -842,8 +813,6 @@ namespace Sandcastle
         /// </exception>
         public void RemoveProperty(string key)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Remove(key);
         }
 
@@ -852,11 +821,6 @@ namespace Sandcastle
         /// </summary>
         public void ClearProperties()
         {
-            if (_properties.Count == 0)
-            {
-                return;
-            }
-
             _properties.Clear();
         }
 
@@ -886,8 +850,6 @@ namespace Sandcastle
         /// </remarks>
         public void AddProperty(string key, string value)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Add(key, value);
         }
 
@@ -904,11 +866,6 @@ namespace Sandcastle
         /// </returns>
         public bool ContainsPropertyKey(string key)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
             return _properties.ContainsKey(key);
         }
 

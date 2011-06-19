@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildList&lt;T&gt;" Collapsed="true">
-    <Position X="3.75" Y="1.75" Width="1.5" />
+    <Position X="0.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAIAAABAAAAgJAAIBAAgAAAAQAgAAAAEAAAAAAAAABA=</HashCode>
+      <HashCode>IAIAAEBAAAAgJAAIBAAgAAAAQAgAAAAEAAAAAAAAABA=</HashCode>
       <FileName>BuildList.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.867" />
@@ -14,12 +14,12 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Sandcastle.BuildKeyedList&lt;T&gt;" Collapsed="true">
-    <Position X="0.5" Y="1.75" Width="1.75" />
+    <Position X="3.75" Y="1.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>IAIAAABAAAAgJAAIDAAgAAAAQAgABAAEAAAgAAAAABA=</HashCode>
+      <HashCode>IIIAAEBAAAAgJAAIDAAgAAAAQAgABAAEAAAgAAAQABA=</HashCode>
       <FileName>BuildKeyedList.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="1.033" />
+    <Lollipop Position="1.069" />
   </Class>
   <Class Name="Sandcastle.BuildListEventArgs&lt;T&gt;" Collapsed="true">
     <Position X="1.75" Y="4.75" Width="2" />

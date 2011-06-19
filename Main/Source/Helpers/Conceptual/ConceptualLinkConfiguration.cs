@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Sandcastle.Conceptual
 {
@@ -307,8 +309,8 @@ namespace Sandcastle.Conceptual
             BuildExceptions.NotNull(group,  "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
-            if (groupContext == null)
+            BuildGroupContext theContext = _context.GroupContexts[group.Id];
+            if (theContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
@@ -328,12 +330,26 @@ namespace Sandcastle.Conceptual
             writer.WriteAttributeString("type", linkType);
             writer.WriteEndElement();             // end - options
 
-            // For now, lets simply write the default...
+            // Keep the targets from the current group at the top...
             writer.WriteStartElement("targets");  // start - targets
             writer.WriteAttributeString("base", String.Format(
-                @".\{0}", groupContext["$DdueXmlCompDir"]));
+                @".\{0}", theContext["$DdueXmlCompDir"]));
             writer.WriteAttributeString("type", linkType);
             writer.WriteEndElement();             // end - targets
+            IList<BuildGroupContext> groupContexts = _context.GroupContexts;
+            for (int i = 0; i < groupContexts.Count; i++)
+            {
+                BuildGroupContext groupContext = groupContexts[i];
+                if (groupContext.GroupType == BuildGroupType.Conceptual 
+                    && groupContext != theContext)
+                {
+                    writer.WriteStartElement("targets");  // start - targets
+                    writer.WriteAttributeString("base", String.Format(
+                        @".\{0}", groupContext["$DdueXmlCompDir"]));
+                    writer.WriteAttributeString("type", linkType);
+                    writer.WriteEndElement();             // end - targets
+                }
+            }
 
             return true;
         }

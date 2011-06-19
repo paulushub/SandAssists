@@ -214,7 +214,7 @@ namespace Sandcastle.Steps
                 return processResult;
             }
 
-            processResult = Run(logger);
+            processResult = this.Run(logger);
 
             return processResult;
         }
@@ -247,7 +247,7 @@ namespace Sandcastle.Steps
                 if (!_shellExecute)
                 {
                     startInfo.RedirectStandardOutput = _redirectOutput;
-                    startInfo.RedirectStandardError = _redirectError;
+                    startInfo.RedirectStandardError  = _redirectError;
                 }
                 if (_encoding != null)
                 {
@@ -298,6 +298,120 @@ namespace Sandcastle.Steps
                 {
                     processResult = (_expectedExitCode == _processExitCode);
                 }
+            }
+            catch (Exception ex)
+            {
+                if (process != null)
+                {   
+                    if (!process.HasExited)
+                    {
+                        process.WaitForExit();
+                    }
+
+                    process.Close();
+                    process.Dispose();
+
+                    process = null;
+                }
+
+                if (logger != null)
+                {
+                    logger.WriteLine(ex);
+                }
+
+                processResult = false;
+            }
+
+            return processResult;
+        }
+
+        protected virtual bool Run(BuildLogger logger,
+            string workingDir, string fileName, string arguments)
+        {
+            bool shellExecute = false;
+
+            if (String.IsNullOrEmpty(fileName))
+            {
+                arguments    = "/C " + arguments;
+                fileName     = "cmd";
+                shellExecute = true;
+            }      
+
+            bool processResult = false;
+
+            _logger = logger;
+
+            Process process = null;
+
+            try
+            {
+                process = new Process();
+
+                ProcessStartInfo startInfo = process.StartInfo;
+
+                startInfo.FileName         = fileName;
+                startInfo.Arguments        = arguments;
+                startInfo.UseShellExecute  = shellExecute;
+                startInfo.CreateNoWindow   = true;
+                startInfo.WorkingDirectory = workingDir;
+
+                startInfo.RedirectStandardInput = false;
+                if (!_shellExecute)
+                {
+                    startInfo.RedirectStandardOutput = _redirectOutput;
+                    startInfo.RedirectStandardError  = _redirectError;
+                }
+                if (_encoding != null)
+                {
+                    startInfo.StandardOutputEncoding = _encoding;
+                    startInfo.StandardErrorEncoding  = _encoding;
+                }
+
+                // Add the event handler to receive the console output...
+                if (_redirectOutput)
+                {
+                    process.OutputDataReceived += new DataReceivedEventHandler(
+                        OnDataReceived);
+                }
+                if (_redirectError)
+                {
+                    process.ErrorDataReceived += new DataReceivedEventHandler(
+                        OnErrorReceived);
+                }
+
+                // Now, start the process - there will still not be output till...
+                process.Start();
+
+                // Start the asynchronous read of the output stream   
+                if (_redirectOutput)
+                {
+                    process.BeginOutputReadLine();
+                }
+                if (_redirectError)
+                {
+                    process.BeginErrorReadLine();
+                }
+
+                // We must wait for the process to complete...
+                process.WaitForExit();
+
+                _processExitCode = process.ExitCode;
+
+                process.Close();
+                process.Dispose();
+
+                process = null;
+
+                if (_ignoreExitCode)
+                {
+                    processResult = true;
+                }
+                else
+                {
+                    processResult = (_expectedExitCode == _processExitCode);
+                }
+
+                _messageCount = 0;
             }
             catch (Exception ex)
             {

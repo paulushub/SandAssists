@@ -34,13 +34,14 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceTocExcludeVisitor()
-            : this((ReferenceEngineSettings)null)
+            : this((ReferenceTocExcludeConfiguration)null)
         {   
         }
 
-        public ReferenceTocExcludeVisitor(ReferenceEngineSettings engineSettings)
-            : base(VisitorName, engineSettings)
+        public ReferenceTocExcludeVisitor(ReferenceTocExcludeConfiguration configuration)
+            : base(VisitorName, configuration)
         {
+            _tocExclude = configuration;
         }
 
         public ReferenceTocExcludeVisitor(ReferenceTocExcludeVisitor source)
@@ -83,14 +84,26 @@ namespace Sandcastle.References
 
             context["$TocExcludedNamespaces"] = String.Empty;
 
-            ReferenceEngineSettings engineSettings = this.EngineSettings;
-
-            Debug.Assert(engineSettings != null);
-            if (engineSettings == null)
+            if (_tocExclude == null)
             {
-                this.IsInitialized = false;
+                ReferenceEngineSettings engineSettings = this.EngineSettings;
 
-                return;
+                Debug.Assert(engineSettings != null);
+                if (engineSettings == null)
+                {
+                    this.IsInitialized = false;
+
+                    return;
+                }
+
+                _tocExclude = engineSettings.TocExclude;
+                Debug.Assert(_tocExclude != null);
+
+                if (_tocExclude == null)
+                {
+                    this.IsInitialized = false;
+                    return;
+                }
             }
 
             ReferenceGroupContext groupContext =
@@ -99,15 +112,6 @@ namespace Sandcastle.References
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
-            }
-
-            _tocExclude = engineSettings.TocExclude;
-            Debug.Assert(_tocExclude != null);
-
-            if (_tocExclude == null)
-            {
-                this.IsInitialized = false;
-                return;
             }
 
             IList<string> commentFiles = groupContext.CommentFiles;
@@ -152,10 +156,10 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override void Visit(ReferenceDocument refDocument)
+        public override void Visit(ReferenceDocument referenceDocument)
         {
-            BuildExceptions.NotNull(refDocument, "refDocument");
-            if (refDocument.DocumentType != ReferenceDocumentType.TableOfContents)
+            BuildExceptions.NotNull(referenceDocument, "referenceDocument");
+            if (referenceDocument.DocumentType != ReferenceDocumentType.TableOfContents)
             {
                 return;
             }
@@ -183,7 +187,7 @@ namespace Sandcastle.References
                     BuildLoggerLevel.Info);
             }
 
-            this.Visit(refDocument.DocumentFile, context.Logger);
+            this.Visit(referenceDocument.DocumentFile, context.Logger);
 
             if (logger != null)
             {
@@ -301,7 +305,7 @@ namespace Sandcastle.References
 
         #region ICloneable Members
 
-        public override ReferenceTocVisitor Clone()
+        public override ReferenceVisitor Clone()
         {
             ReferenceTocExcludeVisitor filter = new ReferenceTocExcludeVisitor(this);
 

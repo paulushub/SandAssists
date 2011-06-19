@@ -1,6 +1,4 @@
 using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Sandcastle.Loggers
 {
@@ -10,15 +8,41 @@ namespace Sandcastle.Loggers
     /// </summary>
     public class ConsoleLogger : BuildLogger
     {
+        #region Public Fields
+
+        public const string LoggerName     = "Sandcastle.Loggers.ConsoleLogger";
+
+        public const string LoggerFileName = "ConsoleLogFile.log";
+
+        #endregion
+
+        #region Private Fields
+
+        private bool _isFileLogging;
+
+        #endregion
+
         #region Constructors and Destructor
 
         public ConsoleLogger()
+            : this(LoggerFileName, false)
+        {
+        }
+
+        public ConsoleLogger(bool logToFile)
+            : this(LoggerFileName, logToFile)
         {
         }
 
         public ConsoleLogger(string logFile)
+            : this(logFile, true)
+        {
+        }
+
+        public ConsoleLogger(string logFile, bool logToFile)
             : base(logFile)
         {
+            _isFileLogging = logToFile;
         }
 
         #endregion
@@ -30,13 +54,26 @@ namespace Sandcastle.Loggers
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.ConsoleLogger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.ConsoleLogger</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.ConsoleLogger";
+                return LoggerName;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return _isFileLogging;
             }
         }
 

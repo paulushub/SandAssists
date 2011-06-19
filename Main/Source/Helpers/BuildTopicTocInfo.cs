@@ -461,7 +461,7 @@ namespace Sandcastle
             {
                 this.Name  = topicId;
                 _source    = topicFile;
-                _container = reader.GetAttribute("file");
+                _container = reader.GetAttribute("project");
             }
             else
             {

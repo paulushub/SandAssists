@@ -37,6 +37,14 @@ namespace Sandcastle.Formats
 
         #region Public Properties
 
+        public override BuildFormatType FormatType
+        {
+            get
+            {
+                return BuildFormatType.HtmlHelp3;
+            }
+        }
+
         /// <summary>
         /// Gets a value specifying the name of the this output format.
         /// </summary>
@@ -76,11 +84,11 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override BuildFormatType FormatType
+        public override string TocFileName
         {
             get
             {
-                return BuildFormatType.HtmlHelp3;
+                return "HtmlHelpToc3.xml";
             }
         }
 

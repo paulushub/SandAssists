@@ -72,7 +72,18 @@
       <HintPath>$(DXROOT)\ProductionTools\BuildComponents.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Sandcastle.BTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6c2bf89a8baa2754, processorArchitecture=MSIL">
+    <Reference Include="CommandLine, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DXROOT)\ProductionTools\CommandLine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MrefBuilder, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(DXROOT)\ProductionTools\MrefBuilder.exe</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <ExecutableExtension>.exe</ExecutableExtension>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandcastle.Esent, Version=1.7.0.0, Culture=neutral, PublicKeyToken=408b92a24af6a3fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
@@ -89,11 +100,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.49.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Output\System.Data.SQLite.DLL</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
@@ -111,6 +117,7 @@
     <Compile Include="Codes\CodeHighlightInfo.cs" />
     <Compile Include="Codes\CodeLanguage.cs" />
     <Compile Include="ConceptualLinkComponent.cs" />
+    <Compile Include="ConceptualLinks.cs" />
     <Compile Include="ConceptualMediaComponent.cs" />
     <Compile Include="ConceptualPreTransComponent.cs" />
     <Compile Include="BuildComponentEx.cs" />
@@ -124,6 +131,8 @@
     <Compile Include="MediaContentComponent.cs" />
     <Compile Include="MediaLinks\MediaSizeUnit.cs" />
     <Compile Include="MediaLinks\MediaTarget.cs" />
+    <Compile Include="Versions\VersionInfoType.cs" />
+    <Compile Include="Reflections\RedirectAssemblyResolver.cs" />
     <Compile Include="ScriptContentComponent.cs" />
     <Compile Include="Snippets\SnippetLanguage.cs" />
     <Compile Include="TargetController.cs" />
@@ -159,7 +168,7 @@
     <Compile Include="MediaComponent.cs" />
     <Compile Include="MediaLinks\MediaType.cs" />
     <Compile Include="MshcComponent.cs" />
-    <Compile Include="Others\VersionInfo.cs" />
+    <Compile Include="Versions\VersionInfo.cs" />
     <Compile Include="PauseComponent.cs" />
     <Compile Include="PostTransComponent.cs" />
     <Compile Include="PreTransComponent.cs" />
@@ -181,14 +190,13 @@
     <Compile Include="ReferencePostTransComponent.cs" />
     <Compile Include="ReferencePreTransComponent.cs" />
     <Compile Include="Snippets\Snippet.cs" />
-    <Compile Include="Snippets\SnippetDbReader.cs" />
-    <Compile Include="Snippets\SnippetDbProvider.cs" />
+    <Compile Include="Snippets\SnippetDatabaseReader.cs" />
+    <Compile Include="Snippets\SnippetDatabaseProvider.cs" />
     <Compile Include="Snippets\SnippetInfo.cs" />
     <Compile Include="Snippets\SnippetItem.cs" />
     <Compile Include="Snippets\SnippetMemoryProvider.cs" />
     <Compile Include="Snippets\SnippetProvider.cs" />
     <Compile Include="Snippets\SnippetReader.cs" />
-    <Compile Include="Snippets\SnippetSqliteProvider.cs" />
     <Compile Include="Snippets\SnippetStorage.cs" />
     <Compile Include="Snippets\SnippetTextReader.cs" />
     <Compile Include="Snippets\SnippetXmlReader.cs" />

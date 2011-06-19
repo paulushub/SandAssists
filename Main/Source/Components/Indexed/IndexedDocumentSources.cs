@@ -4,8 +4,6 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
-using Microsoft.Ddue.Tools;
-
 namespace Sandcastle.Components.Indexed
 {
     public sealed class IndexedDocumentSources : IndexedDocumentSource
@@ -76,29 +74,31 @@ namespace Sandcastle.Components.Indexed
             return null;
         }
 
-        public override void AddDocument(string file, bool cacheIt)
+        public override void AddDocument(string file, bool cacheIt,
+            bool warnOverride)
         {
             if (_memorySource != null)
             {
-                _memorySource.AddDocument(file, cacheIt);
+                _memorySource.AddDocument(file, cacheIt, warnOverride);
             }
         }
 
-        public override void AddDocuments(string wildcardPath, bool cacheIt)
+        public override void AddDocuments(string wildcardPath,
+            bool cacheIt, bool warnOverride)
         {
             if (_memorySource != null)
             {
-                _memorySource.AddDocuments(wildcardPath, cacheIt);
+                _memorySource.AddDocuments(wildcardPath, cacheIt, warnOverride);
             }
         }
 
         public override void AddDocuments(string baseDirectory,
-            string wildcardPath, bool recurse, bool cacheIt)
+            string wildcardPath, bool recurse, bool cacheIt, bool warnOverride)
         {
             if (_memorySource != null)
             {
-                _memorySource.AddDocuments(baseDirectory, wildcardPath, 
-                    recurse, cacheIt);
+                _memorySource.AddDocuments(baseDirectory, wildcardPath,
+                    recurse, cacheIt, warnOverride);
             }
         }
 

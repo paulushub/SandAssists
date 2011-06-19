@@ -7,7 +7,7 @@ using System.Web.Services.Protocols;
 
 namespace Sandcastle.ReflectionData
 {
-    public abstract class TargetMsdnResolver
+    public abstract class TargetMsdnResolver : IDisposable
     {
         #region Public Fields
 
@@ -16,6 +16,7 @@ namespace Sandcastle.ReflectionData
         #region Private Fields
 
         private string _locale;
+        private string _version;
         private ContentService _msdnService;   
 
         #endregion
@@ -30,6 +31,11 @@ namespace Sandcastle.ReflectionData
             _msdnService.appIdValue       = new appId();
             _msdnService.appIdValue.value = "Sandcastle";
             _msdnService.SoapVersion      = SoapProtocolVersion.Soap11;
+        }
+
+        ~TargetMsdnResolver()
+        {
+            this.Dispose(false);
         }
 
         #endregion
@@ -64,6 +70,18 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public string Version
+        {
+            get
+            {
+                return _version;
+            }
+            set
+            {
+                _version = value;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -76,6 +94,19 @@ namespace Sandcastle.ReflectionData
             getContentRequest msdnRequest = new getContentRequest();
             msdnRequest.contentIdentifier = "AssetId:" + id;
             msdnRequest.locale            = _locale;
+
+            // For the Expression SDK...
+            if (id.IndexOf("Microsoft.Expression",
+                StringComparison.OrdinalIgnoreCase) >= 0 ||
+                id.IndexOf("System.Windows.Interactivity",
+                StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                msdnRequest.version = "expression.40";
+            }
+            else if (!String.IsNullOrEmpty(_version))
+            {
+                msdnRequest.version = _version;
+            }
 
             string endpoint = null;
             try
@@ -93,6 +124,20 @@ namespace Sandcastle.ReflectionData
             }
 
             return endpoint;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
         }
 
         #endregion

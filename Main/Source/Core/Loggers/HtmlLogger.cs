@@ -2,7 +2,6 @@
 using System.IO;
 using System.Xml;
 using System.Text;
-using System.Collections.Generic;
 
 using ResourcesEx = Sandcastle.Properties.Resources;
 
@@ -18,6 +17,14 @@ namespace Sandcastle.Loggers
     /// </remarks>
     public class HtmlLogger : BuildLogger
     {
+        #region Public Fields
+
+        public const string LoggerName     = "Sandcastle.Loggers.HtmlLogger";
+
+        public const string LoggerFileName = "HtmlLogFile.htm";
+
+        #endregion
+
         #region Private Fields
 
         private bool _startedSection;
@@ -35,6 +42,7 @@ namespace Sandcastle.Loggers
         /// to the default properties or values.
         /// </summary>
         public HtmlLogger()
+            : this(LoggerFileName)
         {
         }
 
@@ -64,13 +72,26 @@ namespace Sandcastle.Loggers
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.HtmlLogger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.HtmlLogger</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.HtmlLogger";
+                return LoggerName;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return true;
             }
         }
 

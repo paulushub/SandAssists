@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
 using System.Collections.Generic;
 
 using System.Xml;
@@ -23,7 +24,6 @@ namespace Sandcastle.References
         #region Private Fields
 
         private BuildStyle         _style;
-        private BuildContext       _context;
         private BuildSettings      _settings;
         private ReferenceGroup     _group;
 
@@ -76,26 +76,6 @@ namespace Sandcastle.References
 
         #endregion
 
-        #region Protected Properties
-
-        /// <summary>
-        /// Gets the current settings of the build process.
-        /// </summary>
-        /// <value>
-        /// A <see cref="BuildSettings"/> specifying the current settings of the 
-        /// build process. This is <see langword="null"/> if the
-        /// configuration process is not initiated.
-        /// </value>
-        protected override BuildSettings Settings
-        {
-            get
-            {
-                return _settings;
-            }
-        }
-
-        #endregion
-
         #region Public Methods
 
         #region Initialize Methods
@@ -109,8 +89,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            _settings      = context.Settings;
-            _context       = context;
+            _settings = context.Settings;
             if (_settings == null || _settings.Style == null)
             {
                 this.IsInitialized = false;
@@ -131,7 +110,7 @@ namespace Sandcastle.References
             _componentConfigList = _engineSettings.ComponentConfigurations;
             if (_componentConfigList != null && _componentConfigList.Count != 0)
             {
-                _componentConfigList.Initialize(_context);
+                _componentConfigList.Initialize(context);
             }
 
             _style = _settings.Style;
@@ -160,8 +139,6 @@ namespace Sandcastle.References
                 _componentConfigList.Uninitialize();
             }
 
-            _settings            = null;
-            _context             = null;
             _componentConfigList = null;
 
             base.Uninitialize();
@@ -425,11 +402,11 @@ namespace Sandcastle.References
             xmlWriter.WriteStartElement("argument");    // start - argument/languages
             xmlWriter.WriteAttributeString("key", "languages");
 
-            WriteSyntaxTypes(xmlWriter, _settings.SyntaxUsage);
+            WriteSyntaxTypes(xmlWriter, _group.SyntaxUsage);
 
             xmlWriter.WriteEndElement();                // end - argument/languages
 
-            if (_settings.ShowUpdated)
+            if (_settings.ShowUpdatedDate)
             {
                 xmlWriter.WriteStartElement("argument");    // start - argument/RTMReleaseDate
                 xmlWriter.WriteAttributeString("key", "RTMReleaseDate");
@@ -448,15 +425,17 @@ namespace Sandcastle.References
         #region OnReferenceDataItem Method
 
         protected void OnReferenceDataItem(string keyword, XPathNavigator navigator)
-        {    
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+        {
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            string sandcastleDir = _context.SandcastleDirectory;
+            string sandcastleDir = context.SandcastleDirectory;
 
             //<data base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" />
             //<data files=".\reflection.xml" />
@@ -486,7 +465,7 @@ namespace Sandcastle.References
         {
             XmlWriter xmlWriter = navigator.InsertAfter();
 
-            this.WriteSyntaxGenerators(xmlWriter, _settings.SyntaxUsage);
+            this.WriteSyntaxGenerators(xmlWriter, _group.SyntaxUsage);
 
             xmlWriter.Close();
             navigator.DeleteSelf();
@@ -497,13 +476,21 @@ namespace Sandcastle.References
         #region OnReferenceContentsItem Method
 
         private void OnReferenceContentsItem(string keyword, XPathNavigator navigator)
-        {   
+        {
+            BuildContext context = this.Context;
+
             ReferenceGroupContext groupContext =
-                _context.GroupContexts[_group.Id] as ReferenceGroupContext;
+                context.GroupContexts[_group.Id] as ReferenceGroupContext;
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
+            }
+
+            BuildFramework framework = groupContext.Framework;
+            if (framework == null)
+            {
+                throw new BuildException("No valid framework is specified.");
             }
 
             //<data base="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\" 
@@ -512,23 +499,48 @@ namespace Sandcastle.References
             //<data files=".\Comments\TestLibrary.xml" />
             XmlWriter xmlWriter = navigator.InsertAfter();
 
-            BuildFramework framework = _settings.Framework;
-            if (framework != null)
-            {
-                //framework.WriteAssembler(_context, _group, xmlWriter);
-                //TODO - For now just write the default...
+            bool warnOverride   = false;
 
-                xmlWriter.WriteStartElement("data");  // start - data
-                xmlWriter.WriteAttributeString("base",
-                    @"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\");
-                xmlWriter.WriteAttributeString("recurse", "false");
-                xmlWriter.WriteAttributeString("files", "*.xml");
-                xmlWriter.WriteEndElement();          // end - data
+            BuildLoggerVerbosity loggerVerbosity = _settings.Logging.Verbosity;
+
+            if (loggerVerbosity == BuildLoggerVerbosity.Detailed ||
+                loggerVerbosity == BuildLoggerVerbosity.Diagnostic ||
+                loggerVerbosity == BuildLoggerVerbosity.Normal)
+            {
+                warnOverride = true;
+            }
+
+            CultureInfo culture = _settings.CultureInfo;
+            string langName     = culture.TwoLetterISOLanguageName;
+            IList<string> commentDirs = framework.CommentDirs;
+            if (commentDirs != null && commentDirs.Count != 0)
+            {
+                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment files. ");
+                for (int i = 0; i < commentDirs.Count; i++)
+                {
+                    string commentDir = commentDirs[i];
+                    if (!Directory.Exists(commentDir))
+                    {
+                        continue;
+                    }
+                    string langDir = Path.Combine(commentDir, langName);
+                    if (Directory.Exists(langDir))
+                    {
+                        commentDir = langDir;
+                    }
+                    xmlWriter.WriteStartElement("data");  // start - data                  
+                    xmlWriter.WriteAttributeString("base", commentDir);
+                    xmlWriter.WriteAttributeString("recurse", "false");
+                    xmlWriter.WriteAttributeString("warnOverride", warnOverride ? "true" : "false");
+                    xmlWriter.WriteAttributeString("files", "*.xml");
+                    xmlWriter.WriteEndElement();          // end - data                }
+                }
             }
 
             ReferenceContent contents = _group.Content;
             if (contents != null && contents.Count != 0)
             {
+                xmlWriter.WriteComment(" The following are the target comment files. ");
                 int itemCount = contents.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
@@ -549,9 +561,21 @@ namespace Sandcastle.References
                 }
             }
 
-            xmlWriter.Close();
-            navigator.DeleteSelf();
+            IList<string> linkCommentFiles = groupContext.LinkCommentFiles;
+            if (linkCommentFiles != null && linkCommentFiles.Count != 0)
+            {
+                xmlWriter.WriteComment(" The following are the dependent assembly comment files. ");
+                for (int i = 0; i < linkCommentFiles.Count; i++)
+                {
+                    xmlWriter.WriteStartElement("data");
+                    xmlWriter.WriteAttributeString("files", linkCommentFiles[i]);
+                    xmlWriter.WriteAttributeString("warnOverride", "false");
+                    xmlWriter.WriteEndElement();
+                }
+            }
 
+            xmlWriter.Close();
+            navigator.DeleteSelf(); 
         }
 
         #endregion

@@ -29,7 +29,7 @@ namespace Sandcastle.Conceptual
         [NonSerialized]
         private BuildFormat   _format;
         [NonSerialized]
-        private BuildSettings _settings;
+        private BuildContext _context;
 
         #endregion
 
@@ -236,9 +236,9 @@ namespace Sandcastle.Conceptual
                     return;
                 }
 
-                _settings = context.Settings;
-                Debug.Assert(_settings != null);
-                if (_settings == null)
+                _context = context;
+                Debug.Assert(context.Settings != null);
+                if (context.Settings == null)
                 {
                     this.IsInitialized = false;
                     return;
@@ -257,8 +257,8 @@ namespace Sandcastle.Conceptual
 
         public override void Uninitialize()
         {
-            _format   = null;
-            _settings = null;
+            _format  = null;
+            _context = null;
 
             base.Uninitialize();
         }
@@ -294,9 +294,11 @@ namespace Sandcastle.Conceptual
                 return false;
             }
 
+            BuildSettings settings = _context.Settings;
+
             writer.WriteStartElement("options");   // start - options
             writer.WriteAttributeString("locale", 
-                _settings.CultureInfo.Name.ToLower());
+                settings.CultureInfo.Name.ToLower());
             writer.WriteAttributeString("linkTarget",
                 "_" + _format.ExternalLinkTarget.ToString().ToLower());
             writer.WriteEndElement();              // end - options
@@ -311,56 +313,31 @@ namespace Sandcastle.Conceptual
             writer.WriteEndElement();               // end - targets
 
             BuildLinkType linkType = _format.LinkType;
+            string linkTypeText = linkType.ToString().ToLower();
 
-            IList<LinkContent> listTokens = group.LinkContents;
-            if (listTokens != null && listTokens.Count != 0)
+            IBuildNamedList<BuildGroupContext> groupContexts = _context.GroupContexts;
+            if (groupContexts != null && groupContexts.Count != 0)
             {
-                int contentCount = listTokens.Count;
-                for (int i = 0; i < contentCount; i++)
+                for (int i = 0; i < groupContexts.Count; i++)
                 {
-                    LinkContent content = listTokens[i];
-                    if (content == null || content.IsEmpty)
+                    BuildGroupContext groupContext = groupContexts[i];
+
+                    if (groupContext.GroupType != BuildGroupType.Reference)
                     {
                         continue;
                     }
 
-                    int itemCount = content.Count;
-                    for (int j = 0; j < itemCount; j++)
+                    string linkFile = groupContext["$ReflectionFile"];
+                    if (!String.IsNullOrEmpty(linkFile))
                     {
-                        LinkItem item = content[j];
-                        if (item == null || item.IsEmpty)
-                        {
-                            continue;
-                        }
-
                         writer.WriteStartElement("targets");
 
-                        if (item.IsDirectory)
-                        {
-                            writer.WriteAttributeString("base", item.LinkDirectory);
-                            writer.WriteAttributeString("recurse",
-                                item.Recursive.ToString());
-                            writer.WriteAttributeString("files", @"*.xml");
-                        }
-                        else
-                        {
-                            string linkFile = item.LinkFile;
-                            string linkDir = Path.GetDirectoryName(linkFile);
-                            if (String.IsNullOrEmpty(linkDir))
-                            {
-                                linkDir = @".\";
-                            }
-                            else
-                            {
-                                linkFile = Path.GetFileName(linkFile);
-                            }
-                            writer.WriteAttributeString("base", linkDir);
-                            writer.WriteAttributeString("recurse", "false");
-                            writer.WriteAttributeString("files", linkFile);
-                        }
+                        writer.WriteAttributeString("base", @".\");
+                        writer.WriteAttributeString("recurse", "false");
+                        writer.WriteAttributeString("files",
+                            @".\" + groupContext["$ReflectionFile"]);
+                        writer.WriteAttributeString("type", linkTypeText);
 
-                        writer.WriteAttributeString("type",
-                            linkType.ToString().ToLower());
                         writer.WriteEndElement();
                     }
                 }

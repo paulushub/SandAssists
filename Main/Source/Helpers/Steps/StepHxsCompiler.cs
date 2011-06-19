@@ -303,6 +303,7 @@ namespace Sandcastle.Steps
             }
             // If we need to keep the help sources, then just copy everything to
             // the output folder...
+            string helpOutput = Path.Combine(_helpDirectory, _helpFolder);
             if (_keepSources)
             {
                 string compiledDir = Path.Combine(workingDir, _helpFolder);
@@ -310,16 +311,17 @@ namespace Sandcastle.Steps
                 {
                     return processResult;
                 }
-                string outputDir = Path.Combine(_helpDirectory, _helpFolder);
-                if (Directory.Exists(outputDir))
+                if (Directory.Exists(helpOutput))
                 {
-                    DirectoryUtils.DeleteDirectory(outputDir, true);
+                    DirectoryUtils.DeleteDirectory(helpOutput, true);
                 }
-                Directory.Move(compiledDir, outputDir);
+                Directory.Move(compiledDir, helpOutput);
+
+                string destHelpPath = Path.Combine(helpOutput, _helpName + ".HxS");
+                context.AddOutput(BuildFormatType.HtmlHelp2, destHelpPath);
             }
             else  //...otherwise, just copy the essentials...
             {
-                string helpOutput = Path.Combine(_helpDirectory, _helpFolder);
                 if (!Directory.Exists(helpOutput))
                 {
                     Directory.CreateDirectory(helpOutput);
@@ -331,6 +333,7 @@ namespace Sandcastle.Steps
                 {
                     File.Copy(sourceHelpPath, destHelpPath, true);
                     File.SetAttributes(destHelpPath, FileAttributes.Normal);
+                    context.AddOutput(BuildFormatType.HtmlHelp2, destHelpPath);
                 }
                 // Copy the log file, if available...
                 sourceHelpPath = Path.ChangeExtension(sourceHelpPath, ".log");
@@ -428,6 +431,13 @@ namespace Sandcastle.Steps
             if (String.IsNullOrEmpty(workingDir))
             {
                 throw new BuildException("A working directory is required.");
+            }
+
+            BuildTocContext tocContext = context.TocContext;
+            string tocFile = tocContext.GetValue("$" + _buildFormat.Name);
+            if (!String.IsNullOrEmpty(tocFile) && File.Exists(tocFile))
+            {
+                _helpToc = Path.GetFileName(tocFile);
             }
 
             if (String.IsNullOrEmpty(_helpName) || String.IsNullOrEmpty(_helpToc))

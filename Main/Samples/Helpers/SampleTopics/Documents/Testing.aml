@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f105" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--<title>Quick Start</title>-->
+    <summary>
+        <para>
+            A quick start tutorial for the Sandcastle Conceptual Help 
+            Compiler System.
+        </para>        
+    </summary>
+    
+    <introduction>
+        <para>
+            Introducing the Conceptual Help...
+        </para>
+        <para>
+            <link xlink:href="6aca5da4-6f94-43a0-9817-5f413d16f110"></link>
+        </para>
+        <para>
+            <token>autoOutline</token>
+        </para>
+    </introduction>
+    
+    <section address="section1">
+        <title>Section - 1</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+            <para>
+                <externalLink>
+                    <linkText>Download WpfRibbonBrowserApplication Sample</linkText>
+                    <linkAlternateText>Download WpfRibbonBrowserApplication Sample</linkAlternateText>
+                    <linkUri>images/WpfRibbonBrowserApplication1.zip</linkUri>
+                </externalLink>
+            </para>
+            <!--<codeReference>
+                {source="..\Examples\WholeDemo.vb" region="Example 1" lang="vb"}
+            </codeReference>
+            <codeReference>
+                {source="..\Examples\WholeDemo.vb" lang="vb"}
+            </codeReference>
+            <codeReference>
+                {source="..\Class1.vb" region="Snippet #1" lang="vb";
+                source="..\Class1.vb" region="Snippet #2" lang="vb"}
+            </codeReference>-->              
+        </content>
+    </section>
+
+    <section address="section2">
+        <title>Section - 2</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+        </content>
+    </section>
+
+    <section address="section3">
+        <title>Section - 3</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+            <para>
+                <math address="MathTeXUser.-4">
+                    <![CDATA[
+\setlength{\unitlength}{.01in}%{.025in}
+\begin{picture}(200,75)
+\put(0,25){\vector(1,0){200}}
+\put(25,0){\vector(0,1){75}}
+\put(75,22){\line(0,1){6}}
+\put(125,22){\line(0,1){6}}
+\put(22,50){\line(1,0){6}}
+\thicklines
+\put(25,25){\line(1,0){50}}
+\put(75,50){\line(1,0){50}}
+\put(125,25){\line(1,0){72}}
+\put(17,50){\makebox(0,0){$1$}}
+\put(75,13){\makebox(0,0)[b]{$\pi$}}
+\put(125,13){\makebox(0,0)[b]{$2\pi$}}
+\put(195,13){\makebox(0,0)[b]{$t$}}
+\put(175,60){\makebox(0,0){$g(t)$}}
+\end{picture}                    ]]>
+                </math>
+            </para>
+        </content>
+    </section>
+    
+    <section address="section4">
+        <title>Section - 4</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+            <para>
+                <math address="MathTeXUser.-3">
+                    <![CDATA[
+\setlength{\unitlength}{1pt}
+
+\begin{picture}(\widthof{Hello World}, 10mm)
+\put(0, 0){\makebox(0,0)[lb]{Hello World}}%
+\put(0, \heightof{Hello World} + \fboxsep){%
+\line(1, 0){\widthof{Hello World}}%
+}%
+\put(\widthof{Hello World}, 10mm){%
+\line(0, -1){10mm}%
+}%
+\end{picture}
+                ]]>
+                </math>
+            </para>
+        </content>
+    </section>
+    
+    <section address="section5">
+        <title>Section - 5</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+            <para>
+                <math address="MathTeXUser.-1">
+                    <![CDATA[
+\xygraph{                                                        
+  !{0;/r2.0pc/:}                                                 
+  !P9"e"{~:{(5,0):}~*{
+   \xypolynode}~>{-}}[u]                      
+  !P5"d"{~:{(1.41421,0):}~*{
+   \xypolynode}~>{-}}[dd]               
+  !P4"a"{~:{(1.41421,0):}~*{
+   \xypolynode}~>{-}}[ddl]              
+  !P8"b"{~={45}~*{
+   \xypolynode}~>{-}}[rr]                           
+  !P8"c"{~={45}~*{
+   \xypolynode}~>{-}}                             
+  [ddl][u(0.1)]                                                  
+  !P3"f"{~*{
+   \xypolynode}~>{-}}                                   
+}
+                    ]]>
+                </math>
+            </para>
+        </content>
+    </section>
+
+    <section address="section6">
+        <title>Section - 6</title>
+        <content>
+            <para>
+                TODO: Hello, Conceptual Help!
+            </para>
+            <para>
+                <math address="MathTeXUser.-2">
+                    <![CDATA[
+\xygraph{
+  !{0;/r2.0pc/:}
+  !P3"a"{~>{}}
+  !P9"b"{~:{(1.3288,0):}~>{}}
+  !P3"c"{~:{(2.5,0):}~>{}}
+  !{\vunder~{"b2"}{"b1"}{"a1"}{"a3"}<{-1}}
+  !{\vcap~{"c1"}{"c1"}{"b4"}{"b2"}=<}
+  !{\vunder~{"b5"}{"b4"}{"a2"}{"a1"}<{-1}}
+  !{\vcap~{"c2"}{"c2"}{"b7"}{"b5"}=<}
+  !{\vunder~{"b8"}{"b7"}{"a3"}{"a2"}<{-1}}
+  !{\vcap~{"c3"}{"c3"}{"b1"}{"b8"}=<}
+}
+                    ]]>
+                </math>
+            </para>
+        </content>
+    </section>
+
+    <section address="section7">
+        <title>Section - 7</title>
+        <content>
+            <table>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Using User Commands</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <math address="MathTeX.-2">
+                                <![CDATA[
+   \mathbf{A} = 
+   \begin{pmatrix}
+      \quot{1}{1} & \exn{2} & \cdots & \exn{n - 1} 
+         & \exn{n}\\[10pt]
+      \quot{1}{2} & \quot{2}{2} & \cdots & \exn{n - 1} 
+         &\exn{n}\\
+      \hdotsfor{5}\\
+      \quot{1}{n} & \quot{2}{n} & \cdots & 
+       \quot{n - 1}{n} & \quot{n}{n}
+   \end{pmatrix} 
+    + \mathbf{I}_{n}
+                                ]]>
+                            </math>
+                        </para>
+                    </entry>
+                </row>
+            </table>
+        </content>
+    </section>
+
+    <relatedTopics>
+        
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>    

@@ -439,7 +439,7 @@ namespace Sandcastle.Components.Codes
                 return _referenceHighlighter;
             }
 
-            return null;
+            throw new InvalidOperationException();
         }
 
         public static void Create(string buildType, CodeHighlightMode mode)

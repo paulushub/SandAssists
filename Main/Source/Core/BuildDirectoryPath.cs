@@ -187,6 +187,40 @@ namespace Sandcastle
             return false;
         }
 
+        public static BuildDirectoryPath ReadLocation(XmlReader reader)
+        {
+            BuildDirectoryPath contentDir = null;
+
+            if (reader.IsEmptyElement)
+            {
+                return contentDir;
+            }
+
+            string startName = reader.Name;
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        contentDir = new BuildDirectoryPath();
+                        contentDir.ReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return contentDir;
+        }
+
         #endregion
 
         #region Private Methods

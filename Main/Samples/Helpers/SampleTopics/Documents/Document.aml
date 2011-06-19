@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2aca5da4-6f94-43a0-9817-5f413d16f101" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <summary>
+        <para>
+            A quick start tutorial for the Sandcastle Conceptual Help
+            Compiler System.    
+        </para>
+    </summary>
+    
+    <introduction>
+        <para>
+            Introducing the Conceptual Help...
+        </para>
+        <para>
+            <token>autoOutline</token>
+        </para>
+        <mediaLink>
+            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f801"/>
+        </mediaLink>
+        <para>
+            This will demonstrate the use of image maps...
+        </para>
+        <mediaLink>
+            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f813"/>
+        </mediaLink>         
+        <para>
+            This will demonstrate the use YouTube video...
+        </para>
+        <mediaLink>
+            <image xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f814"/>
+        </mediaLink>         
+    </introduction>
+    
+    <section address="section1">
+        <title>Section - Quick Start</title>
+        <content>
+            <para>
+                Hello, Conceptual Help!
+            </para>
+            <code language="c#">
+                <![CDATA[
+using System;
+using System.Text;
+using System.Collections.Generic;
+
+using System.Xml;
+using System.Xml.XPath;
+
+using Microsoft.Ddue.Tools;
+
+namespace Sandcastle.Components
+{
+    public sealed class AutoOutlineComponent : BuilderComponent
+    {
+        #region Private Fields
+
+        private CustomContext   _xsltContext;
+        private XPathExpression _xpathSelector;
+
+        #endregion
+
+        #region Constructors and Destructor
+
+        public AutoOutlineComponent(BuildAssembler assembler,
+            XPathNavigator configuration)
+            : base(assembler, configuration)
+        {
+            _xsltContext = new CustomContext();
+            _xsltContext.AddNamespace("ddue",
+                "http://ddue.schemas.microsoft.com/authoring/2003/5");
+
+            _xpathSelector = XPathExpression.Compile("/*//ddue:token[text()='autoOutline']");
+            _xpathSelector.SetContext(_xsltContext);
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public override void Apply(XmlDocument document, string key)
+        {
+            XPathNavigator docNavigator = document.CreateNavigator();
+
+            XPathNodeIterator iterator = docNavigator.Select(_xpathSelector);
+            XPathNavigator navigator = null;
+            XPathNavigator[] arrNavigator =
+                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
+
+            if (arrNavigator == null)
+            {
+                return;
+            }
+
+            int itemCount = arrNavigator.Length;
+            for (int i = 0; i < itemCount; i++)
+            {
+                navigator = arrNavigator[i];
+                if (navigator == null)
+                {
+                    continue;
+                }
+
+                string nodeText = navigator.Value;
+                if (!String.IsNullOrEmpty(nodeText))
+                {
+                    navigator.ReplaceSelf("<autoOutline xmlns=\"\"/>");
+                }
+            }
+        }
+
+        #endregion
+    }
+}
+                ]]>
+            </code>
+            
+            
+            <code language="c#">
+                <![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace TestingIris
+{
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}                ]]>
+            </code>
+
+            <code language="vb">
+                <![CDATA[
+Module ModuleMain
+
+    Sub Main()
+        ' 1. Set the working directory, which is the same as 
+        '    your project directory
+        Dim workingDir As String = "..\..\"
+
+        ' 2. Prepare the documents and project file paths 
+        Dim projectFile As String = Path.Combine(workingDir, "Project.xml")
+        Dim documentsDir As String = Path.Combine(workingDir, "Documents")
+
+        ' 3. Create a new instance of the conceptual project
+        Dim project As Project = New Project()
+
+        ' 4. Lets begin the build process...
+        Try
+            ' First signal a beginning of a build process
+            project.BeginInitialize(documentsDir, projectFile)
+
+            ' Second, initialize the working (or your project directory)
+            ' and build...
+            If project.Initialize(workingDir) Then
+
+                ' Third, build, only the batch build is implemented.
+                project.CompileBatch("Project.bat", True)
+            End If
+
+            ' Last, clean up...setting the parameter to "true" will delete
+            ' all the directories and files created for the build process.
+            ' NOTE: The HTML help files are not deleted.
+            project.EndInitialize(True)
+            project = Nothing
+        Catch ex As Exception
+            If project IsNot Nothing Then
+                project.EndInitialize(False)
+                project = Nothing
+                Console.WriteLine(ex.ToString())
+            End If
+        End Try
+
+    End Sub
+
+End Module
+                ]]>
+            </code>
+            
+            <code language="c#">
+                <codeFeaturedElement>using System;</codeFeaturedElement>
+                using System.Collections.Generic;
+                using System.Windows.Forms;
+
+                namespace TestingIris
+                {
+                    static class Program
+                    {
+                        // The main entry point for the application.
+                        [STAThread]
+                        static void Main()
+                        {
+                            Application.EnableVisualStyles("Nothing for now!");
+                            Application.SetCompatibleTextRenderingDefault(false);
+                            Application.Run(new MainForm());
+                        }
+                    }
+                }  
+                <placeholder>
+                    Hello, World
+                </placeholder>
+                <comment>
+                    This is a comment.
+                </comment>
+                <legacyItalic>I am here too!</legacyItalic>
+            </code>
+        </content>
+    </section>
+    
+    <section address="section2">
+        <title>Section - Quick Start 2</title>
+        <content>
+            <para>
+                Hello, Conceptual Help!
+            </para>
+            <codeReference>exampleId1#snippetId1</codeReference>
+        </content>
+    </section>
+    
+    <section address="section3">
+        <title>Change History</title>
+        <content>
+            <table>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Date</para>
+                        </entry>
+                        <entry>
+                            <para>History</para>
+                        </entry>
+                        <entry>
+                            <para>Reason</para>
+                        </entry>
+                   </row>
+                </tableHeader>                
+                <row>
+                    <entry>
+                        <para>June 4, 2011</para>
+                    </entry>
+                    <entry>
+                        <para>Added a section for change history</para>
+                    </entry>
+                    <entry>
+                        <para>Testing the change history support</para>
+                    </entry>
+               </row>
+                <row>
+                    <entry>
+                        <para>April 10, 2011</para>
+                    </entry>
+                    <entry>
+                        <para>Included YouTube video media link.</para>
+                    </entry>
+                    <entry>
+                        <para>Testing extended media link support.</para>
+                    </entry>
+               </row>
+            </table>
+        </content>
+    </section>
+
+    <relatedTopics>
+        <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f102"></link>
+        <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f103"></link>
+        <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f104"></link>
+        <link xlink:href="2aca5da4-6f94-43a0-9817-5f413d16f105"></link>
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>

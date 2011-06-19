@@ -262,6 +262,7 @@ namespace Sandcastle.ReflectionData
             if ((options & ReferenceLinkDisplayOptions.ShowContainer) > 0)
             {
                 TypeReference type = target.Type;
+
                 WriteType(type, options & ~ReferenceLinkDisplayOptions.ShowContainer, writer);
                 if (target.TargetType == TargetType.Method)
                 {
@@ -309,7 +310,12 @@ namespace Sandcastle.ReflectionData
             IDictionary<IndexedTemplateTypeReference, TypeReference> dictionary)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+            {
+                return;
+            }
+
+            //if (type == null)
+            //    throw new ArgumentNullException("type");
             if (writer == null)
                 throw new ArgumentNullException("writer");
 

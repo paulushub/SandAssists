@@ -48,6 +48,14 @@ namespace Sandcastle.ReflectionData
                     return cachedMsdnUrls[id];
                 }
 
+                string url = base.GetUrl(id);
+                if (!String.IsNullOrEmpty(url))
+                {
+                    cachedMsdnUrls[id] = url;
+
+                    return url;
+                }
+
                 return String.Empty;
             }
         }
@@ -58,6 +66,11 @@ namespace Sandcastle.ReflectionData
 
         public override string GetUrl(string id)
         {
+            if (cachedMsdnUrls.ContainsKey(id))
+            {
+                return cachedMsdnUrls[id];
+            }
+
             string url = base.GetUrl(id);
             if (!String.IsNullOrEmpty(url))
             {

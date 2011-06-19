@@ -12,7 +12,7 @@ using Sandcastle.Steps;
 namespace Sandcastle.Formats
 {
     [Serializable]
-    public class FormatChm : BuildFormat
+    public sealed class FormatChm : BuildFormat
     {
         #region Private Fields
 
@@ -86,6 +86,14 @@ namespace Sandcastle.Formats
 
         #region Public Properties
 
+        public override BuildFormatType FormatType
+        {
+            get
+            {
+                return BuildFormatType.HtmlHelp1;
+            }
+        }
+
         /// <summary>
         /// Gets a value specifying the name of the this output format.
         /// </summary>
@@ -125,11 +133,11 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override BuildFormatType FormatType
+        public override string TocFileName
         {
             get
             {
-                return BuildFormatType.HtmlHelp1;
+                return "HtmlHelpToc1.xml";
             }
         }
 
@@ -505,14 +513,10 @@ namespace Sandcastle.Formats
                         appLocale = Path.Combine(toolsDir, "SBAppLocale.exe");
                     }
                 }
-                string tocTopics = context["$HelpTocFile"];
-                string tempText  = context["$HelpHierarchicalToc"];
 
-                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
-                {
-                    tocTopics = context["$HelpHierarchicalTocFile"];
-                }
+                // If there is a customized or format specific TOC use it,
+                // otherwise, use the default...
+                string tocFile = context["$HelpTocFile"];
 
                 FormatChmOptions options = new FormatChmOptions();
                 options.ConfigFile       = Path.Combine(workingDir, "ChmBuilder.config");
@@ -522,7 +526,7 @@ namespace Sandcastle.Formats
                 options.WorkingDirectory = workingDir;
                 options.OutputDirectory  = Path.Combine(workingDir, helpFolder);
                 options.ProjectName      = helpName;
-                options.TocFile          = Path.Combine(workingDir, tocTopics);
+                options.TocFile          = Path.Combine(workingDir, tocFile);
                 
                 BuildMultiStep listSteps = new BuildMultiStep();
                 listSteps.LogTitle    = "Building document output format - " + this.Name;
@@ -536,7 +540,7 @@ namespace Sandcastle.Formats
                     "ChmBuilder.exe");
                 string arguments = String.Format(
                     "/project:{0} /html:Output\\html /lcid:{1} /toc:{2} /out:{3} /config:ChmBuilder.config",
-                    helpName, lcid, tocTopics, helpFolder);
+                    helpName, lcid, tocFile, helpFolder);
                 StepChmBuilder chmProcess = new StepChmBuilder(workingDir,
                     application, arguments);
                 chmProcess.LogTitle        = String.Empty;

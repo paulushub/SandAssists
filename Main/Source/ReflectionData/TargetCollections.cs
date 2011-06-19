@@ -9,11 +9,11 @@ namespace Sandcastle.ReflectionData
     {
         #region Private Fields
 
-        private ReferenceLinkType     _localLink;
-        private ReferenceLinkType     _msdnLink;
+        private ReferenceLinkType _localLink;
+        private ReferenceLinkType _msdnLink;
 
-        private MemoryTargetStorage   _localStorage;
-        private DatabaseTargetStorage _msdnStorage;
+        private TargetStorage _localStorage;
+        private TargetStorage _msdnStorage;
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace Sandcastle.ReflectionData
             _msdnLink  = ReferenceLinkType.None;
         }
 
-        public TargetCollections(MemoryTargetStorage local, DatabaseTargetStorage msdn,
+        public TargetCollections(TargetStorage local, TargetStorage msdn,
             ReferenceLinkType localLink, ReferenceLinkType msdnLink)
         {
             _localLink    = localLink;
@@ -68,7 +68,7 @@ namespace Sandcastle.ReflectionData
                     target = _localStorage[id];
                     if (target != null)
                     {
-                        target.type = _localLink;
+                        target.LinkType = _localLink;
 
                         return target;
                     }
@@ -78,7 +78,7 @@ namespace Sandcastle.ReflectionData
                     target = _msdnStorage[id];
                     if (target != null)
                     {
-                        target.type = _msdnLink;
+                        target.LinkType = _msdnLink;
 
                         return target;
                     }
@@ -104,7 +104,7 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public MemoryTargetStorage Local
+        public TargetStorage Local
         {
             get
             {
@@ -112,7 +112,7 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public DatabaseTargetStorage Msdn
+        public TargetStorage Msdn
         {
             get
             {

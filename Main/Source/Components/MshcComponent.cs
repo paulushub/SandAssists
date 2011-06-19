@@ -247,7 +247,7 @@ namespace Sandcastle.Components
                 }
             }
 
-            AddMHSMeta(document, head, MHSMetaName.SelfBranded, 
+            AddMHSMeta(document, head, MHSMetaName.SelfBranded,
                 _selfBranded.ToString().ToLower());
             AddMHSMeta(document, head, MHSMetaName.ContentType, 
                 MHSDefault.Reference);

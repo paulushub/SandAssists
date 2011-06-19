@@ -74,10 +74,14 @@
     <Compile Include="BuildContent.cs" />
     <Compile Include="BuildCredentials.cs" />
     <Compile Include="BuildDeployment.cs" />
+    <Compile Include="BuildDictionary.cs" />
     <Compile Include="BuildDirCopier.cs" />
     <Compile Include="BuildDirectoryPath.cs" />
     <Compile Include="BuildFileExts.cs" />
     <Compile Include="BuildFilePath.cs" />
+    <Compile Include="BuildFramework.cs" />
+    <Compile Include="BuildFrameworks.cs" />
+    <Compile Include="BuildFrameworkType.cs" />
     <Compile Include="BuildInsertType.cs" />
     <Compile Include="BuildMultiMap.cs" />
     <Compile Include="BuildMultiSet.cs" />
@@ -89,11 +93,20 @@
     <Compile Include="BuildPromptResult.cs" />
     <Compile Include="BuildStage.cs" />
     <Compile Include="BuildState.cs" />
+    <Compile Include="BuildProperties.cs" />
     <Compile Include="BuildSystem.cs" />
+    <Compile Include="BuildTagProvider.cs" />
+    <Compile Include="BuildTagResolver.cs" />
+    <Compile Include="BuildTuple.cs" />
     <Compile Include="BuildType.cs" />
     <Compile Include="Contents\CategoryContent.cs" />
     <Compile Include="Contents\CategoryItem.cs" />
     <Compile Include="Contents\CodeSnippetLanguage.cs" />
+    <Compile Include="Contents\CommentContent.cs" />
+    <Compile Include="Contents\CommentItem.cs" />
+    <Compile Include="Contents\CommentItemType.cs" />
+    <Compile Include="Contents\CommentPart.cs" />
+    <Compile Include="Contents\CommentPartType.cs" />
     <Compile Include="Contents\ConfiguratorContent.cs" />
     <Compile Include="Contents\ConfiguratorItem.cs" />
     <Compile Include="Contents\HierarchicalTocContent.cs" />
@@ -144,8 +157,6 @@
     <Compile Include="Contents\BibliographyItem.cs" />
     <Compile Include="Contents\DependencyContent.cs" />
     <Compile Include="Contents\DependencyItem.cs" />
-    <Compile Include="Contents\LinkContent.cs" />
-    <Compile Include="Contents\LinkItem.cs" />
     <Compile Include="Contents\MediaContent.cs" />
     <Compile Include="Contents\MediaItem.cs" />
     <Compile Include="Contents\MediaItemType.cs" />
@@ -194,21 +205,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Templates\TemplateCodeEntity.cs" />
-    <Compile Include="Templates\TemplateConceptual.cs" />
-    <Compile Include="Templates\TemplateErrorMessages.cs" />
-    <Compile Include="Templates\TemplateGlossary.cs" />
-    <Compile Include="Templates\TemplateHowTo.cs" />
-    <Compile Include="Templates\TemplateObject.cs" />
-    <Compile Include="Templates\TemplateOrientation.cs" />
-    <Compile Include="Templates\TemplateReferenceWithoutSyntax.cs" />
-    <Compile Include="Templates\TemplateReferenceWithSyntax.cs" />
-    <Compile Include="Templates\TemplateSample.cs" />
-    <Compile Include="Templates\TemplateTroubleshooting.cs" />
-    <Compile Include="Templates\TemplateUIReference.cs" />
-    <Compile Include="Templates\TemplateWalkthrough.cs" />
-    <Compile Include="Templates\TemplateWhitePaper.cs" />
-    <Compile Include="Templates\TemplateXmlReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -230,7 +226,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Diagrams\Templates.cd" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />

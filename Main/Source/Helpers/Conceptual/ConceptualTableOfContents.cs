@@ -29,8 +29,6 @@ namespace Sandcastle.Conceptual
         private string  _docEditor;
         private string  _docManager;
 
-        private ConceptualGroup _group;
-
         #endregion
 
         #region Constructors and Destructor
@@ -96,13 +94,12 @@ namespace Sandcastle.Conceptual
                     "ConceptualTableOfContents: The conceptual table of contents generator is not initialized.");
             }
 
+            _docWriter  = group.DocumentWriter;
+            _docEditor  = group.DocumentEditor;
+            _docManager = group.DocumentManager;
+
             BuildContext context = this.Context;
             BuildLogger logger   = context.Logger;
-
-            _group   = group;
-            _docWriter  = _group.DocumentWriter;
-            _docEditor  = _group.DocumentEditor;
-            _docManager = _group.DocumentManager;
 
             if (logger != null)
             {
@@ -110,7 +107,7 @@ namespace Sandcastle.Conceptual
                     BuildLoggerLevel.Info);
             }
 
-            WriteContents();
+            WriteContents(group);
 
             if (logger != null)
             {
@@ -125,18 +122,20 @@ namespace Sandcastle.Conceptual
 
         #region WriteContents Method
 
-        private void WriteContents()
+        private void WriteContents(ConceptualGroup group)
         {
-            BuildGroupContext groupContext = this.Context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            Guid fileAsset    = _group.DocumentID;
-            string workingDir = _group.WorkingDirectory;
-            ConceptualContent topicItems = _group.Content;
+            Guid fileAsset    = group.DocumentID;
+            string workingDir = context.WorkingDirectory;
+            ConceptualContent topicItems = group.Content;
             if (topicItems == null || topicItems.IsEmpty)
             {
                 return;

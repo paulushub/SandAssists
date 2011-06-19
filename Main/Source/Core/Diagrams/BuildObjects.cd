@@ -29,13 +29,6 @@
       <FileName>BuildExceptions.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Templates.TemplateObject" Collapsed="true">
-    <Position X="0.5" Y="3" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgBAAAAAAAAAQCAAAAAAAAAAAAgAEAABA=</HashCode>
-      <FileName>Templates\TemplateObject.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Sandcastle.Utilities.DirectoryCopier" Collapsed="true">
     <Position X="1.5" Y="4.25" Width="1.75" />
     <TypeIdentifier>
@@ -75,21 +68,21 @@
   <Class Name="Sandcastle.BuildDirectoryPath" Collapsed="true">
     <Position X="5" Y="0.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>IABAIAAAAAACAAIAgAgAAAQAAAAAAIAAAAAAAAEAABA=</HashCode>
+      <HashCode>IABAIBAAAAACAAIAgAgAgAQCAAQAAIAAAAAAgAEACBg=</HashCode>
       <FileName>BuildDirectoryPath.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildFilePath" Collapsed="true">
     <Position X="0.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAIAAAAAACAAIAgAgAAAQAAAAAAYAAAAAAAAEAABA=</HashCode>
+      <HashCode>IQAAIBAAAAACAAIAgAgAAAQCAAAEAYAAAAAAgEEACBA=</HashCode>
       <FileName>BuildFilePath.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildPathResolver" Collapsed="true">
     <Position X="5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BAAAIAASAAAAAQAAAAAAAAAAQACAAEAAAAAADABACAg=</HashCode>
+      <HashCode>BAACIAASCAAAAQAAAAAAEAAAQACEAEAAAAAADABACAg=</HashCode>
       <FileName>BuildPathResolver.cs</FileName>
     </TypeIdentifier>
   </Class>

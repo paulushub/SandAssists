@@ -41,16 +41,14 @@ namespace Sandcastle.References
             }
         }
 
-        protected ReferenceVisitor(string name, 
-            ReferenceEngineSettings engineSettings)
+        protected ReferenceVisitor(string name,
+            ReferenceConfiguration configuration)
             : this()
         {
             if (!String.IsNullOrEmpty(name))
             {
                 _name = name;
             }
-
-            _engineSettings = engineSettings;
         }
 
         protected ReferenceVisitor(ReferenceVisitor source)
@@ -62,6 +60,8 @@ namespace Sandcastle.References
             {
                 _name = String.Copy(_name);
             }
+
+            _engineSettings = source._engineSettings;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Sandcastle.References
             _isInitialized = false;
         }
 
-        public abstract void Visit(ReferenceDocument refDocument);
+        public abstract void Visit(ReferenceDocument referenceDocument);
 
         #endregion
                                  

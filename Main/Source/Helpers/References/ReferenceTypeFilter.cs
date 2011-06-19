@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.References
@@ -8,10 +9,16 @@ namespace Sandcastle.References
     [Serializable]
     public sealed class ReferenceTypeFilter : ReferenceFilter
     {
+        #region Public Fields
+
+        public const string TagName = "type";
+
+        #endregion
+
         #region Private Fields
 
         private bool _isAttributeType;
-        private List<ReferenceMemberFilter> _listMembers;
+        private BuildList<ReferenceMemberFilter> _listMembers;
 
         #endregion
 
@@ -19,7 +26,7 @@ namespace Sandcastle.References
 
         public ReferenceTypeFilter()
         {
-            _listMembers = new List<ReferenceMemberFilter>();
+            _listMembers = new BuildList<ReferenceMemberFilter>();
         }
 
         public ReferenceTypeFilter(string name, bool isAttributeType)
@@ -28,7 +35,7 @@ namespace Sandcastle.References
             _isAttributeType = isAttributeType;
             if (!isAttributeType)
             {
-                _listMembers = new List<ReferenceMemberFilter>();
+                _listMembers = new BuildList<ReferenceMemberFilter>();
             }
         }
 
@@ -38,7 +45,7 @@ namespace Sandcastle.References
             _isAttributeType = isAttributeType;
             if (!isAttributeType)
             {
-                _listMembers = new List<ReferenceMemberFilter>();
+                _listMembers = new BuildList<ReferenceMemberFilter>();
             }
         }
 
@@ -87,6 +94,71 @@ namespace Sandcastle.References
         /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string nodeText = reader.GetAttribute("name");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                this.Name = nodeText;
+
+                _isAttributeType = (nodeText.IndexOf("Attribute", 
+                    StringComparison.Ordinal) >= 0);
+            }
+            nodeText = reader.GetAttribute("expose");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                this.Expose = Convert.ToBoolean(nodeText);
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_listMembers == null)
+            {
+                _listMembers = new BuildList<ReferenceMemberFilter>();
+            }
+
+            string nodeName = null;
+            XmlNodeType nodeType = XmlNodeType.None;
+            while (reader.Read())
+            {
+                nodeName = reader.Name;
+                nodeType = reader.NodeType;
+
+                if (nodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(nodeName, ReferenceMemberFilter.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        ReferenceMemberFilter memberFilter = new ReferenceMemberFilter();
+                        memberFilter.ReadXml(reader);
+
+                        _listMembers.Add(memberFilter);
+                    }
+                }
+                else if (nodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(nodeName, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -95,10 +167,8 @@ namespace Sandcastle.References
         /// <param name="writer"></param>
         public override void WriteXml(XmlWriter writer)
         {
-            if (_isAttributeType == false && _listMembers == null)
-            {
-                return;
-            }
+            BuildExceptions.NotNull(writer, "writer");
+
             // For the attribute filter...
             // <type name="BindableAttribute" expose="true"/> 
 
@@ -107,13 +177,13 @@ namespace Sandcastle.References
             //   <member name="ToString" expose="true" />
             // </type>
             bool isExposed = this.Expose;
-            writer.WriteStartElement("type");
+            writer.WriteStartElement(TagName);
             writer.WriteAttributeString("name", this.Name);
             writer.WriteAttributeString("expose", isExposed.ToString());
 
             if (_isAttributeType == false)
             {
-                int itemCount = _listMembers.Count;
+                int itemCount =  _listMembers == null ? 0 : _listMembers.Count;
                 if (isExposed)
                 {
                     for (int i = 0; i < itemCount; i++)
@@ -148,6 +218,10 @@ namespace Sandcastle.References
         public override ReferenceFilter Clone()
         {
             ReferenceTypeFilter filter = new ReferenceTypeFilter(this);
+            if (_listMembers != null)
+            {
+                filter._listMembers = _listMembers.Clone();
+            }
 
             return filter;
         }

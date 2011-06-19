@@ -1,22 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildFormat" Collapsed="true">
-    <Position X="2.5" Y="3.75" Width="1.75" />
+    <Position X="1.75" Y="3" Width="1.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="LinkType" Type="Sandcastle.BuildLinkType" FixedFromPoint="true">
+    <AssociationLine Name="LinkType" Type="Sandcastle.BuildLinkType" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.688" Y="4.38" />
-        <Point X="3.688" Y="4.75" />
+        <Point X="2.656" Y="3.63" />
+        <Point X="2.656" Y="4.75" />
+        <Point X="3.75" Y="4.75" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.815" Y="0.11" />
-      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="ExternalLinkTarget" Type="Sandcastle.BuildLinkTargetType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.75" Y="3.315" />
+        <Point X="1.438" Y="3.315" />
+        <Point X="1.438" Y="4.25" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="ExternalLinkType" Type="Sandcastle.BuildLinkType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="3.438" />
+        <Point X="4.562" Y="3.438" />
+        <Point X="4.562" Y="4" />
+      </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>oQgAESgBkAEF1YCACAAEAEXAQACARACYAECCJoICAFg=</HashCode>
+      <HashCode>oQgAEShBkAEV1ICACKAUAAXIQACAwQAZAUACJoACAFg=</HashCode>
       <FileName>BuildFormat.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -25,69 +37,58 @@
       <Property Name="ExternalLinkTarget" />
       <Property Name="ExternalLinkType" />
     </ShowAsAssociation>
-  </Class>
-  <Class Name="Sandcastle.Formats.FormatAjaxHtm" Collapsed="true">
-    <Position X="1" Y="0.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABIAAAAAAAABAAAAAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>Formats\FormatAjaxHtm.cs</FileName>
-    </TypeIdentifier>
+    <Lollipop Position="0.992" />
   </Class>
   <Class Name="Sandcastle.Formats.FormatChm" Collapsed="true">
-    <Position X="1" Y="2.5" Width="1.5" />
+    <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAiAACAAAECRoSAFEEAAADIQAlkAJCAAQOAAiIAABI=</HashCode>
+      <HashCode>gIEiAACAAAECRoSAFEEAAATIQAlkgZCAAQMAAiAAABI=</HashCode>
       <FileName>Formats\FormatChm.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Formats.FormatHxs" Collapsed="true">
-    <Position X="4.25" Y="2.5" Width="1.5" />
+    <Position X="3.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAICAEIEgEECBYGoAAAAhIDEAAFAEAmABAKAAgYEABI=</HashCode>
+      <HashCode>gAMCBEIEoEECFYGsgAAAhITEAKFEkQkABAIAAgQEABI=</HashCode>
       <FileName>Formats\FormatHxs.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Formats.FormatHtm" Collapsed="true">
-    <Position X="1" Y="1.5" Width="1.75" />
+  <Class Name="Sandcastle.Formats.FormatWeb" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABICAAAAAAABAAAAAAACAAACAAgIAABA=</HashCode>
-      <FileName>Formats\FormatHtm.cs</FileName>
+      <HashCode>AAAgAAAAAQAgBICSABAAAARAAIAAgwAKAAAAAgAABhA=</HashCode>
+      <FileName>Formats\FormatWeb.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Formats.FormatAspx" Collapsed="true">
-    <Position X="4" Y="1.5" Width="2" />
+  <Class Name="Sandcastle.Formats.FormatMhv" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABICAAAAAAABAAAAAAACAAACAAgIAABA=</HashCode>
-      <FileName>Formats\FormatAspx.cs</FileName>
+      <HashCode>AAAAAAAAAAEABICIAIAAAAVAAAAAoQAQAAAIMggAABA=</HashCode>
+      <FileName>Formats\FormatMhv.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Formats.FormatAjaxAspx" Collapsed="true">
-    <Position X="4" Y="0.5" Width="2" />
+  <Struct Name="Sandcastle.BuildFormatType">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <Members>
+      <Field Name="_typeValue" Hidden="true" />
+      <Field Name="CustomPrefix" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABIAAAAAAAABAAAAAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>Formats\FormatAjaxAspx.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Enum Name="Sandcastle.BuildLinkTargetType">
-    <Position X="0.5" Y="5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAAAAAAABQAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>BuildLinkTargetType.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Sandcastle.BuildLinkType">
-    <Position X="2.5" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ABAAAAAAAQAAAAAAAAABAAAAAABAAAAAAAEAAAEAAAA=</HashCode>
-      <FileName>BuildLinkType.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="Sandcastle.BuildFormatType">
-    <Position X="4.5" Y="5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAQAAgAAAAAAAAAAAAAAAAAEAAAAAAgAAAAAEAAAA=</HashCode>
+      <HashCode>AIAggAAhAAAAAAQEgACABgAAAAAAAIAIAAIgQEkAB2A=</HashCode>
       <FileName>BuildFormatType.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Struct>
+  <Enum Name="Sandcastle.BuildLinkTargetType">
+    <Position X="0.5" Y="4.25" Width="1.75" />
+    <TypeIdentifier />
+  </Enum>
+  <Enum Name="Sandcastle.BuildLinkType">
+    <Position X="3.75" Y="4" Width="1.5" />
+    <TypeIdentifier />
   </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

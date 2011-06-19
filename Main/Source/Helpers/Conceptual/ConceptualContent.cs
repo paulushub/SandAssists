@@ -710,7 +710,7 @@ namespace Sandcastle.Conceptual
                     if (String.Equals(nodeName, "location", 
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        this.ReadLocation(reader);
+                        _contentDir = BuildDirectoryPath.ReadLocation(reader);
                     }
                     else if (String.Equals(nodeName, "categories", 
                         StringComparison.OrdinalIgnoreCase))
@@ -731,44 +731,6 @@ namespace Sandcastle.Conceptual
                 else if (nodeType == XmlNodeType.EndElement)
                 {
                     if (String.Equals(reader.Name, "conceptualContent"))
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region ReadLocation Method
-
-        private void ReadLocation(XmlReader reader)
-        {
-            if (reader.IsEmptyElement)
-            {
-                return;
-            }
-
-            if (_contentDir == null)
-            {
-                _contentDir = new BuildDirectoryPath();
-            }
-
-            string startName = reader.Name;
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element)
-                {   
-                    if (String.Equals(reader.Name, BuildDirectoryPath.TagName,
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        _contentDir.ReadXml(reader);
-                    }
-                }
-                else if (reader.NodeType == XmlNodeType.EndElement)
-                {
-                    if (String.Equals(reader.Name, startName,
-                        StringComparison.OrdinalIgnoreCase))
                     {
                         break;
                     }

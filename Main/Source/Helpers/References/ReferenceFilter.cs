@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Sandcastle.References
 {
     [Serializable]
-    public abstract class ReferenceFilter : BuildFilter<ReferenceFilter>
+    public abstract class ReferenceFilter : BuildFilter<ReferenceFilter>,
+        IBuildNamedItem
     {
         #region Private Fields
 
-        private bool _isExpose;
+        private bool   _isExpose;
         private string _name;
 
         #endregion
@@ -17,19 +16,16 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         protected ReferenceFilter()
+            : this(Guid.NewGuid().ToString(), true)
         {
-            _isExpose   = true;
         }
 
         protected ReferenceFilter(string name)
-            : this()
+            : this(name, true)
         {
-            _name     = name;
-            _isExpose = true;
         }
 
         protected ReferenceFilter(string name, bool isExposed)
-            : this()
         {
             _name     = name;
             _isExpose = isExposed;
@@ -39,7 +35,7 @@ namespace Sandcastle.References
             : base(source)
         {
             _isExpose = source._isExpose;
-            _name = source._name;
+            _name     = source._name;
 
             if (_name != null)
             {
@@ -56,11 +52,15 @@ namespace Sandcastle.References
             get;
         }
 
-        public virtual string Name
+        public string Name
         {
             get
             {
                 return _name;
+            }
+            protected set
+            {
+                _name = value;
             }
         }
 
@@ -69,8 +69,7 @@ namespace Sandcastle.References
             get
             {
                 return _isExpose;
-            }
-
+            } 
             set
             {
                 _isExpose = value;

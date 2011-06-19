@@ -154,7 +154,7 @@ namespace ANamespace
             {
                 _aName = value;
             }
-        }
+        }           
 
         internal void UpdateName(string name)
         {

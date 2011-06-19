@@ -88,5 +88,25 @@ namespace Sandcastle.ReflectionData
         }
 
         #endregion
+
+        #region IDisposable Members
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_memoryResolver != null)
+            {
+                _memoryResolver.Dispose();
+                _memoryResolver = null;
+            }
+            if (_databaseResolver != null)
+            {
+                _databaseResolver.Dispose();
+                _databaseResolver = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }

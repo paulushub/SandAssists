@@ -13,6 +13,7 @@ namespace Sandcastle
         private bool         _continueOnError;
         private string       _name;
 
+        [NonSerialized]
         private BuildContext _context;
 
         #endregion

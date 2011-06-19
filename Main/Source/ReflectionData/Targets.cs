@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Sandcastle.ReflectionData
 {
+    [Serializable]
     public enum TargetType
     {
         None        = 0,
@@ -34,9 +35,11 @@ namespace Sandcastle.ReflectionData
 
         internal string    id;
         internal string    container;
-        internal string    file; 
+        internal string    file;
 
-        internal ReferenceLinkType type;
+        internal ReferenceLinkType defaultType;
+        [NonSerialized]
+        private ReferenceLinkType type;
 
         #endregion
 
@@ -92,13 +95,17 @@ namespace Sandcastle.ReflectionData
             {
                 return type;
             }
+            set
+            {
+                type = value;
+            }
         }
 
         public ReferenceLinkType DefaultLinkType
         {
             get
             {
-                return type;
+                return defaultType;
             }
         }
 

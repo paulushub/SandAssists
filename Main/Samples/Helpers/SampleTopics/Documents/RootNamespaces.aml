@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="d36e744f-c053-4e94-9ac9-b1ee054d8de1" revisionNumber="1">
+    <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+        <para>
+            Introducing the Conceptual Help...
+        </para>
+    </introduction>
+    
+    <section address="section1">
+        <title>Section - Quick Start 1</title>
+        <content>
+            <para>
+                Hello, Conceptual Help!
+            </para>
+        </content>
+    </section>
+    
+    <section address="section2">
+        <title>Namespaces</title>
+        <content>
+            <para>
+                The following are the namespaces defined in this test library.
+            </para>
+            <table>
+                <tableHeader>
+                    <row>
+                        <entry>
+                            <para>Namespace</para>
+                        </entry>
+                        <entry>
+                            <para>Description</para>
+                        </entry>
+                    </row>
+                </tableHeader>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>A sample namespace documentation using conceptual topic.</para>
+                        <alert class="note">
+                            <para>This can be enhanced with all the features available in the conceptual help</para>                            
+                        </alert>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Linux</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Linux.Charts</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Linux.Games</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.MacOSX</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.MacOSX.Charts</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.MacOSX.Games</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Unix</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Unix.Diagrams</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Windows</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Windows.Charts</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Products.Platform.Windows.Games</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Sales</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Sales.Charts</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Sales.Diagrams</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Sales.Games</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Technical</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Technical.Charts</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Technical.Diagrams</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        <para>
+                            <codeEntityReference qualifyHint="true">N:Company.Supports.Technical.Games</codeEntityReference>
+                        </para>
+                    </entry>
+                    <entry>
+                        <para>...</para>
+                    </entry>
+                </row>
+            </table>
+        </content>
+    </section>
+
+    <relatedTopics>
+    </relatedTopics>
+</developerConceptualDocument>
+</topic>

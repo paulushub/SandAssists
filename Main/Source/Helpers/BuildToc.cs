@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -18,15 +19,11 @@ namespace Sandcastle
     /// table of content processing.
     /// </remarks>
     [Serializable]
-    public class BuildToc : BuildOptions<BuildToc>
+    public sealed class BuildToc : BuildOptions<BuildToc>
     {
         #region Public Static Fields
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public const string HelpToc         = "HelpToc.xml";
-        public const string HierarchicalToc = "HierarchicalToc.xml";
+        public const string TagName = "tocOptions";
 
         #endregion
 
@@ -65,6 +62,7 @@ namespace Sandcastle
         public BuildToc(BuildToc source)
             : base(source)
         {
+            _tocContent = source._tocContent;
         }
 
         #endregion
@@ -84,6 +82,17 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string TocFile
+        {
+            get
+            {
+                return "DocumentToc.xml";
+            }
+        }
+
         public TocContent Content
         {
             get
@@ -92,7 +101,10 @@ namespace Sandcastle
             }
             set
             {
-                _tocContent = value;
+                if (value != null)
+                {
+                    _tocContent = value;
+                }
             }
         }
 
@@ -108,6 +120,87 @@ namespace Sandcastle
         public override void Uninitialize()
         {
             base.Uninitialize();
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (_tocContent == null)
+            {
+                _tocContent = new TocContent();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, TocContent.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        _tocContent.ReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - toc
+
+            if (_tocContent != null)
+            {
+                _tocContent.WriteXml(writer);
+            }
+
+            writer.WriteEndElement();           // end - toc
         }
 
         #endregion

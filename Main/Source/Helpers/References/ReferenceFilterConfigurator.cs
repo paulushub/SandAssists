@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
 
+using Mono.Cecil;
 using Sandcastle.Contents;
 
 namespace Sandcastle.References
@@ -17,15 +18,19 @@ namespace Sandcastle.References
 
         public const string KeywordNamer           = "referenceNamer";
         public const string KeywordAddins          = "referenceAddins";
+        public const string KeywordOptions         = "referenceOptions";
         public const string KeywordPlatform        = "referencePlatform";
         public const string KeywordResolver        = "referenceResolver";
         public const string KeywordApiFilter       = "referenceApiFilter";
         public const string KeywordAttributeFilter = "referenceAttributeFilter";
 
+        public const string DefaultApiFilterFile   = "MRefApiFilter.xml";
+
         #endregion
 
         #region Private Fields
 
+        private string _sourceId;
         private string _sourceFile;
         private string _destFile;
         private string _defaultAttrFile;
@@ -33,6 +38,8 @@ namespace Sandcastle.References
         private BuildSettings   _settings;
         private BuildContext    _context;
         private ReferenceGroup  _group;
+
+        private ReferenceRootFilter     _compilerRootFilter;
 
         private ConfiguratorContent     _configContent;
         [NonSerialized]
@@ -48,6 +55,12 @@ namespace Sandcastle.References
         public ReferenceFilterConfigurator()
         {
             _configContent = new ConfiguratorContent();
+        }
+
+        public ReferenceFilterConfigurator(string sourceId)
+            : this()
+        {
+            _sourceId = sourceId;
         }
 
         #endregion
@@ -111,6 +124,18 @@ namespace Sandcastle.References
             _context         = context;
             _defaultAttrFile = defaultAttrFile;
 
+            if (!String.IsNullOrEmpty(_defaultAttrFile) && 
+                File.Exists(_defaultAttrFile))
+            {
+                string configDir = Path.GetDirectoryName(_defaultAttrFile);
+                string apiFilterFile = Path.Combine(configDir, DefaultApiFilterFile);
+                if (File.Exists(apiFilterFile))
+                {
+                    _compilerRootFilter = new ReferenceRootFilter();
+                    _compilerRootFilter.Load(apiFilterFile);
+                }
+            }
+
             // 1. The reference ...
             this.RegisterItem(KeywordNamer,
                 new Action<string, XPathNavigator>(OnNamerItem));
@@ -124,9 +149,12 @@ namespace Sandcastle.References
             this.RegisterItem(KeywordResolver,
                 new Action<string, XPathNavigator>(OnResolverItem));
             // 5. The reference ...
+            this.RegisterItem(KeywordOptions,
+                new Action<string, XPathNavigator>(OnOptionsItem));
+            // 6. The reference ...
             this.RegisterItem(KeywordApiFilter,
                 new Action<string, XPathNavigator>(OnApiFilterItem));
-            // 6. The reference ...
+            // 7. The reference ...
             this.RegisterItem(KeywordAttributeFilter,
                 new Action<string, XPathNavigator>(OnAttributeFilterItem));
 
@@ -245,19 +273,19 @@ namespace Sandcastle.References
 
             if (_engineSettings.Namer == ReferenceNamer.Whidbey)
             {   
-                XmlWriter xmlWriter = navigator.InsertAfter();
+                XmlWriter writer = navigator.InsertAfter();
 
                 //...
                 // <namer type="Microsoft.Ddue.Tools.Reflection.OrcasNamer" 
                 //   assembly="Microsoft.Ddue.Tools.Reflection.dll" />
-                xmlWriter.WriteStartElement("namer");
-                xmlWriter.WriteAttributeString("type",
+                writer.WriteStartElement("namer");
+                writer.WriteAttributeString("type",
                     "Microsoft.Ddue.Tools.Reflection.WhidbeyNamer");
-                xmlWriter.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
                     @"ProductionTools\MRefBuilder.exe"));
-                xmlWriter.WriteEndElement();
+                writer.WriteEndElement();
 
-                xmlWriter.Close();
+                writer.Close();
             }
 
             navigator.DeleteSelf();
@@ -269,15 +297,35 @@ namespace Sandcastle.References
 
         private void OnAddinsItem(string keyword, XPathNavigator navigator)
         {
-            //XmlWriter xmlWriter = navigator.InsertAfter();
-
             //...
             //<addins>
             //  <addin type="Microsoft.Ddue.Tools.XamlAttachedMembersAddIn" 
             //       assembly="MRefBuilder.exe" />
             //</addins>
 
-            //xmlWriter.Close();
+            string sandcastleDir = _context.SandcastleDirectory;
+
+            XmlWriter writer = navigator.InsertAfter();
+
+            writer.WriteStartElement("addins");  // start: addins
+
+            // For the extension method addin...
+            writer.WriteStartElement("addin");   // start: addin
+            writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ExtensionMethodAddIn");
+            writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                @"ProductionTools\MRefBuilder.exe"));
+            writer.WriteEndElement();            // end: addin
+
+            // For the XAML attached members addin...
+            writer.WriteStartElement("addin");   // start: addin
+            writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.XamlAttachedMembersAddIn");
+            writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                @"ProductionTools\MRefBuilder.exe"));
+            writer.WriteEndElement();            // end: addin
+
+            writer.WriteEndElement();            // end: addins
+
+            writer.Close();
             navigator.DeleteSelf();
         }
 
@@ -287,20 +335,114 @@ namespace Sandcastle.References
 
         private void OnPlatformItem(string keyword, XPathNavigator navigator)
         {
-            BuildFramework framework = _settings.Framework;
+            ReferenceGroupContext groupContext = 
+                _context.GroupContexts[_group.Id] as ReferenceGroupContext;
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
 
-            XmlWriter xmlWriter = navigator.InsertAfter();
+            ReferenceGroupContext sourceContext = groupContext;
+            if (!String.IsNullOrEmpty(_sourceId))
+            {
+                sourceContext = groupContext.Contexts[_sourceId] as ReferenceGroupContext;
+            }
+            if (sourceContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            BuildFramework framework = sourceContext.Framework;
+            if (framework == null)
+            {
+                throw new BuildException("No valid framework is specified.");
+            }
+
+            // For Silver, we use the equivalent .NET Framework version, since
+            // the current reflection tool does not directly support Silverlight.
+            if (framework.FrameworkType.IsSilverlight)
+            {
+                int major = framework.Version.Major;
+
+                BuildFramework netFramework = null;
+                switch (major)
+                {
+                    case 4:
+                        netFramework = BuildFrameworks.GetFramework(
+                            major, false);
+                        if (netFramework == null)
+                        {
+                            major = major - 1;
+                            goto case 3;
+                        }
+                        break;
+                    case 3:
+                        netFramework = BuildFrameworks.GetFramework(
+                            major, 5, false);
+                        if (netFramework == null)
+                        {
+                            netFramework = BuildFrameworks.GetFramework(
+                                major, false);
+                        }
+                        if (netFramework == null)
+                        {
+                            major = major - 1;
+                            goto case 2;
+                        }
+                        break;
+                    case 2:
+                        netFramework = BuildFrameworks.GetFramework(
+                            major, false);
+                        break;
+                    default:
+                        throw new BuildException(
+                            "The specified Silverlight version is not supported.");
+                }
+
+                if (netFramework == null)
+                {
+                    throw new BuildException(
+                        "The equivalent .NET Framework for the specified Silverlight version cannot be found.");
+                }   
+
+                framework = netFramework;
+            }
+
+            Version version = framework.Version;
+
+            XmlWriter writer = navigator.InsertAfter();
 
             // For now, write the default...
             // <platform version="2.0" 
             //   path="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\" />
-            xmlWriter.WriteStartElement("platform");
-            xmlWriter.WriteAttributeString("version", framework.Version.ToString(2));
-            xmlWriter.WriteAttributeString("path", String.Format(
-                @"%SystemRoot%\Microsoft.NET\Framework\{0}\", framework.Folder));
-            xmlWriter.WriteEndElement();
+            writer.WriteStartElement("platform");
+            if (version.Major > 2)
+            {
+                writer.WriteAttributeString("version", "2.0");
+                if (version.Major == 3)
+                {
+                    Version version2 = BuildFrameworks.GetVersion(2, -1, false);
 
-            xmlWriter.Close();
+                    writer.WriteAttributeString("path", String.Format(
+                        @"%SystemRoot%\Microsoft.NET\Framework\v{0}\", version2.ToString(3)));
+                }
+                else
+                {
+                    writer.WriteAttributeString("path", String.Format(
+                        @"%SystemRoot%\Microsoft.NET\Framework\{0}\", framework.Folder));
+                }
+            }
+            else
+            {
+                writer.WriteAttributeString("version", version.ToString(2));
+                writer.WriteAttributeString("path", String.Format(
+                    @"%SystemRoot%\Microsoft.NET\Framework\{0}\", framework.Folder));
+            }
+            writer.WriteEndElement();
+
+            writer.Close();
             navigator.DeleteSelf();
         }
 
@@ -310,22 +452,131 @@ namespace Sandcastle.References
 
         private void OnResolverItem(string keyword, XPathNavigator navigator)
         {
+            ReferenceGroupContext groupContext =
+                _context.GroupContexts[_group.Id] as ReferenceGroupContext;
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            ReferenceGroupContext sourceContext = groupContext;
+            if (!String.IsNullOrEmpty(_sourceId))
+            {
+                sourceContext = groupContext.Contexts[_sourceId] as ReferenceGroupContext;
+            }
+            if (sourceContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             string sandcastleDir = _context.SandcastleDirectory;
 
-            XmlWriter xmlWriter = navigator.InsertAfter();
+            string assistComponents = null;
+            string sandcastleAssist = _settings.SandAssistDirectory;
+            if (!String.IsNullOrEmpty(sandcastleAssist) &&
+                Directory.Exists(sandcastleAssist))
+            {
+                // If the Sandcastle Assist component assembly is in the same 
+                // directory as the Sandcastle Helpers...
+                string tempText = Path.Combine(sandcastleAssist,
+                    "Sandcastle.Components.dll");
+                if (File.Exists(tempText))
+                {
+                    assistComponents = tempText;
+                }
+            }
+
+            XmlWriter writer = navigator.InsertAfter();
 
             // For now, write the default...
             // <resolver type="Microsoft.Ddue.Tools.Reflection.AssemblyResolver" 
             //   assembly="%DXROOT%\ProductionTools\MRefBuilder.exe" use-gac="false" />
-            xmlWriter.WriteStartElement("resolver");
-            xmlWriter.WriteAttributeString("type", 
-                "Microsoft.Ddue.Tools.Reflection.AssemblyResolver");
-            xmlWriter.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
-                @"ProductionTools\MRefBuilder.exe"));
-            xmlWriter.WriteAttributeString("use-gac", "false");
-            xmlWriter.WriteEndElement();
+            writer.WriteStartElement("resolver");  
 
-            xmlWriter.Close();
+            if (!String.IsNullOrEmpty(assistComponents) &&
+                File.Exists(assistComponents))
+            {
+                writer.WriteAttributeString("type",
+                    "Sandcastle.Reflections.RedirectAssemblyResolver");
+                writer.WriteAttributeString("assembly", assistComponents);
+                writer.WriteAttributeString("use-gac", "false");
+
+                IList<DependencyItem> items = sourceContext.BindingRedirects;
+
+                if (items != null && items.Count != 0)
+                {
+                    writer.WriteStartElement("bindingRedirects");  
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        DependencyItem item = items[i];
+                        if (item.IsRedirected)
+                        {
+                            writer.WriteStartElement("bindingRedirect");
+
+                            string strongName = item.StrongName;
+                            if (String.IsNullOrEmpty(strongName))
+                            {
+                                AssemblyDefinition itemAssembly = AssemblyDefinition.ReadAssembly(
+                                   item.Location);
+
+                                strongName = itemAssembly.FullName;
+                            }
+                            writer.WriteAttributeString("from", item.RedirectStrongName);
+                            writer.WriteAttributeString("to", strongName);
+
+                            writer.WriteEndElement();
+                        }
+                    }
+                    writer.WriteEndElement();
+                }
+            }
+            else
+            {
+                writer.WriteAttributeString("type",
+                    "Microsoft.Ddue.Tools.Reflection.AssemblyResolver");
+                writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                    @"ProductionTools\MRefBuilder.exe"));
+                writer.WriteAttributeString("use-gac", "false");
+            }
+            
+            writer.WriteEndElement();
+
+            writer.Close();
+            navigator.DeleteSelf();
+        }
+
+        #endregion
+
+        #region OnOptionsItem Method
+
+        private void OnOptionsItem(string keyword, XPathNavigator navigator)
+        {
+            //<!-- Whether to include protected sealed members -->
+            //<protectedSealed expose="false" /> 
+            //<!-- Whether to include "no-PIA" COM types, aka types marked 
+            //     with TypeIdentifierAttribute and CompilerGeneratedAttribute -->
+            //<noPIA expose="false" />  
+
+            string sandcastleDir = _context.SandcastleDirectory;
+
+            XmlWriter writer = navigator.InsertAfter();
+
+            // For the extension method addin...
+            writer.WriteComment(" Whether to include protected sealed members ");
+            writer.WriteStartElement("protectedSealed");   // start: protectedSealed
+            writer.WriteAttributeString("expose", "true");
+            writer.WriteEndElement();                      // end: protectedSealed
+
+            // For the XAML attached members addin...
+            writer.WriteComment(
+                " Whether to include \"no-PIA\" COM types, aka types marked with TypeIdentifierAttribute and CompilerGeneratedAttribute ");
+            writer.WriteStartElement("noPIA");   // start: noPIA
+            writer.WriteAttributeString("expose", "false");
+            writer.WriteEndElement();            // end: noPIA
+
+            writer.Close();
             navigator.DeleteSelf();
         }
 
@@ -335,7 +586,7 @@ namespace Sandcastle.References
 
         private void OnApiFilterItem(string keyword, XPathNavigator navigator)
         {
-            XmlWriter xmlWriter = navigator.InsertAfter();
+            XmlWriter writer = navigator.InsertAfter();
 
             // <apiFilter expose="true">
             //   <namespace name="System" expose="true">
@@ -344,8 +595,20 @@ namespace Sandcastle.References
             //     </type>
             //   </namespace>
             // </apiFilter>
-            xmlWriter.WriteStartElement("apiFilter");
-            xmlWriter.WriteAttributeString("expose", "true");
+            writer.WriteStartElement("apiFilter");
+            writer.WriteAttributeString("expose", "true");
+
+            // Handle compiler and Generator outputs
+            if (_compilerRootFilter != null && _compilerRootFilter.Count != 0)
+            {
+                int itemNamespaces = _compilerRootFilter.Count;
+                for (int i = 0; i < itemNamespaces; i++)
+                {
+                    ReferenceNamespaceFilter namespaceFilter = _compilerRootFilter[i];
+                    namespaceFilter.WriteXml(writer);
+                }
+            }
+
             ReferenceRootFilter typeFilters = _group.TypeFilters;
 
             if (typeFilters != null && typeFilters.Count != 0)
@@ -354,17 +617,13 @@ namespace Sandcastle.References
                 for (int i = 0; i < itemNamespaces; i++)
                 {
                     ReferenceNamespaceFilter namespaceFilter = typeFilters[i];
-                    if (namespaceFilter == null)
-                    {
-                        continue;
-                    }
-                    namespaceFilter.WriteXml(xmlWriter);
+                    namespaceFilter.WriteXml(writer);
                 }
             }
 
-            xmlWriter.WriteEndElement();
+            writer.WriteEndElement();
 
-            xmlWriter.Close();
+            writer.Close();
             navigator.DeleteSelf();
         }
 
@@ -379,7 +638,7 @@ namespace Sandcastle.References
             // If there is customization of the attribute filters, we use it...
             if (attributeFilters != null && attributeFilters.Count != 0)
             {
-                XmlWriter xmlWriter = navigator.InsertAfter();
+                XmlWriter writer = navigator.InsertAfter();
 
                 //<attributeFilter expose="true">
                 //  <namespace name="System.Diagnostics" expose="false">
@@ -387,8 +646,8 @@ namespace Sandcastle.References
                 //  </namespace>
                 //  <namespace name="System.Xml.Serialization" expose="false" />
                 //</attributeFilter>
-                xmlWriter.WriteStartElement("attributeFilter");
-                xmlWriter.WriteAttributeString("expose", "true");
+                writer.WriteStartElement("attributeFilter");
+                writer.WriteAttributeString("expose", "true");
 
                 int itemNamespaces = attributeFilters.Count;
                 for (int i = 0; i < itemNamespaces; i++)
@@ -398,12 +657,12 @@ namespace Sandcastle.References
                     {
                         continue;
                     }
-                    namespaceFilter.WriteXml(xmlWriter);
+                    namespaceFilter.WriteXml(writer);
                 }
 
-                xmlWriter.WriteEndElement();
+                writer.WriteEndElement();
 
-                xmlWriter.Close();
+                writer.Close();
             }
             else  //...otherwise, we put in the default atttribute filters...
             {   

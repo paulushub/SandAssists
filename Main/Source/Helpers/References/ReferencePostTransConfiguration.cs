@@ -284,13 +284,6 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
-            if (groupContext == null)
-            {
-                throw new BuildException(
-                    "The group context is not provided, and it is required by the build system.");
-            }
-
             if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
@@ -300,6 +293,13 @@ namespace Sandcastle.References
             if (_settings == null || _context == null)
             {
                 return false;
+            }
+
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
             }
 
             //<component type="Sandcastle.Components.ReferencePostTransComponent" assembly="$(SandAssistComponent)">

@@ -1,75 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Font Name="Tahoma" Size="8.25" />
   <Comment CommentText="The reader  fills a provider and/or return snippets on query.">
     <Position X="0.604" Y="4.511" Height="0.615" Width="1.752" />
   </Comment>
   <Class Name="Sandcastle.Components.Snippets.Snippet" Collapsed="true">
     <Position X="2.75" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <FileName>Snippets\Snippet.cs</FileName>
       <HashCode>AAAAAAAAGAgAAAAIgBgABAAEIAgAAAAAEAAACEwAABA=</HashCode>
+      <FileName>Snippets\Snippet.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Info" />
       <Property Name="Item" />
     </ShowAsAssociation>
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetInfo" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetInfo.cs</FileName>
       <HashCode>AAAAAAAAEAAAAAAMgBgAAAAAAAgAAIAAEAAAAAAAABA=</HashCode>
+      <FileName>Snippets\SnippetInfo.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetItem" Collapsed="true">
     <Position X="5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetItem.cs</FileName>
       <HashCode>AAAAAAAACAgAAAAIgAgAAAAAAAAAAAAAAAAACAgAABA=</HashCode>
+      <FileName>Snippets\SnippetItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetReader" Collapsed="true">
     <Position X="3" Y="4.5" Width="1.25" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetReader.cs</FileName>
       <HashCode>AAAAAAAAECCAAAABIQAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Snippets\SnippetReader.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Sandcastle.Components.Snippets.SnippetDbReader" Collapsed="true">
-    <Position X="0.5" Y="6" Width="1.5" />
+  <Class Name="Sandcastle.Components.Snippets.SnippetDatabaseReader" Collapsed="true">
+    <Position X="0.5" Y="6" Width="2" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetDbReader.cs</FileName>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Snippets\SnippetDatabaseReader.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetTextReader" Collapsed="true">
     <Position X="2.75" Y="6" Width="1.75" />
     <TypeIdentifier>
+      <HashCode>AQBKgAAAECAAAShAAAABAAggAAQAAAAACABAAAEEAAg=</HashCode>
       <FileName>Snippets\SnippetTextReader.cs</FileName>
-      <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetXmlReader" Collapsed="true">
-    <Position X="5.25" Y="6" Width="1.5" />
+    <Position X="5" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetXmlReader.cs</FileName>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Snippets\SnippetXmlReader.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetProvider" Collapsed="true">
     <Position X="3" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <FileName>Snippets\SnippetProvider.cs</FileName>
       <HashCode>AEAAAAAAECiAAAAACQAAAAQAAAABAAAAIAAAAAAAAgA=</HashCode>
+      <FileName>Snippets\SnippetProvider.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Storage" />
@@ -77,38 +80,28 @@
     <ShowAsCollectionAssociation>
       <Property Name="this[Sandcastle.Components.Snippets.SnippetInfo]" />
     </ShowAsCollectionAssociation>
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Sandcastle.Components.Snippets.SnippetDbProvider" Collapsed="true">
-    <Position X="0.5" Y="3.25" Width="1.75" />
-    <TypeIdentifier>
-      <FileName>Snippets\SnippetDbProvider.cs</FileName>
-      <HashCode>AEAAAAAAACgAAAAACAAAAAQAAAABAAAgIAAAAAAAAgA=</HashCode>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Sandcastle.Components.Snippets.SnippetMemoryProvider" Collapsed="true">
-    <Position X="2.75" Y="3.25" Width="2" />
+    <Position X="4" Y="3.25" Width="2" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetMemoryProvider.cs</FileName>
       <HashCode>AEAAAAAAACgAAAAACAAgAAQAAAABAAAgIAAAAAAAAgA=</HashCode>
+      <FileName>Snippets\SnippetMemoryProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Components.Snippets.SnippetSqliteProvider" Collapsed="true">
-    <Position X="5.25" Y="3.25" Width="1.75" />
+  <Class Name="Sandcastle.Components.Snippets.SnippetDatabaseProvider" Collapsed="true">
+    <Position X="1.5" Y="3.25" Width="2" />
     <TypeIdentifier>
-      <FileName>Snippets\SnippetSqliteProvider.cs</FileName>
-      <HashCode>AEAAAIAAACgAAAAACBAgAAQAgAgBAQAwJCAAAAAAAgA=</HashCode>
+      <HashCode>AkAAAAAAQCgCAAQQCAAgAAQEAAABAQAEIABAEQQBBgA=</HashCode>
+      <FileName>Snippets\SnippetDatabaseProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="Sandcastle.Components.Snippets.SnippetStorage">
     <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Snippets\SnippetStorage.cs</FileName>
-      <HashCode>AAAAAAAAAEAAAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Enum>
+  <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

@@ -10,7 +10,9 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.Formats
 {
@@ -34,13 +36,13 @@ namespace Sandcastle.Formats
 
         private LangInfo _lang;
 
-        private XPathDocument      _config;
-        private FormatChmOptions   _options;
+        private XPathDocument    _config;
+        private FormatChmOptions _options;
 
         private BuildLogger  _logger;
         private BuildContext _context;
 
-        private BplusTree    _plusTree;
+        private PersistentDictionary<string, string> _plusTree;
 
         public FormatChmHelper(FormatChmOptions options)
         {
@@ -50,9 +52,13 @@ namespace Sandcastle.Formats
             _options.HtmlDirectory = StripEndBackSlash(Path.GetFullPath(
                 _options.HtmlDirectory));
             if (String.IsNullOrEmpty(_options.TocFile))
+            {
                 _hasToc = false;
+            }
             else
-                _hasToc = true;
+            {
+                _hasToc = File.Exists(_options.TocFile);
+            }
             _options.OutputDirectory = StripEndBackSlash(Path.GetFullPath(
                 _options.OutputDirectory));
             _config = new XPathDocument(options.ConfigFile);
@@ -95,14 +101,20 @@ namespace Sandcastle.Formats
 
             BuildSettings settings = context.Settings;
 
-            string workingDir    = _options.WorkingDirectory;
-            workingDir           = Path.Combine(workingDir, "Data");
-            string treeFileName  = Path.Combine(workingDir, "ChmTreeFile.dat");
-            string blockFileName = Path.Combine(workingDir, "ChmBlockFile.dat");
+            FormatChm format     = 
+                settings.Formats[BuildFormatType.HtmlHelp1] as FormatChm;
+
+            if (format == null)
+            {
+                throw new BuildException(
+                    "FormatChmHelper: The build format is not available.");
+            }
+
+            string dataDir = Path.Combine(_options.OutputDirectory, "Data");
 
             try
             {
-                _plusTree    = hBplusTree.Initialize(treeFileName, blockFileName, 64);
+                _plusTree    = new PersistentDictionary<string, string>(dataDir);
                 _indentCount = 0;
 
                 WriteHtmls();
@@ -126,8 +138,7 @@ namespace Sandcastle.Formats
             {   
                 if (_plusTree != null)
                 {
-                    //_plusTree.Commit();
-                    _plusTree.Shutdown();
+                    _plusTree.Dispose();
                 }
             }  
         }
@@ -313,8 +324,7 @@ namespace Sandcastle.Formats
                 sw.WriteLine("  </body>");
                 sw.WriteLine("</html>");
             }
-        }
-
+        }   
 
         /// <summary>
         /// In hhp.template, {0} is projectName, {1} is defalutTopic, {2}:Language, {3}:Title 

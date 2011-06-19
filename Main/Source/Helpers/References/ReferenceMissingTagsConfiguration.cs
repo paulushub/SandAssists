@@ -51,6 +51,8 @@ namespace Sandcastle.References
     {
         #region Public Fields
 
+        public const string OutputDirectory = "MissingTags";
+
         /// <summary>
         /// Gets the unique name of this configuration.
         /// </summary>
@@ -81,6 +83,9 @@ namespace Sandcastle.References
         private bool _valueTags;
 
         private string _outputDir;
+
+        [NonSerialized]
+        private BuildContext _context;
 
         #endregion
 
@@ -608,7 +613,14 @@ namespace Sandcastle.References
 
             if (base.IsInitialized)
             {
-                _outputDir = context.BaseDirectory;
+                _outputDir = Path.Combine(context.BaseDirectory, OutputDirectory);
+
+                if (!Directory.Exists(_outputDir))
+                {
+                    Directory.CreateDirectory(_outputDir);
+                }                
+
+                _context = context;
             }
         }
 
@@ -645,12 +657,33 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group,  "group");
             BuildExceptions.NotNull(writer, "writer");
 
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             if (!this.Enabled || !this.IsInitialized)
             {
                 return false;
             }
 
-            string outputFile = "MissingTags.xml";
+            string outputFile = null;
+            string groupPart = group.Name;
+            if (String.IsNullOrEmpty(groupPart))
+            {
+                groupPart = groupContext["$GroupIndex"];
+                if (String.IsNullOrEmpty(groupPart))
+                {
+                    return false;
+                }
+                outputFile = "MissingTags" + groupPart + ".xml";
+            }
+            else
+            {
+                outputFile = "MissingTags-" + groupPart + ".xml";
+            }
             if (!String.IsNullOrEmpty(_outputDir))
             {
                 outputFile = Path.Combine(_outputDir, outputFile);

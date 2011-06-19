@@ -173,7 +173,7 @@ namespace Sandcastle.ReflectionData
 
             #region Public Properties
 
-            public bool Exists
+            public override bool Exists
             {
                 get
                 {

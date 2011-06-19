@@ -9,13 +9,17 @@ using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools;
 
-using Sandcastle.Components.Others;
+using Sandcastle.Components.Versions;
 
 namespace Sandcastle.Components
 {
     public sealed class ReferencePreTransComponent : PreTransComponent
     {
         #region Private Fields
+
+        private bool   _applyEnabled;  
+        private bool   _applyTopicLinks;
+        private bool   _applyVersionInfo;
 
         // For the auto-documentations...
         private bool   _applyAutoDocument;
@@ -60,6 +64,14 @@ namespace Sandcastle.Components
         private StreamWriter _textWriter;
         private XmlWriter    _xmlWriter;
 
+        private XPathExpression _versionExpression;
+
+        private XPathExpression _seeExpression;
+
+        private XPathExpression _seealsoExpression;
+
+        private BuildComponentController _buildController;
+
         #endregion
 
         #region Constructors and Destructor
@@ -69,8 +81,45 @@ namespace Sandcastle.Components
         {
             try
             {
+                // Parse for the basic version information...
+                _buildController = BuildComponentController.Controller;
+
+                _buildController.ParseVersionInfo(configuration);
+
+                _applyVersionInfo = _buildController.HasVersions;
+
+                if (_applyVersionInfo)
+                {
+                    _versionExpression = XPathExpression.Compile(
+                        "document/reference/containers/library/@assembly");
+                }
+
+                // Parse for the conceptual topic link options...
+                XPathNavigator linkNavigator = configuration.SelectSingleNode(
+                    "conceptualLinks");
+                if (linkNavigator != null)
+                {
+                    string nodeText = linkNavigator.GetAttribute("enabled", 
+                        String.Empty);
+                    if (!String.IsNullOrEmpty(nodeText))
+                    {
+                        _applyTopicLinks = Convert.ToBoolean(nodeText);
+
+                        if (_applyTopicLinks)
+                        {
+                            _seeExpression = XPathExpression.Compile("//see[@topic]");
+                            _seealsoExpression = XPathExpression.Compile("//seealso[@topic]");
+                        }
+                    }
+                }
+
+                // Parse for the automatic documentation options...
                 ParseAutoDocument(configuration);
+                // Parse for the missing tags options...
                 ParseMissingsTags(configuration);
+
+                _applyEnabled = (_applyAutoDocument || _applyMissingTags ||
+                    _applyVersionInfo || _applyTopicLinks);
             }
             catch (Exception ex)
             {
@@ -84,19 +133,57 @@ namespace Sandcastle.Components
 
         public override void Apply(XmlDocument document, string key)
         {
-            if (_applyAutoDocument || _applyMissingTags)
+            _buildController.HasConceptualLinks = false;
+            _buildController.ClearVersions();
+
+            if (!_applyEnabled)
             {
-                XPathNavigator navigator = document.CreateNavigator();
+                return;
+            }
 
-                if (_applyAutoDocument)
-                {
-                    this.ApplyAutoDocument(navigator, key);
-                }
+            XPathNavigator navigator = document.CreateNavigator();
 
-                if (_applyMissingTags)
+            // 1. Process the automatic documentation, if requested...
+            if (_applyAutoDocument)
+            {
+                this.ApplyAutoDocument(navigator, key);
+            }
+
+            // 2. Process the missing tags, if requested...
+            if (_applyMissingTags)
+            {
+                this.ApplyMissingTags(navigator, key);
+            }
+
+            // 3. Extract the version information for the Post-Transformation
+            // processing, if applicable; the project, namespaces and 
+            // grouped/container topics will not carry the version information.
+            if (_applyVersionInfo && (key.Length > 2 && 
+                key[1] == ':' && key[0] != 'R' && key[0] != 'N'))
+            {
+                XPathNodeIterator nodeIterator = navigator.Select(_versionExpression);
+
+                if (nodeIterator != null && nodeIterator.Count != 0)
                 {
-                    this.ApplyMissingTags(navigator, key);
+                    foreach (XPathNavigator node in nodeIterator)
+                    {
+                        if (!_buildController.UpdateVersion(node.Value))
+                        {
+                            this.WriteMessage(MessageLevel.Warn, String.Format(
+                                "The version information for '{0}' could not be found.", key));
+
+                            // If there is error, we stop for this topic...
+                            _buildController.ClearVersions();  
+                            break;
+                        }
+                    }
                 }
+            }
+
+            // 4. Apply the conceptual topic links...
+            if (_applyTopicLinks)
+            {
+                this.ApplyTopicLinks(navigator, key);
             }
         }
 
@@ -380,7 +467,8 @@ namespace Sandcastle.Components
                     }
                 }
             }
-            else if (key.StartsWith("Properties", StringComparison.Ordinal))
+            else if (key.StartsWith("Properties", StringComparison.Ordinal) ||
+                key.StartsWith("AttachedProperties", StringComparison.Ordinal))
             {
                 if (_summaryTags)
                 {   
@@ -403,7 +491,8 @@ namespace Sandcastle.Components
                 }
             }
             else if (key.StartsWith("AllMembers", StringComparison.Ordinal) ||
-                    key.StartsWith("Methods", StringComparison.Ordinal))
+                    key.StartsWith("Methods", StringComparison.Ordinal) ||
+                    key.StartsWith("Operators", StringComparison.Ordinal))
             {
                 if (_summaryTags)
                 {   
@@ -438,7 +527,7 @@ namespace Sandcastle.Components
                         }
                     }
 
-                    // Extract: P:TestLibrary.DClass, but not for "Methods"...
+                    // Extract: P/F/E:TestLibrary.DClass, but not for "Methods"...
                     if (!key.StartsWith("Methods", StringComparison.Ordinal))
                     {
                         targetKey = "P:" + baseKey;
@@ -454,9 +543,83 @@ namespace Sandcastle.Components
                                     targetNavigator.GetAttribute("api", String.Empty), key);
                             }
                         }
+
+                        targetKey = "F:" + baseKey;
+
+                        textExpression = "document/reference/elements/element[starts-with(@api, '"
+                            + targetKey + "')]";
+                        iterator = documentNavigator.Select(textExpression);
+                        if (iterator != null && iterator.Count != 0)
+                        {
+                            foreach (XPathNavigator targetNavigator in iterator)
+                            {
+                                this.ProcessMissingTag(documentNavigator, targetNavigator, "summary",
+                                    targetNavigator.GetAttribute("api", String.Empty), key);
+                            }
+                        }
+
+                        targetKey = "E:" + baseKey;
+
+                        textExpression = "document/reference/elements/element[starts-with(@api, '"
+                            + targetKey + "')]";
+                        iterator = documentNavigator.Select(textExpression);
+                        if (iterator != null && iterator.Count != 0)
+                        {
+                            foreach (XPathNavigator targetNavigator in iterator)
+                            {
+                                this.ProcessMissingTag(documentNavigator, targetNavigator, "summary",
+                                    targetNavigator.GetAttribute("api", String.Empty), key);
+                            }
+                        }   
                     }
                 }
             }
+            else if (key.StartsWith("Events", StringComparison.Ordinal))
+            {
+                if (_summaryTags)
+                {
+                    // Extract: E:TestLibrary.DClass
+                    string baseKey = key.Substring(key.IndexOf(':') + 1);
+                    string targetKey = "E:" + baseKey;
+
+                    string textExpression = "document/reference/elements/element[starts-with(@api, '"
+                        + targetKey + "')]";
+
+                    //string textExpression = "document/reference/elements/element";
+                    XPathNodeIterator iterator = documentNavigator.Select(textExpression);
+                    if (iterator != null && iterator.Count != 0)
+                    {
+                        foreach (XPathNavigator targetNavigator in iterator)
+                        {
+                            this.ProcessMissingTag(documentNavigator, targetNavigator, "summary",
+                                targetNavigator.GetAttribute("api", String.Empty), key);
+                        }
+                    }
+                }
+            }            
+            else if (key.StartsWith("Fields", StringComparison.Ordinal))
+            {
+                if (_summaryTags)
+                {
+                    // Extract: F:TestLibrary.DClass
+                    string baseKey = key.Substring(key.IndexOf(':') + 1);
+                    string targetKey = "F:" + baseKey;
+
+                    string textExpression = "document/reference/elements/element[starts-with(@api, '"
+                        + targetKey + "')]";
+
+                    //string textExpression = "document/reference/elements/element";
+                    XPathNodeIterator iterator = documentNavigator.Select(textExpression);
+                    if (iterator != null && iterator.Count != 0)
+                    {
+                        foreach (XPathNavigator targetNavigator in iterator)
+                        {
+                            this.ProcessMissingTag(documentNavigator, targetNavigator, "summary",
+                                targetNavigator.GetAttribute("api", String.Empty), key);
+                        }
+                    }
+                }
+            }            
             else // Finally, for the individual pages...
             {
                 XPathNavigator commentsNavigator = documentNavigator.SelectSingleNode("document/comments");
@@ -554,6 +717,51 @@ namespace Sandcastle.Components
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region ApplyTopicLinks Method
+
+        private void ApplyTopicLinks(XPathNavigator documentNavigator, string key)
+        {
+            XPathNodeIterator iterator = documentNavigator.Select(_seeExpression);
+            if (iterator != null && iterator.Count != 0)
+            {
+                foreach (XPathNavigator navigator in iterator)
+                {
+                    string topicId = navigator.GetAttribute("topic", String.Empty);
+                    if (!String.IsNullOrEmpty(topicId))
+                    {
+                        navigator.CreateAttribute(navigator.Prefix, "cref",
+                            navigator.NamespaceURI, topicId);
+                    }
+                    else
+                    {
+                        this.WriteMessage(MessageLevel.Warn, String.Format(
+                            "The topic id for a see tag in '{0}' is invalid.", key));
+                    }
+                }
+            }
+   
+            iterator = documentNavigator.Select(_seealsoExpression);
+            if (iterator != null && iterator.Count != 0)
+            {
+                foreach (XPathNavigator navigator in iterator)
+                {
+                    string topicId = navigator.GetAttribute("topic", String.Empty);
+                    if (!String.IsNullOrEmpty(topicId))
+                    {
+                        navigator.CreateAttribute(navigator.Prefix, "cref",
+                            navigator.NamespaceURI, topicId);
+                    }
+                    else
+                    {
+                        this.WriteMessage(MessageLevel.Warn, String.Format(
+                            "The topic id for a seealso tag in '{0}' is invalid.", key));
+                    }
+                }
+            }   
         }
 
         #endregion
@@ -1493,161 +1701,6 @@ namespace Sandcastle.Components
             }
 
             _applyAutoDocument = _documentConstructors || _documentDisposeMethods;
-        }
-
-        #endregion
-
-        #region Version Information Methods
-
-        private void ParseVersionInfo(XPathNavigator configuration)
-        {
-            string reflectionFile = String.Empty;
-
-            if (String.IsNullOrEmpty(reflectionFile) || 
-                File.Exists(reflectionFile) == false)
-            {
-                return;
-            }
-
-            BuildComponentController controller = BuildComponentController.Controller;
-            if (controller == null)
-            {
-                return;
-            }
-
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.ConformanceLevel = ConformanceLevel.Document;
-            //settings.IgnoreWhitespace = true;
-            settings.IgnoreComments = true;
-            using (XmlReader reader = XmlReader.Create(reflectionFile, settings))
-            {
-                reader.MoveToContent();
-                if (String.Equals(reader.Name, "versions"))
-                {
-                    XmlNodeType nodeType = XmlNodeType.None;
-                    string nodeName = String.Empty;
-                    while (reader.Read())
-                    {
-                        nodeType = reader.NodeType;
-                        if (nodeType == XmlNodeType.Element &&
-                            String.Equals(reader.Name, "version"))
-                        {
-                            string asmName     = reader.GetAttribute("assemblyName");
-                            string asmVersion  = reader.GetAttribute("assemblyVersion");
-                            string fileVersion = reader.GetAttribute("fileVersion");
-                            if (!String.IsNullOrEmpty(asmName))
-                            {
-                                controller.AddVersion(new VersionInfo(asmName,
-                                    asmVersion, fileVersion));
-                            }
-                        }
-                        else if (nodeType == XmlNodeType.EndElement)
-                        {
-                            if (String.Equals(reader.Name, "versions"))
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (String.Equals(reader.Name, "reflection"))
-                {
-                    ParseAssemblies(reader, controller);
-                }
-            }
-        }
-
-        private void ParseAssemblies(XmlReader reader, BuildComponentController controller)
-        {
-            XmlNodeType nodeType = XmlNodeType.None;
-            string nodeName = String.Empty;
-            while (reader.Read())
-            {
-                nodeType = reader.NodeType;
-                if (nodeType == XmlNodeType.Element)
-                {
-                    nodeName = reader.Name;
-                    if (String.Equals(nodeName, "assembly"))
-                    {
-                        string asmName = reader.GetAttribute("name");
-                        string asmVersion = String.Empty;
-                        while (reader.Read())
-                        {
-                            nodeType = reader.NodeType;
-                            if (nodeType == XmlNodeType.Element)
-                            {
-                                nodeName = reader.Name;
-                                if (String.Equals(nodeName, "assemblydata"))
-                                {
-                                    asmVersion = reader.GetAttribute("version");
-                                    reader.Skip();
-                                }
-                                else if (String.Equals(nodeName, "attributes"))
-                                {
-                                    string fileVersion = String.Empty;
-                                    while (reader.Read())
-                                    {
-                                        nodeType = reader.NodeType;
-                                        if (nodeType == XmlNodeType.Element &&
-                                            String.Equals(reader.Name, "attribute"))
-                                        {
-                                            if (reader.ReadToDescendant("type") && String.Equals(
-                                                reader.GetAttribute("api"), "T:System.Reflection.AssemblyFileVersionAttribute"))
-                                            {
-                                                if (reader.ReadToNextSibling("argument") &&
-                                                    reader.ReadToDescendant("value"))
-                                                {
-                                                    fileVersion = reader.ReadString();
-                                                }
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                reader.Skip();
-                                            }
-                                        }
-                                        else if (nodeType == XmlNodeType.EndElement)
-                                        {
-                                            if (String.Equals(reader.Name, "attributes"))
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    controller.AddVersion(new VersionInfo(asmName,
-                                        asmVersion, fileVersion));
-
-                                    break;
-                                }
-                            }
-                            else if (nodeType == XmlNodeType.EndElement)
-                            {
-                                nodeName = reader.Name;
-                                if (String.Equals(nodeName, "assembly") ||
-                                    String.Equals(nodeName, "assemblies") ||
-                                    String.Equals(nodeName, "apis"))
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    else if (String.Equals(nodeName, "apis"))
-                    {
-                        break;
-                    }
-                }
-                else if (nodeType == XmlNodeType.EndElement)
-                {
-                    nodeName = reader.Name;
-                    if (String.Equals(nodeName, "assemblies") ||
-                        String.Equals(nodeName, "apis"))
-                    {
-                        break;
-                    }
-                }
-            }
         }
 
         #endregion

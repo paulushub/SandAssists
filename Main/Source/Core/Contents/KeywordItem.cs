@@ -254,7 +254,7 @@ namespace Sandcastle.Contents
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (String.Equals(reader.Name, "keyword",
+                    if (String.Equals(reader.Name, TagName,
                         StringComparison.OrdinalIgnoreCase))
                     {
                         break;

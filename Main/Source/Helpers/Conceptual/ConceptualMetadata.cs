@@ -159,7 +159,9 @@ namespace Sandcastle.Conceptual
 
         private void WriteMetadata(ConceptualGroup group)
         {
-            BuildGroupContext groupContext = this.Context.GroupContexts[group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -167,7 +169,7 @@ namespace Sandcastle.Conceptual
             }
 
             Guid fileAsset    = group.DocumentID;
-            string workingDir = group.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
             ConceptualContent content = group.Content;
             if (content == null || content.IsEmpty)

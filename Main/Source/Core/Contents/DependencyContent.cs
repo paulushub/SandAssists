@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Xml;
-using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.Contents
@@ -8,7 +8,15 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class DependencyContent : BuildContent<DependencyItem, DependencyContent>
     {
+        #region Public Fields
+
+        public const string TagName = "dependencyContent";
+
+        #endregion
+
         #region Private Fields
+
+        private BuildList<BuildDirectoryPath> _paths;
 
         [NonSerialized]
         private IDictionary<string, int> _dicItems;
@@ -27,11 +35,14 @@ namespace Sandcastle.Contents
             {
                 _dicItems = keyedList.Dictionary;
             }
+
+            _paths = new BuildList<BuildDirectoryPath>();
         }
 
         public DependencyContent(DependencyContent source)
             : base(source)
         {
+            _paths    = source._paths;
             _dicItems = source._dicItems;
         }
 
@@ -67,9 +78,45 @@ namespace Sandcastle.Contents
             }
         }
 
+        public IList<BuildDirectoryPath> Paths
+        {
+            get
+            {
+                return _paths;
+            }
+        }
+
         #endregion
 
         #region Public Method
+
+        public void AddDirectory(string assemblyDir)
+        {
+            if (!String.IsNullOrEmpty(assemblyDir))
+            {
+                this.AddDirectory(new BuildDirectoryPath(assemblyDir));
+            }
+        }
+
+        public void AddDirectory(BuildDirectoryPath path)
+        {
+            BuildExceptions.NotNull(path, "path");
+
+            if (_paths == null)
+            {
+                _paths = new BuildList<BuildDirectoryPath>();
+            }
+
+            _paths.Add(path);
+        }
+
+        public void AddItem(string assemblyName)
+        {
+            if (!String.IsNullOrEmpty(assemblyName))
+            {
+                this.Add(new DependencyItem(assemblyName));
+            }
+        }
 
         public override void Add(DependencyItem item)
         {
@@ -160,12 +207,139 @@ namespace Sandcastle.Contents
 
         #region IXmlSerializable Members
 
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (_paths == null)
+            {
+                _paths = new BuildList<BuildDirectoryPath>();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "paths",
+                        StringComparison.OrdinalIgnoreCase) &&
+                        !reader.IsEmptyElement)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.NodeType == XmlNodeType.Element)
+                            {
+                                if (String.Equals(reader.Name, BuildDirectoryPath.TagName,
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    BuildDirectoryPath path = new BuildDirectoryPath();
+                                    path.ReadXml(reader);
+
+                                    this.AddDirectory(path);
+                                }
+                            }
+                            else if (reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                if (String.Equals(reader.Name, "paths",
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "items",
+                        StringComparison.OrdinalIgnoreCase) &&
+                        !reader.IsEmptyElement)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.NodeType == XmlNodeType.Element)
+                            {
+                                if (String.Equals(reader.Name, DependencyItem.TagName,
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    DependencyItem item = new DependencyItem();
+                                    item.ReadXml(reader);
+
+                                    this.Add(item);
+                                }
+                            }
+                            else if (reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                if (String.Equals(reader.Name, "items",
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    } 
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
         public override void WriteXml(XmlWriter writer)
         {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);
+
+            writer.WriteStartElement("paths");    // start: paths
+            for (int i = 0; i < _paths.Count; i++)
+            {
+                _paths[i].WriteXml(writer);
+            }
+            writer.WriteEndElement();             // end: paths
+
+            writer.WriteStartElement("items");    // start: items
+            for (int i = 0; i < this.Count; i++)
+            {
+                this[i].WriteXml(writer);
+            }
+            writer.WriteEndElement();             // end: items
+
+            writer.WriteEndElement();
         }
 
         #endregion
@@ -175,6 +349,11 @@ namespace Sandcastle.Contents
         public override DependencyContent Clone()
         {
             DependencyContent content = new DependencyContent(this);
+
+            if (_paths != null)
+            {
+                content._paths = _paths.Clone();
+            }
 
             this.Clone(content, new BuildKeyedList<DependencyItem>());
 

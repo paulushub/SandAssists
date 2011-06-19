@@ -62,7 +62,11 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Sandcastle.BTree, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6c2bf89a8baa2754, processorArchitecture=MSIL">
+    <Reference Include="Sandcastle.Cecil, Version=0.9.4.0, Culture=neutral, PublicKeyToken=1371da3ce5824b55, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandcastle.Esent, Version=1.7.0.0, Culture=neutral, PublicKeyToken=408b92a24af6a3fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
@@ -87,14 +91,14 @@
     <Compile Include="BuildGroupContext.cs" />
     <Compile Include="BuildGroupTocInfo.cs" />
     <Compile Include="BuildGroupVisitor.cs" />
+    <Compile Include="BuildLogging.cs" />
+    <Compile Include="Conceptual\ConceptualChangeHistory.cs" />
     <Compile Include="Conceptual\ConceptualGroupContext.cs" />
     <Compile Include="BuildSource.cs" />
     <Compile Include="BuildComponentType.cs" />
     <Compile Include="BuildEngineSettings.cs" />
     <Compile Include="BuildFeedback.cs" />
     <Compile Include="BuildFeedbackType.cs" />
-    <Compile Include="BuildFramework.cs" />
-    <Compile Include="BuildFrameworkId.cs" />
     <Compile Include="BuildLogoAlignment.cs" />
     <Compile Include="BuildLogoPlacement.cs" />
     <Compile Include="BuildMisspelledWord.cs" />
@@ -139,6 +143,7 @@
     <Compile Include="BuildVisitor.cs" />
     <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
     <Compile Include="Conceptual\ConceptualLinkConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualLinkTargets.cs" />
     <Compile Include="Conceptual\ConceptualMarkerTopic.cs" />
     <Compile Include="Conceptual\ConceptualMathConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualMediaConfiguration.cs" />
@@ -149,9 +154,10 @@
     <Compile Include="Conceptual\ConceptualSharedConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualShfbSource.cs" />
     <Compile Include="Conceptual\ConceptualSource.cs" />
-    <Compile Include="Conceptual\ConceptualTocFilter.cs" />
+    <Compile Include="Conceptual\ConceptualTocVisitor.cs" />
     <Compile Include="Conceptual\ConceptualTopic.cs" />
     <Compile Include="Conceptual\ConceptualTopicType.cs" />
+    <Compile Include="Conceptual\ConceptualVisitor.cs" />
     <Compile Include="Conceptual\ConceptualXsdDocSource.cs" />
     <Compile Include="Configurators\AssemblerConfigurator.cs" />
     <Compile Include="BuildConfigurator.cs" />
@@ -196,9 +202,6 @@
     <Compile Include="MSHelpCompiler\HxCompStatus.cs" />
     <Compile Include="MSHelpCompiler\IHxComp.cs" />
     <Compile Include="MSHelpCompiler\IHxCompError.cs" />
-    <Compile Include="Formats\FormatAjaxAspx.cs" />
-    <Compile Include="Formats\FormatAjaxHtm.cs" />
-    <Compile Include="Formats\FormatAspx.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -208,8 +211,11 @@
     <Compile Include="References\ReferenceAutoDocConfiguration.cs" />
     <Compile Include="References\ReferenceCloneConfiguration.cs" />
     <Compile Include="References\ReferenceCodeConfiguration.cs" />
+    <Compile Include="References\ReferenceCommentConfiguration.cs" />
+    <Compile Include="References\ReferenceCommentVisitor.cs" />
     <Compile Include="References\ReferenceComponentConfiguration.cs" />
     <Compile Include="References\ReferenceConfiguration.cs" />
+    <Compile Include="References\ReferenceDependencyResolver.cs" />
     <Compile Include="References\ReferenceDocProjSource.cs" />
     <Compile Include="References\ReferenceDocumentType.cs" />
     <Compile Include="References\ReferenceEngineSettings.cs" />
@@ -217,6 +223,7 @@
     <Compile Include="References\ReferenceGroupTocInfo.cs" />
     <Compile Include="References\ReferenceGroupVisitor.cs" />
     <Compile Include="References\ReferenceNDocSource.cs" />
+    <Compile Include="References\ReferencePreTransConfiguration.cs" />
     <Compile Include="References\ReferenceScriptSharpSource.cs" />
     <Compile Include="References\ReferenceSharedConfiguration.cs" />
     <Compile Include="References\ReferenceShfbSource.cs" />
@@ -244,9 +251,11 @@
     <Compile Include="References\ReferenceTocLayoutVisitor.cs" />
     <Compile Include="References\ReferenceTocVisitor.cs" />
     <Compile Include="References\ReferenceNamespaceFilter.cs" />
-    <Compile Include="References\ReferenceVersionContent.cs" />
-    <Compile Include="References\ReferenceVersionItem.cs" />
+    <Compile Include="References\ReferenceVersionInfo.cs" />
+    <Compile Include="References\ReferenceVersionRelated.cs" />
+    <Compile Include="References\ReferenceVersions.cs" />
     <Compile Include="References\ReferenceVersionSource.cs" />
+    <Compile Include="References\ReferenceVersionType.cs" />
     <Compile Include="References\ReferenceVisibilityConfiguration.cs" />
     <Compile Include="References\ReferenceVisibilityVisitor.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
@@ -280,7 +289,6 @@
     <Compile Include="Conceptual\ConceptualUtils.cs" />
     <Compile Include="Configurators\SharedContentConfigurator.cs" />
     <Compile Include="Formats\FormatChm.cs" />
-    <Compile Include="Formats\FormatHtm.cs" />
     <Compile Include="Conceptual\ConceptualSettingsLoc.cs" />
     <Compile Include="Conceptual\ConceptualTableOfContents.cs" />
     <Compile Include="Formats\FormatHxs.cs" />
@@ -343,11 +351,6 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</Project>
       <Name>Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Resources\Resources.csproj">
-      <Project>{1E71CD2B-C403-4BF0-95AF-192494E533D7}</Project>
-      <Name>Resources</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

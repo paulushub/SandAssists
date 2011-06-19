@@ -22,7 +22,7 @@ namespace Sandcastle
 
         private BuildEngineType _engineType;
 
-        private Dictionary<string, string> _properties;
+        private BuildProperties _properties;
 
         private BuildConfigurationList _configurations;
         private BuildConfigurationList _pluginConfigurations;
@@ -52,8 +52,7 @@ namespace Sandcastle
 
             _engineName = name;
             _engineType = engineType;
-            _properties = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
+            _properties = new BuildProperties();
 
             _configurations = new BuildConfigurationList(_engineType);
             _pluginConfigurations = new BuildConfigurationList(_engineType);
@@ -147,22 +146,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -191,15 +178,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.KeyCollection keyColl
-                        = _properties.Keys;
-
-                    return keyColl;
-                }
-
-                return null;
+                return _properties.Keys;
             }
         }
 
@@ -213,15 +192,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.ValueCollection valueColl
-                        = _properties.Values;
-
-                    return valueColl;
-                }
-
-                return null;
+                return _properties.Values;
             }
         }
 
@@ -273,8 +244,6 @@ namespace Sandcastle
         /// </exception>
         public void Remove(string key)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Remove(key);
         }
 
@@ -283,11 +252,6 @@ namespace Sandcastle
         /// </summary>
         public void Clear()
         {
-            if (_properties.Count == 0)
-            {
-                return;
-            }
-
             _properties.Clear();
         }
 
@@ -317,8 +281,6 @@ namespace Sandcastle
         /// </remarks>
         public void Add(string key, string value)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Add(key, value);
         }
 
@@ -335,11 +297,6 @@ namespace Sandcastle
         /// </returns>
         public bool ContainsKey(string key)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
             return _properties.ContainsKey(key);
         }
 

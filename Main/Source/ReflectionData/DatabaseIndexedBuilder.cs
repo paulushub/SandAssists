@@ -7,8 +7,6 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
-using BplusDotNet;
-
 namespace Sandcastle.ReflectionData
 {
     public sealed class DatabaseIndexedBuilder : IDisposable

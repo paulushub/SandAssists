@@ -22,11 +22,6 @@ namespace Sandcastle.ReflectionData
 
         #region Public Properties
 
-        public abstract bool Exists
-        {
-            get;
-        }
-
         public abstract DatabaseTargetCache Cache
         {
             get;

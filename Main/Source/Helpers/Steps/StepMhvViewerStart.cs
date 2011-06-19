@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using Microsoft.Win32;
 
+using Sandcastle.Formats;
 using Sandcastle.Utilities;
 
 namespace Sandcastle.Steps
@@ -934,7 +935,7 @@ namespace Sandcastle.Steps
             {
                 // We wait for a max of 5 times, should be enough on even slow
                 // systems...
-                if (waitCount == 5) 
+                if (waitCount >= 5) 
                 {
                     break;
                 }
@@ -957,8 +958,21 @@ namespace Sandcastle.Steps
             // 3. The startup help ID will normally be saved in the context, get it...
             string helpStartId = context["$HelpTocRoot"];
             string tempText    = context["$HelpHierarchicalToc"];
+            // If there is a custom format TOC, we use its root...
+            BuildTocContext tocContext = context.TocContext;
+            BuildFormatList formatList = context.Settings.Formats;
+            FormatMhv mhvFormat = formatList[BuildFormatType.HtmlHelp3] 
+                as FormatMhv;
+            string formatTocFile = tocContext.GetValue("$" + mhvFormat.Name);
+            string formatTocRoot = tocContext.GetValue("$" + mhvFormat.Name +
+                "-HelpTocRoot");
 
-            if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
+            if (!(String.IsNullOrEmpty(formatTocFile) && File.Exists(formatTocFile)) 
+                && !String.IsNullOrEmpty(formatTocRoot))
+            {
+                helpStartId = formatTocRoot;
+            }
+            else if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
                 Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
             {
                 helpStartId = context["$HelpHierarchicalTocRoot"];

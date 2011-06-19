@@ -16,6 +16,11 @@ namespace Sandcastle.Conceptual
         {
         }
 
+        public ConceptualGroupContext(ConceptualGroup group, string contextId)
+            : base(group, contextId)
+        {
+        }
+
         public ConceptualGroupContext(ConceptualGroupContext context)
             : base(context)
         {   

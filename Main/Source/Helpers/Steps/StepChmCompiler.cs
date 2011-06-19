@@ -131,34 +131,41 @@ namespace Sandcastle.Steps
             }
 
             bool buildResult = base.OnExecute(context);
+
             // If the build is successful, we will need to handle the output...
             if (!buildResult || String.IsNullOrEmpty(_helpDirectory) ||
                 String.IsNullOrEmpty(_helpFolder))
             {
                 return buildResult;
             }
-            string workingDir = this.WorkingDirectory;
+
             if (!Directory.Exists(_helpDirectory))
             {
                 Directory.CreateDirectory(_helpDirectory);
             }
+            string helpOutput = Path.Combine(_helpDirectory, _helpFolder);
+
+            string workingDir = this.WorkingDirectory;
             if (_keepSources)
             {
+                // If requested to keep the build sources, just move it to
+                // the output directory...
                 string compiledDir = Path.Combine(workingDir, _helpFolder);
                 if (!Directory.Exists(compiledDir))
                 {
                     return buildResult;
-                }      
-                string outputDir = Path.Combine(_helpDirectory, _helpFolder);
-                if (Directory.Exists(outputDir))
-                {                       
-                    DirectoryUtils.DeleteDirectory(outputDir, true);
                 }
-                Directory.Move(compiledDir, outputDir);
+                if (Directory.Exists(helpOutput))
+                {
+                    DirectoryUtils.DeleteDirectory(helpOutput, true);
+                }
+                Directory.Move(compiledDir, helpOutput);
+
+                string destHelpPath = Path.Combine(helpOutput, _helpName + ".chm");
+                context.AddOutput(BuildFormatType.HtmlHelp1, destHelpPath);
             }
             else
             {
-                string helpOutput = Path.Combine(_helpDirectory, _helpFolder);
                 if (!Directory.Exists(helpOutput))
                 {
                     Directory.CreateDirectory(helpOutput);
@@ -170,6 +177,8 @@ namespace Sandcastle.Steps
                 {
                     File.Copy(sourceHelpPath, destHelpPath, true);
                     File.SetAttributes(destHelpPath, FileAttributes.Normal);
+
+                    context.AddOutput(BuildFormatType.HtmlHelp1, destHelpPath);
                 }
                 sourceHelpPath = Path.ChangeExtension(sourceHelpPath, ".log");
                 if (File.Exists(sourceHelpPath))

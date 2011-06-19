@@ -23,7 +23,6 @@ namespace Sandcastle.Conceptual
         #region Private Fields
 
         private BuildStyle          _style;
-        private BuildContext        _context;
         private BuildSettings       _settings;
         private ConceptualGroup     _group;
 
@@ -76,26 +75,6 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region Protected Properties
-
-        /// <summary>
-        /// Gets the current settings of the build process.
-        /// </summary>
-        /// <value>
-        /// A <see cref="BuildSettings"/> specifying the current settings of the 
-        /// build process. This is <see langword="null"/> if the
-        /// configuration process is not initiated.
-        /// </value>
-        protected override BuildSettings Settings
-        {
-            get
-            {
-                return _settings;
-            }
-        }
-
-        #endregion
-
         #region Public Methods
 
         #region Initialize Methods
@@ -110,7 +89,6 @@ namespace Sandcastle.Conceptual
             }
 
             _settings = context.Settings;
-            _context = context;
             if (_settings == null || _settings.Style == null)
             {
                 this.IsInitialized = false;
@@ -131,7 +109,7 @@ namespace Sandcastle.Conceptual
             _componentConfigList = _engineSettings.ComponentConfigurations;
             if (_componentConfigList != null && _componentConfigList.Count != 0)
             {
-                _componentConfigList.Initialize(_context);
+                _componentConfigList.Initialize(context);
             }
 
             _style = _settings.Style;
@@ -398,8 +376,10 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnTopicsContentsItem(string keyword, XPathNavigator navigator)
-        {   
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+        {
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -435,7 +415,9 @@ namespace Sandcastle.Conceptual
                     "There is not build group to provide the media/arts contents.");
             }
 
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -448,7 +430,7 @@ namespace Sandcastle.Conceptual
             if (listTokens == null || listTokens.Count == 0)
             {
                 // Create an empty tokens file...
-                string workingDir = _group.WorkingDirectory;
+                string workingDir = context.WorkingDirectory;
                 string tokenPath  = Path.Combine(workingDir, groupContext["$TokenFile"]);
 
                 XmlWriterSettings settings   = new XmlWriterSettings();
@@ -546,8 +528,10 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnMetadataKeywordsItem(string keyword, XPathNavigator navigator)
-        {   
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+        {
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -581,7 +565,9 @@ namespace Sandcastle.Conceptual
         /// <param name="args"></param>
         protected void OnMetadataAttributesItem(string keyword, XPathNavigator navigator)
         {
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -611,7 +597,9 @@ namespace Sandcastle.Conceptual
         /// <param name="args"></param>
         protected void OnMetadataVersionItem(string keyword, XPathNavigator navigator)
         {
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -619,7 +607,7 @@ namespace Sandcastle.Conceptual
             }
 
             // Create an empty version metadata file...
-            string workingDir  = _group.WorkingDirectory;
+            string workingDir  = context.WorkingDirectory;
             string versionPath = Path.Combine(workingDir, groupContext["$VersionFile"]);
 
             XmlWriterSettings settings   = new XmlWriterSettings();
@@ -657,8 +645,10 @@ namespace Sandcastle.Conceptual
         /// <param name="sender"></param>
         /// <param name="args"></param>
         protected void OnMetadataSettingsItem(string keyword, XPathNavigator navigator)
-        {   
-            BuildGroupContext groupContext = _context.GroupContexts[_group.Id];
+        {
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
@@ -722,12 +712,36 @@ namespace Sandcastle.Conceptual
 
             xmlWriter.WriteEndElement();                // end - argument/languages
 
-            if (_settings.ShowUpdated)
+            if (_settings.ShowUpdatedDate)
             {   
                 xmlWriter.WriteStartElement("argument");    // start - argument/RTMReleaseDate
                 xmlWriter.WriteAttributeString("key", "RTMReleaseDate");
                 xmlWriter.WriteAttributeString("value", DateTime.Now.ToString());
                 xmlWriter.WriteEndElement();                // end - argument/RTMReleaseDate
+            }
+
+            //You can use the optional changeHistoryOptions argument to control display of freshness date and Change History sections.
+            //If value='showDefaultFreshnessDate', all topics have a freshness date; default date is from 'defaultFreshnessDate' shared content item.
+            //if value='omit', freshness date and Change History sections are omitted from all topics.
+            //<argument key="changeHistoryOptions" value="omit" />
+            ConceptualChangeHistory changeHistory = _group.ChangeHistory;
+            switch (changeHistory)
+            {
+                case ConceptualChangeHistory.Show:
+                    // do nothing, this is the default.
+                    break;
+                case ConceptualChangeHistory.Hide:
+                    xmlWriter.WriteStartElement("argument"); // start - argument/changeHistoryOptions
+                    xmlWriter.WriteAttributeString("key", "changeHistoryOptions");
+                    xmlWriter.WriteAttributeString("value", "omit");
+                    xmlWriter.WriteEndElement();         // end - argument/changeHistoryOptions
+                    break;
+                case ConceptualChangeHistory.ShowFreshnessDate:
+                    xmlWriter.WriteStartElement("argument"); // start - argument/changeHistoryOptions
+                    xmlWriter.WriteAttributeString("key", "changeHistoryOptions");
+                    xmlWriter.WriteAttributeString("value", "showDefaultFreshnessDate");
+                    xmlWriter.WriteEndElement();         // end - argument/changeHistoryOptions
+                    break;
             }
             
             xmlWriter.WriteEndElement();                // end - transform

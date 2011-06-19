@@ -187,6 +187,13 @@ namespace Sandcastle.Steps
                 throw new BuildException("A working directory is required.");
             }
 
+            BuildTocContext tocContext = context.TocContext;
+            string tocFile = tocContext.GetValue("$" + _buildFormat.Name);
+            if (!String.IsNullOrEmpty(tocFile) && File.Exists(tocFile))
+            {
+                _helpToc = Path.GetFileName(tocFile);
+            }
+
             if (String.IsNullOrEmpty(_helpName) || String.IsNullOrEmpty(_helpToc))
             {
                 throw new BuildException("The required property values are set.");
@@ -524,7 +531,7 @@ namespace Sandcastle.Steps
 
             ProcessStartInfo startInfo = process.StartInfo;
 
-            string sandcastleDir = _settings.StylesDirectory;
+            string sandcastleDir = context.StylesDirectory;
             string tempText = Path.Combine(sandcastleDir,
                 @"ProductionTransforms\CreateHxc.xsl");
             string arguments = String.Format(
@@ -675,7 +682,7 @@ namespace Sandcastle.Steps
 
             startInfo = process.StartInfo;
 
-            string sandcastleDir = _settings.StylesDirectory;
+            string sandcastleDir = context.StylesDirectory;
             string tempText = Path.Combine(sandcastleDir,
                 @"ProductionTransforms\TocToHxSContents.xsl");
             string arguments = String.Format("/xsl:\"{0}\" {1} /out:{2}\\{3}.HxT",

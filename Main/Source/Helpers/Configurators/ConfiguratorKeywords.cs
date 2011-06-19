@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace Sandcastle.Configurators
-{
+{                                   
     public static class ConfiguratorKeywords
-    {
+    {                               
         public const string Skeleton           = "%Skeleton%";
         public const string Tokens             = "%Tokens%";
         public const string TokensReplaced     = "%TokensReplaced%";

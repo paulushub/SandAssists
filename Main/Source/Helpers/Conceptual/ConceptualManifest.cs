@@ -32,9 +32,7 @@ namespace Sandcastle.Conceptual
         private string _projectName;
         private string _workingDir;
 
-        private BuildSettings   _settings;
-        private ConceptualGroup _group;
-
+        [NonSerialized]
         private BuildKeyedList<ConceptualMarkerTopic> _listMarkers;
 
         #endregion
@@ -105,21 +103,19 @@ namespace Sandcastle.Conceptual
                 throw new BuildException(
                     "ConceptualTableOfContents: The conceptual table of contents generator is not initialized.");
             }
-
+            
             BuildContext context   = this.Context;
             BuildLogger logger     = context.Logger; 
             BuildSettings settings = context.Settings;
 
-            _group           = group;
-            _settings        = settings;
+            _fileAsset       = group.DocumentID.ToString();
+            _projectAsset    = group.ProjectID.ToString();
+            _repositoryAsset = group.RepositoryID.ToString();
+            _projectName     = group.ProjectName;
 
-            _lcid            = _settings.CultureInfo.LCID;
-            
-            _fileAsset       = _group.DocumentID.ToString();
-            _projectAsset    = _group.ProjectID.ToString();
-            _repositoryAsset = _group.RepositoryID.ToString();
-            _projectName     = _group.ProjectName;
-            _workingDir      = _group.WorkingDirectory;
+            _workingDir      = context.WorkingDirectory;
+
+            _lcid            = settings.CultureInfo.LCID;
 
             if (logger != null)
             {
@@ -127,7 +123,7 @@ namespace Sandcastle.Conceptual
                     BuildLoggerLevel.Info);
             }
 
-            WriteManifest();
+            this.WriteManifest(group);
 
             if (_listMarkers != null && _listMarkers.Count != 0)
             {
@@ -158,19 +154,21 @@ namespace Sandcastle.Conceptual
 
         #region WriteManifest Method
 
-        private void WriteManifest()
+        private void WriteManifest(ConceptualGroup group)
         {
-            BuildGroupContext groupContext = this.Context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            string workingDir = _group.WorkingDirectory;
+            string workingDir = context.WorkingDirectory;
 
-            ConceptualContent topicItems = _group.Content;
-            if (topicItems == null || topicItems.IsEmpty)
+            ConceptualContent content = group.Content;
+            if (content == null || content.IsEmpty)
             {
                 return;
             }
@@ -204,7 +202,34 @@ namespace Sandcastle.Conceptual
                 writer.WriteStartDocument();
                 writer.WriteStartElement("topics"); // start-topics
 
-                WriteTopics(writer);
+                // We write each topic
+                int itemCount = content.Count;
+                for (int i = 0; i < itemCount; i++)
+                {
+                    ConceptualItem topicItem = content[i];
+                    if (topicItem == null || topicItem.IsEmpty)
+                    {
+                        continue;
+                    }
+
+                    this.WriteTopic(topicItem, writer);
+                }
+
+                IList<ConceptualRelatedTopic> relatedTopics = content.RelatedTopics;
+                if (relatedTopics != null && relatedTopics.Count != 0)
+                {
+                    itemCount = relatedTopics.Count;
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ConceptualRelatedTopic topicItem = relatedTopics[i];
+                        if (topicItem == null || topicItem.IsEmpty)
+                        {
+                            continue;
+                        }
+
+                        this.WriteTopic(topicItem, writer);
+                    }
+                }
 
                 writer.WriteEndElement();           // end-topics
                 writer.WriteEndDocument();
@@ -221,41 +246,7 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region WriteTopics Method
-
-        private void WriteTopics(XmlWriter writer)
-        {
-            ConceptualContent content = _group.Content;
-
-            // We write each topic
-            int itemCount = content.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                ConceptualItem topicItem = content[i];
-                if (topicItem == null || topicItem.IsEmpty)
-                {
-                    continue;
-                }
-
-                this.WriteTopic(topicItem, writer);
-            }
-
-            IList<ConceptualRelatedTopic> relatedTopics = content.RelatedTopics;
-            if (relatedTopics != null && relatedTopics.Count != 0)
-            {
-                itemCount = relatedTopics.Count;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    ConceptualRelatedTopic topicItem = relatedTopics[i];
-                    if (topicItem == null || topicItem.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    this.WriteTopic(topicItem, writer);
-                }
-            }
-        }
+        #region WriteTopic Method
 
         private void WriteTopic(ConceptualItem topicItem, XmlWriter writer)
         {

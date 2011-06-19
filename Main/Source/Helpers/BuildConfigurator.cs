@@ -36,7 +36,7 @@ namespace Sandcastle
         private BuildLogger _logger;
 
         // The shared content items
-        private Dictionary<string, string> _dicContents;
+        private BuildProperties _dicContents;
         // The shared content elements
         private XPathExpression _pathSelector;
         private XPathExpression _itemSelector;
@@ -215,8 +215,7 @@ namespace Sandcastle
 
             if (_dicContents == null)
             {
-                _dicContents = new Dictionary<string, string>(
-                    StringComparer.OrdinalIgnoreCase);
+                _dicContents = new BuildProperties();
             }
 
             _dicContents[itemName] = itemValue;
@@ -226,8 +225,7 @@ namespace Sandcastle
         {
             if (_dicContents != null)
             {
-                _dicContents = new Dictionary<string, string>(
-                    StringComparer.OrdinalIgnoreCase);
+                _dicContents = new BuildProperties();
             }
         }
 
@@ -293,8 +291,7 @@ namespace Sandcastle
         {
             if (_dicContents == null)
             {
-                _dicContents = new Dictionary<string, string>(
-                    StringComparer.OrdinalIgnoreCase);
+                _dicContents = new BuildProperties();
             }
 
             LogMessage(BuildLoggerLevel.Info, String.Format(

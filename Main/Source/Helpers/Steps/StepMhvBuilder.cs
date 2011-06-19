@@ -32,8 +32,8 @@ namespace Sandcastle.Steps
         private string _helpSource;
         private string _helpOutputDir;
 
-        private XmlWriter    _metadataWriter;
-        private Dictionary<string, string> _contentTypes;
+        private XmlWriter       _metadataWriter;
+        private BuildProperties _contentTypes;
 
         #endregion
 
@@ -131,8 +131,7 @@ namespace Sandcastle.Steps
 
         protected override bool OnExecute(BuildContext context)
         {
-            _contentTypes = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
+            _contentTypes = new BuildProperties();
 
             _contentTypes[".js"]  = "text/javascript; charset=utf-8";
             _contentTypes[".xap"] = "application/x-silverlight-app";
@@ -167,6 +166,9 @@ namespace Sandcastle.Steps
 
             this.CreateMsha(context);
             this.CreateMshc(context);
+
+            context.AddOutput(BuildFormatType.HtmlHelp3,
+                Path.Combine(_helpOutputDir, _helpName + ".mshc"));
 
             return true;
         }

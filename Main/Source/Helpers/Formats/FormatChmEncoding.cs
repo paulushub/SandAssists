@@ -27,7 +27,7 @@ namespace Sandcastle.Formats
         private FormatChmOptions _options;
 
         private List<FormatChmEncoder> _listEncoders;
-        private Dictionary<string, string> _appSettings;
+        private BuildProperties _appSettings;
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Sandcastle.Formats
             _options        = options;
             _listEncoders   = new List<FormatChmEncoder>();
             _outputEncoding = Encoding.UTF8;
-            _appSettings    = new Dictionary<string, string>();
+            _appSettings    = new BuildProperties();
         }
 
         #endregion

@@ -112,8 +112,8 @@ namespace Sandcastle.References
             listSteps.LogTimeSpan = true;
 
             BuildSettings settings = this.Settings;
+            string sandcastleDir   = this.Context.StylesDirectory;
             BuildStyle outputStyle = settings.Style;
-            string sandcastleDir = settings.StylesDirectory;
 
             if (String.IsNullOrEmpty(sandcastleDir))
             {
@@ -194,7 +194,7 @@ namespace Sandcastle.References
             {
                 StepNone placeHolder = new StepNone();
                 placeHolder.LogTitle = String.Empty;
-                placeHolder.Message = "Copying user-defined resources.";
+                placeHolder.Message  = "Copying user-defined resources.";
                 listSteps.Add(placeHolder);
             }
 
@@ -237,7 +237,7 @@ namespace Sandcastle.References
             string configFile     = groupContext["$ConfigurationFile"];
             string tocFile        = groupContext["$TocFile"];
 
-            string sandcastleDir = settings.StylesDirectory;
+            string sandcastleDir  = context.StylesDirectory;
 
             BuildStyleType outputStyle = settings.Style.StyleType;
             string workingDir = context.WorkingDirectory;
@@ -333,33 +333,8 @@ namespace Sandcastle.References
                     indexText = (i + 1).ToString();
                 }
 
-                groupContext["$SharedContentFile"] =
-                    String.Format("ApiSharedContent{0}.xml", indexText);
-                groupContext["$TocFile"] =
-                    String.Format("ApiToc{0}.xml", indexText);
-                groupContext["$HierarchicalTocFile"] =
-                    String.Format("ApiHierarchicalToc{0}.xml", indexText);
-                groupContext["$ManifestFile"] =
-                    String.Format("ApiManifest{0}.xml", indexText);
-                groupContext["$RootNamespaces"] =
-                    String.Format("ApiRootNamespaces{0}.xml", indexText);
-                groupContext["$ConfigurationFile"] =
-                    String.Format("ApiBuildAssembler{0}.config", indexText);
-                groupContext["$ReflectionFile"] =
-                    String.Format("Reflection{0}.xml", indexText);
-                groupContext["$ReflectionBuilderFile"] =
-                    String.Format("MRefBuilder{0}.config", indexText);
-
-                groupContext["$AssembliesFolder"] =
-                    String.Format("Assemblies{0}", indexText);
-                groupContext["$CommentsFolder"] =
-                    String.Format("Comments{0}", indexText);
-                groupContext["$DependenciesFolder"] =
-                    String.Format("Dependencies{0}", indexText);
-
-                groupContext["$IsRooted"] = Boolean.FalseString;
-
                 groupContext["$GroupIndex"] = indexText;
+                groupContext.CreateProperties(indexText);
                 
                 group.Initialize(this.Context);
                 if (!group.IsInitialized)
@@ -542,44 +517,68 @@ namespace Sandcastle.References
             string reflectionFile = groupContext["$ReflectionFile"];
             string manifestFile   = groupContext["$ManifestFile"];
             string refBuilderFile = groupContext["$ReflectionBuilderFile"];
-            string refInfoFile    = Path.ChangeExtension(reflectionFile, ".org");
             string configFile     = groupContext["$ConfigurationFile"];
             string tocFile        = groupContext["$TocFile"];
 
             BuildStyleType outputStyle = settings.Style.StyleType;
             string workingDir = context.WorkingDirectory;
 
-            string tempText = null;
+            string tempText    = null;
 
-            // Create the reflection and the manifest
+            string arguments   = null;
+            string application = null;
+
+            // 1. Create the reflection and the manifest
             StringBuilder textBuilder = new StringBuilder();
-            // 1. Call MRefBuilder to generate the reflection...
-            // MRefBuilder Assembly.dll 
-            // /out:reflection.org /config:MRefBuilder.config 
-            //   /internal-
-            string application = Path.Combine(context.SandcastleToolsDirectory, 
-                "MRefBuilder.exe");
-            textBuilder.AppendFormat(@"{0}\*.dll", assemblyDir);
-            if (dependencies != null && dependencies.Count > 0)
+            if (group.IsSingleVersion)
             {
-                textBuilder.AppendFormat(@" /dep:{0}\*.dll", dependencyDir);
-            }
+                // Call MRefBuilder to generate the reflection...
+                // MRefBuilder Assembly.dll 
+                // /out:reflection.org /config:MRefBuilder.config 
+                //   /internal-
+                application = Path.Combine(context.SandcastleToolsDirectory,
+                    "MRefBuilder.exe");
+                textBuilder.AppendFormat(@"{0}\*.*", assemblyDir);
+                textBuilder.AppendFormat(@" /dep:{0}\*.*", dependencyDir);
 
-            textBuilder.AppendFormat(" /out:{0} /config:{1}", 
-                refInfoFile, refBuilderFile);
-            ReferenceVisibilityConfiguration visibility = 
-                _engineSettings.Visibility;
-            Debug.Assert(visibility != null);
-            if (visibility != null && visibility.IncludeInternalsMembers)
-            {
-                textBuilder.Append(" /internal+");
+                textBuilder.AppendFormat(" /out:{0} /config:{1}",
+                    Path.ChangeExtension(reflectionFile, ".ver"), refBuilderFile);
+                ReferenceVisibilityConfiguration visibility =
+                    _engineSettings.Visibility;
+                Debug.Assert(visibility != null);
+                if (visibility != null && visibility.IncludeInternalsMembers)
+                {
+                    textBuilder.Append(" /internal+");
+                }
+                else
+                {
+                    textBuilder.Append(" /internal-");
+                }
+
+                arguments = textBuilder.ToString();
             }
             else
             {
-                textBuilder.Append(" /internal-");
+                // Call the VersionBuilder to create the combined reflection file...
+                application = Path.Combine(context.SandcastleToolsDirectory,
+                    "VersionBuilder.exe");
+
+                textBuilder.AppendFormat(" /config:{0} /out:{1}",
+                    groupContext["$ApiVersionsBuilderFile"], 
+                    Path.ChangeExtension(reflectionFile, ".org"));
+
+                ReferenceVersionInfo versionInfo = group.VersionInfo;
+                if (versionInfo.RipOldApis)
+                {
+                    textBuilder.Append(" /rip+");
+                }
+                else
+                {
+                    textBuilder.Append(" /rip-");
+                }
+
+                arguments = textBuilder.ToString();
             }
-            
-            string arguments = textBuilder.ToString();
             StepReflectionBuilder mRefProcess = new StepReflectionBuilder(workingDir,
                 application, arguments);
             mRefProcess.Group    = group;
@@ -612,7 +611,17 @@ namespace Sandcastle.References
             application = Path.Combine(context.SandcastleToolsDirectory, 
                 "XslTransform.exe");
             string prodPath = Path.Combine(sandcastleDir, "ProductionTransforms");
-            string textTemp = prodPath;
+            string textTemp = String.Empty;
+            if (group.EnableXmlnsForXaml)
+            {
+                textTemp = Path.Combine(prodPath, "AddXamlSyntaxData.xsl");
+                if (!String.IsNullOrEmpty(textTemp))
+                {
+                    textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+                    textTemp = String.Empty;
+                }
+            }
+
             if (outputStyle == BuildStyleType.ClassicWhite ||
                 outputStyle == BuildStyleType.ClassicBlue)
             {
@@ -624,8 +633,11 @@ namespace Sandcastle.References
             else if (outputStyle == BuildStyleType.ScriptFree)
             {
             }
-            textBuilder.AppendFormat("/xsl:\"{0}\" ", textTemp);
-            textBuilder.Append(refInfoFile);
+            if (!String.IsNullOrEmpty(textTemp))
+            {
+                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+                textTemp = String.Empty;
+            }
 
             ReferenceNamingMethod namingMethod = _engineSettings.Naming;
             if (namingMethod == ReferenceNamingMethod.Guid)
@@ -640,8 +652,13 @@ namespace Sandcastle.References
             {
                 textTemp = Path.Combine(prodPath, "AddGuidFilenames.xsl");
             }
+            if (!String.IsNullOrEmpty(textTemp))
+            {
+                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+                textTemp = String.Empty;
+            }
 
-            textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+            textBuilder.Append(" " + Path.ChangeExtension(reflectionFile, ".org")); 
             textBuilder.AppendFormat(" /out:{0}", reflectionFile);
             textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
             textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");

@@ -82,7 +82,7 @@ namespace Sandcastle.Steps
             ConceptualContent content = _group.Content;
             if (content.OutputTopics)
             {
-                string workingDir  = _group.WorkingDirectory;
+                string workingDir  = context.WorkingDirectory;
 
                 string ddueXmlDir  = Path.Combine(workingDir, groupContext["$DdueXmlDir"]);
                 string ddueCompDir = Path.Combine(workingDir, groupContext["$DdueXmlCompDir"]);
@@ -149,6 +149,12 @@ namespace Sandcastle.Steps
             topicManifest.Initialize(context);
             topicManifest.Visit(_group);
             topicManifest.Uninitialize();
+
+            // 5. Write the link targets to linking in other groups
+            //ConceptualLinkTargets linkTargets = new ConceptualLinkTargets();
+            //linkTargets.Initialize(context);
+            //linkTargets.Visit(_group);
+            //linkTargets.Uninitialize();
 
             return true;
         }

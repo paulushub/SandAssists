@@ -7,7 +7,9 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private bool _isInitialized;
+        private bool               _isInitialized;
+
+        [NonSerialized]
         private BuildSourceContext _context;
 
         #endregion

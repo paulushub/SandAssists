@@ -7,7 +7,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
@@ -20,10 +22,9 @@ namespace Sandcastle.ReflectionData
         private bool _isSystem;
         private bool _isExisted;
 
-        private string _treeFileName;
-        private string _blockFileName;
+        private string _dataDir;
 
-        private hBplusTreeBytes _plusTree;
+        private PersistentDictionary<string, byte[]> _plusTree;
 
         private DatabaseTargetCache _targetCache;
 
@@ -180,22 +181,20 @@ namespace Sandcastle.ReflectionData
             }
             if (_isSystem)
             {
-                _treeFileName  = Path.Combine(workingDir, "SLinkT2.6.10621.1.dat");
-                _blockFileName = Path.Combine(workingDir, "SLinkB2.6.10621.1.dat");
+                _dataDir = Path.Combine(workingDir, "SLinkT26106211");
             }
             else
             {
                 string tempFile = Path.GetFileNameWithoutExtension(
                     Path.GetTempFileName());
 
-                _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
-                _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
+                _dataDir = Path.Combine(workingDir, tempFile);
             }
 
-            if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
+            _isExisted = PersistentDictionaryFile.Exists(_dataDir);
+            if (_isExisted)
             {
-                _isExisted = true;
-                _plusTree = hBplusTreeBytes.ReOpen(_treeFileName, _blockFileName);
+                _plusTree = new PersistentDictionary<string, byte[]>(_dataDir);
                 if (_plusTree.ContainsKey("$DataCount$"))
                 {
                     Encoding encoder = Encoding.Unicode;
@@ -208,8 +207,7 @@ namespace Sandcastle.ReflectionData
                 _count = 0;
                 if (createNotFound)
                 {
-                    _plusTree = hBplusTreeBytes.Initialize(_treeFileName,
-                        _blockFileName, 64);
+                    _plusTree = new PersistentDictionary<string, byte[]>(_dataDir);
                 }
             }
 
@@ -247,26 +245,19 @@ namespace Sandcastle.ReflectionData
                             Encoding encoder = Encoding.Unicode;
                             _plusTree["$DataCount$"]   = encoder.GetBytes(_count.ToString());
                             _plusTree["$DataVersion$"] = encoder.GetBytes("2.6.10621.1");
-
-                            _plusTree.Commit();
                         }
                     }
 
-                    _plusTree.Shutdown();
+                    _plusTree.Dispose();
                     _plusTree = null;
 
                     // For the non-system reflection database, delete after use...
                     if (!_isSystem)
                     {
-                        if (!String.IsNullOrEmpty(_treeFileName) &&
-                            File.Exists(_treeFileName))
+                        if (!String.IsNullOrEmpty(_dataDir) &&
+                            Directory.Exists(_dataDir))
                         {
-                            File.Delete(_treeFileName);
-                        }
-                        if (!String.IsNullOrEmpty(_blockFileName) &&
-                            File.Exists(_blockFileName))
-                        {
-                            File.Delete(_blockFileName);
+                            PersistentDictionaryFile.DeleteFiles(_dataDir);
                         }
                     }
                 }

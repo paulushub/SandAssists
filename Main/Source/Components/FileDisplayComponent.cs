@@ -144,8 +144,8 @@ namespace Sandcastle.Components
                     if (fileExits)
                     {
                         writer.WriteLine();
-                    }
-                    writer.WriteLine("<!-- " + _writeStage + " -->");
+                    }                           
+                    writer.WriteLine(_writeStage);
                     writer.WriteLine();
 
                     XPathNodeIterator nodes = result as XPathNodeIterator;

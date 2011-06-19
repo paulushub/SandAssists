@@ -33,13 +33,14 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceVisibilityVisitor()
-            : this((ReferenceEngineSettings)null)
+            : this((ReferenceVisibilityConfiguration)null)
         {   
         }
 
-        public ReferenceVisibilityVisitor(ReferenceEngineSettings engineSettings)
-            : base(VisitorName, engineSettings)
+        public ReferenceVisibilityVisitor(ReferenceVisibilityConfiguration configuration)
+            : base(VisitorName, configuration)
         {
+            _visibility = configuration;
         }
 
         public ReferenceVisibilityVisitor(ReferenceVisibilityVisitor source)
@@ -77,21 +78,24 @@ namespace Sandcastle.References
 
             if (this.IsInitialized)
             {
-                ReferenceEngineSettings engineSettings = this.EngineSettings;
-
-                Debug.Assert(engineSettings != null);
-                if (engineSettings == null)
-                {
-                    this.IsInitialized = false;
-                    return;
-                }
-
-                _visibility = engineSettings.Visibility;
-                Debug.Assert(_visibility != null);
                 if (_visibility == null)
                 {
-                    this.IsInitialized = false;
-                    return;
+                    ReferenceEngineSettings engineSettings = this.EngineSettings;
+
+                    Debug.Assert(engineSettings != null);
+                    if (engineSettings == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
+
+                    _visibility = engineSettings.Visibility;
+                    Debug.Assert(_visibility != null);
+                    if (_visibility == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
                 }
             }
         }
@@ -101,15 +105,15 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override void Visit(ReferenceDocument refDocument)
+        public override void Visit(ReferenceDocument referenceDocument)
         {
-            BuildExceptions.NotNull(refDocument, "refDocument");
-            if (refDocument.DocumentType != ReferenceDocumentType.Reflection)
+            BuildExceptions.NotNull(referenceDocument, "referenceDocument");
+            if (referenceDocument.DocumentType != ReferenceDocumentType.Reflection)
             {
                 return;
             }
 
-            XmlDocument xmlDocument = refDocument.Document;
+            XmlDocument xmlDocument = referenceDocument.Document;
             if (xmlDocument == null)
             {
                 return;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <members>
+    <member name="R:Project">
+      <summary>This the description of the project.</summary>
+    </member>
+    <member name="N:TestLibrary">
+      <summary>This is the description TestLibary namespace - testing only.</summary>
+    </member>
+  </members>
+</doc>

@@ -23,13 +23,22 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool                   _xmlnsForXaml;
+
         private string                 _rootTitle;
         private string                 _rootTopicId;
+
+        private CommentContent         _commentContent;
+        private HierarchicalTocContent _tocContent;
+
+        private ReferenceVersionInfo   _versionInfo; 
+        private ReferenceVersionType   _versionType;
+
+        private ReferenceSource        _topicSource;
 
         private ReferenceContent       _topicContent;
         private ReferenceRootFilter    _typeFilters;
         private ReferenceRootFilter    _attributeFilters;
-        private HierarchicalTocContent _tocContent;
 
         #endregion
 
@@ -56,10 +65,14 @@ namespace Sandcastle.References
         public ReferenceGroup(string groupName, string groupId)
             : base(groupName, groupId)
         {
+            _versionType      = ReferenceVersionType.None;
+
             _rootTitle        = "Programmer's Reference";
             _rootTopicId      = String.Empty;
 
+            _commentContent   = new CommentContent();
             _tocContent       = new HierarchicalTocContent();
+
             _typeFilters      = new ReferenceRootFilter();
             _topicContent     = new ReferenceContent();
             _attributeFilters = new ReferenceRootFilter();
@@ -79,8 +92,16 @@ namespace Sandcastle.References
         public ReferenceGroup(ReferenceGroup source)
             : base(source)
         {
-            _rootTitle   = source._rootTitle;
-            _rootTopicId = source._rootTopicId;
+            _versionType      = source._versionType;
+            _xmlnsForXaml     = source._xmlnsForXaml;
+            _rootTitle        = source._rootTitle;
+            _rootTopicId      = source._rootTopicId;
+            _topicSource      = source._topicSource;
+            _typeFilters      = source._typeFilters;
+            _topicContent     = source._topicContent;
+            _rootTopicId      = source._rootTopicId;
+            _attributeFilters = source._attributeFilters;
+            _commentContent   = source._commentContent;
         }
 
         #endregion
@@ -123,6 +144,48 @@ namespace Sandcastle.References
             }
         }
 
+        public bool EnableXmlnsForXaml
+        {
+            get
+            {
+                return _xmlnsForXaml;
+            }
+            set
+            {
+                _xmlnsForXaml = value;
+            }
+        }
+
+        public CommentContent Comments
+        {
+            get
+            {
+                return _commentContent;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _commentContent = value;
+                }
+            }
+        }
+
+        public HierarchicalTocContent HierarchicalToc
+        {
+            get
+            {
+                return _tocContent;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _tocContent = value;
+                }
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -140,6 +203,27 @@ namespace Sandcastle.References
                 if (value != null)
                 {
                     _topicContent = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public ReferenceSource Source
+        {
+            get
+            {
+                return _topicSource;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _topicSource = value;
                 }
             }
         }
@@ -169,18 +253,6 @@ namespace Sandcastle.References
             get
             {
                 return _attributeFilters;
-            }
-        }
-
-        public HierarchicalTocContent HierarchicalToc
-        {
-            get
-            {
-                return _tocContent;
-            }
-            set
-            {
-                _tocContent = value;
             }
         }
 
@@ -242,6 +314,49 @@ namespace Sandcastle.References
             }
         }
 
+
+        public bool IsSingleVersion
+        {
+            get
+            {
+                if (_versionType != ReferenceVersionType.Advanced)
+                {
+                    return true;
+                }
+
+                if (_versionInfo == null || _versionInfo.IsEmpty)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public ReferenceVersionType VersionType
+        {
+            get
+            {
+                return _versionType;
+            }
+            set
+            {
+                _versionType = value;
+            }
+        }
+
+        public ReferenceVersionInfo VersionInfo
+        {
+            get
+            {
+                return _versionInfo;
+            }
+            set
+            {
+                _versionInfo = value;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -260,13 +375,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            string workingDir = this.WorkingDirectory;
-
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = context.WorkingDirectory;
-                this.WorkingDirectory = workingDir;
-            }
+            string workingDir = context.WorkingDirectory;
 
             if (!Directory.Exists(workingDir))
             {
@@ -279,9 +388,9 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override IList<SharedItem> PrepareShared()
+        public override IList<SharedItem> PrepareShared(BuildContext context)
         {
-            IList<SharedItem> listShared = base.PrepareShared();
+            IList<SharedItem> listShared = base.PrepareShared(context);
 
             if (!String.IsNullOrEmpty(_rootTitle))
             {

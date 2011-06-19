@@ -23,7 +23,7 @@ namespace Sandcastle
     /// The default or system build loggers will have names in the format:
     /// </para>
     /// <para>
-    /// <bold>Sandcastle.{X}.Logger</bold>
+    /// <bold>Sandcastle.Loggers.{X}Logger</bold>
     /// where {X} represents the format or output destination of the logger.
     /// </para>
     /// <para>
@@ -32,37 +32,37 @@ namespace Sandcastle
     /// <list type="bullet">
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.NoneLogger</bold>, the output logger
+    /// <bold>Sandcastle.Loggers.NoneLogger</bold>, the output logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.ConsoleLogger</bold>, the console logger
+    /// <bold>Sandcastle.Loggers.ConsoleLogger</bold>, the console logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.FileLogger</bold>, the file logger
+    /// <bold>Sandcastle.Loggers.FileLogger</bold>, the file logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.HtmlLogger</bold>, the HTML format logger
+    /// <bold>Sandcastle.Loggers.HtmlLogger</bold>, the HTML format logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.XmlLogger</bold>, the XML format logger
+    /// <bold>Sandcastle.Loggers.XmlLogger</bold>, the XML format logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.XamlLogger</bold>, the XAML flow document logger
+    /// <bold>Sandcastle.Loggers.XamlLogger</bold>, the XAML flow document logger
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.BuildLoggers</bold>, the logger container, with no output
+    /// <bold>Sandcastle.Loggers.BuildLoggers</bold>, the logger container, with no output
     /// </description>
     /// </item>
     /// </list>
@@ -74,7 +74,6 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private bool   _isAppend;
         private bool   _isInitialized;
         private bool   _isEnabled;
         private bool   _keepLogFile;
@@ -163,20 +162,14 @@ namespace Sandcastle
         /// <param name="logFileName">
         /// A string specifying the log file name.
         /// </param>
-        /// <param name="append">
-        /// A value indicating whether to append this logging to an existing
-        /// log file. If <see langword="false"/>, any existing file with the
-        /// same log file name is deleted.
-        /// </param>
         /// <param name="encoding">
         /// The encoding of the log file. If <see langword="null"/>, the default
         /// encoding of UTF-8 is used.
         /// </param>
-        protected BuildLogger(string logFileName, bool append, Encoding encoding)
+        protected BuildLogger(string logFileName, Encoding encoding)
             : this(logFileName)
         {
             _isEnabled   = true; 
-            _isAppend    = append;
             if (encoding == null)
             {
                 encoding = new UTF8Encoding();
@@ -351,27 +344,6 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to append the logging to
-        /// an existing log file.
-        /// </summary>
-        /// <value>
-        /// This is <see langword="true"/> if the logger appends its logs to
-        /// an existing file; otherwise, the contents of any existing file 
-        /// with the same file is deleted.
-        /// </value>
-        public bool Append
-        {
-            get
-            {
-                return _isAppend;
-            } 
-            set
-            {
-                _isAppend = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the encoding of the log file.
         /// </summary>
         /// <value>
@@ -425,6 +397,11 @@ namespace Sandcastle
         #endregion
 
         #region Protected Properties
+
+        protected abstract bool IsFileLogging
+        {
+            get;
+        }
 
         protected string PrefixStarted
         {
@@ -528,7 +505,10 @@ namespace Sandcastle
                     _logFullPath = Path.GetFullPath(_logFileName);
                 }
 
-                _baseWriter = new StreamWriter(_logFullPath, _isAppend, _encoding);
+                if (this.IsFileLogging)
+                {
+                    _baseWriter = new StreamWriter(_logFullPath, false, _encoding);
+                }
             }
 
             _isInitialized = true;
@@ -548,6 +528,20 @@ namespace Sandcastle
                 _baseWriter = null;
             }
 
+            // If the log file is not required, we delete it...
+            if (!_keepLogFile && !String.IsNullOrEmpty(_logFullPath) &&
+                File.Exists(_logFullPath))
+            {   
+                try
+                {
+                    File.SetAttributes(_logFullPath, FileAttributes.Normal);
+                    File.Delete(_logFullPath);
+                }            
+                catch
+                {                    	
+                }
+            }
+
             _isInitialized = false;
         }
 
@@ -562,6 +556,7 @@ namespace Sandcastle
             {
                 return;
             }
+
             this.Write(ex, BuildLoggerLevel.Error);
         }
 
@@ -575,6 +570,7 @@ namespace Sandcastle
             {
                 return;
             }
+
             this.WriteLine(ex, BuildLoggerLevel.Error);
         }
 
@@ -594,6 +590,7 @@ namespace Sandcastle
             {
                 return;
             }
+
             this.Write(ex.ToString(), level);
         }
 
@@ -618,6 +615,7 @@ namespace Sandcastle
             {
                 return;
             }
+
             this.WriteLine(ex.ToString(), level);
         }
 

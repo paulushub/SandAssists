@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.References
@@ -8,8 +9,17 @@ namespace Sandcastle.References
     [Serializable]
     public sealed class ReferenceMemberFilter : ReferenceFilter
     {
+        #region Public Fields
+
+        public const string TagName = "member";
+
+        #endregion
+
         #region Private Fields
 
+        /// <summary>
+        /// Mainly used for editing, this is the name of the parent type.
+        /// </summary>
         private string _typeName;
 
         #endregion
@@ -33,6 +43,7 @@ namespace Sandcastle.References
         public ReferenceMemberFilter(ReferenceMemberFilter source)
             : base(source)
         {
+            _typeName = source._typeName;
         }
 
         #endregion
@@ -49,13 +60,13 @@ namespace Sandcastle.References
 
         public string TypeName
         {
-            get 
-            { 
-                return _typeName; 
+            get
+            {
+                return _typeName;
             }
-            set 
-            { 
-                _typeName = value; 
+            set
+            {
+                _typeName = value;
             }
         }
 
@@ -69,6 +80,30 @@ namespace Sandcastle.References
         /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string nodeText = reader.GetAttribute("name");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                this.Name = nodeText;
+            }
+            nodeText = reader.GetAttribute("expose");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                this.Expose = Convert.ToBoolean(nodeText);
+            }
         }
 
         /// <summary>
@@ -79,7 +114,7 @@ namespace Sandcastle.References
         {
             // <member name="ToString" expose="true" />
             bool isExposed = this.Expose;
-            writer.WriteStartElement("member");
+            writer.WriteStartElement(TagName);
             writer.WriteAttributeString("name", this.Name);
             writer.WriteAttributeString("expose", isExposed.ToString());
             writer.WriteEndElement();
@@ -92,6 +127,10 @@ namespace Sandcastle.References
         public override ReferenceFilter Clone()
         {
             ReferenceMemberFilter filter = new ReferenceMemberFilter(this);
+            if (_typeName != null)
+            {
+                filter._typeName = String.Copy(_typeName);
+            }
 
             return filter;
         }

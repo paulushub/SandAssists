@@ -37,12 +37,15 @@
     </ItemRule>	    
     
 	<item id="locale"><IncludeItem item="helpLocale"/></item>
+	
+	<item id="assemblyNameModuleVersion"><span style="white-space:nowrap">{0} (in {1}.{2}) <span class="label">Version</span>: {3}</span></item>
     
     <item id="rootTopicTitle"><IncludeItem item="rootTopicTitle"/></item>
     <item id="rootTopicTitleLocalized">Namespaces</item>
     <item id="rootLink"><referenceLink target="R:Project"><IncludeItem item="rootTopicTitle"/></referenceLink></item>
     <item id="productTitle"><IncludeItem item="feedbackProduct"/></item>
     <item id="runningHeaderText"><IncludeItem item="runningHeaderText"/></item>
+    <item id="defaultFreshnessDate"><IncludeItem item="defaultFreshnessDate"/></item>
 
     <!-- The header of the page -->
     <item id="header">

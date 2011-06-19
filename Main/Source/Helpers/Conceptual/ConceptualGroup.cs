@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
+using Sandcastle.Contents;
+
 namespace Sandcastle.Conceptual
 {
     /// <summary>
@@ -35,8 +37,13 @@ namespace Sandcastle.Conceptual
 
         private Version _fileVersion;
 
+        private string   _freshnessFormat;
+        private DateTime _freshnessDate;
+
         private ConceptualSource  _source;
         private ConceptualContent _topicContent;
+
+        private ConceptualChangeHistory _changeHistory;
 
         #endregion
 
@@ -63,12 +70,15 @@ namespace Sandcastle.Conceptual
         public ConceptualGroup(string groupName, string groupId)
             : base(groupName, groupId)
         {
-            _fileVersion   = new Version(1, 0, 0, 0);
-            _projectTitle  = "ProjectTitle";
-            _projectName   = "ProjectName";
-            _docID         = Guid.NewGuid();
-            _projectID     = Guid.NewGuid();
-            _repositoryID  = Guid.NewGuid();
+            _fileVersion     = new Version(1, 0, 0, 0);
+            _projectTitle    = "ProjectTitle";
+            _projectName     = "ProjectName";
+            _docID           = Guid.NewGuid();
+            _projectID       = Guid.NewGuid();
+            _repositoryID    = Guid.NewGuid();
+            _freshnessDate   = DateTime.Today;
+            _freshnessFormat = "D";
+            _changeHistory   = ConceptualChangeHistory.Show;
         }
 
         /// <summary>
@@ -286,6 +296,40 @@ namespace Sandcastle.Conceptual
             }
         }
 
+        public string FreshnessFormat
+        {
+            get
+            {
+                return _freshnessFormat;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    value = value.Trim();
+                }
+                if (String.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+
+                _freshnessFormat = value;
+            }
+        }
+
+
+        public DateTime FreshnessDate
+        {
+            get
+            {
+                return _freshnessDate;
+            }
+            set
+            {
+                _freshnessDate = value;
+            }
+        }
+
         public ConceptualSource Source
         {
             get
@@ -307,6 +351,18 @@ namespace Sandcastle.Conceptual
             set
             {
                 _topicContent = value;
+            }
+        }
+
+        public ConceptualChangeHistory ChangeHistory
+        {
+            get
+            {
+                return _changeHistory;
+            }
+            set
+            {
+                _changeHistory = value;
             }
         }
 
@@ -345,7 +401,7 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
-        #region Initialize Method
+        #region Initialization Methods
 
         public override void Initialize(BuildContext context)
         {
@@ -359,13 +415,7 @@ namespace Sandcastle.Conceptual
             base.Initialize(context);
 
             BuildSettings settings = context.Settings;
-            string workingDir = this.WorkingDirectory;
-
-            if (String.IsNullOrEmpty(workingDir))
-            {
-                workingDir = context.WorkingDirectory;
-                this.WorkingDirectory = workingDir;
-            }
+            string workingDir = context.WorkingDirectory;
 
             string ddueXmlDir  = Path.Combine(workingDir, groupContext["$DdueXmlDir"]);
             string ddueCompDir = Path.Combine(workingDir, groupContext["$DdueXmlCompDir"]);
@@ -407,16 +457,40 @@ namespace Sandcastle.Conceptual
             }
         }
 
-        #endregion
-
-        #region Uninitialize Method
-
         public override void Uninitialize()
         {
             _topicContent = null;
 
             base.Uninitialize();
         }
+
+        #endregion
+
+        #region Other Methods
+
+        public override IList<SharedItem> PrepareShared(BuildContext context)
+        {
+            IList<SharedItem> listShared = base.PrepareShared(context);
+
+            if (listShared == null)
+            {
+                listShared = new List<SharedItem>();
+            }
+
+            if (_changeHistory == ConceptualChangeHistory.ShowFreshnessDate)
+            {
+                if (_freshnessDate != DateTime.MinValue &&
+                    _freshnessDate != DateTime.MaxValue)
+                {
+                    BuildSettings settings = context.Settings;
+
+                    listShared.Add(new SharedItem("defaultFreshnessDate",
+                        _freshnessDate.ToString(_freshnessFormat, settings.CultureInfo)));
+                }
+            }
+
+            return listShared;
+        }     
 
         #endregion
 

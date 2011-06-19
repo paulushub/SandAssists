@@ -64,6 +64,7 @@
     <Compile Include="Products\Platform\Unix\Diagrams\DiagramU.cs" />
     <Compile Include="Products\Platform\Windows\Charts\ChartW.cs" />
     <Compile Include="Products\Platform\Windows\Games\GameW.cs" />
+    <Compile Include="Products\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Supports\Sales\Charts\ChartS.cs" />
     <Compile Include="Supports\Sales\Diagrams\DiagramS.cs" />
@@ -71,6 +72,14 @@
     <Compile Include="Supports\Technical\Charts\ChartT.cs" />
     <Compile Include="Supports\Technical\Diagrams\DiagramT.cs" />
     <Compile Include="Supports\Technical\Games\GameT.cs" />
+    <Compile Include="TestLibrary\ExtensionMethods.cs" />
+    <Compile Include="TestLibrary\TestClassEventArgs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SampleLibrary\SampleLibrary.csproj">
+      <Project>{0009470D-BB30-4147-B373-356A4EE11441}</Project>
+      <Name>SampleLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

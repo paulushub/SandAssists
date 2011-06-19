@@ -52,6 +52,14 @@ namespace Sandcastle.ReflectionData
             get;
         }
 
+        public virtual bool Exists
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         #endregion
 
         #region Public Methods

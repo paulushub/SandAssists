@@ -174,7 +174,7 @@ namespace Sandcastle.Components
             }
             else if (_codeRefStorage == SnippetStorage.Database)
             {
-                _codeRefProvider = new SnippetSqliteProvider(compType,
+                _codeRefProvider = new SnippetDatabaseProvider(compType,
                     msgHandler);
             }
 

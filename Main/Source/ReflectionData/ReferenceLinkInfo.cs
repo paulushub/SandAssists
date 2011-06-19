@@ -18,8 +18,8 @@ namespace Sandcastle.ReflectionData
         private bool           _preferOverload;
         private string         _target;
         private string         _displayTarget;
-        private ReferenceLinkDisplayOptions _options;
         private XPathNavigator _contents;
+        private ReferenceLinkDisplayOptions _options;
 
         #endregion
 
@@ -89,7 +89,8 @@ namespace Sandcastle.ReflectionData
             ReferenceLinkInfo info = new ReferenceLinkInfo();
 
             info._target = element.GetAttribute("target", String.Empty);
-            if (String.IsNullOrEmpty(info._target)) return (null);
+            if (String.IsNullOrEmpty(info._target)) 
+                return (null);
 
             info._displayTarget = element.GetAttribute("display-target", String.Empty);
 

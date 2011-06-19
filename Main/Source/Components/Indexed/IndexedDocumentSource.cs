@@ -101,12 +101,14 @@ namespace Sandcastle.Components.Indexed
 
         public abstract XPathNavigator GetContent(string key);
 
-        public abstract void AddDocument(string file, bool cacheIt);
+        public abstract void AddDocument(string file, bool cacheIt, 
+            bool warnOverride);
 
-        public abstract void AddDocuments(string wildcardPath, bool cacheIt);
+        public abstract void AddDocuments(string wildcardPath,
+            bool cacheIt, bool warnOverride);
 
         public abstract void AddDocuments(string baseDirectory,
-            string wildcardPath, bool recurse, bool cacheIt);
+            string wildcardPath, bool recurse, bool cacheIt, bool warnOverride);
 
         public void WriteMessage(MessageLevel level, string message)
         {

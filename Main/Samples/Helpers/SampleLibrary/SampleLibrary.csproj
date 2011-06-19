@@ -33,6 +33,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,9 +55,21 @@
     <DocumentationFile>Output\TestLibrary.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AClass.cs" />
@@ -67,14 +80,26 @@
     <Compile Include="CClass.cs" />
     <Compile Include="CodeSnippets.cs" />
     <Compile Include="DClass.cs" />
+    <Compile Include="DependencyObjects.cs" />
     <Compile Include="Equation.cs" />
     <Compile Include="GClass.cs" />
+    <Compile Include="GenericMethods.cs" />
     <Compile Include="IAClass.cs" />
     <Compile Include="IBClass.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Point3D.cs" />
     <Compile Include="PointCollection.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Rectangle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -100,12 +125,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeSnippetSample.snippets" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\Caliburn.Micro.dll" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\Caliburn.Micro.xml" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\System.Windows.Controls.dll" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\System.Windows.Controls.xml" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\System.Windows.Interactivity.dll" />
+    <Content Include="Libraries\Caliburn.Micro\Silverlight\System.Windows.Interactivity.xml" />
+    <Content Include="Libraries\Caliburn.Micro\WP7\Caliburn.Micro.dll" />
+    <Content Include="Libraries\Caliburn.Micro\WP7\Caliburn.Micro.xml" />
+    <Content Include="Libraries\Caliburn.Micro\WP7\System.Windows.Interactivity.dll" />
+    <Content Include="Libraries\Caliburn.Micro\WP7\System.Windows.Interactivity.xml" />
+    <Content Include="Libraries\Caliburn.Micro\WPF\Caliburn.Micro.dll" />
+    <Content Include="Libraries\Caliburn.Micro\WPF\Caliburn.Micro.xml" />
+    <Content Include="Libraries\Caliburn.Micro\WPF\System.Windows.Interactivity.dll" />
+    <Content Include="Libraries\Caliburn.Micro\WPF\System.Windows.Interactivity.xml" />
     <Content Include="Project.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeSnippets.xsd" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

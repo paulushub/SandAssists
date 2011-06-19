@@ -5,11 +5,20 @@
     <!-- The expections are attributes relating to data binding. Do show them. -->
     <namespace name="System.ComponentModel" expose="false">
         <type name="BindableAttribute" expose="true"/>
+        <type name="BrowsableAttribute" expose="true" />
         <type name="ComplexBindingPropertiesAttribute" expose="true"/>
         <type name="DataObjectAttribute" expose="true"/>
         <type name="DefaultBindingPropertyAttribute" expose="true"/>
+        <type name="DefaultEventAttribute" expose="true"/>
+        <type name="DefaultPropertyAttribute" expose="true"/>
+        <type name="DefaultValueAttribute" expose="true"/>
+        <type name="DesignerSerializationVisibilityAttribute" expose="true"/>
+        <type name="EditorAttribute" expose="true"/>
+        <type name="EditorBrowsableAttribute" expose="true"/>
+        <type name="ExtenderProvidedProperty" expose="true"/>
         <type name="ListBindableAttribute" expose="true"/>
         <type name="LookupBindingPropertiesAttribute" expose="true"/>
+        <type name="ProvideProperty" expose="true"/>
         <type name="SettingsBindableAttribute" expose="true"/>
         <type name="TypeConverterAttribute" expose="true"/>
     </namespace>
@@ -29,7 +38,9 @@
         <type name="DefaultMemberAttribute" expose="false" />
     </namespace>
     <!-- Attributes in System.Runtime.CompilerServices control obscure details of compilation. Don't show them. -->
-    <namespace name="System.Runtime.CompilerServices" expose="false" />
+      <namespace name="System.Runtime.CompilerServices" expose="false">
+        <type name="ExtensionAttribute" expose="true" />
+      </namespace>
     <!-- Attributes in System.Runtime.ConstrinedExecution control obscure details of compilation. Don't show them. -->
     <namespace name="System.Runtime.ConstrainedExecution" expose="false" />
     <!-- Most atributes in System.Runtime.InteropServices control obscure details of COM interop. Don't show them. -->
@@ -43,6 +54,8 @@
     <namespace name="System.Runtime.Versioning" expose="false" />
     <!-- Attributes in System.Security might hint as security implementation details. Don't show them. -->
     <namespace name="System.Security" expose="false">
+        <type name="SecurityCriticalAttribute" expose="true" />
+		<type name="SecurityTreatAsSafeAttribute" expose="true" />
         <type name="AllowPartiallyTrustedCallersAttribute" expose="true" />
     </namespace>
     <!-- Attributes in System.Web.Compilation control interaction with the Expression designer. Don't show them. -->
@@ -50,6 +63,7 @@
     <!-- The ASP.NET team only wants these attributes exposed from their namespace. Their logic ecscapes me, but here it is. -->
     <namespace name="System.Web.UI" expose="false">
         <type name="ControlValuePropertyAttribute" expose="true"/>
+        <type name="PersistenceModeAttribute" expose="true" />
         <type name="ValidationPropertyAttribute" expose="true"/>
         <type name="WebResourceAttribute" expose="true"/>
         <type name="TemplateContainerAttribute" expose="true"/>
@@ -59,7 +73,7 @@
     <!-- Don't show attributes related to XAML serialization details. -->
     <namespace name="System.Windows.Markup" expose="true">
         <type name="ConstructorArgumentAttribute" expose="false" />
-        <type name="DependsOnAttribute" expose="false" />
+        <!-- <type name="DependsOnAttribute" expose="false" /> -->
         <type name="DesignerSerializationOptionsAttribute" expose="false" />
         <type name="ValueSerializerAttribute" expose="false" />
         <type name="XmlnsCompatibleWithAttribute" expose="false" />
@@ -68,5 +82,9 @@
     </namespace>
     <!-- Attributes in System.Xml.Serialization control obscure details of XML serialization. Don't show them.-->
     <namespace name="System.Xml.Serialization" expose="false" />
+    <!-- The GeneratedCodeAttribute is useful only to tools, and should be hidden from end users.-->
+	<namespace name="System.CodeDom.Compiler" expose="true">
+        <type name="GeneratedCodeAttribute" expose="false" />
+    </namespace>
 </attributeFilter>
 

@@ -29,7 +29,7 @@ namespace Sandcastle.Formats
     /// </para>
     /// </remarks>
     [Serializable]
-    public class FormatHxs : BuildFormat
+    public sealed class FormatHxs : BuildFormat
     {
         #region Private Fields
 
@@ -94,6 +94,14 @@ namespace Sandcastle.Formats
 
         #region Public Properties
 
+        public override BuildFormatType FormatType
+        {
+            get
+            {
+                return BuildFormatType.HtmlHelp2;
+            }
+        }
+
         /// <summary>
         /// Gets a value specifying the name of the this output format.
         /// </summary>
@@ -133,11 +141,11 @@ namespace Sandcastle.Formats
             }
         }
 
-        public override BuildFormatType FormatType
+        public override string TocFileName
         {
             get
             {
-                return BuildFormatType.HtmlHelp2;
+                return "HtmlHelpToc2.xml";
             }
         }
 
@@ -545,20 +553,13 @@ namespace Sandcastle.Formats
                 listSteps.Add(dirMove); 
 
                 // 2. Creating the project file...
-                string tocTopics = context["$HelpTocFile"];
-                string tempText = context["$HelpHierarchicalToc"];
-
-                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
-                {
-                    tocTopics = context["$HelpHierarchicalTocFile"];
-                }
+                string tocFile = context["$HelpTocFile"];
 
                 StepHxsBuilder hxsBuilder  = new StepHxsBuilder(workingDir);
-                hxsBuilder.LogTitle = String.Empty;
+                hxsBuilder.LogTitle        = String.Empty;
                 hxsBuilder.Message         = "Creating project, content and configuration files.";
                 hxsBuilder.HelpFolder      = helpFolder;
-                hxsBuilder.HelpToc         = tocTopics;
+                hxsBuilder.HelpToc         = tocFile;
                 hxsBuilder.HelpName        = helpName;
                 hxsBuilder.HelpTitleId     = _helpTitleId;
                 hxsBuilder.HelpCultureInfo = culture;
@@ -579,7 +580,7 @@ namespace Sandcastle.Formats
                     String.Format(@"{0}\{1}.HxC", helpFolder, helpName));
                 //hxsCompiler.CopyrightNotice = 2;
                 hxsCompiler.HelpFolder      = helpFolder;
-                hxsCompiler.HelpToc         = tocTopics;
+                hxsCompiler.HelpToc         = tocFile;
                 hxsCompiler.HelpName        = helpName;
                 hxsCompiler.HelpTitleId     = _helpTitleId;
                 hxsCompiler.HelpDirectory   = helpDirectory;

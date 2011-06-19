@@ -11,6 +11,7 @@ using Iris.Highlighting;
 using Microsoft.Ddue.Tools;
 
 using Sandcastle.Components.Codes;
+using Sandcastle.Components.Versions;
 using Sandcastle.Components.Snippets;
 
 namespace Sandcastle.Components
@@ -44,6 +45,8 @@ namespace Sandcastle.Components
 
         private XPathExpression _tocEnumHSelector;
         private XPathExpression _tocEnumDivSelector;
+
+        private XPathExpression _versionSelector;
 
         private Dictionary<string, XmlDocument> _tocExcludedDocuments;
         private Dictionary<string, RootNamespaceItem> _tocExcludedNamespaces;
@@ -119,11 +122,29 @@ namespace Sandcastle.Components
                 {
                     _tocExcludedDocuments[key] = (XmlDocument)document.Clone();
                 }
-                else if (key.Length > 2 && key[0] == 'R') // change the root id...
+                else if (key.Length > 2 && key[0] == 'R' && key[1] == ':') // change the root id...
                 {
                     if (!String.IsNullOrEmpty(_rootId))
                     {
                         this.ApplyRootId(docNavigator, key);
+                    }
+                }
+
+                // 6. Apply the version information...
+                BuildComponentController controller = BuildComponentController.Controller;
+                if (controller.HasVersions)
+                {
+                    if (_versionSelector == null)
+                    {
+                        _versionSelector = XPathExpression.Compile(
+                            "//include[@item='assemblyNameAndModule']");
+                    }
+
+                    IList<VersionInfo> currentVersions = controller.CurrentVersions;
+                    if (currentVersions != null && currentVersions.Count != 0)
+                    {
+                        this.ApplyVersionInformation(docNavigator, 
+                            currentVersions, key);
                     }
                 }
             }
@@ -636,6 +657,56 @@ namespace Sandcastle.Components
             }
 
             writer.Close();
+        }
+
+        #endregion
+
+        #region ApplyVersionInformation Method
+
+        private void ApplyVersionInformation(XPathNavigator docNavigator,
+            IList<VersionInfo> currentVersions, string key)
+        {
+            XPathNodeIterator iterator = docNavigator.Select(_versionSelector);
+            if (iterator == null || iterator.Count == 0 ||
+                iterator.Count != currentVersions.Count)
+            {
+                return;
+            }
+
+            int index = 0;
+            foreach (XPathNavigator navigator in iterator)
+            {
+                if (navigator.MoveToAttribute("item", String.Empty))
+                {
+                    navigator.SetValue("assemblyNameModuleVersion");
+                    if (navigator.MoveToParent())
+                    {
+                        XmlWriter writer = navigator.AppendChild();
+                        writer.WriteStartElement("parameter");
+                        writer.WriteString(currentVersions[index].Text);
+                        writer.WriteEndElement();
+
+                        writer.Close();
+                    }
+                    else
+                    {
+                        // If it fails, just return the attribute...
+                        navigator.SetValue("assemblyNameAndModule");
+
+                        this.WriteMessage(MessageLevel.Warn, String.Format(
+                            "The writing of the version information for '{0}' failed.", key));
+                        break;
+                    }
+                }
+                else
+                {
+                    this.WriteMessage(MessageLevel.Warn, String.Format(
+                        "The writing of the version information for '{0}' failed.", key));
+                    break;
+                }
+
+                index++;
+            }
         }
 
         #endregion

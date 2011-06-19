@@ -363,7 +363,7 @@ namespace Sandcastle.Conceptual
                     configurator.Contents.Add(formatShared);
                 }
 
-                IList<SharedItem> groupShared = group.PrepareShared();
+                IList<SharedItem> groupShared = group.PrepareShared(_context);
                 if (groupShared != null && groupShared.Count > 0)
                 {
                     configurator.Contents.Add(groupShared);

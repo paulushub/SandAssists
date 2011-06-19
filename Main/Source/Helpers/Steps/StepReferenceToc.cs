@@ -18,6 +18,9 @@ namespace Sandcastle.Steps
         private ReferenceGroup _group;
 
         [NonSerialized]
+        private List<ReferenceConfiguration> _listConfigurations;
+
+        [NonSerialized]
         private ReferenceEngineSettings _engineSettings;
         [NonSerialized]
         private List<ReferenceDocument> _listDocuments;
@@ -446,12 +449,60 @@ namespace Sandcastle.Steps
                 _dictVisitors = new Dictionary<string, ReferenceTocVisitor>();
             }
 
-            _dictVisitors.Add(
-                ReferenceTocExcludeConfiguration.ConfigurationName,
-                new ReferenceTocExcludeVisitor());
-            _dictVisitors.Add(
-                ReferenceTocLayoutConfiguration.ConfigurationName,
-                new ReferenceTocLayoutVisitor());
+            _listConfigurations = new List<ReferenceConfiguration>();
+
+            // List out enabled Sandcastle Assist and the Plugin configurations...
+            IBuildNamedList<BuildConfiguration> dicAssistConfigs
+                = _engineSettings.Configurations;
+            if (dicAssistConfigs != null && dicAssistConfigs.Count != 0)
+            {
+                foreach (ReferenceConfiguration config in dicAssistConfigs)
+                {
+                    // It must be both enabled to be used and active/valid...
+                    if (config.Enabled && config.IsActive &&
+                        String.Equals(config.Category, "ReferenceTocVisitor",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Make sure there is a handler of this configuration...
+                        ReferenceTocVisitor visitor = config.CreateVisitor() as ReferenceTocVisitor;
+                        if (visitor != null)
+                        {
+                            _listConfigurations.Add(config);
+
+                            if (!_dictVisitors.ContainsKey(config.Name))
+                            {
+                                _dictVisitors.Add(config.Name, visitor);
+                            }
+                        }
+                    }
+                }
+            }
+
+            IBuildNamedList<BuildConfiguration> dicPluginConfigs
+                = _engineSettings.PluginConfigurations;
+            if (dicPluginConfigs != null && dicPluginConfigs.Count != 0)
+            {
+                foreach (ReferenceConfiguration config in dicPluginConfigs)
+                {
+                    // It must be both enabled to be used and active/valid...
+                    if (config.Enabled && config.IsActive &&
+                        String.Equals(config.Category, "ReferenceTocVisitor",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Make sure there is a handler of this configuration...
+                        ReferenceTocVisitor visitor = config.CreateVisitor() as ReferenceTocVisitor;
+                        if (visitor != null)
+                        {
+                            _listConfigurations.Add(config);
+
+                            if (!_dictVisitors.ContainsKey(config.Name))
+                            {
+                                _dictVisitors.Add(config.Name, visitor);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

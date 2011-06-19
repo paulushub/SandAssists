@@ -125,7 +125,7 @@ namespace Sandcastle.ReflectionData
                 throw new XmlSchemaValidationException(String.Format(
                     "The target file '{0}' is not valid.", topic.BaseURI));
 
-            target.type = type;
+            target.defaultType = type;
 
             return target;
         }
@@ -285,7 +285,7 @@ namespace Sandcastle.ReflectionData
                 MemberTarget member = new MemberTarget();
                 member.id             = memberId; // get Id from element
                 member.file           = file; // get file from type file
-                member.type           = linkType;
+                member.defaultType    = linkType;
                 member.name           = memberName; // get name from element
                 member.containingType = new SimpleTypeReference(typeId); // get containing type from this type
                 members.Add(member);

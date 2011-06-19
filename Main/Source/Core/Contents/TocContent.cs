@@ -17,6 +17,8 @@ namespace Sandcastle.Contents
 
         #region Private Fields
 
+        private bool _isEnabled;
+
         [NonSerialized]
         private IDictionary<string, int> _dicItems;
 
@@ -34,12 +36,15 @@ namespace Sandcastle.Contents
             {
                 _dicItems = keyedList.Dictionary;
             }
+
+            _isEnabled = true;
         }
 
         public TocContent(TocContent source)
             : base(source)
         {
-            _dicItems     = source._dicItems;
+            _isEnabled = source._isEnabled;
+            _dicItems  = source._dicItems;
         }
 
         #endregion
@@ -66,6 +71,18 @@ namespace Sandcastle.Contents
                 }
 
                 return (validRoots == 0);
+            }
+        }
+
+        public bool Enabled
+        {
+            get
+            {
+                return _isEnabled;
+            }
+            set
+            {
+                _isEnabled = value;
             }
         }
 
@@ -233,6 +250,12 @@ namespace Sandcastle.Contents
         {
             BuildExceptions.NotNull(reader, "reader");
 
+            string nodeText = reader.GetAttribute("enabled");
+            if (!String.IsNullOrEmpty(nodeText))
+            {
+                _isEnabled = Convert.ToBoolean(nodeText);
+            }
+
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -273,6 +296,7 @@ namespace Sandcastle.Contents
             BuildExceptions.NotNull(writer, "writer");
 
             writer.WriteStartElement(TagName);
+            writer.WriteAttributeString("enabled", _isEnabled.ToString());
 
             for (int i = 0; i < this.Count; i++)
             {

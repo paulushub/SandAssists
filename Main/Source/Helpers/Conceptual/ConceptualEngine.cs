@@ -208,8 +208,8 @@ namespace Sandcastle.Conceptual
             }
 
             BuildSettings settings = this.Settings;
+            string sandcastleDir   = this.Context.StylesDirectory;
             BuildStyle outputStyle = settings.Style;
-            string sandcastleDir   = settings.StylesDirectory;
 
             if (String.IsNullOrEmpty(sandcastleDir))
             {

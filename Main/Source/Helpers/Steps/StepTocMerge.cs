@@ -20,8 +20,11 @@ namespace Sandcastle.Steps
         private BuildToc     _helpToc;
         private List<string> _conceptualGroups;
         private List<string> _referenceGroups;
-        private BuildKeyedList<TocMerge> _listTocMerges;
 
+        private BuildLogger     _logger;
+        private BuildTocContext _tocContext;
+
+        private BuildKeyedList<TocMerge> _listTocMerges;  
         private List<PendingDeletePair>  _pendindDelete;
 
         #endregion
@@ -70,7 +73,7 @@ namespace Sandcastle.Steps
         #region Public Methods
 
         public void Add(string tocFile, BuildGroupType groupType,
-            string groupId, bool isRooted)
+            string groupId, bool isRooted, bool isExcluded)
         {
             if (_listTocMerges == null)
             {
@@ -98,8 +101,8 @@ namespace Sandcastle.Steps
                 _referenceGroups.Add(groupId);
             }
 
-            _listTocMerges.Add(new TocMerge(this.ExpandPath(tocFile), 
-                groupType, groupId, isRooted));
+            _listTocMerges.Add(new TocMerge(this.ExpandPath(tocFile),
+                groupType, groupId, isRooted, isExcluded));
         }
 
         #endregion
@@ -115,18 +118,12 @@ namespace Sandcastle.Steps
                     "The table of contents options is not available.");
             }
 
+            BuildLogger logger = context.Logger;
             try
             {
                 if (String.IsNullOrEmpty(_mergedToc))
                 {
-                    if (_isHierarchical)
-                    {
-                        _mergedToc = BuildToc.HierarchicalToc;
-                    }
-                    else
-                    {
-                        _mergedToc = BuildToc.HelpToc;
-                    }
+                    _mergedToc = _helpToc.TocFile;
                 }
                 _mergedToc = this.ExpandPath(_mergedToc);
                 if (File.Exists(_mergedToc))
@@ -144,8 +141,18 @@ namespace Sandcastle.Steps
                     this.ProcessMarkers(context);
                 }
 
-                if (this.ProcessToc(context) && File.Exists(_mergedToc))
-                { 
+                if (!this.ProcessToc(context))
+                {
+                    if (logger != null)
+                    {
+                        logger.WriteLine("The merging of the TOC failed.", 
+                            BuildLoggerLevel.Error);
+                    }
+                    return false;
+                }
+
+                if (File.Exists(_mergedToc))
+                {   
                     // For a successful merge, get the "root/first" topic...
                     using (XmlReader reader = XmlReader.Create(_mergedToc))
                     {   
@@ -167,13 +174,12 @@ namespace Sandcastle.Steps
                             }
                         }
                     }
-
-                    return true;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
-                BuildLogger logger = context.Logger;
                 if (logger != null)
                 {
                     logger.WriteLine(ex, BuildLoggerLevel.Error);
@@ -191,38 +197,98 @@ namespace Sandcastle.Steps
 
         private bool ProcessToc(BuildContext context)
         {
-            BuildLogger logger = context.Logger;
+            _logger     = context.Logger;
+            _tocContext = context.TocContext;
 
+            bool tocIsCreated = false;
             if (_helpToc != null && !_helpToc.IsEmpty)
             {
-                return this.CustomMergeToc(logger, context.TocContext);
-            }
-            else
-            {
-                if (_listTocMerges == null || _listTocMerges.Count == 0)
+                TocContent tocContent = _helpToc.Content;
+                if (tocContent.Enabled)
                 {
-                    return false;
+                    tocIsCreated = this.CustomMergeToc(_mergedToc, tocContent);
                 }
+            }
 
+            IList<BuildFormat> formats = context.Settings.Formats;
+            int enabledFormats = 0;
+            int customizedToc  = 0;
+            for (int i = 0; i < formats.Count; i++)
+            {
+                BuildFormat format = formats[i];
+                if (format.Enabled)
+                {
+                    enabledFormats++;
+
+                    TocContent tocContent = format.TocContent;
+                    if (tocContent != null && !tocContent.IsEmpty &&
+                        tocContent.Enabled)
+                    {
+                        string mergedToc = this.ExpandPath(format.TocFileName);
+                        if (this.CustomMergeToc(mergedToc, tocContent))
+                        {
+                            string tocKey = "$" + format.Name;
+                            _tocContext.SetValue(tocKey, mergedToc);
+
+                            // For a successful merge, get the "root/first" topic...
+                            using (XmlReader reader = XmlReader.Create(mergedToc))
+                            {
+                                while (reader.Read())
+                                {
+                                    if (reader.NodeType == XmlNodeType.Element &&
+                                        String.Equals(reader.Name, "topic",
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        _tocContext.SetValue(tocKey + "-HelpTocRoot", reader.GetAttribute("id"));
+                                        break;
+                                    }
+                                }
+                            }    
+
+                            customizedToc++;
+                        }
+                    }
+                }
+            }
+
+            // If all the formats have customized TOC, there is no need to
+            // proceed further, creating a general merged TOC...
+            if (customizedToc != 0 && customizedToc == enabledFormats)
+            {   
+                if (!tocIsCreated)
+                {
+                    tocIsCreated = true;
+                }
+            }
+
+            if (tocIsCreated)
+            {
+                return tocIsCreated;
+            }
+
+            if (_listTocMerges != null && _listTocMerges.Count != 0)
+            {       
                 int itemCount = _listTocMerges.Count;
 
                 // If there is a single TOC, we simply rename it...
                 if (itemCount == 1)
                 {
-                    return RenameToc(logger, _mergedToc);
+                    tocIsCreated = RenameToc(_mergedToc);
                 }
                 else
                 {
-                    return MergeToc(logger, _mergedToc, itemCount);
+                    tocIsCreated = MergeToc(_mergedToc, itemCount);
                 }   
-            }
+            }   
+
+            return tocIsCreated;
         }
 
         #endregion
 
         #region Default TOC Merging Methods
 
-        private bool RenameToc(BuildLogger logger, string mergedToc)
+        private bool RenameToc(string mergedToc)
         {
             try
             {
@@ -247,16 +313,16 @@ namespace Sandcastle.Steps
             }
             catch (Exception ex)
             {
-                if (logger != null)
+                if (_logger != null)
                 {
-                    logger.WriteLine(ex);
+                    _logger.WriteLine(ex);
                 }
 
                 return false;
             }
         }
 
-        private bool MergeToc(BuildLogger logger, string mergedToc, int itemCount)
+        private bool MergeToc(string mergedToc, int itemCount)
         {
             XmlWriter xmlWriter = null;
             try
@@ -277,7 +343,12 @@ namespace Sandcastle.Steps
                 // Process the conceptual topics first....
                 for (int i = 0; i < itemCount; i++)
                 {
-                    TocMerge tocMerge = _listTocMerges[i];
+                    TocMerge tocMerge = _listTocMerges[i];  
+                    if (tocMerge.IsEncluded)
+                    {
+                        continue;
+                    }
+
                     if (tocMerge.GroupType == BuildGroupType.Conceptual &&
                         tocMerge.IsIncluded)
                     {
@@ -293,6 +364,11 @@ namespace Sandcastle.Steps
                 for (int i = 0; i < itemCount; i++)
                 {
                     TocMerge tocMerge = _listTocMerges[i];
+                    if (tocMerge.IsEncluded)
+                    {
+                        continue;
+                    }
+
                     if (tocMerge.GroupType == BuildGroupType.Reference &&
                         tocMerge.IsIncluded)
                     {
@@ -319,9 +395,9 @@ namespace Sandcastle.Steps
                     xmlWriter = null;
                 }
 
-                if (logger != null)
+                if (_logger != null)
                 {
-                    logger.WriteLine(ex);
+                    _logger.WriteLine(ex);
                 }
 
                 return false;
@@ -352,12 +428,11 @@ namespace Sandcastle.Steps
 
         #region Custom TOC Merging Methods
 
-        private bool CustomMergeToc(BuildLogger logger, BuildTocContext tocContext)
+        private bool CustomMergeToc(string mergedToc, TocContent tocContent)
         {
-            tocContext.LoadAll();
+            _tocContext.LoadAll();
 
-            TocContent tocContent = _helpToc.Content;
-            IBuildNamedList<BuildGroupTocInfo> groupTocItems = tocContext.Items;
+            IBuildNamedList<BuildGroupTocInfo> groupTocItems = _tocContext.Items;
 
             Debug.Assert(groupTocItems != null && groupTocItems.Count != 0);
 
@@ -385,7 +460,7 @@ namespace Sandcastle.Steps
                         Debug.Assert(groupToc != null); 
                         break;
                     case TocItemSourceType.Namespace:
-                        tocInfo = tocContext[tocItem.SourceId];
+                        tocInfo = _tocContext[tocItem.SourceId];
                         break;
                     case TocItemSourceType.NamespaceRoot:
                         groupToc = groupTocItems[tocItem.SourceId];
@@ -405,7 +480,7 @@ namespace Sandcastle.Steps
                         }
                         break;
                     case TocItemSourceType.Topic:
-                        tocInfo = tocContext[tocItem.SourceId];
+                        tocInfo = _tocContext[tocItem.SourceId];
                         break;
                 }
 
@@ -420,9 +495,9 @@ namespace Sandcastle.Steps
 
                 if (tocInfo == null)
                 {
-                    if (logger != null)
+                    if (_logger != null)
                     {
-                        logger.WriteLine(String.Format(
+                        _logger.WriteLine(String.Format(
                             "The TOC topic for the item '{0}' cannot be found.", tocItem.Name),
                             BuildLoggerLevel.Warn);
                     }
@@ -446,15 +521,15 @@ namespace Sandcastle.Steps
 
                 for (int j = 0; j < tocItem.ItemCount; j++)
                 {
-                    this.CustomMergeToc(logger, tocContext, topicToc, tocItem[j]);
+                    this.CustomMergeToc(topicToc, tocItem[j]);
                 }
             }
 
             if (listToc.Count == 0)
             {
-                if (logger != null)
+                if (_logger != null)
                 {
-                    logger.WriteLine("The custom merging of the table of contents failed.", 
+                    _logger.WriteLine("The custom merging of the table of contents failed.", 
                         BuildLoggerLevel.Error);
                 }
 
@@ -467,7 +542,7 @@ namespace Sandcastle.Steps
                 XmlWriterSettings writerSettings  = new XmlWriterSettings();
                 writerSettings.Indent             = true;
                 writerSettings.OmitXmlDeclaration = false;
-                xmlWriter = XmlWriter.Create(_mergedToc, writerSettings);
+                xmlWriter = XmlWriter.Create(mergedToc, writerSettings);
 
                 xmlWriter.WriteStartElement("topics");
 
@@ -491,25 +566,24 @@ namespace Sandcastle.Steps
                     xmlWriter = null;
                 }
 
-                if (logger != null)
+                if (_logger != null)
                 {
-                    logger.WriteLine(ex);
+                    _logger.WriteLine(ex);
                 }
 
                 return false;
             }
         }
 
-        private void CustomMergeToc(BuildLogger logger, BuildTocContext tocContext, 
-            BuildTopicTocInfo topicParent, TocItem tocItem)
+        private void CustomMergeToc(BuildTopicTocInfo topicParent, TocItem tocItem)
         {
             TocItemSourceType sourceType = tocItem.SourceType;
             if (sourceType == TocItemSourceType.None)
             {
                 return;
             }
-     
-            IBuildNamedList<BuildGroupTocInfo> groupTocItems = tocContext.Items;
+
+            IBuildNamedList<BuildGroupTocInfo> groupTocItems = _tocContext.Items;
             BuildGroupTocInfo groupToc = null;
             BuildTopicTocInfo tocInfo  = null;
             switch (sourceType)
@@ -521,7 +595,7 @@ namespace Sandcastle.Steps
                     Debug.Assert(groupToc != null);
                     break;
                 case TocItemSourceType.Namespace:
-                    tocInfo = tocContext[tocItem.SourceId];
+                    tocInfo = _tocContext[tocItem.SourceId];
                     break;
                 case TocItemSourceType.NamespaceRoot:
                     groupToc = groupTocItems[tocItem.SourceId];
@@ -541,7 +615,7 @@ namespace Sandcastle.Steps
                     }
                     break;
                 case TocItemSourceType.Topic:
-                    tocInfo = tocContext[tocItem.SourceId];
+                    tocInfo = _tocContext[tocItem.SourceId];
                     break;
             }
 
@@ -556,9 +630,9 @@ namespace Sandcastle.Steps
 
             if (tocInfo == null)
             {
-                if (logger != null)
+                if (_logger != null)
                 {
-                    logger.WriteLine(String.Format(
+                    _logger.WriteLine(String.Format(
                         "The TOC topic for the item '{0}' cannot be found.", tocItem.Name),
                         BuildLoggerLevel.Warn);
                 }
@@ -582,7 +656,7 @@ namespace Sandcastle.Steps
 
             for (int j = 0; j < tocItem.ItemCount; j++)
             {
-                this.CustomMergeToc(logger, tocContext, topicToc, tocItem[j]);
+                this.CustomMergeToc(topicToc, tocItem[j]);
             }
         }
 
@@ -624,6 +698,9 @@ namespace Sandcastle.Steps
             _pendindDelete = null;
 
             tocContext.SaveAll();
+
+            // Reset the markers state, since it is handled...
+            context["$HelpTocMarkers"] = Boolean.FalseString;
         }
 
         private void ProcessMarker(ConceptualGroupContext conceptualContext, 
@@ -667,7 +744,16 @@ namespace Sandcastle.Steps
                 return;
             }
 
-            groupTocInfo.Remove(markerTocInfo);
+            //groupTocInfo.Remove(markerTocInfo);
+            BuildTopicTocInfo markerParent = markerTocInfo.Parent;
+            if (markerParent != null)
+            {
+                markerParent.Remove(markerTocInfo);
+            }
+            else
+            {
+                groupTocInfo.Remove(markerTocInfo);
+            }
         }
 
         private void ProcessMarker(ConceptualGroupTocInfo groupTocInfo,
@@ -690,7 +776,15 @@ namespace Sandcastle.Steps
                     BuildTopicTocInfo topicTocInfo = tocContext[markerTopic.SourceId];
                     if (topicTocInfo == null)
                     {
-                        groupTocInfo.Remove(markerTocInfo);
+                        BuildTopicTocInfo markerParent = markerTocInfo.Parent;
+                        if (markerParent != null)
+                        {
+                            markerParent.Remove(markerTocInfo);
+                        }
+                        else
+                        {
+                            groupTocInfo.Remove(markerTocInfo);
+                        }  
                     }
                     else
                     {
@@ -725,7 +819,16 @@ namespace Sandcastle.Steps
                     sourceTocInfo = tocContext.Items[markerTopic.SourceId];
                     if (sourceTocInfo == null)
                     {
-                        groupTocInfo.Remove(markerTocInfo);
+                        //groupTocInfo.Remove(markerTocInfo);
+                        BuildTopicTocInfo markerParent = markerTocInfo.Parent;
+                        if (markerParent != null)
+                        {
+                            markerParent.Remove(markerTocInfo);
+                        }
+                        else
+                        {
+                            groupTocInfo.Remove(markerTocInfo);
+                        }
                     }
                     else
                     {
@@ -759,20 +862,26 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region TocMergeItem Class
+        #region TocMerge Class
 
+        /// <summary>
+        /// This defines the Table of Contents of a build group for the merging
+        /// operation.
+        /// </summary>
         private sealed class TocMerge : IBuildNamedItem
         {
             private bool           _isIncluded;
+            private bool           _isEncluded;
             private bool           _isRooted;
             private string         _tocFile;
             private string         _groupId;
             private BuildGroupType _groupType;
 
             public TocMerge(string tocFile, BuildGroupType groupType,
-                string groupId, bool isRooted)
+                string groupId, bool isRooted, bool isExcluded)
             {
                 _isIncluded = true;
+                _isEncluded = isExcluded;
                 _tocFile    = tocFile;
                 _groupId    = groupId;
                 _groupType  = groupType;
@@ -782,6 +891,7 @@ namespace Sandcastle.Steps
             public TocMerge(TocMerge source)
             {
                 _isIncluded = source._isIncluded;
+                _isEncluded = source._isEncluded;
                 _tocFile    = source._tocFile;
                 _groupId    = source._groupId;
                 _groupType  = source._groupType;
@@ -797,6 +907,14 @@ namespace Sandcastle.Steps
                 set
                 {
                     _isIncluded = value;
+                }
+            }
+
+            public bool IsEncluded
+            {
+                get
+                {
+                    return _isEncluded;
                 }
             }
 
@@ -873,6 +991,9 @@ namespace Sandcastle.Steps
 
         #region PendingDeletePair
 
+        /// <summary>
+        /// This defines a TOC topic marked for deletion and its parent group.
+        /// </summary>
         private sealed class PendingDeletePair
         {
             private BuildTopicTocInfo _topic;

@@ -16,13 +16,13 @@ namespace Sandcastle.ReflectionData
 
         private static TargetController  _controller;
 
-        private bool                  _isInitialized;
-        private bool                  _isDataLoaded;
+        private bool           _isInitialized;
+        private bool           _isDataLoaded;
 
-        private MessageHandler        _messageHandler;
+        private TargetStorage  _localStorage;
+        private TargetStorage   _msdnStorage;
 
-        private MemoryTargetStorage   _localStorage;
-        private DatabaseTargetStorage _msdnStorage;
+        private MessageHandler _messageHandler;
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Sandcastle.ReflectionData
 
         #region Public Properties
 
-        public MemoryTargetStorage Local
+        public TargetStorage Local
         {
             get
             {
@@ -46,11 +46,19 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public DatabaseTargetStorage Msdn
+        public TargetStorage Msdn
         {
             get
             {
                 return _msdnStorage;
+            }
+        }
+
+        public bool HasMsdnStorage
+        {
+            get
+            {
+                return (_msdnStorage != null);
             }
         }
 
@@ -177,8 +185,8 @@ namespace Sandcastle.ReflectionData
                 }
                 else
                 {
-                    if (directoryPath.EndsWith(@"Sandcastle\Data\Reflection", 
-                        StringComparison.OrdinalIgnoreCase))
+                    if (directoryPath.IndexOf(@"Sandcastle\Data\Reflection", 
+                        StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         isSystem = true;
                         if (msdnLink == ReferenceLinkType.None)
@@ -188,7 +196,8 @@ namespace Sandcastle.ReflectionData
                     }
                     else
                     {
-                        if (localLink == ReferenceLinkType.None)
+                        if (localLink == ReferenceLinkType.None &&
+                            linkType != ReferenceLinkType.Msdn)
                         {
                             localLink = linkType;
                         }
@@ -201,12 +210,22 @@ namespace Sandcastle.ReflectionData
                     {
                         if (!_msdnStorage.Exists)
                         {
-                            AddTargets(directoryPath, filePattern, recurse, linkType);
+                            this.AddDatabaseTargets(directoryPath, filePattern, 
+                                recurse, linkType);
                         }
                     }
                     else
                     {
-                        AddTargets(directoryPath, filePattern, recurse, linkType);
+                        if (linkType == ReferenceLinkType.Msdn)
+                        {
+                            this.AddDatabaseTargets(directoryPath, filePattern, 
+                                recurse, linkType);
+                        }
+                        else
+                        {
+                            this.AddTargets(directoryPath, filePattern, 
+                                recurse, linkType);
+                        }
                     }
                 }
             }
@@ -216,7 +235,8 @@ namespace Sandcastle.ReflectionData
                 _isDataLoaded = true;
             }
 
-            return new TargetCollections(_localStorage, _msdnStorage, localLink, msdnLink);
+            return new TargetCollections(_localStorage, _msdnStorage, 
+                localLink, msdnLink);
         }
 
         #endregion
@@ -311,7 +331,19 @@ namespace Sandcastle.ReflectionData
             {
                 XPathDocument document = new XPathDocument(file);
                 // This will only load into the memory...
-                TargetCollectionXmlUtilities.AddTargets(_msdnStorage, document.CreateNavigator(), type);
+
+                TargetStorage quickStorage = _msdnStorage;
+
+                if (quickStorage != null)
+                {
+                    TargetCollectionXmlUtilities.AddTargets(quickStorage,
+                        document.CreateNavigator(), type);
+                }
+                else
+                {
+                    TargetCollectionXmlUtilities.AddTargets(_msdnStorage,
+                        document.CreateNavigator(), type);
+                }  
             }
             catch (XmlSchemaException e)
             {

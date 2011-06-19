@@ -63,7 +63,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_contentFile) == false)
+                if (_contentFile != null && _contentFile.Exists)
                 {
                     return false;
                 }
@@ -136,8 +136,7 @@ namespace Sandcastle.Contents
                 return;
             }
 
-            if (String.IsNullOrEmpty(_contentFile) ||
-                File.Exists(_contentFile) == false)
+            if (_contentFile == null || !_contentFile.Exists)
             {
                 return;
             }
@@ -181,6 +180,11 @@ namespace Sandcastle.Contents
 
         public void Save()
         {
+            if (_contentFile == null)
+            {
+                return;
+            }
+
             XmlWriterSettings settings  = new XmlWriterSettings();
             settings.Indent             = true;
             settings.Encoding           = Encoding.UTF8;

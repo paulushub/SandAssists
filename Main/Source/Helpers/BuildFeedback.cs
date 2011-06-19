@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle
@@ -19,6 +19,12 @@ namespace Sandcastle
     [Serializable]
     public sealed class BuildFeedback : BuildOptions<BuildFeedback>
     {
+        #region Public Fields
+
+        public const string TagName = "feedbacOptions";
+
+        #endregion
+
         #region Private Fields
 
         private int    _logoWidth;
@@ -366,6 +372,125 @@ namespace Sandcastle
             writer.WriteEndElement();            //end: header
 
             return true;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a XML format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the XML attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string nodeText = reader.GetAttribute("verbosity");
+            //if (!String.IsNullOrEmpty(nodeText))
+            //{
+            //    _verbosity = (BuildLoggerVerbosity)Enum.Parse(
+            //        typeof(BuildLoggerVerbosity), nodeText, true);
+            //}
+            //nodeText = reader.GetAttribute("useFile");
+            //if (!String.IsNullOrEmpty(nodeText))
+            //{
+            //    _useFile = Convert.ToBoolean(nodeText);
+            //}
+            //nodeText = reader.GetAttribute("keepFile");
+            //if (!String.IsNullOrEmpty(nodeText))
+            //{
+            //    _keepFile = Convert.ToBoolean(nodeText);
+            //}
+            //nodeText = reader.GetAttribute("fileName");
+            //if (!String.IsNullOrEmpty(nodeText))
+            //{
+            //    _fileName = nodeText;
+            //}
+
+            //if (reader.IsEmptyElement)
+            //{
+            //    return;
+            //}
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "logger",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        nodeText = reader.GetAttribute("name");
+
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            //_loggers.Add(nodeText);
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the XML format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The XML writer with which the XML format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - feedback
+            //writer.WriteAttributeString("verbosity", _verbosity.ToString());
+            //writer.WriteAttributeString("useFile", _useFile.ToString());
+            //writer.WriteAttributeString("keepFile", _keepFile.ToString());
+            //writer.WriteAttributeString("fileName", _fileName);
+
+            //writer.WriteStartElement("loggers");  // start - loggers
+            //if (_loggers != null && _loggers.Count != 0)
+            //{
+            //    for (int i = 0; i < _loggers.Count; i++)
+            //    {
+            //        writer.WriteStartElement("logger");  // start - logger
+            //        writer.WriteAttributeString("name", _loggers[i]);
+            //        writer.WriteEndElement();           // end - logger
+            //    }
+            //}
+            //writer.WriteEndElement();           // end - loggers
+
+            writer.WriteEndElement();           // end - feedback
         }
 
         #endregion

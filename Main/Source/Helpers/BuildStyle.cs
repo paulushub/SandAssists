@@ -71,9 +71,9 @@ namespace Sandcastle
         #region Private Fields
 
         private string             _styleName;
-        private string             _styleDir;
         private string             _stylePresent;
         private BuildStyleType     _styleType;
+        private BuildDirectoryPath _styleDir;
 
         private ScriptContent      _scripts;
         private SnippetContent     _snippets;
@@ -165,7 +165,10 @@ namespace Sandcastle
             BuildStyleType type) : this(type)
         {
             _styleName = name;
-            _styleDir  = directory;
+            if (!String.IsNullOrEmpty(directory))
+            {
+                _styleDir = new BuildDirectoryPath(directory);
+            }
         }
 
         /// <summary>
@@ -257,7 +260,7 @@ namespace Sandcastle
         /// style. If not specified or the specified directory is invalid, the 
         /// default Sandcastle style directory is used.
         /// </remarks>
-        public string Directory
+        public BuildDirectoryPath Directory
         {
             get 
             { 
@@ -421,6 +424,7 @@ namespace Sandcastle
             else if (engineType == BuildEngineType.Reference)
             {
                 transform = "main_sandcastle.xsl";
+                //transform = "main_reference.xsl";
             }
             if (String.IsNullOrEmpty(transform))
             {
@@ -541,7 +545,7 @@ namespace Sandcastle
             }
             if (_styleDir != null)
             {
-                style._styleDir = String.Copy(_styleDir);
+                style._styleDir = _styleDir.Clone();
             }
             if (_stylePresent != null)
             {

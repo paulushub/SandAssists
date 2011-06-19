@@ -28,8 +28,6 @@ namespace Sandcastle.Conceptual
         private string  _projectName;
         private string  _projectTitle;
 
-        private ConceptualGroup _group;
-
         #endregion
 
         #region Constructors and Destructor
@@ -95,12 +93,11 @@ namespace Sandcastle.Conceptual
                     "ConceptualTableOfContents: The conceptual table of contents generator is not initialized.");
             }
 
+            _projectName  = group.ProjectName;
+            _projectTitle = group.ProjectTitle;
+
             BuildContext context = this.Context;
             BuildLogger logger   = context.Logger;
-
-            _group     = group;
-            _projectName  = _group.ProjectName;
-            _projectTitle = _group.ProjectTitle;
 
             if (logger != null)
             {
@@ -108,7 +105,7 @@ namespace Sandcastle.Conceptual
                     BuildLoggerLevel.Info);
             }
 
-            WriteSettings();
+            WriteSettings(group);
 
             if (logger != null)
             {
@@ -123,17 +120,19 @@ namespace Sandcastle.Conceptual
 
         #region WriteSettings Method
 
-        private void WriteSettings()
+        private void WriteSettings(ConceptualGroup group)
         {
-            BuildGroupContext groupContext = this.Context.GroupContexts[_group.Id];
+            BuildContext context = this.Context;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            Guid fileAsset    = _group.DocumentID;
-            string workingDir = _group.WorkingDirectory;
+            Guid fileAsset    = group.DocumentID;
+            string workingDir = context.WorkingDirectory;
 
             XmlWriterSettings settings  = new XmlWriterSettings();
 

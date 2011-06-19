@@ -8,7 +8,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Web.Services.Protocols;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
@@ -160,10 +162,9 @@ namespace Sandcastle.ReflectionData
 
             private string    _locale;
 
-            private string    _treeFileName;
-            private string    _blockFileName;
+            private string    _dataDir;
 
-            private BplusTree _plusTree;
+            private PersistentDictionary<string, string> _plusTree;
 
             private BuilderMsdnResolver _msdnResolver;
 
@@ -206,7 +207,7 @@ namespace Sandcastle.ReflectionData
 
             #region Public Properties
 
-            public bool Exists
+            public override bool Exists
             {
                 get
                 {
@@ -286,26 +287,20 @@ namespace Sandcastle.ReflectionData
 
                 if (_isSystem)
                 {
-                    _treeFileName  = Path.Combine(workingDir, "MsdnT2.6.10621.1.dat");
-                    _blockFileName = Path.Combine(workingDir, "MsdnB2.6.10621.1.dat");
-                    //_treeFileName = Path.Combine(workingDir, "MsdnT" + localPart + "2.6.10621.1.dat");
-                    //_blockFileName = Path.Combine(workingDir, "MsdnB" + localPart + "2.6.10621.1.dat");
+                    _dataDir = Path.Combine(workingDir, "MsdnT26106211");
                 }
                 else
                 {
                     string tempFile = Path.GetFileNameWithoutExtension(
                         Path.GetTempFileName());
 
-                    _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
-                    _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
-                    //_treeFileName = Path.Combine(workingDir, tempFile + localPart + "Tree.dat");
-                    //_blockFileName = Path.Combine(workingDir, tempFile + localPart + "Block.dat");
+                    _dataDir = Path.Combine(workingDir, tempFile);
                 }
 
-                if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
+                _isExisted = PersistentDictionaryFile.Exists(_dataDir);
+                if (_isExisted)
                 {
-                    _isExisted = true;
-                    _plusTree  = hBplusTree.ReOpen(_treeFileName, _blockFileName);
+                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
                     if (_plusTree.ContainsKey("$DataCount$"))
                     {
                         _count = Convert.ToInt32(_plusTree["$DataCount$"]);
@@ -314,8 +309,7 @@ namespace Sandcastle.ReflectionData
                 else
                 {
                     _count    = 0;
-                    _plusTree = hBplusTree.Initialize(_treeFileName,
-                        _blockFileName, 64);
+                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
 
                     _msdnResolver        = new BuilderMsdnResolver();
                     _msdnResolver.Locale = _locale;
@@ -340,26 +334,19 @@ namespace Sandcastle.ReflectionData
                                 // Add some metadata...
                                 _plusTree["$DataCount$"]   = _count.ToString();
                                 _plusTree["$DataVersion$"] = "2.6.10621.1";
-
-                                _plusTree.Commit();
                             }
                         }
 
-                        _plusTree.Shutdown();
+                        _plusTree.Dispose();
                         _plusTree = null;
 
                         // For the non-system reflection database, delete after use...
                         if (!_isSystem)
                         {
-                            if (!String.IsNullOrEmpty(_treeFileName) &&
-                                File.Exists(_treeFileName))
+                            if (!String.IsNullOrEmpty(_dataDir) &&
+                                Directory.Exists(_dataDir))
                             {
-                                File.Delete(_treeFileName);
-                            }
-                            if (!String.IsNullOrEmpty(_blockFileName) &&
-                                File.Exists(_blockFileName))
-                            {
-                                File.Delete(_blockFileName);
+                                PersistentDictionaryFile.DeleteFiles(_dataDir);
                             }
                         }
                     }

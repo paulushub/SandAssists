@@ -15,14 +15,14 @@
   <Class Name="Sandcastle.Conceptual.ConceptualConfigurator" Collapsed="true">
     <Position X="1" Y="5.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>gCAAAAAgCAgQBwAAgARAAAJgAABAIgABwCEAACAAAIA=</HashCode>
+      <HashCode>ACAAAAAgCAgABQAggARAAAKAAABEIAABwCAAACAAAIA=</HashCode>
       <FileName>Conceptual\ConceptualConfigurator.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceConfigurator" Collapsed="true">
     <Position X="3.75" Y="5.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>ACAAAACAAAgABQAggABAEAKAAAAAQgABwCEAACAAAAg=</HashCode>
+      <HashCode>ACAAAACAAAgABQAggABAEAKAAAAAQAABwCAAACAAAAg=</HashCode>
       <FileName>References\ReferenceConfigurator.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -38,20 +38,10 @@
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="Settings" Type="Sandcastle.BuildSettings" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.25" Y="4.312" />
-        <Point X="1.438" Y="4.312" />
-        <Point X="1.438" Y="3.63" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAQAIAAAAAAAAYAgAABAICAgQEAAIEBAxgAEBRgAAAg=</HashCode>
       <FileName>Configurators\AssemblerConfigurator.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Settings" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.Configurators.GenericConfigurator" Collapsed="true">
     <Position X="1" Y="1.5" Width="1.75" />
@@ -70,17 +60,9 @@
   <Class Name="Sandcastle.Configurators.ConfiguratorKeywords" Collapsed="true">
     <Position X="2.5" Y="6.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AEAAAAUAABQAQEAAEABAAAAAAgCBAKAAAAAAYAADAAA=</HashCode>
+      <HashCode>AEAAAAUAABQAQEAAEABAAAAAAgCBAKAAAAAAYAgDAAA=</HashCode>
       <FileName>Configurators\ConfiguratorKeywords.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.BuildSettings" Collapsed="true">
-    <Position X="0.5" Y="3" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>BAIACAQwAqAFEREEeAICDoTYqIiBQgKgD4SAAqRYYlo=</HashCode>
-      <FileName>BuildSettings.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.304" />
   </Class>
   <Class Name="Sandcastle.Configurators.IncludeConfigurator" Collapsed="true">
     <Position X="4" Y="1.5" Width="1.75" />

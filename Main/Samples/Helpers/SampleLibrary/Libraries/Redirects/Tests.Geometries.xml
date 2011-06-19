@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tests.Geometries</name>
+    </assembly>
+    <members>
+        <member name="T:Tests.Geometries.GeometryEllipse">
+            <summary>
+            This the ellipse geometry.
+            </summary>
+        </member>
+        <member name="T:Tests.Geometries.GeometryBase">
+            <summary>
+            The <see langword="abstract"/> base class for all geometries.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryBase.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryBase"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryBase"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryBase.#ctor(Tests.Geometries.GeometryBase)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryBase"/> class with parameter
+            copied from the specified <see cref="T:Tests.Geometries.GeometryBase"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Geometries.GeometryBase"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Tests.Geometries.GeometryEllipse.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryEllipse"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryEllipse"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryEllipse.#ctor(Tests.Geometries.GeometryEllipse)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryEllipse"/> class with parameter
+            copied from the specified <see cref="T:Tests.Geometries.GeometryEllipse"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Geometries.GeometryEllipse"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="T:Tests.Geometries.GeometryRectangle">
+            <summary>
+            This is the rectangle geometry.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryRectangle.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryRectangle"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryRectangle"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryRectangle.#ctor(Tests.Geometries.GeometryRectangle)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryRectangle"/> class with parameter
+            copied from the specified <see cref="T:Tests.Geometries.GeometryRectangle"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Geometries.GeometryRectangle"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="T:Tests.Geometries.GeometryGroup">
+            <summary>
+            This the group geometry.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryGroup.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryGroup"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryGroup"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Geometries.GeometryGroup.#ctor(Tests.Geometries.GeometryGroup)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Geometries.GeometryGroup"/> class with parameter
+            copied from the specified <see cref="T:Tests.Geometries.GeometryGroup"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Geometries.GeometryGroup"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+    </members>
+</doc>

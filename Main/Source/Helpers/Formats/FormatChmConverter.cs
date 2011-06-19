@@ -9,8 +9,6 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using BplusDotNet;
-
 using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
@@ -39,14 +37,14 @@ namespace Sandcastle.Formats
         private BuildLogger  _logger;
         private BuildContext _context;
 
-        private BplusTree    _plusTree;
+        private IDictionary<string, string> _plusTree;
 
         #endregion
 
         #region Constructors and Destructor
 
-        public FormatChmConverter(string htmlDir, string outputDir, bool metadata, 
-            BplusTree plusTree)
+        public FormatChmConverter(string htmlDir, string outputDir, bool metadata,
+            IDictionary<string, string> plusTree)
         {
             _plusTree  = plusTree;
 

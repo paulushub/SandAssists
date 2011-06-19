@@ -1,11 +1,17 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Sandcastle.Loggers
 {
     public sealed class NoneLogger : BuildLogger
     {
+        #region Public Fields
+
+        public const string LoggerName     = "Sandcastle.Loggers.NoneLogger";
+
+        public const string LoggerFileName = "NoneLogFile.log";
+
+        #endregion
+
         #region Private Fields
 
         #endregion
@@ -13,11 +19,6 @@ namespace Sandcastle.Loggers
         #region Constructors and Destructor
 
         public NoneLogger()
-        {
-        }
-
-        public NoneLogger(string logFile)
-            : base(logFile)
         {
         }
 
@@ -30,13 +31,26 @@ namespace Sandcastle.Loggers
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.NoneLogger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.NoneLogger</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.NoneLogger";
+                return LoggerName;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return false;
             }
         }
 

@@ -34,7 +34,7 @@
   <Class Name="Sandcastle.Conceptual.ConceptualShfbSource" Collapsed="true">
     <Position X="5.25" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEwAAAAgAAAQAAAAAAkAAAAAAAAAAAJg=</HashCode>
       <FileName>Conceptual\ConceptualShfbSource.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -76,9 +76,10 @@
   <Class Name="Sandcastle.References.ReferenceVersionSource" Collapsed="true">
     <Position X="0.5" Y="6.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAgCAIAAAgAAAhABABgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
       <FileName>References\ReferenceVersionSource.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="1.19" />
   </Class>
   <Class Name="Sandcastle.References.ReferenceVsNetSource" Collapsed="true">
     <Position X="5.25" Y="6.5" Width="2" />

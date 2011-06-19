@@ -31,17 +31,17 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceXPathVisitor()
-            : this((ReferenceEngineSettings)null)
+            : this((ReferenceXPathConfiguration)null)
         {   
         }
 
-        public ReferenceXPathVisitor(ReferenceEngineSettings engineSettings)
-            : base(VisitorName, engineSettings)
+        public ReferenceXPathVisitor(ReferenceXPathConfiguration configuration)
+            : base(VisitorName, configuration)
         {
+            _xpathConfig = configuration;
         }
 
-        public ReferenceXPathVisitor(
-            ReferenceXPathVisitor source)
+        public ReferenceXPathVisitor(ReferenceXPathVisitor source)
             : base(source)
         {
         }
@@ -76,21 +76,24 @@ namespace Sandcastle.References
 
             if (this.IsInitialized)
             {
-                ReferenceEngineSettings engineSettings = this.EngineSettings;
-
-                Debug.Assert(engineSettings != null);
-                if (engineSettings == null)
-                {
-                    this.IsInitialized = false;
-                    return;
-                }
-
-                _xpathConfig = engineSettings.XPath;
-                Debug.Assert(_xpathConfig != null);
                 if (_xpathConfig == null)
                 {
-                    this.IsInitialized = false;
-                    return;
+                    ReferenceEngineSettings engineSettings = this.EngineSettings;
+
+                    Debug.Assert(engineSettings != null);
+                    if (engineSettings == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
+
+                    _xpathConfig = engineSettings.XPath;
+                    Debug.Assert(_xpathConfig != null);
+                    if (_xpathConfig == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
                 }
             }
         }
@@ -100,18 +103,19 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override void Visit(ReferenceDocument refDocument)
+        public override void Visit(ReferenceDocument referenceDocument)
         {
+            Debug.Assert(_xpathConfig != null);
             if (_xpathConfig == null || !_xpathConfig.Enabled)
             {
                 return;
             }
-            if (refDocument.DocumentType != ReferenceDocumentType.Reflection)
+            if (referenceDocument.DocumentType != ReferenceDocumentType.Reflection)
             {
                 return;
             }
 
-            XmlDocument xmlDocument = refDocument.Document;
+            XmlDocument xmlDocument = referenceDocument.Document;
             if (xmlDocument == null)
             {
                 return;

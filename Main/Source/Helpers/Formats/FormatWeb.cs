@@ -10,7 +10,7 @@ using Sandcastle.Steps;
 namespace Sandcastle.Formats
 {
     [Serializable]
-    public class FormatWeb : FormatHtm
+    public sealed class FormatWeb : BuildFormat
     {
         #region Private Fields
 
@@ -41,6 +41,61 @@ namespace Sandcastle.Formats
         #endregion
 
         #region Public Properties
+
+        public override BuildFormatType FormatType
+        {
+            get
+            {
+                return BuildFormatType.WebHelp;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value specifying the name of the this output format.
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> containing the name of the output format.
+        /// This will always return "WebHelp".
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return "WebHelp";
+            }
+        }
+
+        public override string Extension
+        {
+            get
+            {
+                return ".htm";
+            }
+        }
+
+        public override string OutputExtension
+        {
+            get
+            {
+                return ".htm";
+            }
+        }
+
+        public override bool IsCompilable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override string TocFileName
+        {
+            get
+            {
+                return "WebHelpToc.xml";
+            }
+        }
 
         public bool UseTabView
         {
@@ -186,18 +241,11 @@ namespace Sandcastle.Formats
 
                 listSteps.Add(dirCopy);
 
-                string tocTopics = context["$HelpTocFile"];
-                string tempText = context["$HelpHierarchicalToc"];
-
-                if (!String.IsNullOrEmpty(tempText) && String.Equals(tempText,
-                    Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
-                {
-                    tocTopics = context["$HelpHierarchicalTocFile"];
-                }
+                string tocFile = context["$HelpTocFile"];
 
                 FormatWebOptions options = new FormatWebOptions();
                 options.HelpTitle   = helpTitle;
-                options.HelpTocFile = tocTopics;
+                options.HelpTocFile = tocFile;
                 options.ProjectName = helpName;
                 options.WorkingDirectory = workingDir;
                 options.HtmlDirectory = Path.Combine(workingDir, 
@@ -205,6 +253,7 @@ namespace Sandcastle.Formats
                 options.OutputDirectory = tempOutputDir;
 
                 StepWebBuilder webBuilder = new StepWebBuilder(options, workingDir);
+                webBuilder.Format        = this;
                 webBuilder.LogTitle      = String.Empty;
                 webBuilder.Message       = "Creating the WebHelp files.";
                 webBuilder.HelpDirectory = webHelpDir;
@@ -234,6 +283,10 @@ namespace Sandcastle.Formats
         public override void Reset()
         {
             base.Reset();
+
+            this.FormatFolder     = "html0";
+            this.OutputFolder     = "WebHelp";
+            this.ExternalLinkType = BuildLinkType.Msdn;
 
             base.CloseViewerBeforeBuild = false;
         }

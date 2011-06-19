@@ -6,8 +6,6 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
-using BplusDotNet;
-
 using Microsoft.Ddue.Tools;
 
 namespace Sandcastle.Components.Indexed
@@ -98,6 +96,13 @@ namespace Sandcastle.Components.Indexed
         #endregion
 
         #region Public Methods
+
+        public bool Build()
+        {
+            this.AddDocuments();
+
+            return this.Exists;
+        }
 
         public void AddDocument(string file, bool cacheIt)
         {

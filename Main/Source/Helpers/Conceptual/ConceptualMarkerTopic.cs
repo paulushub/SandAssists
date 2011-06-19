@@ -3,7 +3,6 @@ using System.IO;
 using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using Sandcastle.Contents;
 

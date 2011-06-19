@@ -14,7 +14,7 @@ namespace Sandcastle.ReflectionData
     {
         private static XmlReaderSettings _settings;
 
-        public static Target Read(string targetText)
+        public static Target ReadXml(string targetText)
         {
             if (String.IsNullOrEmpty(targetText))
             {
@@ -187,7 +187,7 @@ namespace Sandcastle.ReflectionData
     {
         private static XmlWriterSettings _settings;
 
-        public static string Write(Target target)
+        public static string WriteXml(Target target)
         {
             if (target == null)
             {

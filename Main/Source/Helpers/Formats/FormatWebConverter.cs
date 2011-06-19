@@ -4,8 +4,6 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using BplusDotNet;
-
 using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
@@ -27,10 +25,10 @@ namespace Sandcastle.Formats
 
         private BuildLogger _logger;
 
-        private BplusTree _plusTree;
+        private IDictionary<string, string> _plusTree;
 
         public FormatWebConverter(string htmlDir, string outputDir,
-            List<KKeywordInfo> kkeywords, BplusTree plusTree)
+            List<KKeywordInfo> kkeywords, IDictionary<string, string> plusTree)
         {
             _plusTree  = plusTree;
 

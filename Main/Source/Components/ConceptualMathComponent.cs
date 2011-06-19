@@ -16,6 +16,7 @@ namespace Sandcastle.Components
     {
         #region Private Fields
 
+        private bool _isInline;
         private CustomContext _xsltContext;
 
         #endregion
@@ -112,14 +113,16 @@ namespace Sandcastle.Components
                     //    <image xlink:href=""/>
                     //</mediaLink>
                     string mediaFormat = FormatEquation(mathInfo, mathText);
-                    if (String.IsNullOrEmpty(mediaFormat) == false)
+                    if (!String.IsNullOrEmpty(mediaFormat))
                     {
                         XmlWriter xmlWriter = navigator.InsertAfter();
-                        xmlWriter.WriteStartElement("mediaLink");  // start - mediaLink
+
+                        xmlWriter.WriteStartElement(_isInline ? "mediaLinkInline" : "mediaLink");  // start - mediaLink
                         xmlWriter.WriteStartElement("image");  // start - image
                         xmlWriter.WriteAttributeString("xlink", "href", null, mediaFormat);
                         xmlWriter.WriteEndElement();               // end - image
                         xmlWriter.WriteEndElement();               // end - mediaLink
+                        
                         xmlWriter.Close();
 
                         if (_isNumbered)
@@ -148,8 +151,11 @@ namespace Sandcastle.Components
 
         #region Protected Methods
 
-        protected override string FormatEquation(string mathInfo, string mathText)
+        protected override string FormatEquation(string mathInfo,
+            string mathText)
         {
+            _isInline = false;
+
             try
             {
                 int separator = mathInfo.IndexOf('.');
@@ -232,6 +238,8 @@ namespace Sandcastle.Components
                 else if (String.Equals(mathFormat, "MathTeXInline",
                     StringComparison.OrdinalIgnoreCase))
                 {
+                    _isInline = true;
+
                     if (_latexFormatter.Create(mathText, true, false))
                     {
                         string mathClass = MathController.MathInline;

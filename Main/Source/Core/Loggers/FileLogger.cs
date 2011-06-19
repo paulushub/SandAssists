@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Sandcastle.Loggers
 {
@@ -11,26 +9,23 @@ namespace Sandcastle.Loggers
     /// </summary>
     public class FileLogger : BuildLogger
     {
-        #region Public Static Fields
+        #region Public Fields
 
-        public const string DefaultOutputFile = "BuildLog.log";
+        public const string LoggerName     = "Sandcastle.Loggers.FileLogger";
+
+        public const string LoggerFileName = "FileLogFile.log";
 
         #endregion
 
         #region Constructors and Destructor
 
         public FileLogger()
-            : base(DefaultOutputFile, false, null)
+            : base(LoggerFileName)
         {
         }
 
         public FileLogger(string outputFile)
-            : base(outputFile, false, null)
-        {
-        }
-
-        public FileLogger(string outputFile, bool append)
-            : base(outputFile, append, null)
+            : base(outputFile)
         {
         }
 
@@ -43,13 +38,26 @@ namespace Sandcastle.Loggers
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.FileLogger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.FileLogger</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.FileLogger";
+                return LoggerName;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return true;
             }
         }
 

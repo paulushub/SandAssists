@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Sandcastle.Loggers
 {
@@ -12,6 +10,14 @@ namespace Sandcastle.Loggers
     /// </summary>
     public class XmlLogger : BuildLogger
     {
+        #region Public Fields
+
+        public const string LoggerName     = "Sandcastle.Loggers.XmlLogger";
+
+        public const string LoggerFileName = "XmlLogFile.xml";
+
+        #endregion
+
         #region Private Fields
 
         private bool _startedSection;
@@ -29,6 +35,7 @@ namespace Sandcastle.Loggers
         /// to the default properties or values.
         /// </summary>
         public XmlLogger()
+            : this(LoggerFileName)
         {
         }
 
@@ -58,13 +65,26 @@ namespace Sandcastle.Loggers
         /// </summary>
         /// <value>
         /// A <see cref="System.String"/> containing the unique name of this
-        /// build logger implementation. This will always return <c>Sandcastle.XmlLogger</c>.
+        /// build logger implementation. This will always return 
+        /// <c>Sandcastle.Loggers.XmlLogger</c>.
         /// </value>
         public override string Name
         {
             get
             {
-                return "Sandcastle.XmlLogger";
+                return LoggerName;
+            }
+        }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsFileLogging
+        {
+            get
+            {
+                return true;
             }
         }
 

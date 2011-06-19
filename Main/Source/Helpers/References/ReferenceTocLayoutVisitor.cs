@@ -41,8 +41,8 @@ namespace Sandcastle.References
 
         private ReferenceTocLayoutConfiguration _tocLayout;
 
-        private Dictionary<string, string> _dicTocExcludedNamespaces;
-        private Dictionary<string, XPathNavigator> _dicNavigators;
+        private BuildProperties _dicTocExcludedNamespaces;
+        private BuildDictionary<XPathNavigator> _dicNavigators;
         private List<KeyValuePair<string, HierarchicalTocNode>> _undocumentedNodes;
 
         #endregion
@@ -50,13 +50,14 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceTocLayoutVisitor()
-            : this((ReferenceEngineSettings)null)
+            : this((ReferenceTocLayoutConfiguration)null)
         {   
         }
 
-        public ReferenceTocLayoutVisitor(ReferenceEngineSettings engineSettings)
-            : base(VisitorName, engineSettings)
+        public ReferenceTocLayoutVisitor(ReferenceTocLayoutConfiguration configuration)
+            : base(VisitorName, configuration)
         {
+            _tocLayout = configuration;
         }
 
         public ReferenceTocLayoutVisitor(ReferenceTocLayoutVisitor source)
@@ -94,23 +95,27 @@ namespace Sandcastle.References
 
             if (this.IsInitialized)
             {
-                ReferenceEngineSettings engineSettings = this.EngineSettings;
-
-                Debug.Assert(engineSettings != null);
-                if (engineSettings == null)
-                {
-                    this.IsInitialized = false;
-                    return;
-                }
-
-                _tocLayout = engineSettings.TocLayout;
-                Debug.Assert(_tocLayout != null);
-
                 if (_tocLayout == null)
                 {
-                    this.IsInitialized = false;
-                    return;
+                    ReferenceEngineSettings engineSettings = this.EngineSettings;
+
+                    Debug.Assert(engineSettings != null);
+                    if (engineSettings == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
+
+                    _tocLayout = engineSettings.TocLayout;
+                    Debug.Assert(_tocLayout != null);
+
+                    if (_tocLayout == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
                 }
+
                 _contentsAfter = _tocLayout.ContentsAfter;
 
                 ReferenceTocLayoutType layoutType = _tocLayout.LayoutType;
@@ -128,10 +133,10 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override void Visit(ReferenceDocument refDocument)
+        public override void Visit(ReferenceDocument referenceDocument)
         {
-            BuildExceptions.NotNull(refDocument, "refDocument");
-            if (refDocument.DocumentType != ReferenceDocumentType.TableOfContents)
+            BuildExceptions.NotNull(referenceDocument, "referenceDocument");
+            if (referenceDocument.DocumentType != ReferenceDocumentType.TableOfContents)
             {
                 return;
             }
@@ -153,13 +158,12 @@ namespace Sandcastle.References
                     BuildLoggerLevel.Info);
             }
 
-            if (this.Visit(refDocument.DocumentFile, context.Logger))
+            if (this.Visit(referenceDocument.DocumentFile, context.Logger))
             {
                 string tocExcludedNamespaces = context["$TocExcludedNamespaces"];
                 if (!String.IsNullOrEmpty(tocExcludedNamespaces))
                 {
-                    _dicTocExcludedNamespaces = new Dictionary<string, string>(
-                        StringComparer.OrdinalIgnoreCase);
+                    _dicTocExcludedNamespaces = new BuildProperties();
 
                     StringReader textReader = new StringReader(tocExcludedNamespaces);
                     using (XmlReader xmlReader = XmlReader.Create(textReader))
@@ -251,8 +255,7 @@ namespace Sandcastle.References
             _namingMethod      = this.EngineSettings.Naming;
             _tocFilePath       = tocFilePath;
 
-            _dicNavigators     = new Dictionary<string, XPathNavigator>(
-                StringComparer.OrdinalIgnoreCase);
+            _dicNavigators     = new BuildDictionary<XPathNavigator>();
 
             if (layoutType == ReferenceTocLayoutType.Hierarchical)
             {
@@ -829,7 +832,7 @@ namespace Sandcastle.References
 
         #region ICloneable Members
 
-        public override ReferenceTocVisitor Clone()
+        public override ReferenceVisitor Clone()
         {
             ReferenceTocLayoutVisitor filter = new ReferenceTocLayoutVisitor(this);
 

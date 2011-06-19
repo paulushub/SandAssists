@@ -80,7 +80,12 @@ namespace Sandcastle.Components.Indexed
                     bool recurse = false;
                     string recurseValue = dataNode.GetAttribute("recurse", String.Empty);
                     if (!String.IsNullOrEmpty(recurseValue))
-                        recurse = (bool)Convert.ToBoolean(recurseValue);
+                        recurse = Convert.ToBoolean(recurseValue);
+
+                    bool warnOverride = true;
+                    string warningValue = dataNode.GetAttribute("warnOverride", String.Empty);
+                    if (!String.IsNullOrEmpty(warningValue))
+                        warnOverride = Convert.ToBoolean(warningValue);
 
                     // get the files				
                     string files = dataNode.GetAttribute("files", String.Empty);
@@ -96,8 +101,8 @@ namespace Sandcastle.Components.Indexed
                         StringComparison.OrdinalIgnoreCase))
                     {
                         if (!String.IsNullOrEmpty(baseValue) &&
-                            baseValue.EndsWith(@"Sandcastle\Data\Reflection", 
-                            StringComparison.OrdinalIgnoreCase))
+                            baseValue.IndexOf(@"Sandcastle\Data\Reflection", 
+                            StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             Debug.Assert(databaseSource == null);
 
@@ -105,18 +110,20 @@ namespace Sandcastle.Components.Indexed
                                 component, keyXPath, valueXPath, context, cache, true);
                             if (!databaseSource.Exists)
                             {
-                                memorySource.AddDocuments(baseValue, 
-                                    files, recurse, false); 
+                                memorySource.AddDocuments(baseValue,
+                                    files, recurse, false, warnOverride); 
                             }
                         }
                         else
                         {
-                            memorySource.AddDocuments(baseValue, files, recurse, true);
+                            memorySource.AddDocuments(baseValue, files, recurse,
+                                true, warnOverride);
                         }
                     }
                     else
                     {
-                        memorySource.AddDocuments(baseValue, files, recurse, false);
+                        memorySource.AddDocuments(baseValue, files, recurse,
+                            false, warnOverride);
                     }
                 }
                 WriteMessage(MessageLevel.Info, String.Format(

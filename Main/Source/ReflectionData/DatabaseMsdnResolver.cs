@@ -5,7 +5,9 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Collections.Generic;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
@@ -18,10 +20,9 @@ namespace Sandcastle.ReflectionData
         private bool _isSystem;
         private bool _isExisted;
 
-        private string _treeFileName;
-        private string _blockFileName;
+        private string _dataDir;
 
-        private BplusTree _plusTree;
+        private PersistentDictionary<string, string> _plusTree;
 
         private Dictionary<string, string> _cachedMsdnUrls;
 
@@ -135,26 +136,20 @@ namespace Sandcastle.ReflectionData
 
             if (_isSystem)
             {
-                _treeFileName  = Path.Combine(workingDir, "MsdnT2.6.10621.1.dat");
-                _blockFileName = Path.Combine(workingDir, "MsdnB2.6.10621.1.dat");
-                //_treeFileName = Path.Combine(workingDir, "MsdnT" + localPart + "2.6.10621.1.dat");
-                //_blockFileName = Path.Combine(workingDir, "MsdnB" + localPart + "2.6.10621.1.dat");
+                _dataDir = Path.Combine(workingDir, "MsdnT26106211");
             }
             else
             {
                 string tempFile = Path.GetFileNameWithoutExtension(
                     Path.GetTempFileName());
 
-                _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
-                _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
-                //_treeFileName = Path.Combine(workingDir, tempFile + localPart + "Tree.dat");
-                //_blockFileName = Path.Combine(workingDir, tempFile + localPart + "Block.dat");
+                _dataDir = Path.Combine(workingDir, tempFile);
             }
 
-            if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
+            _isExisted = PersistentDictionaryFile.Exists(_dataDir);
+            if (_isExisted)
             {
-                _isExisted = true;
-                _plusTree  = hBplusTree.ReOpen(_treeFileName, _blockFileName);
+                _plusTree  = new PersistentDictionary<string, string>(_dataDir);
                 if (_plusTree.ContainsKey("$DataCount$"))
                 {
                     _count = Convert.ToInt32(_plusTree["$DataCount$"]);
@@ -164,8 +159,7 @@ namespace Sandcastle.ReflectionData
             {
                 if (createNotFound)
                 {
-                    _plusTree = hBplusTree.Initialize(_treeFileName,
-                        _blockFileName, 64);
+                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
                 }
             }
 
@@ -175,6 +169,46 @@ namespace Sandcastle.ReflectionData
                 if (!_targetIds.Exists || _targetIds.Count == 0)
                 {
                     _targetIds = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_plusTree != null)
+            {
+                try
+                {
+                    // Save the system reflection database, if newly created...
+                    if (_isSystem)
+                    {
+                        if (!_isExisted)
+                        {
+                            // Add some metadata...
+                            _plusTree["$DataCount$"] = _count.ToString();
+                            _plusTree["$DataVersion$"] = "2.6.10621.1";
+                        }
+                    }
+
+                    _plusTree.Dispose();
+                    _plusTree = null;
+
+                    // For the non-system reflection database, delete after use...
+                    if (!_isSystem)
+                    {
+                        if (!String.IsNullOrEmpty(_dataDir) &&
+                            Directory.Exists(_dataDir))
+                        {
+                            PersistentDictionaryFile.DeleteFiles(_dataDir);
+                        }
+                    }
+                }
+                catch
+                {
                 }
             }
         }

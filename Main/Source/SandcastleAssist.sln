@@ -13,10 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builders", "Builders\Builde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components", "Components\Components.csproj", "{1F2EB9F1-1FE3-42F5-86BA-77EF369E11FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources\Resources.csproj", "{1E71CD2B-C403-4BF0-95AF-192494E533D7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{EFADD64A-F0D3-45AF-A916-A95EA333331C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{048F177F-802E-494D-89E0-CD4074F8A33C}"
@@ -25,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReflectionData", "Reflectio
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
 		SccLocalPath0 = .
@@ -35,21 +31,15 @@ Global
 		SccProjectUniqueName2 = Components\\Components.csproj
 		SccProjectName2 = Components
 		SccLocalPath2 = Components
-		SccProjectUniqueName3 = Controls\\Controls.csproj
-		SccProjectName3 = Controls
-		SccLocalPath3 = Controls
-		SccProjectUniqueName4 = Resources\\Resources.csproj
-		SccProjectName4 = Resources
-		SccLocalPath4 = Resources
-		SccProjectUniqueName5 = Helpers\\Helpers.csproj
-		SccProjectName5 = Helpers
-		SccLocalPath5 = Helpers
-		SccProjectUniqueName6 = Core\\Core.csproj
-		SccProjectName6 = Core
-		SccLocalPath6 = Core
-		SccProjectUniqueName7 = ReflectionData\\ReflectionData.csproj
-		SccProjectName7 = ReflectionData
-		SccLocalPath7 = ReflectionData
+		SccProjectUniqueName3 = Helpers\\Helpers.csproj
+		SccProjectName3 = Helpers
+		SccLocalPath3 = Helpers
+		SccProjectUniqueName4 = Core\\Core.csproj
+		SccProjectName4 = Core
+		SccLocalPath4 = Core
+		SccProjectUniqueName5 = ReflectionData\\ReflectionData.csproj
+		SccProjectName5 = ReflectionData
+		SccLocalPath5 = ReflectionData
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -74,22 +64,6 @@ Global
 		{1F2EB9F1-1FE3-42F5-86BA-77EF369E11FE}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{1F2EB9F1-1FE3-42F5-86BA-77EF369E11FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F2EB9F1-1FE3-42F5-86BA-77EF369E11FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E71CD2B-C403-4BF0-95AF-192494E533D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFADD64A-F0D3-45AF-A916-A95EA333331C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
 		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
 		{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

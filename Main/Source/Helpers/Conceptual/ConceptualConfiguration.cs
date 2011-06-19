@@ -67,5 +67,18 @@ namespace Sandcastle.Conceptual
         #region Public Properties
 
         #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Creates the visitor implementation for this configuration.
+        /// </summary>
+        /// <returns>
+        /// A instance of the reference visitor, <see cref="ReferenceVisitor"/>,
+        /// which is used to process this configuration settings during build.
+        /// </returns>
+        public abstract ConceptualVisitor CreateVisitor();
+
+        #endregion
     }
 }

@@ -5,7 +5,9 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.Formats
 {
@@ -23,7 +25,7 @@ namespace Sandcastle.Formats
         private BuildLogger _logger;
         private BuildContext _context;
 
-        private BplusTree _plusTree;
+        private PersistentDictionary<string, string> _plusTree;
 
         private FormatWebOptions _options;
 
@@ -72,14 +74,11 @@ namespace Sandcastle.Formats
 
             BuildSettings settings = context.Settings;
 
-            string workingDir    = _options.WorkingDirectory;
-            workingDir           = Path.Combine(workingDir, "Data");
-            string treeFileName  = Path.Combine(workingDir, "WebTreeFile.dat");
-            string blockFileName = Path.Combine(workingDir, "WebBlockFile.dat");
+            string dataDir = Path.Combine(_options.OutputDirectory, "Data");
 
             try
             {
-                _plusTree = hBplusTree.Initialize(treeFileName, blockFileName, 64);
+                _plusTree = new PersistentDictionary<string, string>(dataDir);
 
                 WriteHtmls();
                 if (!WriteHhk())
@@ -106,8 +105,7 @@ namespace Sandcastle.Formats
             {   
                 if (_plusTree != null)
                 {
-                    //_plusTree.Commit();
-                    _plusTree.Shutdown();
+                    _plusTree.Dispose();
                 }
             }  
         }

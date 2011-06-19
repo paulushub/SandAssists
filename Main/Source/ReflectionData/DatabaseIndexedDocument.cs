@@ -6,7 +6,9 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
-using BplusDotNet;
+using Microsoft.Isam.Esent;
+using Microsoft.Isam.Esent.Interop;
+using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
@@ -17,12 +19,11 @@ namespace Sandcastle.ReflectionData
         private bool      _isSystem;
         private bool      _isExisted;
 
-        private string    _treeFileName;
-        private string    _blockFileName;
-
-        private BplusTree _plusTree;
+        private string    _dataDir;
 
         private XmlReaderSettings _settings;
+
+        private PersistentDictionary<string, string> _plusTree;
 
         #endregion
 
@@ -44,27 +45,24 @@ namespace Sandcastle.ReflectionData
                 Directory.CreateDirectory(workingDir);
             }
             if (_isSystem)
-            {   
-                _treeFileName  = Path.Combine(workingDir, "RefT2.6.10621.1.dat");
-                _blockFileName = Path.Combine(workingDir, "RefB2.6.10621.1.dat");
+            {
+                _dataDir = Path.Combine(workingDir, "RefT26106211");
             }
             else
             {
                 string tempFile = Path.GetFileNameWithoutExtension(
                     Path.GetTempFileName());
-                _treeFileName  = Path.Combine(workingDir, tempFile + "Tree.dat");
-                _blockFileName = Path.Combine(workingDir, tempFile + "Block.dat");
+                _dataDir = Path.Combine(workingDir, tempFile);
             }
 
-            if (File.Exists(_treeFileName) && File.Exists(_blockFileName))
+            _isExisted = PersistentDictionaryFile.Exists(_dataDir);
+            if (_isExisted)
             {
-                _isExisted = true;
-                _plusTree  = hBplusTree.ReOpen(_treeFileName, _blockFileName);
+                _plusTree = new PersistentDictionary<string, string>(_dataDir);
             }
             else
             {
-                _plusTree = hBplusTree.Initialize(_treeFileName, 
-                    _blockFileName, 64);
+                _plusTree = new PersistentDictionary<string, string>(_dataDir);
             }
         }
 
@@ -170,25 +168,19 @@ namespace Sandcastle.ReflectionData
                     {
                         if (!_isExisted)
                         {
-                            _plusTree.Commit();
                         }
                     }
 
-                    _plusTree.Shutdown();
+                    _plusTree.Dispose();
                     _plusTree = null;
 
                     // For the non-system reflection database, delete after use...
                     if (!_isSystem)
                     {
-                        if (!String.IsNullOrEmpty(_treeFileName) &&
-                            File.Exists(_treeFileName))
+                        if (!String.IsNullOrEmpty(_dataDir) &&
+                            Directory.Exists(_dataDir))
                         {
-                            File.Delete(_treeFileName);
-                        }
-                        if (!String.IsNullOrEmpty(_blockFileName) &&
-                            File.Exists(_blockFileName))
-                        {
-                            File.Delete(_blockFileName);
+                            PersistentDictionaryFile.DeleteFiles(_dataDir);
                         }
                     }
                 }

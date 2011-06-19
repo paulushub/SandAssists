@@ -4,8 +4,6 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
-using Microsoft.Ddue.Tools;
-
 namespace Sandcastle.Components.Indexed
 {
     public sealed class DatabaseIndexedDocumentSource : IndexedDocumentSource
@@ -98,7 +96,8 @@ namespace Sandcastle.Components.Indexed
             return navigator;
         }
 
-        public override void AddDocument(string file, bool cacheIt)
+        public override void AddDocument(string file,
+            bool cacheIt, bool warnOverride)
         {
             if (_document != null)
             {
@@ -106,7 +105,8 @@ namespace Sandcastle.Components.Indexed
             }
         }
 
-        public override void AddDocuments(string wildcardPath, bool cacheIt)
+        public override void AddDocuments(string wildcardPath,
+            bool cacheIt, bool warnOverride)
         {
             string directoryPart = Path.GetDirectoryName(wildcardPath);
             if (String.IsNullOrEmpty(directoryPart))
@@ -119,12 +119,12 @@ namespace Sandcastle.Components.Indexed
 
             foreach (string file in files)
             {
-                AddDocument(file, cacheIt);
+                AddDocument(file, cacheIt, warnOverride);
             }
         }
 
         public override void AddDocuments(string baseDirectory,
-            string wildcardPath, bool recurse, bool cacheIt)
+            string wildcardPath, bool recurse, bool cacheIt, bool warnOverride)
         {
             string path;
             if (String.IsNullOrEmpty(baseDirectory))
@@ -136,13 +136,14 @@ namespace Sandcastle.Components.Indexed
                 path = Path.Combine(baseDirectory, wildcardPath);
             }
 
-            AddDocuments(path, cacheIt);
+            AddDocuments(path, cacheIt, warnOverride);
 
             if (recurse)
             {
                 string[] subDirectories = Directory.GetDirectories(baseDirectory);
                 foreach (string subDirectory in subDirectories)
-                    AddDocuments(subDirectory, wildcardPath, recurse, cacheIt);
+                    this.AddDocuments(subDirectory, wildcardPath, recurse, 
+                        cacheIt, warnOverride);
             }
         }
 

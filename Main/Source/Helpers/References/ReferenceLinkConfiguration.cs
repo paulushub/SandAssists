@@ -9,6 +9,9 @@ using Sandcastle.Contents;
 
 namespace Sandcastle.References
 {
+    using ConceptualEngineSettings    = Sandcastle.Conceptual.ConceptualEngineSettings;
+    using ConceptualLinkConfiguration = Sandcastle.Conceptual.ConceptualLinkConfiguration;
+
     [Serializable]
     public sealed class ReferenceLinkConfiguration : ReferenceComponentConfiguration
     {
@@ -310,8 +313,16 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(group, "group");
             BuildExceptions.NotNull(writer, "writer");
 
-            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
-            if (groupContext == null)
+            IBuildNamedList<BuildGroupContext> groupContexts = _context.GroupContexts;
+            if (groupContexts == null || groupContexts.Count == 0)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            ReferenceGroupContext theContext = groupContexts[group.Id] 
+                as ReferenceGroupContext;
+            if (theContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
@@ -322,9 +333,15 @@ namespace Sandcastle.References
                 return false;
             }
 
+            BuildFramework framework = theContext.Framework;
+
             writer.WriteStartElement("options");   // start - options
             writer.WriteAttributeString("locale", 
                 _settings.CultureInfo.Name.ToLower());
+            if (framework.FrameworkType.IsSilverlight)
+            {
+                writer.WriteAttributeString("version", "VS.95");
+            }
             writer.WriteAttributeString("linkTarget",
                 "_" + _format.ExternalLinkTarget.ToString().ToLower());
             writer.WriteEndElement();              // end - options
@@ -338,59 +355,61 @@ namespace Sandcastle.References
                 _format.ExternalLinkType.ToString().ToLower());
             writer.WriteEndElement();
 
-            BuildLinkType linkType = _format.LinkType;
-
-            IList<LinkContent> listTokens = group.LinkContents;
-            if (listTokens != null && listTokens.Count != 0)
+            if (framework.FrameworkType.IsSilverlight)
             {
-                int contentCount = listTokens.Count;
-                for (int i = 0; i < contentCount; i++)
+                string silverlightDir = theContext["$SilverlightDataDir"];
+                if (!String.IsNullOrEmpty(silverlightDir) &&
+                    Directory.Exists(silverlightDir))
                 {
-                    LinkContent content = listTokens[i];
-                    if (content == null || content.IsEmpty)
-                    {
-                        continue;
-                    }
+                    writer.WriteStartElement("targets");
+                    writer.WriteAttributeString("base", silverlightDir);
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteAttributeString("type",
+                        _format.ExternalLinkType.ToString().ToLower());
+                    writer.WriteEndElement();
+                }
+            }
+            else
+            {
+                string blendDir = theContext["$BlendDataDir"];
+                if (!String.IsNullOrEmpty(blendDir) && Directory.Exists(blendDir))
+                {
+                    writer.WriteStartElement("targets");
+                    writer.WriteAttributeString("base", blendDir);
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteAttributeString("type",
+                        _format.ExternalLinkType.ToString().ToLower());
+                    writer.WriteEndElement();
+                }
+            }
 
-                    int itemCount = content.Count;
-                    for (int j = 0; j < itemCount; j++)
-                    {
-                        LinkItem item = content[j];
-                        if (item == null || item.IsEmpty)
-                        {
-                            continue;
-                        }
+            BuildLinkType linkType = _format.LinkType;
+            string linkTypeText = linkType.ToString().ToLower();
 
-                        writer.WriteStartElement("targets");
+            for (int i = 0; i < groupContexts.Count; i++)
+            {
+                BuildGroupContext groupContext = groupContexts[i];
 
-                        if (item.IsDirectory)
-                        {
-                            writer.WriteAttributeString("base", item.LinkDirectory);
-                            writer.WriteAttributeString("recurse",
-                                item.Recursive.ToString());
-                            writer.WriteAttributeString("files", @"*.xml");
-                        }
-                        else
-                        {
-                            string linkFile = item.LinkFile;
-                            string linkDir  = Path.GetDirectoryName(linkFile);
-                            if (String.IsNullOrEmpty(linkDir))
-                            {
-                                linkDir = @".\";
-                            }
-                            else
-                            {
-                                linkFile = Path.GetFileName(linkFile);
-                            }
-                            writer.WriteAttributeString("base", linkDir);
-                            writer.WriteAttributeString("recurse", "false");
-                            writer.WriteAttributeString("files", linkFile);
-                        }
+                if (groupContext.GroupType != BuildGroupType.Reference ||
+                    groupContext == theContext)
+                {
+                    continue;
+                }
 
-                        writer.WriteAttributeString("type",
-                            linkType.ToString().ToLower());
-                        writer.WriteEndElement();
-                    }
+                string linkFile = groupContext["$ReflectionFile"];
+                if (!String.IsNullOrEmpty(linkFile))
+                {
+                    writer.WriteStartElement("targets");
+
+                    writer.WriteAttributeString("base", @".\");
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("files", 
+                        @".\" + groupContext["$ReflectionFile"]);   
+                    writer.WriteAttributeString("type", linkTypeText);
+
+                    writer.WriteEndElement();
                 }
             }
 
@@ -399,9 +418,67 @@ namespace Sandcastle.References
             writer.WriteStartElement("targets");
             writer.WriteAttributeString("base", @".\");
             writer.WriteAttributeString("recurse", "false");
-            writer.WriteAttributeString("files", @".\" + groupContext["$ReflectionFile"]);
+            writer.WriteAttributeString("files", @".\" + theContext["$ReflectionFile"]);
             writer.WriteAttributeString("type", linkType.ToString().ToLower());
             writer.WriteEndElement();
+
+            bool conceptualContext = _settings.BuildConceptual;
+            if (conceptualContext)
+            {
+                conceptualContext = false;
+
+                for (int i = 0; i < groupContexts.Count; i++)
+                {
+                    BuildGroupContext groupContext = groupContexts[i];
+                    if (groupContext.GroupType == BuildGroupType.Conceptual)
+                    {
+                        conceptualContext = true;
+                        break;
+                    }
+                }
+            }
+
+            if (conceptualContext)
+            {     
+                ConceptualEngineSettings engineSettings = _settings.EngineSettings[
+                    BuildEngineType.Conceptual] as ConceptualEngineSettings;
+                Debug.Assert(engineSettings != null,
+                    "The settings does not include the reference engine settings.");
+                if (engineSettings == null)
+                {
+                    return false;
+                }
+                ConceptualLinkConfiguration linkConfig = 
+                    engineSettings.ConceptualLinks;
+                Debug.Assert(linkConfig != null,
+                    "There is no conceptual link configuration available.");
+                if (linkConfig == null)
+                {
+                    return false;
+                }
+
+                writer.WriteStartElement("conceptualLinks");  //start: conceptualLinks
+                writer.WriteAttributeString("enabled", "true");
+                writer.WriteAttributeString("showText",
+                    linkConfig.ShowLinkText.ToString());
+                writer.WriteAttributeString("showBrokenLinkText",
+                    linkConfig.ShowBrokenLinkText.ToString());
+                writer.WriteAttributeString("type", linkTypeText);
+
+                for (int i = 0; i < groupContexts.Count; i++)
+                {
+                    BuildGroupContext groupContext = groupContexts[i];
+                    if (groupContext.GroupType == BuildGroupType.Conceptual)
+                    {
+                        writer.WriteStartElement("conceptualTargets");  // start - conceptualTargets
+                        writer.WriteAttributeString("base", String.Format(
+                            @".\{0}", groupContext["$DdueXmlCompDir"]));
+                        writer.WriteAttributeString("type", linkTypeText);
+                        writer.WriteEndElement();                       // end - conceptualTargets
+                    }
+                }
+                writer.WriteEndElement();                 //end: conceptualLinks
+            }    
 
             return true;
         }

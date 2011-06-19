@@ -81,7 +81,8 @@ namespace Sandcastle.Components.Indexed
             return navigator;
         }
 
-        public override void AddDocument(string file, bool cacheIt)
+        public override void AddDocument(string file, bool cacheIt, 
+            bool warnOverride)
         {    
             // load the document
             MemoryIndexedDocument document = 
@@ -91,8 +92,8 @@ namespace Sandcastle.Components.Indexed
             //string[] keys = document.GetKeys();
             ICollection<string> keys = document.GetKeys();
             foreach (string key in keys)
-            {
-                if (_keyFileIndex.ContainsKey(key))
+            {                   
+                if (warnOverride && _keyFileIndex.ContainsKey(key))
                 {
                     this.WriteMessage(MessageLevel.Warn, 
                         String.Format("Entries for the key '{0}' occur in both '{1}' and '{2}'. The last entry will be used.", 
@@ -109,7 +110,8 @@ namespace Sandcastle.Components.Indexed
             document = null;
         }
 
-        public override void AddDocuments(string wildcardPath, bool cacheIt)
+        public override void AddDocuments(string wildcardPath,
+            bool cacheIt, bool warnOverride)
         {
             string directoryPart = Path.GetDirectoryName(wildcardPath);
             if (String.IsNullOrEmpty(directoryPart)) 
@@ -122,14 +124,14 @@ namespace Sandcastle.Components.Indexed
             
             foreach (string file in files)
             {
-                AddDocument(file, cacheIt);
+                AddDocument(file, cacheIt, warnOverride);
             }
 
             _documentCount += files.Length;
         }
 
-        public override void AddDocuments(string baseDirectory, 
-            string wildcardPath, bool recurse, bool cacheIt)
+        public override void AddDocuments(string baseDirectory,
+            string wildcardPath, bool recurse, bool cacheIt, bool warnOverride)
         {      
             string path;
             if (String.IsNullOrEmpty(baseDirectory))
@@ -141,13 +143,14 @@ namespace Sandcastle.Components.Indexed
                 path = Path.Combine(baseDirectory, wildcardPath);
             }
 
-            AddDocuments(path, cacheIt);
+            AddDocuments(path, cacheIt, warnOverride);
 
             if (recurse)
             {
                 string[] subDirectories = Directory.GetDirectories(baseDirectory);
                 foreach (string subDirectory in subDirectories)
-                    AddDocuments(subDirectory, wildcardPath, recurse, cacheIt);
+                    this.AddDocuments(subDirectory, wildcardPath, recurse, 
+                        cacheIt, warnOverride);
             }
         }
 

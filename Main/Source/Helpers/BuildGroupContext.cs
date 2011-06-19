@@ -9,11 +9,12 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private bool                       _isInitialized;
-        private BuildGroup                 _group;
-        private BuildContext               _context;
-        private Dictionary<string, string> _properties;
-        private Dictionary<string, object> _objects;
+        private bool                    _isInitialized;
+        private string                  _contextId;
+        private BuildGroup              _group;
+        private BuildContext            _context;
+        private BuildProperties         _properties;
+        private BuildDictionary<object> _objects;
 
         #endregion
 
@@ -21,10 +22,8 @@ namespace Sandcastle
 
         private BuildGroupContext()
         {
-            _properties = new Dictionary<string, string>(
-               StringComparer.OrdinalIgnoreCase);
-            _objects    = new Dictionary<string, object>(
-               StringComparer.OrdinalIgnoreCase);
+            _properties = new BuildProperties();
+            _objects    = new BuildDictionary<object>();
         }
 
         protected BuildGroupContext(BuildGroup group)
@@ -33,6 +32,15 @@ namespace Sandcastle
             BuildExceptions.NotNull(group, "group");
 
             _group = group;
+        }
+
+        protected BuildGroupContext(BuildGroup group, string contextId)
+            : this()
+        {
+            BuildExceptions.NotNull(group, "group");
+
+            _group     = group;
+            _contextId = contextId;
         }
 
         protected BuildGroupContext(BuildGroupContext context)
@@ -67,6 +75,11 @@ namespace Sandcastle
         {
             get
             {
+                if (!String.IsNullOrEmpty(_contextId))
+                {
+                    return _contextId;
+                }
+
                 return _group.Id;
             }
         }
@@ -107,22 +120,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -148,28 +149,16 @@ namespace Sandcastle
 
         public object GetValue(string key)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return null;
-            }
-
-            object theValue;
-            if (_objects.TryGetValue(key, out theValue))
-            {
-                return theValue;
-            }
-
-            return null;
+            return _objects[key];
         }
 
         public void SetValue(string key, object value)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return;
-            }
-
             _objects[key] = value;
+        }
+
+        public virtual void CreateProperties(string indexValue)
+        {
         }
 
         #endregion
@@ -180,6 +169,11 @@ namespace Sandcastle
         {
             get 
             {
+                if (!String.IsNullOrEmpty(_contextId))
+                {
+                    return _contextId;
+                }
+
                 return _group.Id; 
             }
         }

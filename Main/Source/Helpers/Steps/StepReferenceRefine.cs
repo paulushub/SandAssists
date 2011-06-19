@@ -15,9 +15,14 @@ namespace Sandcastle.Steps
         private ReferenceGroup _group;
 
         [NonSerialized]
+        private List<ReferenceConfiguration> _listConfigurations;
+
+        [NonSerialized]
         private ReferenceEngineSettings _engineSettings;
+
         [NonSerialized]
         private List<ReferenceDocument> _listDocuments;
+
         [NonSerialized]
         private Dictionary<string, ReferenceVisitor> _dictVisitors;
 
@@ -179,7 +184,8 @@ namespace Sandcastle.Steps
 
             // 1. Create all the reference visitors...
             this.PrepareVisitors(context); 
-            if (_dictVisitors == null || _dictVisitors.Count == 0)
+            if ((_dictVisitors == null || _dictVisitors.Count == 0) ||
+                (_listConfigurations == null || _listConfigurations.Count == 0))
             {
                 return true;
             }
@@ -213,65 +219,23 @@ namespace Sandcastle.Steps
             {
                 return;
             }
-
-            List<BuildConfiguration> listConfigurations = 
-                new List<BuildConfiguration>();
-
-            // List out enabled Sandcastle Assist and the Plugin configurations...
-            IBuildNamedList<BuildConfiguration> dicAssistConfigs
-                = _engineSettings.Configurations;
-            if (dicAssistConfigs != null && dicAssistConfigs.Count != 0)
-            {
-                foreach (ReferenceConfiguration config in dicAssistConfigs)
-                {
-                    // It must be both enabled to be used and active/valid...
-                    if (config.Enabled && config.IsActive &&
-                        String.Equals(config.Category, "ReferenceVisitor",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Make sure there is a handler of this configuration...
-                        if (_dictVisitors.ContainsKey(config.Name))
-                        {
-                            listConfigurations.Add(config);
-                        }
-                    }
-                }
-            }   
-            IBuildNamedList<BuildConfiguration> dicPluginConfigs
-                = _engineSettings.PluginConfigurations;
-            if (dicPluginConfigs != null && dicPluginConfigs.Count != 0)
-            {
-                foreach (ReferenceConfiguration config in dicPluginConfigs)
-                {
-                    // It must be both enabled to be used and active/valid...
-                    if (config.Enabled && config.IsActive &&
-                        String.Equals(config.Category, "ReferenceVisitor", 
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Make sure there is a handler of this configuration...
-                        if (_dictVisitors.ContainsKey(config.Name))
-                        {
-                            listConfigurations.Add(config);
-                        }
-                    }
-                }
-            }
-            if (listConfigurations.Count == 0)
+            if (_listConfigurations.Count == 0)
             {
                 return;
-            }
-            // Initialize the configurations and get them ready for processing...
-            for (int i = 0; i < listConfigurations.Count; i++)
-            {
-                listConfigurations[i].Initialize(context);
             }
 
             FileSystemWatcher fileWatcher = null;
             try
             {
                 fileWatcher  = new FileSystemWatcher(); 
-                int itemCount = _listDocuments.Count;
 
+                // Initialize the configurations and get them ready for processing...
+                for (int i = 0; i < _listConfigurations.Count; i++)
+                {
+                    _listConfigurations[i].Initialize(context);
+                }
+
+                int itemCount = _listDocuments.Count;  
                 for (int i = 0; i < itemCount; i++)
                 {
                     ReferenceDocument document = _listDocuments[i];
@@ -280,14 +244,13 @@ namespace Sandcastle.Steps
                         continue;
                     }
 
-                    this.ProcessDocument(fileWatcher, context, 
-                        document, listConfigurations);
+                    this.ProcessDocument(fileWatcher, context, document);
                 }   
         
                 // Un-initialize the configurations after the processing...
-                for (int i = 0; i < listConfigurations.Count; i++)
+                for (int i = 0; i < _listConfigurations.Count; i++)
                 {
-                    listConfigurations[i].Uninitialize();
+                    _listConfigurations[i].Uninitialize();
                 }
             }
             finally
@@ -302,8 +265,7 @@ namespace Sandcastle.Steps
         }
 
         private void ProcessDocument(FileSystemWatcher fileWatcher, 
-            BuildContext context, ReferenceDocument document, 
-            IList<BuildConfiguration> configurations)
+            BuildContext context, ReferenceDocument document)
         {
             try
             {
@@ -314,10 +276,10 @@ namespace Sandcastle.Steps
 
                 // For each configuration, retrieve the processor (visitor) and
                 // process the document...
-                int itemCount = configurations.Count;
+                int itemCount = _listConfigurations.Count;
                 for (int i = 0; i < itemCount; i++)
                 {
-                    BuildConfiguration configuration = configurations[i];
+                    BuildConfiguration configuration = _listConfigurations[i];
 
                     string configName = configuration.Name;
                     if (_dictVisitors.ContainsKey(configName))
@@ -343,15 +305,60 @@ namespace Sandcastle.Steps
                 _dictVisitors = new Dictionary<string, ReferenceVisitor>();
             }
 
-            _dictVisitors.Add(
-                ReferenceVisibilityConfiguration.ConfigurationName,
-                new ReferenceVisibilityVisitor());
-            _dictVisitors.Add(
-                ReferenceXPathConfiguration.ConfigurationName,
-                new ReferenceXPathVisitor());
-            _dictVisitors.Add(
-                ReferenceSpellCheckConfiguration.ConfigurationName,
-                new ReferenceSpellCheckVisitor());
+            _listConfigurations = new List<ReferenceConfiguration>();
+
+            // List out enabled Sandcastle Assist and the Plugin configurations...
+            IBuildNamedList<BuildConfiguration> dicAssistConfigs
+                = _engineSettings.Configurations;
+            if (dicAssistConfigs != null && dicAssistConfigs.Count != 0)
+            {
+                foreach (ReferenceConfiguration config in dicAssistConfigs)
+                {
+                    // It must be both enabled to be used and active/valid...
+                    if (config.Enabled && config.IsActive &&
+                        String.Equals(config.Category, "ReferenceVisitor",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Make sure there is a handler of this configuration...
+                        ReferenceVisitor visitor = config.CreateVisitor();
+                        if (visitor != null)
+                        {
+                            _listConfigurations.Add(config);
+
+                            if (!_dictVisitors.ContainsKey(config.Name))
+                            {
+                                _dictVisitors.Add(config.Name, visitor);
+                            }
+                        }
+                    }
+                }
+            }   
+
+            IBuildNamedList<BuildConfiguration> dicPluginConfigs
+                = _engineSettings.PluginConfigurations;
+            if (dicPluginConfigs != null && dicPluginConfigs.Count != 0)
+            {
+                foreach (ReferenceConfiguration config in dicPluginConfigs)
+                {
+                    // It must be both enabled to be used and active/valid...
+                    if (config.Enabled && config.IsActive &&
+                        String.Equals(config.Category, "ReferenceVisitor", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Make sure there is a handler of this configuration...
+                        ReferenceVisitor visitor = config.CreateVisitor();
+                        if (visitor != null)
+                        {
+                            _listConfigurations.Add(config);
+
+                            if (!_dictVisitors.ContainsKey(config.Name))
+                            {
+                                _dictVisitors.Add(config.Name, visitor);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

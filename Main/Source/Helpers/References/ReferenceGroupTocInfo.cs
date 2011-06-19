@@ -624,7 +624,7 @@ namespace Sandcastle.References
 
             writer.WriteStartElement(TagName);
 
-            if (_listTopics == null && _listTopics.Count != 0)
+            if (_listTopics != null && _listTopics.Count != 0)
             {
                 for (int i = 0; i < _listTopics.Count; i++)
                 {

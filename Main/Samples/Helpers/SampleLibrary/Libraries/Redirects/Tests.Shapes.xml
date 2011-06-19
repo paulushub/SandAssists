@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tests.Shapes</name>
+    </assembly>
+    <members>
+        <member name="T:Tests.Shapes.ShapeControl">
+            <summary>
+            Interaction logic for ShapeControl.xaml
+            </summary>
+            <summary>
+            ShapeControl
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeControl.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Tests.Shapes.ShapeControl"/> class.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Tests.Shapes.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Tests.Shapes.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Tests.Shapes.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:Tests.Shapes.ShapeEllipse">
+            <summary>
+            This the ellipse shape.
+            </summary>
+        </member>
+        <member name="T:Tests.Shapes.ShapeBase">
+            <summary>
+            The <see langword="abstract"/> base class for all shapes.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeBase.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeBase"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeBase"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeBase.#ctor(Tests.Shapes.ShapeBase)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeBase"/> class with parameter
+            copied from the specified <see cref="T:Tests.Shapes.ShapeBase"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Shapes.ShapeBase"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Tests.Shapes.ShapeBase.Geometry">
+            <summary>
+            Gets the geometry associated with this shape.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:Tests.Geometries.GeometryBase"/> specifying the geometry of this shape.
+            </remarks>
+        </member>
+        <member name="M:Tests.Shapes.ShapeEllipse.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeEllipse"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeEllipse"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeEllipse.#ctor(Tests.Shapes.ShapeEllipse)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeEllipse"/> class with parameter
+            copied from the specified <see cref="T:Tests.Shapes.ShapeEllipse"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Shapes.ShapeEllipse"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Tests.Shapes.ShapeEllipse.Geometry">
+            <summary>
+            Gets the geometry associated with this shape.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:Tests.Geometries.GeometryEllipse"/> specifying the geometry of this shape.
+            </remarks>
+        </member>
+        <member name="P:Tests.Shapes.ShapeEllipse.Ellipse">
+            <summary>
+            Gets the geometry associated with this shape.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:Tests.Geometries.GeometryEllipse"/> specifying the geometry of this shape.
+            </remarks>
+        </member>
+        <member name="T:Tests.Shapes.ShapeRectangle">
+            <summary>
+            This is the rectangle shape.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeRectangle.#ctor">
+            <overloads>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeRectangle"/> class.
+            </overloads>
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeRectangle"/> class to the
+            default parameters.
+            </summary>
+        </member>
+        <member name="M:Tests.Shapes.ShapeRectangle.#ctor(Tests.Shapes.ShapeRectangle)">
+            <summary>
+            Initializes an instance of the <see cref="T:Tests.Shapes.ShapeRectangle"/> class with parameter
+            copied from the specified <see cref="T:Tests.Shapes.ShapeRectangle"/> object. A copy constructor.
+            </summary>
+            <param name="source">
+            An instance of the <see cref="T:Tests.Shapes.ShapeRectangle"/> class from which the initial
+            properties are copied.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            If the <paramref name="source"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Tests.Shapes.ShapeRectangle.Geometry">
+            <summary>
+            Gets the geometry associated with this shape.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:Tests.Geometries.GeometryRectangle"/> specifying the geometry of this shape.
+            </remarks>
+        </member>
+        <member name="P:Tests.Shapes.ShapeRectangle.Rectangle">
+            <summary>
+            Gets the geometry associated with this shape.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:Tests.Geometries.GeometryRectangle"/> specifying the geometry of this shape.
+            </remarks>
+        </member>
+    </members>
+</doc>

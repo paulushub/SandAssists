@@ -59,19 +59,13 @@ namespace Sandcastle
     /// </list>
     /// </remarks>
     [Serializable]
-    public class BuildSettings : BuildOptions<BuildSettings>
+    public sealed class BuildSettings : BuildOptions<BuildSettings>
     {
         #region Private Fields
-
-        // Logging information or settings...
-        private bool   _useLogFile;
-        private bool   _keepLogFile;
-        private string _logFileName;
 
         private bool   _cleanIntermediate;
         private bool   _showUpdated;
         private bool   _showPreliminary;
-        private bool   _syntaxUsage;
 
         private bool   _isHelpApi;
         private bool   _isHelpTopics;
@@ -82,12 +76,12 @@ namespace Sandcastle
         private string _headerText;
         private string _footerText;
 
-        private string _outputDir;
-        private string _configDir;
-        private string _workingDir;
-        private string _contentDir;
-        private string _sandcastleDir;
-        private string _sandassistDir;
+        private BuildDirectoryPath _outputDir;
+        private BuildDirectoryPath _configDir;
+        private BuildDirectoryPath _workingDir;
+        private BuildDirectoryPath _contentDir;
+        private BuildDirectoryPath _sandcastleDir;
+        private BuildDirectoryPath _sandassistDir;
 
         private SharedContent     _sharedContent;
         private IncludeContent    _includeContent;
@@ -97,17 +91,14 @@ namespace Sandcastle
 
         private BuildToc          _outputToc;
         private BuildStyle        _outputStyle;
+        private BuildLogging      _outputLogging;
         private BuildFeedback     _outputFeedback;
-        private BuildFramework    _outputFramework;
-        private BuildSyntaxType   _syntaxType;
 
-        private BuildLoggerVerbosity _verbosity;
+        private BuildList<string> _outputFolders;
+        private BuildFormatList   _listFormats;
+        private BuildProperties   _properties;
 
-        private List<string>               _outputFolders;
-        private BuildFormatList            _listFormats;
-        private Dictionary<string, string> _properties;
-
-        private BuildEngineSettingsList    _listEngineSettings;
+        private BuildEngineSettingsList _listEngineSettings;
 
         #endregion
 
@@ -121,22 +112,16 @@ namespace Sandcastle
         /// </summary>
         public BuildSettings()
         {
-            _useLogFile      = true;
-            _keepLogFile     = true;
-            _logFileName     = "HelpBuild.log";
-
             _helpName        = "Documentation";
             _helpTitle       = "Sandcastle Documentation";
      
-            _outputToc         = new BuildToc();
+            _outputToc       = new BuildToc();
             _outputStyle     = new BuildStyle();
+            _outputLogging   = new BuildLogging();
             _listFormats     = new BuildFormatList();
 
             _outputCulture   = new CultureInfo(1033, false);
             _outputFeedback  = new BuildFeedback();
-            _outputFramework = BuildFramework.Default;
-
-            _verbosity       = BuildLoggerVerbosity.Minimal;
 
             _sharedContent      = new SharedContent("Default");
             _attributeContent   = new AttributeContent();
@@ -150,15 +135,14 @@ namespace Sandcastle
             string tempDir = Environment.ExpandEnvironmentVariables("%DXROOT%");
             if (Directory.Exists(tempDir))
             {
-                _sandcastleDir = "%DXROOT%";
+                _sandcastleDir          = new BuildDirectoryPath(tempDir);
+                _sandcastleDir.HintPath = "%DXROOT%";
             }
             string assemblyPath = Path.GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
-            _configDir     = Path.Combine(assemblyPath, "Configurations");
-            _contentDir    = Path.Combine(assemblyPath, "Contents");
-            _sandassistDir = String.Copy(assemblyPath);
-
-            _syntaxType    = BuildSyntaxType.Standard;
+            _configDir     = new BuildDirectoryPath(Path.Combine(assemblyPath, "Configurations"));
+            _contentDir    = new BuildDirectoryPath(Path.Combine(assemblyPath, "Contents"));
+            _sandassistDir = new BuildDirectoryPath(String.Copy(assemblyPath));
 
             // We create all the current three file formats, and reset to set
             // the initial values...
@@ -182,7 +166,7 @@ namespace Sandcastle
             _listFormats.Add(htmFormat);
 
             // Add all the "standard" Sandcastle/Assist folders....
-            _outputFolders = new List<string>();
+            _outputFolders = new BuildList<string>();
             _outputFolders.Add("icons");
             _outputFolders.Add("scripts");
             _outputFolders.Add("styles");
@@ -190,8 +174,7 @@ namespace Sandcastle
             _outputFolders.Add("images");
             _outputFolders.Add("maths");
 
-            _properties = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
+            _properties = new BuildProperties();
         }
 
         /// <summary>
@@ -201,7 +184,6 @@ namespace Sandcastle
         public BuildSettings(BuildSettings source)
             : base(source)
         {
-            _syntaxType         = source._syntaxType;
             _properties         = source._properties;
             _listFormats        = source._listFormats;
             _outputFolders      = source._outputFolders;
@@ -260,42 +242,6 @@ namespace Sandcastle
                 }
             }
         }
-       
-        public bool UseLogFile
-        {
-            get
-            {
-                return _useLogFile;
-            }
-            set
-            {
-                _useLogFile = value;
-            }
-        }
-        
-        public bool KeepLogFile
-        {
-            get
-            {
-                return _keepLogFile;
-            }
-            set
-            {
-                _keepLogFile = value;
-            }
-        }
-        
-        public string LogFileName
-        {
-            get
-            {
-                return _logFileName;
-            }
-            set
-            {
-                _logFileName = value;
-            }
-        }
 
         public bool BuildReferences
         {
@@ -318,30 +264,6 @@ namespace Sandcastle
             set 
             { 
                 _isHelpTopics = value; 
-            }
-        }
-
-        public BuildSyntaxType SyntaxType
-        {
-            get 
-            { 
-                return _syntaxType; 
-            }
-            set 
-            { 
-                _syntaxType = value; 
-            }
-        }
-
-        public bool SyntaxUsage
-        {
-            get 
-            { 
-                return _syntaxUsage; 
-            }
-            set 
-            {
-                _syntaxUsage = value; 
             }
         }
 
@@ -369,55 +291,12 @@ namespace Sandcastle
         }   
 
         /// <summary>
-        /// Gets or sets the level of detail to show in the build log.
-        /// </summary>
-        /// <value>
-        /// An enumeration of the type <see cref="BuildLoggerVerbosity"/> specifying 
-        /// the level of detail. The default is <see cref="BuildLoggerVerbosity.Minimal"/>.
-        /// </value>
-        public BuildLoggerVerbosity Verbosity
-        {
-            get 
-            { 
-                return _verbosity; 
-            }
-            set 
-            { 
-                _verbosity = value; 
-            }
-        }
-
-        public string StylesDirectory
-        {
-            get
-            {
-                string sandcastleDir = this.SandcastleDirectory;
-                sandcastleDir = Environment.ExpandEnvironmentVariables(sandcastleDir);
-                sandcastleDir = Path.GetFullPath(sandcastleDir);
-
-                BuildStyle outputStyle = this.Style;
-                string stylesDir = outputStyle.Directory;
-                if (String.IsNullOrEmpty(stylesDir) == false)
-                {
-                    stylesDir = Environment.ExpandEnvironmentVariables(stylesDir);
-                    stylesDir = Path.GetFullPath(stylesDir);
-                    if (Directory.Exists(stylesDir))
-                    {
-                        sandcastleDir = stylesDir;
-                    }
-                }
-
-                return sandcastleDir;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the fully qualified path of the current working directory.
         /// </summary>
         /// <value>
         /// A string containing a directory path.
         /// </value>
-        public string WorkingDirectory
+        public BuildDirectoryPath WorkingDirectory
         {
             get
             {
@@ -425,12 +304,10 @@ namespace Sandcastle
             }
             set
             {
-                if (!String.IsNullOrEmpty(value))
+                if (value != null)
                 {
-                    value = Environment.ExpandEnvironmentVariables(value);
-                    value = Path.GetFullPath(value);
+                    _workingDir = value;
                 }
-                _workingDir = value;
             }
         }
 
@@ -440,7 +317,7 @@ namespace Sandcastle
         /// <value>
         /// 
         /// </value>
-        public string ConfigurationDirectory
+        public BuildDirectoryPath ConfigurationDirectory
         {
             get
             {
@@ -448,14 +325,14 @@ namespace Sandcastle
             }
             set
             {
-                if (String.IsNullOrEmpty(value) == false)
+                if (value != null)
                 {
                     _configDir = value;
                 }
             }
         }
 
-        public string ContentsDirectory
+        public BuildDirectoryPath ContentsDirectory
         {
             get
             {
@@ -463,14 +340,14 @@ namespace Sandcastle
             }
             set
             {
-                if (String.IsNullOrEmpty(value) == false)
+                if (value != null)
                 {
                     _contentDir = value;
                 }
             }
         }
 
-        public string SandcastleDirectory
+        public BuildDirectoryPath SandcastleDirectory
         {
             get 
             { 
@@ -478,14 +355,14 @@ namespace Sandcastle
             }
             set 
             {
-                if (String.IsNullOrEmpty(value) == false)
+                if (value != null)
                 {
                     _sandcastleDir = value; 
                 }
             }
         }
 
-        public string SandAssistDirectory
+        public BuildDirectoryPath SandAssistDirectory
         {
             get 
             { 
@@ -493,14 +370,14 @@ namespace Sandcastle
             }
             set 
             {
-                if (String.IsNullOrEmpty(value) == false)
+                if (value != null)
                 {
                     _sandassistDir = value; 
                 }
             }
         }
 
-        public string OutputDirectory
+        public BuildDirectoryPath OutputDirectory
         {
             get
             {
@@ -532,7 +409,7 @@ namespace Sandcastle
             }
         }
 
-        public bool ShowUpdated
+        public bool ShowUpdatedDate
         {
             get 
             { 
@@ -595,6 +472,21 @@ namespace Sandcastle
             }
         }
 
+        public BuildLogging Logging
+        {
+            get
+            {
+                return _outputLogging;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _outputLogging = value;
+                }
+            }
+        }
+
         public BuildStyle Style
         {
             get
@@ -621,21 +513,6 @@ namespace Sandcastle
                 if (value != null)
                 {
                     _outputFeedback = value;
-                }
-            }
-        }
-
-        public BuildFramework Framework
-        {
-            get
-            {
-                return _outputFramework;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _outputFramework = value;
                 }
             }
         }
@@ -692,22 +569,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -736,15 +601,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.KeyCollection keyColl
-                        = _properties.Keys;
-
-                    return keyColl;
-                }
-
-                return null;
+                return _properties.Keys;
             }
         }
 
@@ -758,15 +615,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.ValueCollection valueColl
-                        = _properties.Values;
-
-                    return valueColl;
-                }
-
-                return null;
+                return _properties.Values;
             }
         }
 
@@ -785,8 +634,8 @@ namespace Sandcastle
 
             _outputToc.Initialize(context);
             _outputStyle.Initialize(context);
+            _outputLogging.Initialize(context);
             _outputFeedback.Initialize(context);
-            _outputFramework.Initialize(context);
 
             for (int i = 0; i < _listEngineSettings.Count; i++)
             {
@@ -858,8 +707,8 @@ namespace Sandcastle
 
             _outputToc.Uninitialize();
             _outputStyle.Uninitialize();
+            _outputLogging.Uninitialize();
             _outputFeedback.Uninitialize();
-            _outputFramework.Uninitialize();
         }
 
         /// <summary>
@@ -874,8 +723,6 @@ namespace Sandcastle
         /// </exception>
         public void Remove(string key)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Remove(key);
         }
 
@@ -884,11 +731,6 @@ namespace Sandcastle
         /// </summary>
         public void Clear()
         {
-            if (_properties.Count == 0)
-            {
-                return;
-            }
-
             _properties.Clear();
         }
 
@@ -918,8 +760,6 @@ namespace Sandcastle
         /// </remarks>
         public void Add(string key, string value)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Add(key, value);
         }
 
@@ -936,11 +776,6 @@ namespace Sandcastle
         /// </returns>
         public bool ContainsKey(string key)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
             return _properties.ContainsKey(key);
         }
 

@@ -19,21 +19,22 @@ namespace Sandcastle
         private bool   _isTocExcluded;
         private bool   _isInitialized;
 
+        private bool   _syntaxUsage;
+
         private string  _groupId;
 
         private string _groupName;
         private string _groupTitle;
-        private string _workingDir;
         private string _runningTitle;
 
-        private BuildList<LinkContent>        _listLinks;
+        private BuildSyntaxType _syntaxType;
+        private BuildProperties _properties;
+
         private BuildList<TokenContent>       _listTokens;
         private BuildList<MediaContent>       _listMedia;
         private BuildList<SharedContent>      _listShared;
         private BuildList<ResourceContent>    _listResources;
         private BuildList<CodeSnippetContent> _listSnippets;
-
-        private Dictionary<string, string>    _properties;
 
         #endregion
 
@@ -63,15 +64,15 @@ namespace Sandcastle
 
             _groupName     = groupName;
             _groupId       = groupId;
-            _listLinks     = new BuildList<LinkContent>();
             _listMedia     = new BuildList<MediaContent>();
             _listTokens    = new BuildList<TokenContent>();
             _listShared    = new BuildList<SharedContent>();
             _listSnippets  = new BuildList<CodeSnippetContent>();
             _listResources = new BuildList<ResourceContent>();
 
-            _properties    = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
+            _properties    = new BuildProperties();
+
+            _syntaxType    = BuildSyntaxType.Standard;
         }
 
         /// <summary>
@@ -88,11 +89,13 @@ namespace Sandcastle
         protected BuildGroup(BuildGroup source)
             : base(source)
         {
+            _syntaxUsage   = source._syntaxUsage;
+            _syntaxType    = source._syntaxType;
+
             _groupId       = source._groupId;
             _groupName     = source._groupName;
             _properties    = source._properties;
 
-            _listLinks     = source._listLinks;
             _listMedia     = source._listMedia;
             _listTokens    = source._listTokens;
             _listShared    = source._listShared;
@@ -242,40 +245,27 @@ namespace Sandcastle
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public string WorkingDirectory
+        public BuildSyntaxType SyntaxType
         {
             get
             {
-                return _workingDir;
+                return _syntaxType;
             }
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    value = Environment.ExpandEnvironmentVariables(value);
-                    value = Path.GetFullPath(value);
-                }
-                _workingDir = value;
+                _syntaxType = value;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public IList<LinkContent> LinkContents
+        public bool SyntaxUsage
         {
             get
             {
-                return _listLinks;
+                return _syntaxUsage;
+            }
+            set
+            {
+                _syntaxUsage = value;
             }
         }
 
@@ -381,22 +371,10 @@ namespace Sandcastle
         {
             get
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                string strValue = String.Empty;
-                if (_properties.TryGetValue(key, out strValue))
-                {
-                    return strValue;
-                }
-
-                return null;
+                return _properties[key];
             }
             set
             {
-                BuildExceptions.NotNullNotEmpty(key, "key");
-
-                bool bContains = _properties.ContainsKey(key);
-
                 _properties[key] = value;
             }
         }
@@ -425,15 +403,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.KeyCollection keyColl
-                        = _properties.Keys;
-
-                    return keyColl;
-                }
-
-                return null;
+                return _properties.Keys;
             }
         }
 
@@ -447,15 +417,7 @@ namespace Sandcastle
         {
             get
             {
-                if (_properties != null)
-                {
-                    Dictionary<string, string>.ValueCollection valueColl
-                        = _properties.Values;
-
-                    return valueColl;
-                }
-
-                return null;
+                return _properties.Values;
             }
         }
 
@@ -489,72 +451,6 @@ namespace Sandcastle
         public virtual void Uninitialize()
         {
             _isInitialized = false;
-        }
-
-        #endregion
-
-        #region Links Methods
-
-        public virtual void AddLinkItem(string linkFile)
-        {
-            if (String.IsNullOrEmpty(linkFile))
-            {
-                return;
-            }
-
-            if (_listLinks == null)
-            {
-                _listLinks = new BuildList<LinkContent>();
-            }
-            LinkContent defaultContent = null;
-            if (_listLinks.Count == 0)
-            {
-                defaultContent = new LinkContent();
-                _listLinks.Add(defaultContent);
-            }
-            else
-            {
-                defaultContent = _listLinks[0];
-            }
-
-            defaultContent.Add(new LinkItem(linkFile));
-        }
-
-        public virtual void AddLinkItem(string linkDir, bool isRecursive)
-        {
-            if (String.IsNullOrEmpty(linkDir))
-            {
-                return;
-            }
-
-            if (_listLinks == null)
-            {
-                _listLinks = new BuildList<LinkContent>();
-            }
-            LinkContent defaultContent = null;
-            if (_listLinks.Count == 0)
-            {
-                defaultContent = new LinkContent();
-                _listLinks.Add(defaultContent);
-            }
-            else
-            {
-                defaultContent = _listLinks[0];
-            }
-
-            defaultContent.Add(new LinkItem(linkDir, isRecursive));
-        }
-
-        public virtual void AddLink(LinkContent content)
-        {
-            BuildExceptions.NotNull(content, "content");
-
-            if (_listLinks == null)
-            {
-                _listLinks = new BuildList<LinkContent>();
-            }
-
-            _listLinks.Add(content);
         }
 
         #endregion
@@ -647,8 +543,10 @@ namespace Sandcastle
             _listShared.Add(content);
         }
 
-        public virtual IList<SharedItem> PrepareShared()
+        public virtual IList<SharedItem> PrepareShared(BuildContext context)
         {
+            BuildExceptions.NotNull(context, "context");
+
             List<SharedItem> listShared = new List<SharedItem>();
 
             if (!String.IsNullOrEmpty(_runningTitle))
@@ -660,8 +558,10 @@ namespace Sandcastle
             return listShared;
         }
 
-        public virtual IList<RuleItem> PrepareSharedRule()
+        public virtual IList<RuleItem> PrepareSharedRule(BuildContext context)
         {
+            BuildExceptions.NotNull(context, "context");
+
             return null;
         }
 
@@ -697,8 +597,6 @@ namespace Sandcastle
         /// </exception>
         public void RemoveProperty(string key)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Remove(key);
         }
 
@@ -707,11 +605,6 @@ namespace Sandcastle
         /// </summary>
         public void ClearProperties()
         {
-            if (_properties.Count == 0)
-            {
-                return;
-            }
-
             _properties.Clear();
         }
 
@@ -741,8 +634,6 @@ namespace Sandcastle
         /// </remarks>
         public void AddProperty(string key, string value)
         {
-            BuildExceptions.NotNullNotEmpty(key, "key");
-
             _properties.Add(key, value);
         }
 
@@ -759,11 +650,6 @@ namespace Sandcastle
         /// </returns>
         public bool ContainsPropertyKey(string key)
         {
-            if (String.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
             return _properties.ContainsKey(key);
         }
 

@@ -99,13 +99,26 @@ namespace Sandcastle.Steps
 
             bool buildResult = base.OnExecute(context);
 
-            if (buildResult && _logger != null && !String.IsNullOrEmpty(_lastMessage))
+            if (buildResult && !String.IsNullOrEmpty(_lastMessage) &&
+                _lastMessage.StartsWith("Processed", StringComparison.OrdinalIgnoreCase))
             {
-                if (_lastLevel == BuildLoggerLevel.Info &&
-                    _verbosity == BuildLoggerVerbosity.Normal &&
-                    _verbosity != BuildLoggerVerbosity.Quiet)
+                if (_logger != null && _lastLevel == BuildLoggerLevel.Info 
+                    && _verbosity == BuildLoggerVerbosity.Normal 
+                    && _verbosity != BuildLoggerVerbosity.Quiet)
                 {
                     _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
+                }
+
+                int startIndex = _lastMessage.IndexOf("topics");
+
+                if (startIndex > 0)
+                {
+                    int processedTopics;
+                    if (Int32.TryParse(_lastMessage.Substring(9,
+                        startIndex - 9).Trim(), out processedTopics))
+                    {
+                        context.AddProcessedTopics(processedTopics);
+                    }
                 }
             }
 

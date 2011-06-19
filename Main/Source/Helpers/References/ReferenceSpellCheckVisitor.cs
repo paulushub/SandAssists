@@ -13,6 +13,8 @@ namespace Sandcastle.References
     {
         #region Public Fields
 
+        public const string OutputDirectory = "SpellChecking";
+
         /// <summary>
         /// Gets the unique name of this visitor.
         /// </summary>
@@ -38,13 +40,15 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceSpellCheckVisitor()
-            : this((ReferenceEngineSettings)null)
+            : this((ReferenceSpellCheckConfiguration)null)
         {   
         }
 
-        public ReferenceSpellCheckVisitor(ReferenceEngineSettings engineSettings)
-            : base(VisitorName, engineSettings)
+        public ReferenceSpellCheckVisitor(ReferenceSpellCheckConfiguration configuration)
+            : base(VisitorName, configuration)
         {
+            _spellChecking = configuration;
+
             _targetTags = new HashSet<string>();
             _skipTags   = new HashSet<string>();
 
@@ -99,21 +103,24 @@ namespace Sandcastle.References
 
             if (this.IsInitialized)
             {
-                ReferenceEngineSettings engineSettings = this.EngineSettings;
-
-                Debug.Assert(engineSettings != null);
-                if (engineSettings == null)
-                {
-                    this.IsInitialized = false;
-                    return;
-                }
-
-                _spellChecking = engineSettings.SpellChecking;
-                Debug.Assert(_spellChecking != null);
                 if (_spellChecking == null)
                 {
-                    this.IsInitialized = false;
-                    return;
+                    ReferenceEngineSettings engineSettings = this.EngineSettings;
+
+                    Debug.Assert(engineSettings != null);
+                    if (engineSettings == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
+
+                    _spellChecking = engineSettings.SpellChecking;
+                    Debug.Assert(_spellChecking != null);
+                    if (_spellChecking == null)
+                    {
+                        this.IsInitialized = false;
+                        return;
+                    }
                 }
 
                 _spellChecker = BuildSpellChecker.Default;
@@ -140,10 +147,10 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
-        public override void Visit(ReferenceDocument refDocument)
+        public override void Visit(ReferenceDocument referenceDocument)
         {
-            BuildExceptions.NotNull(refDocument, "refDocument");
-            if (refDocument.DocumentType != ReferenceDocumentType.Comments || 
+            BuildExceptions.NotNull(referenceDocument, "referenceDocument");
+            if (referenceDocument.DocumentType != ReferenceDocumentType.Comments || 
                 !_spellChecking.Enabled)
             {
                 return;
@@ -156,16 +163,16 @@ namespace Sandcastle.References
                 return;
             }
 
-            this.Visit(refDocument.DocumentFile, context.Logger);
+            this.OnVisit(referenceDocument.DocumentFile, context.Logger);
         }
 
         #endregion
 
         #region Private Methods
 
-        #region Visit Method
+        #region OnVisit Method
 
-        private void Visit(string commentFile, BuildLogger logger)
+        private void OnVisit(string commentFile, BuildLogger logger)
         {
             if (_spellChecking == null || !_spellChecking.Enabled)
             {
@@ -189,13 +196,20 @@ namespace Sandcastle.References
             int misspellCount = _spellCheckResult.MisspelledWords.Count;
             if (misspellCount != 0 && _spellChecking.Log)
             {
+                string workingDir = Path.Combine(Context.BaseDirectory, OutputDirectory);
+
+                if (!Directory.Exists(workingDir))
+                {
+                    Directory.CreateDirectory(workingDir);
+                }
+
                 if (_spellChecking.LogXml)
                 {
-                    this.WriteXmlResults(fileName, Context.BaseDirectory, logger);
+                    this.WriteXmlResults(fileName, workingDir, logger);
                 }
                 else
                 {
-                    this.WriteResults(fileName, Context.BaseDirectory, logger);
+                    this.WriteResults(fileName, workingDir, logger);
                 }
             }
 
@@ -269,8 +283,10 @@ namespace Sandcastle.References
             for (int i = 0; i < textLine.Length; i++)
             {
                 char ch = textLine[i];
-                if (ch == ' ' || ch == '-' || ch == '.' || ch == ',' || ch == ':' ||
-                    ch == ';' || ch == '?' || ch == '!' || ch == '&' || ch == '\'')
+                if (ch == ' ' || ch == '-' || ch == '.' || ch == ',' || ch == ':'  ||
+                    ch == ';' || ch == '?' || ch == '!' || ch == '&' || ch == '\'' ||
+                    ch == '/' || ch == '(' || ch == ')' || ch == '[' || ch == ']'  ||
+                    ch == '{' || ch == '}')
                 {
                     if (word.Length >= 2)
                     {
