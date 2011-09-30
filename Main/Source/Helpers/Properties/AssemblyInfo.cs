@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sandcastle Assist")]
 [assembly: AssemblyProduct("Sandcastle Assist")]
-[assembly: AssemblyCopyright("Copyright © 2007-2008 Sandcastle Assist")]
+[assembly: AssemblyCopyright("Copyright © 2007-2011 Sandcastle Assist")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

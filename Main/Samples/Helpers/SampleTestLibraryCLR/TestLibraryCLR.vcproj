@@ -220,6 +220,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\TestingGeneric.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestLibraryCLR.cpp"
 				>
 			</File>
@@ -238,6 +242,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Point.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -247,6 +255,10 @@
 			</File>
 			<File
 				RelativePath=".\TestEnum.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TestingGeneric.h"
 				>
 			</File>
 			<File

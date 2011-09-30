@@ -1,10 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<conceptualContent id="02c7601c-770c-4dfb-bee0-9421bc17d995" companionFiles="False" version="1.0">
+<conceptualContent version="1.0">
 
     <!-- The content directory, if not the same as the content file. -->
     <location>
         <path value=".\Documents\" />
     </location>
+
+    <!-- The general content settings -->
+    <propertyGroup name="General">
+        <property name="Id">02c7601c-770c-4dfb-bee0-9421bc17d995</property>
+        <property name="CompanionFiles">False</property>
+    </propertyGroup>
 
     <!-- The list of categories defined by this conceptual contents. -->
     <categories />

@@ -50,6 +50,26 @@ namespace Sandcastle.Contents
 
         #region Public Properties
 
+        public override bool IsEmpty
+        {
+            get
+            {
+                if (_paths != null && _paths.Count != 0)
+                {
+                    for (int i = 0; i < _paths.Count; i++)
+                    {
+                        BuildDirectoryPath path = _paths[i];
+                        if (path != null && path.Exists)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return base.IsEmpty;
+            }
+        }
+
         public DependencyItem this[string itemName]
         {
             get
@@ -83,6 +103,24 @@ namespace Sandcastle.Contents
             get
             {
                 return _paths;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="DependencyContent"/> class instance, this property is 
+        /// <see cref="DependencyContent.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
             }
         }
 
@@ -208,11 +246,11 @@ namespace Sandcastle.Contents
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -230,9 +268,18 @@ namespace Sandcastle.Contents
             if (!String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
                 return;
             }
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            this.Clear();
             if (_paths == null)
             {
                 _paths = new BuildList<BuildDirectoryPath>();
@@ -281,6 +328,7 @@ namespace Sandcastle.Contents
                                     StringComparison.OrdinalIgnoreCase))
                                 {
                                     DependencyItem item = new DependencyItem();
+                                    item.Content = this;
                                     item.ReadXml(reader);
 
                                     this.Add(item);
@@ -310,10 +358,10 @@ namespace Sandcastle.Contents
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -325,19 +373,22 @@ namespace Sandcastle.Contents
 
             writer.WriteStartElement(TagName);
 
-            writer.WriteStartElement("paths");    // start: paths
-            for (int i = 0; i < _paths.Count; i++)
-            {
-                _paths[i].WriteXml(writer);
-            }
-            writer.WriteEndElement();             // end: paths
+            if (!this.IsEmpty)
+            {   
+                writer.WriteStartElement("paths");    // start: paths
+                for (int i = 0; i < _paths.Count; i++)
+                {
+                    _paths[i].WriteXml(writer);
+                }
+                writer.WriteEndElement();             // end: paths
 
-            writer.WriteStartElement("items");    // start: items
-            for (int i = 0; i < this.Count; i++)
-            {
-                this[i].WriteXml(writer);
-            }
-            writer.WriteEndElement();             // end: items
+                writer.WriteStartElement("items");    // start: items
+                for (int i = 0; i < this.Count; i++)
+                {
+                    this[i].WriteXml(writer);
+                }
+                writer.WriteEndElement();             // end: items
+            }   
 
             writer.WriteEndElement();
         }

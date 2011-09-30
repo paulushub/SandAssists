@@ -36,6 +36,13 @@ namespace Sandcastle.ReflectionData
 
     public abstract class TargetCollection
     {
+        #region Public Fields
+
+        public bool RecentLinkTypeIsMsdn;
+        public ReferenceLinkType RecentLinkType;
+
+        #endregion
+
         #region Constructor and Destructor
 
         protected TargetCollection()

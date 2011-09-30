@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Conceptual
 {
@@ -21,7 +22,6 @@ namespace Sandcastle.Conceptual
         #region Private Fields
 
         private bool   _isLoaded;
-        private bool   _outputTopics;
         private bool   _hasFilter;
         private bool   _documentExists;
         private bool   _companionFiles;
@@ -35,7 +35,7 @@ namespace Sandcastle.Conceptual
         private BuildDirectoryPath      _contentDir;
 
         private CategoryContent         _categories;
-        private IList<ConceptualFilter> _listFilters;
+        private BuildList<ConceptualFilter> _listFilters;
 
         private BuildKeyedList<ConceptualRelatedTopic> _relatedTopics;
 
@@ -51,7 +51,6 @@ namespace Sandcastle.Conceptual
         {
             _contentId      = Guid.NewGuid().ToString();
             _documentExists = true;
-            _outputTopics   = true;
             _categories     = new CategoryContent();
 
             BuildKeyedList<ConceptualItem> keyedList =
@@ -87,16 +86,28 @@ namespace Sandcastle.Conceptual
             string contentFile, string documentsDir)
             : this(contentFile, documentsDir)
         {
-            _listFilters = listFilters;
+            if (listFilters != null)
+            {
+                _listFilters = new BuildList<ConceptualFilter>(listFilters);
+            }
         }
 
         public ConceptualContent(ConceptualContent source)
             : base(source)
         {
-            _dicItems     = source._dicItems;
-            _contentId    = source._contentId;
-            _outputTopics = source._outputTopics;
-            _hasFilter    = source._hasFilter;
+            _isLoaded       = source._isLoaded;
+            _documentExists = source._documentExists;
+            _companionFiles = source._companionFiles;
+            _defaultTopic   = source._defaultTopic;
+            _contentVersion = source._contentVersion;
+            _contentFile    = source._contentFile;
+            _contentDir     = source._contentDir;
+            _categories     = source._categories;
+            _listFilters    = source._listFilters;
+            _relatedTopics  = source._relatedTopics;
+            _dicItems       = source._dicItems;
+            _contentId      = source._contentId;
+            _hasFilter      = source._hasFilter;
         }
 
         #endregion
@@ -115,6 +126,15 @@ namespace Sandcastle.Conceptual
         {
             get
             {
+                if (_relatedTopics != null && _relatedTopics.Count != 0)
+                {
+                    return false;
+                }
+                if (_contentFile != null && _contentFile.Exists)
+                {
+                    return false;
+                }
+
                 return base.IsEmpty;
             }
         }
@@ -214,18 +234,6 @@ namespace Sandcastle.Conceptual
             }
         }
 
-        public bool OutputTopics
-        {
-            get
-            {
-                return _outputTopics;
-            }
-            set
-            {
-                _outputTopics = value;
-            }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -255,6 +263,12 @@ namespace Sandcastle.Conceptual
                 if (value != null)
                 {
                     _contentFile = value;
+
+                    if (_contentDir == null)
+                    {
+                        _contentDir = new BuildDirectoryPath(
+                            Path.GetDirectoryName(value.Path));
+                    }
                 }
             }
         }
@@ -266,8 +280,11 @@ namespace Sandcastle.Conceptual
                 return _contentDir;
             }
             set
-            {                   
-                _contentDir = value;
+            {
+                if (value != null)
+                {
+                    _contentDir = value;
+                }
             }
         }
 
@@ -285,11 +302,37 @@ namespace Sandcastle.Conceptual
             }
         }
 
+        public IList<ConceptualFilter> Filters
+        {
+            get
+            {
+                return _listFilters;
+            }
+        }
+
         public IBuildNamedList<ConceptualRelatedTopic> RelatedTopics
         {
             get
             {
                 return _relatedTopics;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ConceptualContent"/> class instance, this property is 
+        /// <see cref="ConceptualContent.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
             }
         }
 
@@ -366,11 +409,13 @@ namespace Sandcastle.Conceptual
 
                 reader = XmlReader.Create(_contentFile, settings);
 
-                lock (BuildPathResolver.Push(resolver))
+                reader.MoveToContent();
+
+                string resolverId = BuildPathResolver.Push(resolver);
                 {
                     this.ReadXml(reader);
 
-                    BuildPathResolver.Pop();
+                    BuildPathResolver.Pop(resolverId);
                 }   
 
                 if (String.IsNullOrEmpty(_defaultTopic))
@@ -428,6 +473,17 @@ namespace Sandcastle.Conceptual
         {
             BuildExceptions.NotNull(resolver, "resolver");
 
+            // If this is not yet located, and the contents is empty, we
+            // will simply not continue from here...
+            if (_contentFile != null && _contentFile.Exists)
+            {
+                if (!this._isLoaded && base.IsEmpty && 
+                    (_relatedTopics == null || _relatedTopics.Count == 0))
+                {
+                    return;
+                }
+            }
+
             XmlWriterSettings settings  = new XmlWriterSettings();
             settings.Indent             = true;
             settings.IndentChars        = new string(' ', 4);
@@ -439,7 +495,7 @@ namespace Sandcastle.Conceptual
             {
                 writer = XmlWriter.Create(_contentFile, settings);
 
-                lock (BuildPathResolver.Push(resolver))
+                string resolverId = BuildPathResolver.Push(resolver);
                 {
                     writer.WriteStartDocument();
 
@@ -447,7 +503,7 @@ namespace Sandcastle.Conceptual
 
                     writer.WriteEndDocument();
 
-                    BuildPathResolver.Pop();
+                    BuildPathResolver.Pop(resolverId);
                 }
 
                 // The file content is now same as the memory, so it can be
@@ -682,17 +738,7 @@ namespace Sandcastle.Conceptual
         private void ReadContents(XmlReader reader)
         {
             // Read the version information of the file format...
-            string nodeText = reader.GetAttribute("id");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _contentId = nodeText;
-            }
-            nodeText = reader.GetAttribute("companionFiles");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _companionFiles = Convert.ToBoolean(nodeText);
-            }
-            nodeText = reader.GetAttribute("version");
+            string nodeText = reader.GetAttribute("version");
             if (!String.IsNullOrEmpty(nodeText))
             {
                 _contentVersion = new Version(nodeText);
@@ -710,9 +756,17 @@ namespace Sandcastle.Conceptual
                     if (String.Equals(nodeName, "location", 
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        _contentDir = BuildDirectoryPath.ReadLocation(reader);
+                        if (!reader.IsEmptyElement)
+                        {
+                            _contentDir = BuildDirectoryPath.ReadLocation(reader);
+                        }
                     }
-                    else if (String.Equals(nodeName, "categories", 
+                    else if (String.Equals(nodeName, "propertyGroup", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadPropertyGroup(reader);
+                    }
+                    else if (String.Equals(nodeName, "categories",
                         StringComparison.OrdinalIgnoreCase))
                     {
                         this.ReadCategories(reader);
@@ -730,7 +784,56 @@ namespace Sandcastle.Conceptual
                 }
                 else if (nodeType == XmlNodeType.EndElement)
                 {
-                    if (String.Equals(reader.Name, "conceptualContent"))
+                    if (String.Equals(reader.Name, TagName))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadPropertyGroup Method
+
+        private void ReadPropertyGroup(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "id":
+                                _contentId = reader.ReadString();
+                                break;
+                            case "companionfiles":
+                                string tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _companionFiles = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
                     {
                         break;
                     }
@@ -978,16 +1081,37 @@ namespace Sandcastle.Conceptual
         {
             BuildExceptions.NotNull(reader, "reader");
 
-            reader.MoveToContent();
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase) && !String.Equals(
+                reader.Name, "files", StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
 
             if (String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
+                // For the current and updated format....
                 this.ReadContents(reader);
             }
             else if (String.Equals(reader.Name, "files",
                 StringComparison.OrdinalIgnoreCase))
             {
+                // For the old temporal format...
                 this.ReadFiles(reader);
             }
         }
@@ -997,21 +1121,29 @@ namespace Sandcastle.Conceptual
             BuildExceptions.NotNull(writer, "writer");
 
             writer.WriteStartElement(TagName); //conceptualContent
-            writer.WriteAttributeString("id", _contentId);
-            writer.WriteAttributeString("companionFiles", _companionFiles.ToString());
             writer.WriteAttributeString("version", _contentVersion.ToString(2));
 
             writer.WriteComment(
-                " The content directory, if not the same as the content file. ");
+                " 1. The content directory, if not the same as the content file. ");
             writer.WriteStartElement("location"); // location
-            if (!_contentDir.IsDirectoryOf(_contentFile))
+            if (_contentDir != null && 
+                !_contentDir.IsDirectoryOf(_contentFile))
             {
                 _contentDir.WriteXml(writer);
             }
             writer.WriteEndElement();             // location
 
+            writer.WriteComment(" 2. The general content settings ");
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+
+            writer.WritePropertyElement("Id", _contentId);
+            writer.WritePropertyElement("CompanionFiles", _companionFiles.ToString());
+
+            writer.WriteEndElement();                   // end - propertyGroup
+
             writer.WriteComment(
-                " The list of categories defined by this conceptual contents. ");
+                " 3. The list of categories defined by this conceptual contents. ");
             if (_categories != null)
             {
                 _categories.WriteXml(writer);
@@ -1023,7 +1155,7 @@ namespace Sandcastle.Conceptual
             }
 
             writer.WriteComment(
-                " The hierarchical list of topics in this contents. ");
+                " 4. The hierarchical list of topics in this contents. ");
             writer.WriteStartElement("topics"); // topics
             if (String.IsNullOrEmpty(_defaultTopic)) 
             {
@@ -1049,11 +1181,11 @@ namespace Sandcastle.Conceptual
             writer.WriteEndElement();           // topics
 
             writer.WriteComment(
-                " A list of related topics, which may or may not be compiled, but not included in the TOC. ");
+                " 5. A list of related topics, which may or may not be compiled, but not included in the TOC. ");
             writer.WriteStartElement("relatedTopics"); // relatedTopics
             if (_relatedTopics != null && _relatedTopics.Count != 0)
             {
-                for (int i = 0; i < this.Count; i++)
+                for (int i = 0; i < _relatedTopics.Count; i++)
                 {
                     ConceptualRelatedTopic relatedTopic = _relatedTopics[i];
                     if (relatedTopic != null && !relatedTopic.IsEmpty)
@@ -1076,6 +1208,40 @@ namespace Sandcastle.Conceptual
             ConceptualContent content = new ConceptualContent(this);
 
             this.Clone(content, new BuildKeyedList<ConceptualItem>());
+
+            if (_contentId != null)
+            {
+                content._contentId = String.Copy(_contentId);
+            }
+            if (_defaultTopic != null)
+            {
+                content._defaultTopic = String.Copy(_defaultTopic);
+            }
+
+            if (_contentVersion != null)
+            {
+                content._contentVersion = (Version)_contentVersion.Clone();
+            }
+            if (_contentFile != null)
+            {
+                content._contentFile = _contentFile.Clone();
+            }
+            if (_contentDir != null)
+            {
+                content._contentDir = _contentDir.Clone();
+            }
+            if (_categories != null)
+            {
+                content._categories = _categories.Clone();
+            }
+            if (_listFilters != null)
+            {
+                content._listFilters = _listFilters.Clone();
+            }
+            if (_relatedTopics != null)
+            {
+                content._relatedTopics = _relatedTopics.Clone();
+            }
 
             return content;
         }

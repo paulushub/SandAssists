@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Conceptual" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">d75bef3a-6098-455f-983b-8cb0d08a442d</property>
+        <property name="Name">Test Topics</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: Test Topics</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Conceptual">
+        <property name="DocumentId">41884a9f-82e8-40f0-91ea-503493bf6836</property>
+        <property name="ProjectId">a4d131c1-e6e3-4e5f-a477-c73555521efb</property>
+        <property name="RepositoryId">3e55624b-6569-44c9-8cc5-b0436db8ea7d</property>
+        <property name="ProjectName">ProjectName</property>
+        <property name="ProjectTitle">ProjectTitle</property>
+        <property name="DocumentWriter"></property>
+        <property name="DocumentEditor"></property>
+        <property name="DocumentManager"></property>
+        <property name="FileVersion">1.0.0.0</property>
+        <property name="FreshnessFormat">D</property>
+        <property name="FreshnessDate"></property>
+        <property name="ChangeHistory">ShowFreshnessDate</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Media" source="..\SampleTopics\MediaContent.media" />
+        <content type="CodeSnippets" source="..\SampleTopics\CodeSnippetSample.snippets" />
+        <content type="Conceptual" source=".\MainConceptual.sandtopics" />
+    </contents>
+</documentGroup>

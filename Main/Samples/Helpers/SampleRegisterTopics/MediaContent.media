@@ -1,56 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<mediaContent id="2013248e-4811-4c4e-a72c-f7a8b385eb3f" version="1.0">
+<mediaContent id="b10e7f16-6291-405f-b39e-6c15d66f5be7" version="1.0">
     <location>
         <path value=".\Media" />
     </location>
     <items>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f813">
-            <image file="HelpUpdate.jpg">
+            <image file=".\Media\HelpUpdate.jpg">
                 <altText>Help 2.0 Update Dialog</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f814">
-            <image file="HelpUpdate9.jpg">
+            <image file=".\Media\HelpUpdate9.jpg">
                 <altText>Help 2.0 Update Dialog</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f815">
-            <image file="Contents1.jpg">
+            <image file=".\Media\Contents1.jpg">
                 <altText>Table of Contents for HelpRegister</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f816">
-            <image file="Contents2.jpg">
+            <image file=".\Media\Contents2.jpg">
                 <altText>Table of Contents for HelpRegister</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f817">
-            <image file="IndexFilter.jpg">
+            <image file=".\Media\IndexFilter.jpg">
                 <altText>Index and Table of Contents Filters</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f818">
-            <image file="SearchFilter.jpg">
+            <image file=".\Media\SearchFilter.jpg">
                 <altText>SearchFilters</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f819">
-            <image file="Contents3.jpg">
+            <image file=".\Media\Contents3.jpg">
                 <altText>Visual Studio 2005 with HelpRegister Help</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f820">
-            <image file="Contents4.jpg">
+            <image file=".\Media\Contents4.jpg">
                 <altText>Visual Studio 2008 with HelpRegister Help</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f821">
-            <image file="RegisterFlow.jpg">
+            <image file=".\Media\RegisterFlow.jpg">
                 <altText>Help File Registration</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f822">
-            <image file="MSDExplore.jpg">
+            <image file=".\Media\MSDExplore.jpg">
                 <altText>Registered Document Explorer Namespaces</altText>
             </image>
         </item>

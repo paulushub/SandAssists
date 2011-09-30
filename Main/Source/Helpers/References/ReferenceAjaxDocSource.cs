@@ -46,6 +46,12 @@ namespace Sandcastle.References
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets the unique name of this reference content source.
+        /// </summary>
+        /// <value>
+        /// It has the same value as the <see cref="ReferenceAjaxDocSource.SourceName"/>.
+        /// </value>
         public override string Name
         {
             get
@@ -54,6 +60,15 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this reference content source is
+        /// valid and contains contents.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if the content source is
+        /// not empty; otherwise, it is <see langword="false"/>. This also
+        /// verifies that at least an item is not empty.
+        /// </value>
         public override bool IsValid
         {
             get
@@ -66,8 +81,34 @@ namespace Sandcastle.References
 
         #region Public Methods
 
-        public override ReferenceContent Create()
+        public override ReferenceContent Create(BuildGroupContext groupContext)
         {
+            BuildExceptions.NotNull(groupContext, "groupContext");
+
+            BuildContext context = groupContext.Context;
+            BuildLogger logger = null;
+            if (context != null)
+            {
+                logger = context.Logger;
+            }
+
+            if (!this.IsInitialized)
+            {
+                throw new BuildException(String.Format(
+                    "The content source '{0}' is not yet initialized.", this.Title));
+            }
+            if (!this.IsValid)
+            {
+                if (logger != null)
+                {
+                    logger.WriteLine(String.Format(
+                        "The content group source '{0}' is invalid.", this.Title),
+                        BuildLoggerLevel.Warn);
+                }
+
+                return null;
+            }
+
             return null;
         }
 
@@ -75,9 +116,11 @@ namespace Sandcastle.References
 
         #region ICloneable Members
 
-        public override BuildSource Clone()
+        public override ReferenceSource Clone()
         {
             ReferenceAjaxDocSource source = new ReferenceAjaxDocSource(this);
+
+            this.Clone(source);
 
             return source;
         }

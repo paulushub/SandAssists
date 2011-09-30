@@ -1,20 +1,29 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
+using System.Xml;
+using System.Diagnostics;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Contents
 {
     [Serializable]
     public sealed class ScriptItem : BuildItem<ScriptItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "scriptItem";
+
+        #endregion
+
         #region Private Fields
 
         private bool   _overrides;
         private string _tag;
         private string _name;
         private string _condition;
-        private string _scriptFile;
         private string _description;
+
+        private BuildFilePath _scriptFile;
 
         #endregion
 
@@ -29,9 +38,21 @@ namespace Sandcastle.Contents
         {
             BuildExceptions.NotNullNotEmpty(name, "name");
 
-            _name       = name;
-            _condition  = String.Empty;
-            _scriptFile = scriptFile;
+            _name        = name;
+            _condition   = String.Empty;
+            if (!String.IsNullOrEmpty(scriptFile))
+            {
+                _scriptFile = new BuildFilePath(scriptFile);
+            }
+        }
+
+        public ScriptItem(string name, BuildFilePath scriptFile)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            _name        = name;
+            _condition   = String.Empty;
+            _scriptFile  = scriptFile;
         }
 
         public ScriptItem(ScriptItem source)
@@ -53,8 +74,8 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_name) || 
-                    String.IsNullOrEmpty(_scriptFile))
+                if (String.IsNullOrEmpty(_name) || _scriptFile == null ||
+                    !_scriptFile.IsValid)
                 {
                     return true;
                 }
@@ -95,7 +116,7 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string ScriptFile
+        public BuildFilePath ScriptFile
         {
             get
             {
@@ -135,6 +156,24 @@ namespace Sandcastle.Contents
                 {
                     _condition = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ScriptItem"/> class instance, this property is 
+        /// <see cref="ScriptItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
             }
         }
 
@@ -221,6 +260,116 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _name = reader.GetAttribute("name");
+            string tempText = reader.GetAttribute("overrides");
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _overrides = Convert.ToBoolean(tempText);
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.Name.ToLower())
+                    {
+                        case "tag":
+                            _tag = reader.ReadString();
+                            break;
+                        case "condition":
+                            _condition = reader.ReadString();
+                            break;
+                        case "description":
+                            _description = reader.ReadString();
+                            break;
+                        case "location":
+                            _scriptFile = BuildFilePath.ReadLocation(reader);
+                            break;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", _name);
+            writer.WriteAttributeString("overrides", _overrides.ToString());
+
+            writer.WriteTextElement("tag",         _tag);
+            writer.WriteTextElement("condition",   _condition);
+            writer.WriteTextElement("description", _description);
+            writer.WriteStartElement("location");
+            if (_scriptFile != null)  // should be for non-empty item
+            {
+                _scriptFile.WriteXml(writer);
+            }
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();           // end - TagName
+        }
+
+        #endregion
+
         #region ICloneable Members
 
         public override ScriptItem Clone()
@@ -240,7 +389,7 @@ namespace Sandcastle.Contents
             }
             if (_scriptFile != null)
             {
-                item._scriptFile = String.Copy(_scriptFile);
+                item._scriptFile = _scriptFile.Clone();
             }
             if (_condition != null)
             {

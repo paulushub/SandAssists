@@ -130,6 +130,44 @@ namespace Sandcastle
         /// </summary>
         public readonly static BuildFrameworkType Silverlight40 =
             new BuildFrameworkType(140, "Microsoft Silverlight 4.0");
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>150</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Silverlight50 =
+            new BuildFrameworkType(150, "Microsoft Silverlight 5.0");
+
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>210</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Portable10 =
+            new BuildFrameworkType(210, "Microsoft Portable 1.0");
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>220</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Portable20 =
+            new BuildFrameworkType(220, "Microsoft Portable 2.0");
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>230</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Portable30 =
+            new BuildFrameworkType(230, "Microsoft Portable 3.0");
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>240</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Portable40 =
+            new BuildFrameworkType(240, "Microsoft Portable 4.0");
+
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>310</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType ScriptSharp10 =
+            new BuildFrameworkType(310, "Script# Framework 1.0");
 
 
         #endregion
@@ -189,12 +227,28 @@ namespace Sandcastle
             }
         }
 
-        public bool IsSilverlight
+        public BuildFrameworkKind Kind
         {
             get
             {
-                // includes the version 5...
-                return (_typeValue >= 110 && _typeValue <= 150);  
+                if (_typeValue >= 10 && _typeValue <= 40)
+                {
+                    return BuildFrameworkKind.DotNet;
+                }
+                if (_typeValue >= 110 && _typeValue <= 150)
+                {
+                    return BuildFrameworkKind.Silverlight;
+                }
+                if (_typeValue >= 210 && _typeValue <= 240)
+                {
+                    return BuildFrameworkKind.Portable;
+                }
+                if (_typeValue == 310)
+                {
+                    return BuildFrameworkKind.ScriptSharp;
+                }
+
+                return BuildFrameworkKind.None;
             }
         }
 
@@ -276,6 +330,20 @@ namespace Sandcastle
                     return BuildFrameworkType.Silverlight30;
                 case 140:
                     return BuildFrameworkType.Silverlight40;
+                case 150:
+                    return BuildFrameworkType.Silverlight50;
+
+                case 210:
+                    return BuildFrameworkType.Portable10;
+                case 220:
+                    return BuildFrameworkType.Portable20;
+                case 230:
+                    return BuildFrameworkType.Portable30;
+                case 240:
+                    return BuildFrameworkType.Portable40;
+
+                case 310:
+                    return BuildFrameworkType.ScriptSharp10;
             }
 
             return BuildFrameworkType.Null;
@@ -478,6 +546,26 @@ namespace Sandcastle
                 case "silverlight40":
                     value = BuildFrameworkType.Silverlight40;
                     return true;
+                case "silverlight50":
+                    value = BuildFrameworkType.Silverlight50;
+                    return true;
+
+                case "portable10":
+                    value = BuildFrameworkType.Portable10;
+                    return true;
+                case "portable20":
+                    value = BuildFrameworkType.Portable20;
+                    return true;
+                case "portable30":
+                    value = BuildFrameworkType.Portable30;
+                    return true;
+                case "portable40":
+                    value = BuildFrameworkType.Portable40;
+                    return true;
+
+                case "scriptsharp10":
+                    value = BuildFrameworkType.ScriptSharp10;
+                    return true;
             }
 
             return false;
@@ -522,6 +610,7 @@ namespace Sandcastle
                     return "Framework35";
                 case 40:
                     return "Framework40";
+
                 case 110:
                     return "Silverlight10";
                 case 120:
@@ -530,6 +619,20 @@ namespace Sandcastle
                     return "Silverlight30";
                 case 140:
                     return "Silverlight40";
+                case 150:
+                    return "Silverlight50";
+
+                case 210:
+                    return "Portable10";
+                case 220:
+                    return "Portable20";
+                case 230:
+                    return "Portable30";
+                case 240:
+                    return "Portable40";
+
+                case 310:
+                    return "ScriptSharp10";
             }
 
             return base.ToString();

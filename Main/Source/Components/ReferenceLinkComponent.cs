@@ -358,6 +358,10 @@ namespace Sandcastle.Components
                 {
                     this.WriteMessage(MessageLevel.Warn,
                         "Invalid referenceLink element.");
+#if DEBUG
+                    this.WriteMessage(MessageLevel.Warn, linkNode.OuterXml);
+
+#endif
                 }
                 else
                 {
@@ -415,7 +419,7 @@ namespace Sandcastle.Components
                                 Target overloadTarget = _targets[member.OverloadId];
                                 if (overloadTarget != null)
                                 {
-                                    target = overloadTarget;
+                                    target   = overloadTarget;
                                     targetId = overloadTarget.Id;
                                 }
                             }
@@ -433,7 +437,8 @@ namespace Sandcastle.Components
                         }
 
                         // get stored link type
-                        type = _hasMsdnStorage ? target.LinkType : target.DefaultLinkType;
+                        type = _targets.RecentLinkTypeIsMsdn ? 
+                            _targets.RecentLinkType : target.LinkType;
 
                         // if link type is local or index, determine which
                         if (type == ReferenceLinkType.LocalOrIndex)
@@ -659,7 +664,11 @@ namespace Sandcastle.Components
             if (link == null)
             {
                 this.WriteMessage(MessageLevel.Warn,
-                    "Invalid referenceLink element.");
+                    "Invalid conceptualLink element.");
+#if DEBUG
+                this.WriteMessage(MessageLevel.Warn, linkNode.OuterXml);
+
+#endif
             }
             else
             {

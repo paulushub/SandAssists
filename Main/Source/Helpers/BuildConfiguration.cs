@@ -10,12 +10,16 @@ namespace Sandcastle
     public abstract class BuildConfiguration
         : BuildOptions<BuildConfiguration>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "configuration";
+
+        #endregion
+
         #region Private Fields
 
-        private bool   _isEnabled;
-        private bool   _continueOnError;
-        private string _name;
-        private BuildEngineType _engineType;
+        private bool _isEnabled;
+        private bool _continueOnError;
 
         #endregion
 
@@ -29,35 +33,9 @@ namespace Sandcastle
         /// to the default values.
         /// </summary>
         protected BuildConfiguration()
-            : this(Guid.NewGuid().ToString(), BuildEngineType.None)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualOptions"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <param name="engineType">
-        /// Specifies the build engine type, which is targeted by this configuration.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        protected BuildConfiguration(string optionsName, 
-            BuildEngineType engineType)
-        {
-            BuildExceptions.NotNullNotEmpty(optionsName, "optionsName");
-
-            _name            = optionsName;
             _isEnabled       = true;
             _continueOnError = true;
-            _engineType      = engineType;
         }
 
         /// <summary>
@@ -75,10 +53,8 @@ namespace Sandcastle
         protected BuildConfiguration(BuildConfiguration source)
             : base(source)
         {
-            _name            = source._name;
             _isEnabled       = source._isEnabled;
             _continueOnError = source._continueOnError;
-            _engineType      = source._engineType;
         }
 
         #endregion
@@ -92,12 +68,9 @@ namespace Sandcastle
         /// A <see cref="System.String"/> specifying the unique name of this 
         /// category of options.
         /// </value>
-        public string Name
+        public abstract string Name
         {
-            get
-            {
-                return _name;
-            }
+            get;
         }
 
         /// <summary>
@@ -165,11 +138,26 @@ namespace Sandcastle
         /// An enumeration of the type, <see cref="BuildEngineType"/>, specifying
         /// the build engine type targeted by this configuration.
         /// </value>
-        public BuildEngineType EngineType
+        public abstract BuildEngineType EngineType
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ReferenceEngineSettings"/> class instance, 
+        /// this property is <see cref="TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
         {
             get
             {
-                return _engineType;
+                return TagName;
             }
         }
 
@@ -326,6 +314,23 @@ namespace Sandcastle
             }
 
             base.SetItem(index, newItem);
+        }
+
+        #endregion
+
+        #region ICloneable Members
+
+        public override BuildKeyedList<BuildConfiguration> Clone()
+        {
+            BuildConfigurationList clonedList = new BuildConfigurationList(this);
+
+            int itemCount = this.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                clonedList.Add(this[i].Clone());
+            }
+
+            return clonedList;
         }
 
         #endregion

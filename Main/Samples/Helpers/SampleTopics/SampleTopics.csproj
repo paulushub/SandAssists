@@ -50,9 +50,6 @@
     <None Include="Documents\EmbedPdf.aml" />
     <None Include="Documents\RootTopic.aml" />
     <Content Include="Documents\TestHtmlDocument.htm" />
-    <Content Include="Images\Nativity3WiseMen.png" />
-    <Content Include="Images\NativityHerrodAndSon.jpg" />
-    <Content Include="Images\NativityScene.jpg" />
     <Content Include="Media\ArrowDisabled.png" />
     <Content Include="Media\ArrowHovered.png" />
     <Content Include="Media\ArrowNormal.png" />

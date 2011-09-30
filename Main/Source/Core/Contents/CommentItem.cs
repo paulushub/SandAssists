@@ -88,6 +88,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="CommentItem"/> class instance, this property is 
+        /// <see cref="CommentItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region IEquatable<T> Members
@@ -141,11 +159,11 @@ namespace Sandcastle.Contents
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -167,6 +185,11 @@ namespace Sandcastle.Contents
 
             _name = reader.GetAttribute("name");
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
             if (_listParts == null)
             {
                 _listParts = new BuildList<CommentPart>();
@@ -177,7 +200,7 @@ namespace Sandcastle.Contents
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     CommentPartType partType = CommentPartType.None;
-                    switch (reader.Name)
+                    switch (reader.Name.ToLower())
                     {
                         case "overloads":
                             partType = CommentPartType.Overloads;
@@ -231,10 +254,10 @@ namespace Sandcastle.Contents
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
-        /// </summary>
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>                        
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">

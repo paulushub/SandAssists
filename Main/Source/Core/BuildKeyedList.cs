@@ -470,7 +470,7 @@ namespace Sandcastle
 
         #region ICloneable Members
 
-        public BuildKeyedList<T> Clone()
+        public virtual BuildKeyedList<T> Clone()
         {
             BuildKeyedList<T> clonedList = new BuildKeyedList<T>(this);
 

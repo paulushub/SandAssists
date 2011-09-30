@@ -78,6 +78,42 @@ namespace Sandcastle.Conceptual
             base.Uninitialize();
         }
 
+        public override void CreateProperties(string indexValue)
+        {
+            if (indexValue == null)
+            {
+                indexValue = String.Empty;
+            }
+
+            base.CreateProperties(indexValue);  
+
+            this["$SharedContentFile"] =
+                String.Format("TopicsSharedContent{0}.xml", indexValue);
+            this["$TocFile"] =
+                String.Format("TopicsToc{0}.xml", indexValue);
+            this["$ManifestFile"] =
+                String.Format("TopicsManifest{0}.xml", indexValue);
+            this["$ConfigurationFile"] =
+                String.Format("TopicsBuildAssembler{0}.config", indexValue);
+            this["$MetadataFile"] =
+                String.Format("TopicsMetadata{0}.xml", indexValue);
+            this["$ProjSettings"] =
+                String.Format("TopicsProjectSettings{0}.xml", indexValue);
+            this["$ProjSettingsLoc"] =
+                String.Format("TopicsProjectSettings{0}.loc.xml", indexValue);
+
+            this["$VersionFile"]    = String.Format("TopicsVersions{0}.xml", indexValue);
+            this["$TokenFile"]      = String.Format("TopicsTokens{0}.xml", indexValue);
+            this["$IndexFile"]      = String.Format("TopicsIndex{0}.xml", indexValue);
+            this["$MediaFile"]      = String.Format("TopicsMedia{0}.xml", indexValue);
+            this["$ContentsFile"]   = String.Format("TopicsTableOfContents{0}.xml", indexValue);
+
+            this["$DdueXmlDir"]     = String.Format("DdueXml{0}", indexValue);
+            this["$DdueXmlCompDir"] = String.Format("DdueXmlComp{0}", indexValue);
+            this["$DdueHtmlDir"]    = String.Format("DdueHtml{0}", indexValue);
+            this["$DdueMedia"]      = String.Format("DdueMedia{0}", indexValue);
+        }
+
         public bool Exclude(ConceptualItem item)
         {
             if (item == null || item.IsEmpty || !item.Visible)

@@ -156,10 +156,10 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Gets the name of the XML tag containing the misspelled word.
+        /// Gets the name of the <c>XML</c> tag containing the misspelled word.
         /// </summary>
         /// <value>
-        /// A string specifying the name of the XML tag containing the misspelled word.
+        /// A string specifying the name of the <c>XML</c> tag containing the misspelled word.
         /// </value>
         public string ContainingTag
         {

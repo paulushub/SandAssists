@@ -22,7 +22,7 @@ namespace Sandcastle.References
 
         public ReferenceVersions()
         {
-            _versionsId  = Guid.NewGuid().ToString();
+            _versionsId  = String.Format("vId{0:x}", Guid.NewGuid().ToString().GetHashCode());
             _workingDirs = new BuildList<string>();
             _listSources = new BuildKeyedList<ReferenceVersionSource>();
         }
@@ -30,7 +30,7 @@ namespace Sandcastle.References
         public ReferenceVersions(string versionsId, string versionsTitle)
             : this()
         {
-            BuildExceptions.NotNullNotEmpty(versionsId, "versionsId");
+            BuildExceptions.NotNullNotEmpty(versionsId,    "versionsId");
             BuildExceptions.NotNullNotEmpty(versionsTitle, "versionsTitle");
 
             _versionsId    = versionsId;

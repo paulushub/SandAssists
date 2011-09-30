@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Builders.Templates.FileTemplateManager" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAQAAAAAQAACAAAAQAABAABFAAAAAAABAAAMAg=</HashCode>
+      <FileName>Templates\FileTemplateManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="this[System.String]" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.FileTemplate" Collapsed="true">
+    <Position X="4" Y="1.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Authoring" Type="Sandcastle.Builders.Templates.TemplateAuthoring" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="2.062" />
+        <Point X="8" Y="2.062" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Description" Type="Sandcastle.Builders.Templates.TemplateDescription" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="2.25" />
+        <Point X="7.438" Y="2.25" />
+        <Point X="7.438" Y="3" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Configuration" Type="Sandcastle.Builders.Templates.TemplateConfiguration" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="2.25" />
+        <Point X="3.062" Y="2.25" />
+        <Point X="3.062" Y="3" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Properties" Type="Sandcastle.Builders.Templates.TemplateProperty" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="2.062" />
+        <Point X="2.5" Y="2.062" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABBgIAAAAAgMIAMAAAAAggCAAAAEAAAiAEAgAACGJQ=</HashCode>
+      <FileName>Templates\FileTemplate.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Authoring" />
+      <Property Name="Assistant" />
+      <Property Name="Description" />
+      <Property Name="Configuration" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Files" />
+      <Property Name="Properties" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateAssistant" Collapsed="true">
+    <Position X="5.5" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAARAAAAAAAAAAAEAACAAAAABAAQIAAgAgACBA=</HashCode>
+      <FileName>Templates\TemplateAssistant.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateAuthoring" Collapsed="true">
+    <Position X="8" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABAAAABAAAAAAAAgAAAAAACAgAAAAIAAoAAgABACBA=</HashCode>
+      <FileName>Templates\TemplateAuthoring.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateConfiguration" Collapsed="true">
+    <Position X="2" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABCAAAAAIAABEgAACBAAAAGmAABgABAAAAAkIAACBg=</HashCode>
+      <FileName>Templates\TemplateConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateDescription" Collapsed="true">
+    <Position X="6.25" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABgAAAAAAAhAAACAAAAAAQCAAAAAAAAAAAAgAAACBA=</HashCode>
+      <FileName>Templates\TemplateDescription.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateFile" Collapsed="true">
+    <Position X="3.5" Y="4.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQBAAAAAAgAAAAQBCQEAQAACAAAAAAAAAAAAgABACBA=</HashCode>
+      <FileName>Templates\TemplateFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateProperty" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABCIAAAAAAgBAQEACBAAAQCAABAAAAAAQAAgAAAGBA=</HashCode>
+      <FileName>Templates\TemplateProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.ProjectTemplate" Collapsed="true">
+    <Position X="4.5" Y="5.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Authoring" Type="Sandcastle.Builders.Templates.TemplateAuthoring" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="5.812" />
+        <Point X="9.75" Y="5.812" />
+        <Point X="9.75" Y="2.38" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Description" Type="Sandcastle.Builders.Templates.TemplateDescription" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="5.688" />
+        <Point X="8.031" Y="5.688" />
+        <Point X="8.031" Y="3.63" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Configuration" Type="Sandcastle.Builders.Templates.TemplateConfiguration" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.5" Y="5.688" />
+        <Point X="2.719" Y="5.688" />
+        <Point X="2.719" Y="3.63" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Properties" Type="Sandcastle.Builders.Templates.TemplateProperty" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.5" Y="5.812" />
+        <Point X="1.062" Y="5.812" />
+        <Point X="1.062" Y="2.38" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="ItemGroups" Type="Sandcastle.Builders.Templates.TemplateItemGroup">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.073" Y="0.127" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="PropertyGroups" Type="Sandcastle.Builders.Templates.TemplatePropertyGroup" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="6" />
+        <Point X="9.25" Y="6" />
+        <Point X="9.25" Y="7.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.265" Y="0.118" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="TargetFrameworks" Type="Sandcastle.Builders.Templates.TemplateTargetFramework" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.5" Y="6" />
+        <Point X="1.625" Y="6" />
+        <Point X="1.625" Y="7.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QABBgIAAIAAgOJAMAAAEAggCAAAAFAAEiAEAgAACGJQ=</HashCode>
+      <FileName>Templates\ProjectTemplate.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Authoring" />
+      <Property Name="Assistant" />
+      <Property Name="Description" />
+      <Property Name="Configuration" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Files" />
+      <Property Name="Properties" />
+      <Property Name="Actions" />
+      <Property Name="ItemGroups" />
+      <Property Name="PropertyGroups" />
+      <Property Name="TargetFrameworks" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.ProjectTemplateManager" Collapsed="true">
+    <Position X="4.5" Y="7.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAQAQAAAAAQAACAAAAQAABAABFAAAAAAABAAAMAg=</HashCode>
+      <FileName>Templates\ProjectTemplateManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="this[System.String]" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateAction" Collapsed="true">
+    <Position X="3" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAQCAAAAAAAAYAAAgAAACBA=</HashCode>
+      <FileName>Templates\TemplateAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateItemGroup" Collapsed="true">
+    <Position X="6" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAACACACAAAAAAAAAACABgAAAAAgAAAgAAACBA=</HashCode>
+      <FileName>Templates\TemplateItemGroup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplatePropertyGroup" Collapsed="true">
+    <Position X="8" Y="7.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAACACAEAAACAAAAAACAAgAAAAAgAAAgAACCBA=</HashCode>
+      <FileName>Templates\TemplatePropertyGroup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Builders.Templates.TemplateTargetFramework" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAgAACAAAAAABAAAAAAQCAAAAAAAAgAAAgAAACBA=</HashCode>
+      <FileName>Templates\TemplateTargetFramework.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

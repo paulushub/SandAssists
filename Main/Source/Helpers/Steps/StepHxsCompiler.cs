@@ -655,7 +655,7 @@ namespace Sandcastle.Steps
                     _helpFileVersion.ToString());
                 xmlWriter.WriteAttributeString("LangId", langText);
                 xmlWriter.WriteAttributeString("Title", _settings.HelpTitle);
-                xmlWriter.WriteAttributeString("Copyright", _settings.Feedback.Copyright);
+                xmlWriter.WriteAttributeString("Copyright", _settings.Feedback.CopyrightText);
 
                 // <TOCDef File="HelpFile.HxT" />
                 xmlWriter.WriteStartElement("TOCDef");

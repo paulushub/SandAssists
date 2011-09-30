@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Reference" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">3177d3c9-3bd3-477c-82b4-ac7e1a77786a</property>
+        <property name="Name">Testing Redirection</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: Testing Assembly Redirection</property>
+        <property name="SyntaxType">Standard, Xaml</property>
+    </propertyGroup>
+    <propertyGroup name="Reference">
+        <property name="XmlnsForXaml">True</property>
+        <property name="RootTitle">Testing Assembly Redirection</property>
+        <property name="RootTopicId"></property>
+        <property name="VersionType">Assembly</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Reference" source=".\Redirection.sandrefs" />
+    </contents>
+    <!-- The links source for this reference group. -->
+    <contentSource name="Sandcastle.References.ReferenceLinkSource">
+        <propertyGroup name="General">
+            <property name="Title">ReferenceSource51decd94</property>
+            <property name="LinkType">Local</property>
+            <property name="FrameworkType">None</property>
+        </propertyGroup>
+        <!-- The reference items defining the API content -->
+        <referenceItems>
+            <referenceItem xamlSyntax="True">
+                <assembly />
+                <comments>
+                    <path value="..\SampleLibrary\Libraries\Redirects\Project.xml" />
+                </comments>
+                <source />
+            </referenceItem>
+            <referenceItem xamlSyntax="True">
+                <assembly>
+                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Shapes.dll" />
+                </assembly>
+                <comments>
+                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Shapes.xml" />
+                </comments>
+                <source />
+            </referenceItem>
+            <referenceItem xamlSyntax="True">
+                <assembly>
+                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Geometries.dll" />
+                </assembly>
+                <comments>
+                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Geometries.xml" />
+                </comments>
+                <source />
+            </referenceItem>
+        </referenceItems>
+        <!-- The various contents required for documentation -->
+        <contents>
+            <content type="Comments">
+                <doc />
+            </content>
+            <content type="HierarchicalToc">
+                <hierarchicalTocContent />
+            </content>
+        </contents>
+        <!-- The API/attribute filters associated with the documentations -->
+        <filters>
+            <filter name="ftd904a570" expose="True" type="ApiFilter" />
+            <filter name="ftf15ea56f" expose="True" type="AttributeFilter" />
+        </filters>
+    </contentSource>
+</documentGroup>

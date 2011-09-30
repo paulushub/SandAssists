@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.Contents
@@ -6,6 +8,12 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class HierarchicalTocNode : BuildObject<HierarchicalTocNode>
     {
+        #region Public Fields
+
+        public const string TagName = "hierarchicalTocNode";
+
+        #endregion
+
         #region Private Fields
 
         private string                    _nodeText;
@@ -68,6 +76,14 @@ namespace Sandcastle.Contents
             get
             {
                 return (_nodeParent == null);
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return String.IsNullOrEmpty(_nodeText);
             }
         }
 
@@ -134,6 +150,24 @@ namespace Sandcastle.Contents
             get
             {
                 return (_nodeChildren != null && _nodeChildren.Count != 0);
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="HierarchicalTocNode"/> class instance, this property is 
+        /// <see cref="HierarchicalTocNode.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
             }
         }
 
@@ -211,6 +245,112 @@ namespace Sandcastle.Contents
             }
 
             return null;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            _nodeText = reader.GetAttribute("text");
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_nodeChildren == null || _nodeChildren.Count != 0)
+            {
+                _nodeChildren = new List<HierarchicalTocNode>();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, HierarchicalTocNode.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        HierarchicalTocNode item = new HierarchicalTocNode(
+                            this, reader.GetAttribute("text"));
+                        item.ReadXml(reader);
+
+                        _nodeChildren.Add(item);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("text", _nodeText);
+            if (_nodeChildren != null && _nodeChildren.Count != 0)
+            {
+                for (int i = 0; i < _nodeChildren.Count; i++)
+                {
+                    HierarchicalTocNode tocNode = _nodeChildren[i];
+                    if (tocNode != null && !tocNode.IsEmpty)
+                    {
+                        tocNode.WriteXml(writer);
+                    }
+                }
+            }
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

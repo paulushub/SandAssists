@@ -616,7 +616,7 @@ namespace Sandcastle.Steps
                 attribute = mainNode.Attributes["Copyright"];
                 if (attribute != null)
                 {
-                    attribute.Value = _settings.Feedback.Copyright;
+                    attribute.Value = _settings.Feedback.CopyrightText;
                 }
 
                 string contentsDir = _settings.ContentsDirectory;

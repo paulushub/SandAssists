@@ -489,8 +489,8 @@ namespace Sandcastle.ReflectionData
             writer.WriteString(space.Id.Substring(2));
         }
 
-        internal static void WriteSimpleTypeReference(SimpleTypeReference type, ReferenceLinkDisplayOptions options,
-            XmlWriter writer)
+        internal static void WriteSimpleTypeReference(SimpleTypeReference type, 
+            ReferenceLinkDisplayOptions options, XmlWriter writer)
         {
 
             // this logic won't correctly deal with nested types, but type cer strings simply don't include that

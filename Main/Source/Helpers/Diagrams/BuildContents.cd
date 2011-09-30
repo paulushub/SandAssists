@@ -8,15 +8,36 @@
   <Class Name="Sandcastle.Conceptual.ConceptualContent" Collapsed="true">
     <Position X="2.25" Y="3.25" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AEIAAQAAQARCUCCAKAgFBgAiEBEEEhAAAAAggABQAJA=</HashCode>
+      <HashCode>EEJDgYAABDRCQCCIKAgVBgASFFUEEhAgCAAhgABQCJA=</HashCode>
       <FileName>Conceptual\ConceptualContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceContent" Collapsed="true">
     <Position X="2.25" Y="0.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAABA=</HashCode>
+      <HashCode>AAAAAAAACAAAIACAAgAAAAACgAAAAAAAgAAAgAAACBA=</HashCode>
       <FileName>References\ReferenceContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualReader" Collapsed="true">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Conceptual\ConceptualReader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualShfbReader" Collapsed="true">
+    <Position X="1.25" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAgAAAAAgAAAAAAAAAAAIA=</HashCode>
+      <FileName>Conceptual\ConceptualShfbReader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualDocProjReader" Collapsed="true">
+    <Position X="3.75" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Conceptual\ConceptualDocProjReader.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

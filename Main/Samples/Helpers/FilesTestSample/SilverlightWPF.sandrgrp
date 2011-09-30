@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Reference" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">2866bd2b-ba61-4bf7-9bb9-2169f42dee10</property>
+        <property name="Name">Test WPF .NET 4</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: Test .NET Framework 4.0</property>
+        <property name="SyntaxType">Standard, Xaml</property>
+    </propertyGroup>
+    <propertyGroup name="Reference">
+        <property name="XmlnsForXaml">True</property>
+        <property name="RootTitle">Caliburn Micro for WPF 4.0 v1.0 RTW</property>
+        <property name="RootTopicId"></property>
+        <property name="VersionType">None</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Reference" source=".\SilverlightWPF.sandrefs" />
+    </contents>
+</documentGroup>

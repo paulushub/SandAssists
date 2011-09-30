@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Text;
+using System.Xml;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -23,22 +25,16 @@ namespace Sandcastle.References
 
         #region Private Fields
 
-        private bool                   _xmlnsForXaml;
+        private bool                 _xmlnsForXaml; 
+        private string               _rootTitle;
+        private string               _rootTopicId;
 
-        private string                 _rootTitle;
-        private string                 _rootTopicId;
+        private ReferenceSource      _topicSource;
+        private ReferenceContent     _topicContent;
+        private ReferenceLinkSource  _topicLinks;
 
-        private CommentContent         _commentContent;
-        private HierarchicalTocContent _tocContent;
-
-        private ReferenceVersionInfo   _versionInfo; 
-        private ReferenceVersionType   _versionType;
-
-        private ReferenceSource        _topicSource;
-
-        private ReferenceContent       _topicContent;
-        private ReferenceRootFilter    _typeFilters;
-        private ReferenceRootFilter    _attributeFilters;
+        private ReferenceVersionInfo _versionInfo;
+        private ReferenceVersionType _versionType;
 
         #endregion
 
@@ -68,14 +64,33 @@ namespace Sandcastle.References
             _versionType      = ReferenceVersionType.None;
 
             _rootTitle        = "Programmer's Reference";
-            _rootTopicId      = String.Empty;
-
-            _commentContent   = new CommentContent();
-            _tocContent       = new HierarchicalTocContent();
-
-            _typeFilters      = new ReferenceRootFilter();
+            _rootTopicId      = String.Empty;    
             _topicContent     = new ReferenceContent();
-            _attributeFilters = new ReferenceRootFilter();
+        }
+
+        public ReferenceGroup(string groupName, string groupId, 
+            ReferenceSource source) : base(groupName, groupId)
+        {
+            _versionType      = ReferenceVersionType.None;
+
+            _rootTitle        = "Programmer's Reference";
+            _rootTopicId      = String.Empty;
+            _topicSource      = source;
+            if (_topicSource == null)
+            {
+                _topicContent = new ReferenceContent();
+            }
+        }
+
+        public ReferenceGroup(string groupName, string groupId, string contentFile)
+            : base(groupName, groupId, contentFile)
+        {
+        }
+
+        public ReferenceGroup(string groupName, string groupId,
+            string contentFile, string contentDir)
+            : base(groupName, groupId, contentFile, contentDir)
+        {
         }
 
         /// <summary>
@@ -97,11 +112,9 @@ namespace Sandcastle.References
             _rootTitle        = source._rootTitle;
             _rootTopicId      = source._rootTopicId;
             _topicSource      = source._topicSource;
-            _typeFilters      = source._typeFilters;
             _topicContent     = source._topicContent;
+            _topicLinks       = source._topicLinks;
             _rootTopicId      = source._rootTopicId;
-            _attributeFilters = source._attributeFilters;
-            _commentContent   = source._commentContent;
         }
 
         #endregion
@@ -119,12 +132,12 @@ namespace Sandcastle.References
         {
             get
             {
-                if (_topicContent == null || _topicContent.Count == 0)
+                if (_topicSource != null && _topicSource.IsValid)
                 {
-                    return true;
+                    return false;
                 }
 
-                return false;
+                return (_topicContent == null || _topicContent.IsEmpty);
             }
         }
 
@@ -156,36 +169,6 @@ namespace Sandcastle.References
             }
         }
 
-        public CommentContent Comments
-        {
-            get
-            {
-                return _commentContent;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _commentContent = value;
-                }
-            }
-        }
-
-        public HierarchicalTocContent HierarchicalToc
-        {
-            get
-            {
-                return _tocContent;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _tocContent = value;
-                }
-            }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -200,10 +183,7 @@ namespace Sandcastle.References
             }
             set
             {
-                if (value != null)
-                {
-                    _topicContent = value;
-                }
+                _topicContent = value;
             }
         }
 
@@ -221,38 +201,19 @@ namespace Sandcastle.References
             }
             set
             {
-                if (value != null)
-                {
-                    _topicSource = value;
-                }
+                _topicSource = value;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public ReferenceRootFilter TypeFilters
+        public ReferenceLinkSource Links
         {
             get
             {
-                return _typeFilters;
+                return _topicLinks;
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <value>
-        /// 
-        /// </value>
-        public ReferenceRootFilter AttributeFilters
-        {
-            get
+            set
             {
-                return _attributeFilters;
+                _topicLinks = value;
             }
         }
 
@@ -373,7 +334,17 @@ namespace Sandcastle.References
             if (!this.IsInitialized)
             {
                 return;
-            }
+            } 
+        }
+
+        public override void Uninitialize()
+        {
+            base.Uninitialize();
+        }
+
+        public override void BeginSources(BuildContext context)
+        {
+            base.BeginSources(context);
 
             string workingDir = context.WorkingDirectory;
 
@@ -381,11 +352,52 @@ namespace Sandcastle.References
             {
                 Directory.CreateDirectory(workingDir);
             }
+
+            if (_topicSource != null && _topicSource.IsValid)
+            {
+                BuildGroupContext groupContext = context.GroupContexts[this.Id];
+                if (groupContext == null)
+                {
+                    throw new BuildException(
+                        "The group context is not provided, and it is required by the build system.");
+                }
+
+                string ddueMediaDir = Path.Combine(workingDir, groupContext["$DdueMedia"]);
+
+                BuildSourceContext sourceContext = new BuildSourceContext();
+                sourceContext.AssembliesDir = Path.Combine(workingDir,
+                    groupContext["$AssembliesFolder"]);
+                sourceContext.CommentsDir = Path.Combine(workingDir,
+                    groupContext["$CommentsFolder"]);
+                sourceContext.DependenciesDir = Path.Combine(workingDir,
+                    groupContext["$DependenciesFolder"]);
+                sourceContext.MediaDir = ddueMediaDir;
+                sourceContext.MediaFile = Path.Combine(workingDir,
+                    groupContext["$MediaFile"]);
+
+                sourceContext.Initialize(this.Name, workingDir, false);
+
+                _topicSource.Initialize(sourceContext);
+                _topicContent = _topicSource.Create(groupContext);
+                _topicSource.Uninitialize();
+
+                if (_topicContent == null)
+                {
+                    throw new BuildException(String.Format(
+                        "The creation of the content for '{0}' failed.", this.Name));
+                }
+            }
         }
 
-        public override void Uninitialize()
+        public override void EndSources()
         {
-            base.Uninitialize();
+            base.EndSources();
+
+            if (_topicSource != null && _topicSource.IsValid)
+            {
+                // It was created from the source...
+                _topicContent = null;
+            }
         }
 
         public override IList<SharedItem> PrepareShared(BuildContext context)
@@ -407,6 +419,217 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadPropertyGroupXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "Reference"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "xmlnsforxaml":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _xmlnsForXaml = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "roottitle":
+                                _rootTitle = reader.ReadString();
+                                break;
+                            case "roottopicid":
+                                _rootTopicId = reader.ReadString();
+                                break;
+                            case "versiontype":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _versionType = (ReferenceVersionType)Enum.Parse(
+                                        typeof(ReferenceVersionType), tempText, true);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override void OnWritePropertyGroupXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "Reference");
+
+            writer.WritePropertyElement("XmlnsForXaml", _xmlnsForXaml);
+            writer.WritePropertyElement("RootTitle",    _rootTitle);
+            writer.WritePropertyElement("RootTopicId",  _rootTopicId);
+            writer.WritePropertyElement("VersionType",  _versionType.ToString());
+
+            writer.WriteEndElement();                   // end - propertyGroup
+        }
+
+        protected override void OnReadContentXml(XmlReader reader)
+        {
+            if (String.Equals(reader.Name, "content",
+                StringComparison.OrdinalIgnoreCase) && String.Equals(
+                reader.GetAttribute("type"), "Reference", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_topicContent == null)
+                {
+                    _topicContent = new ReferenceContent();
+                }
+                if (reader.IsEmptyElement)
+                {
+                    string sourceFile = reader.GetAttribute("source");
+                    if (!String.IsNullOrEmpty(sourceFile))
+                    {
+                        _topicContent.ContentFile = new BuildFilePath(sourceFile);
+                        _topicContent.Load();
+                    }
+                }
+                else
+                {
+                    if (reader.ReadToDescendant(ReferenceContent.TagName))
+                    {
+                        _topicContent.ReadXml(reader);
+                    }
+                }
+            }
+        }
+
+        protected override void OnWriteContentXml(XmlWriter writer)
+        {
+            if (_topicContent != null)
+            {
+                BuildFilePath filePath = _topicContent.ContentFile;
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Reference");
+                if (filePath != null && filePath.IsValid)
+                {
+                    BuildPathResolver resolver = BuildPathResolver.Resolver;
+                    Debug.Assert(resolver != null && resolver.Id == this.Id);
+
+                    writer.WriteAttributeString("source", 
+                        resolver.ResolveRelative(filePath));
+                    _topicContent.Save();
+                }
+                else
+                {
+                    _topicContent.WriteXml(writer);
+                }
+                writer.WriteEndElement();
+            }
+        }
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            if (String.Equals(reader.Name, ReferenceSource.TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                string sourceName = reader.GetAttribute("name");
+
+                // For the link source...
+                if (String.Equals(sourceName, ReferenceLinkSource.SourceName,
+                    StringComparison.OrdinalIgnoreCase))
+                {   
+                    if (_topicLinks == null)
+                    {
+                        _topicLinks = new ReferenceLinkSource();
+                    }
+
+                    _topicLinks.ReadXml(reader);
+                }
+                else // For all other sources...
+                {
+                    if (_topicSource == null)
+                    {
+                        _topicSource = ReferenceSource.CreateSource(sourceName);
+                    }
+
+                    if (_topicSource == null)
+                    {
+                        throw new BuildException(String.Format(
+                            "The creation of the reference content source '{0}' failed.",
+                            reader.GetAttribute("name")));
+                    }
+
+                    _topicSource.ReadXml(reader);
+                }
+
+            }
+            else if (String.Equals(reader.Name, "versionInfo",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                if (_versionInfo == null)
+                {
+                    _versionInfo = new ReferenceVersionInfo();
+                }
+
+                _versionInfo.ReadXml(reader);
+            }    
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+            if (_topicSource != null)
+            {
+                writer.WriteComment(
+                    " The content source defining this reference group. ");
+                _topicSource.WriteXml(writer);
+            }
+
+            if (_topicLinks != null)
+            {
+                writer.WriteComment(
+                    " The links source for this reference group. ");
+                _topicLinks.WriteXml(writer);
+            }
+
+            if (_versionInfo != null)
+            {
+                writer.WriteComment(" The version information for this group. ");
+                _versionInfo.WriteXml(writer);
+            }
+        }
+
+        #endregion
+
+        #region Internal Methods
+
+        internal static string NextGroupName()
+        {
+            string groupName = "ReferenceGroup" + _groupCount.ToString();
+
+            _groupCount++;
+
+            return groupName;
+        }
+
+        #endregion
+
         #region Private Methods
 
         #endregion
@@ -416,6 +639,34 @@ namespace Sandcastle.References
         public override BuildGroup Clone()
         {
             ReferenceGroup group = new ReferenceGroup(this);
+
+            base.Clone(group);
+
+            if (_rootTitle != null)
+            {
+                group._rootTitle = String.Copy(_rootTitle);
+            }
+            if (_rootTopicId != null)
+            {
+                group._rootTopicId = String.Copy(_rootTopicId);
+            }
+
+            if (_topicSource != null)
+            {
+                group._topicSource = _topicSource.Clone();
+            }
+            if (_topicContent != null)
+            {
+                group._topicContent = _topicContent.Clone();
+            }
+            if (_topicLinks != null)
+            {
+                group._topicLinks = (ReferenceLinkSource)_topicLinks.Clone();
+            }
+            if (_versionInfo != null)
+            {
+                group._versionInfo = _versionInfo.Clone();
+            }
 
             return group;
         }

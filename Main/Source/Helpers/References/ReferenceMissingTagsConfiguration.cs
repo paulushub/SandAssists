@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -82,6 +85,7 @@ namespace Sandcastle.References
         private bool _typeParameterTags;
         private bool _valueTags;
 
+        [NonSerialized]
         private string _outputDir;
 
         [NonSerialized]
@@ -99,25 +103,6 @@ namespace Sandcastle.References
         /// to the default values.
         /// </summary>
         public ReferenceMissingTagsConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReferenceMissingTagsConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ReferenceMissingTagsConfiguration(string optionsName)
-            : base(optionsName)
         {
             _log               = true;
             _logXml            = true;
@@ -173,6 +158,25 @@ namespace Sandcastle.References
         #region Public Properties
 
         /// <summary>
+        /// Gets the name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the name of this category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ReferenceMissingTagsConfiguration.ConfigurationName"/>
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ReferenceMissingTagsConfiguration.ConfigurationName;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value specifying whether the missing tags are 
         /// logged to a missing tags specific log file.
         /// </summary>
@@ -195,10 +199,10 @@ namespace Sandcastle.References
 
         /// <summary>
         /// Gets or sets a value specifying whether the format of the missing tags 
-        /// specific logging use XML file format.
+        /// specific logging use <c>XML</c> file format.
         /// </summary>
         /// <value>
-        /// This is <see langword="true"/> if the XML file format is used for the 
+        /// This is <see langword="true"/> if the <c>XML</c> file format is used for the 
         /// missing tags logging; otherwise, it is <see langword="false"/>. 
         /// The default is <see langword="true"/>.
         /// </value>
@@ -725,6 +729,223 @@ namespace Sandcastle.References
             writer.WriteComment(" End: Missing tags options ");
 
             return true;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) &&
+                    String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "log":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _log = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "logxml":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _logXml = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "warn":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _warn = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "indicate":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _indicate = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "roottags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _rootTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "exceptiontags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _exceptionTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "includetargettags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _includeTargetTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "namespacetags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _namespaceTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "parametertags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _parameterTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "remarktags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _remarkTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "returntags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _returnTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "summarytags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _summaryTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "typeparametertags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _typeParameterTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "valuetags":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _valueTags = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name",    ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled",           this.Enabled);
+            writer.WritePropertyElement("Log",               _log);
+            writer.WritePropertyElement("LogXml",            _logXml);
+            writer.WritePropertyElement("Warn",              _warn);
+            writer.WritePropertyElement("Indicate",          _indicate);
+            writer.WritePropertyElement("RootTags",          _rootTags);
+            writer.WritePropertyElement("ExceptionTags",     _exceptionTags);
+            writer.WritePropertyElement("IncludeTargetTags", _includeTargetTags);
+            writer.WritePropertyElement("NamespaceTags",     _namespaceTags);
+            writer.WritePropertyElement("ParameterTags",     _parameterTags);
+            writer.WritePropertyElement("RemarkTags",        _remarkTags);
+            writer.WritePropertyElement("ReturnTags",        _returnTags);
+            writer.WritePropertyElement("SummaryTags",       _summaryTags);
+            writer.WritePropertyElement("TypeParameterTags", _typeParameterTags);
+            writer.WritePropertyElement("ValueTags",         _valueTags);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

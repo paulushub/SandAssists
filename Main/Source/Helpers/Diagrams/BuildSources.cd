@@ -1,106 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Sandcastle.BuildSource" Collapsed="true">
-    <Position X="3" Y="2.75" Width="1.75" />
+  <Class Name="Sandcastle.BuildSource&lt;T&gt;" Collapsed="true">
+    <Position X="1.25" Y="4.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAQAgAABQAAAAgAABQAAAAAAAAAAAAABAAIAAg=</HashCode>
+      <HashCode>AAAAAAAQAAAAAQAAAAhAAAQAAAAAAAAAAAAABAAIAIg=</HashCode>
       <FileName>BuildSource.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="EngineType" />
+      <Property Name="SourceContext" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualSource" Collapsed="true">
-    <Position X="3" Y="1.75" Width="1.75" />
+    <Position X="3.25" Y="4.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAEAAAAAAAAAIAAA=</HashCode>
+      <HashCode>AAACAAAAAIAAAEAAAAAAAAAAAAAAAEAAAABAAAAICAA=</HashCode>
       <FileName>Conceptual\ConceptualSource.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceSource" Collapsed="true">
-    <Position X="3" Y="3.75" Width="1.75" />
+    <Position X="3" Y="5.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAEAAAAAAAAAIAAA=</HashCode>
+      <HashCode>AAACAGAAAIAAAEgAAAAAQAIABAAEAEQCAABAAAAJKBA=</HashCode>
       <FileName>References\ReferenceSource.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualDocProjSource" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="2.25" />
+  <Class Name="Sandcastle.Conceptual.ConceptualDoxygenSource" Collapsed="true">
+    <Position X="5.25" Y="3" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>Conceptual\ConceptualDocProjSource.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualShfbSource" Collapsed="true">
-    <Position X="5.25" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAEwAAAAgAAAQAAAAAAkAAAAAAAAAAAJg=</HashCode>
-      <FileName>Conceptual\ConceptualShfbSource.cs</FileName>
+      <FileName>Conceptual\ConceptualDoxygenSource.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualXsdDocSource" Collapsed="true">
-    <Position X="0.5" Y="0.5" Width="2" />
+    <Position X="5.5" Y="5.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <HashCode>OQwCBKjEIAAHAgAAhAwABAQCCCCEAGEICIBAwKEAAhg=</HashCode>
       <FileName>Conceptual\ConceptualXsdDocSource.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.References.ReferenceAjaxDocSource" Collapsed="true">
-    <Position X="0.5" Y="5.25" Width="2" />
+  <Class Name="Sandcastle.References.ReferenceLinkSource" Collapsed="true">
+    <Position X="3" Y="7.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>References\ReferenceAjaxDocSource.cs</FileName>
+      <FileName>References\ReferenceLinkSource.cs</FileName>
+      <NewMemberFileName>References\ReferenceAjaxDocSource.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.References.ReferenceDocProjSource" Collapsed="true">
-    <Position X="5.25" Y="3.75" Width="2" />
+  <Class Name="Sandcastle.Sources.DocProjectGroupSource" Collapsed="true">
+    <Position X="5.5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>References\ReferenceDocProjSource.cs</FileName>
+      <FileName>Sources\DocProjectGroupSource.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.References.ReferenceScriptSharpSource" Collapsed="true">
-    <Position X="5" Y="5.25" Width="2.25" />
+  <Class Name="Sandcastle.Sources.ShfbGroupSource" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>References\ReferenceScriptSharpSource.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.References.ReferenceShfbSource" Collapsed="true">
-    <Position X="0.5" Y="3.75" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>References\ReferenceShfbSource.cs</FileName>
+      <FileName>Sources\ShfbGroupSource.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceVersionSource" Collapsed="true">
-    <Position X="0.5" Y="6.5" Width="2" />
+    <Position X="0.5" Y="6.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAgCAIAAAgAAAhABABgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAgCAIAAAgAABhABABgAAAQCAAAAAEAAAAAAgAAAABA=</HashCode>
       <FileName>References\ReferenceVersionSource.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.19" />
   </Class>
   <Class Name="Sandcastle.References.ReferenceVsNetSource" Collapsed="true">
-    <Position X="5.25" Y="6.5" Width="2" />
+    <Position X="5.5" Y="6.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <HashCode>AEIAAEAAQCAADgQACAgABEQCBAAAAEAAAAAAggBQABA=</HashCode>
       <FileName>References\ReferenceVsNetSource.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.References.ReferenceNDocSource" Collapsed="true">
-    <Position X="3" Y="6.5" Width="1.75" />
+  <Class Name="Sandcastle.Sources.NDocGroupSource" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
-      <FileName>References\ReferenceNDocSource.cs</FileName>
+      <FileName>Sources\NDocGroupSource.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="Sandcastle.BuildEngineType" Collapsed="true">
-    <Position X="1.25" Y="1.75" Width="1.5" />
+  <Class Name="Sandcastle.BuildGroupSource" Collapsed="true">
+    <Position X="3" Y="3" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAA=</HashCode>
-      <FileName>BuildEngineType.cs</FileName>
+      <HashCode>AAgGAIAACIAABMAACAAAAQAAEIAAAEAAAAAAAAAICBA=</HashCode>
+      <FileName>BuildGroupSource.cs</FileName>
     </TypeIdentifier>
-  </Enum>
+    <Lollipop Position="1.044" />
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceDirectorySource" Collapsed="true">
+    <Position X="5.5" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAACAgABiAAAAgAEEQCAAAAEMAAgAQBkCCAARA=</HashCode>
+      <FileName>References\ReferenceDirectorySource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.BuildSourceContext" Collapsed="true">
+    <Position X="0.5" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>IAIAMAARoAAAAQBgGAAANSQAADoACAAAAAAABACAIBg=</HashCode>
+      <FileName>BuildSourceContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceImportSource" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAABAAAAABgQAAAgAEgQCAAgAAEAIAAQAgAAAABA=</HashCode>
+      <FileName>References\ReferenceImportSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Sources.ImportGroupSource" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABiAAAAgEAAQCAAAAIEAAAAAAgAAAABA=</HashCode>
+      <FileName>Sources\ImportGroupSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Conceptual.ConceptualImportSource" Collapsed="true">
+    <Position X="5.5" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABgAAAAgAEAQCAAAAAEAAAAQAgAAAABA=</HashCode>
+      <FileName>Conceptual\ConceptualImportSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceAjaxDocSource" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAgAAAQAAAAAAEAAAAAAAAAAABA=</HashCode>
+      <FileName>References\ReferenceAjaxDocSource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

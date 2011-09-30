@@ -74,14 +74,6 @@ namespace Sandcastle
             }
         }
 
-        public static object SyncRoot 
-        { 
-            get
-            {
-                return _synchObject;
-            }
-        }
-
         public static BuildPathResolver Resolver
         {
             get
@@ -95,7 +87,11 @@ namespace Sandcastle
             }
         }
 
-        public static object Push(BuildPathResolver resolver)
+        #endregion
+
+        #region Public Methods
+
+        public static string Push(BuildPathResolver resolver)
         {
             BuildExceptions.NotNull(resolver, "resolver");
 
@@ -103,30 +99,33 @@ namespace Sandcastle
             {
                 _resolvers.Push(resolver);
 
-                return _synchObject;
+                return resolver.Id ;
             }
         }
 
-        public static BuildPathResolver Pop()
+        public static BuildPathResolver Pop(string resolverId)
         {
-            if (!Monitor.TryEnter(_synchObject))
+            lock (_synchObject)
             {
-                // If is locked by the user...
-                if (_resolvers.Count != 0)
+                // The current provider must match the id provided...
+                BuildPathResolver resolver = BuildPathResolver.Resolver;
+                if (resolver != null)
                 {
-                    return _resolvers.Pop();
-                }  
-            }
+                    if (String.Equals(resolver.Id, resolverId,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        resolver = _resolvers.Pop();
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new BuildException(
+                            "The operation is invalid. The resolver ID does not match the current resolver.");
+                    }
+                }                  
 
-            // We have locked it...
-            BuildPathResolver resolver = null;
-            if (_resolvers.Count != 0)
-            {
-                resolver = _resolvers.Pop();
+                return resolver;
             }
-            Monitor.Exit(_synchObject);
-
-            return resolver;
         }
 
         public static void Clear()
@@ -136,10 +135,6 @@ namespace Sandcastle
                 _resolvers.Clear();
             }
         }
-
-        #endregion
-
-        #region Public Methods
 
         public virtual void Initialize(string basePath)
         {
@@ -157,7 +152,7 @@ namespace Sandcastle
 
         public virtual void Uninitialize()
         {
-            _basePath       = null;
+            _basePath      = null;
             _isInitialized = false;
         }
 

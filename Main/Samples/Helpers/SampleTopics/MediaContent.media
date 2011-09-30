@@ -1,76 +1,76 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<mediaContent id="405fa5d9-4ac5-4e0e-ab75-7fc2fd6d58af" version="1.0">
+<mediaContent id="ffe9a2d5-2970-49e3-bc57-0cc021c80671" version="1.0">
     <location>
         <path value=".\Media" />
     </location>
     <items>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f800">
-            <image file="NativityScene.jpg">
+            <image file=".\Media\NativityScene.jpg">
                 <altText>Nativity Scene</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f801">
-            <image file="NativityBanner.jpg">
+            <image file=".\Media\NativityBanner.jpg">
                 <altText>Nativity Banner</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f802">
-            <image file="NativityWiseMen.png">
+            <image file=".\Media\NativityWiseMen.png">
                 <altText>Nativity: Three Wise Men</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f803">
-            <image file="pubproperty.gif">
+            <image file=".\Media\pubproperty.gif">
                 <altText>Properties</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f804">
-            <image file="Warning.png">
+            <image file=".\Media\Warning.png">
                 <altText>Warming</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f805">
-            <image file="SmallWarning.png">
+            <image file=".\Media\SmallWarning.png">
                 <altText>Warming</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f806">
-            <image file="Information.png">
+            <image file=".\Media\Information.png">
                 <altText>Information</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f807">
-            <image file="Question.png">
+            <image file=".\Media\Question.png">
                 <altText>Question</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f808">
-            <image file="Error.png">
+            <image file=".\Media\Error.png">
                 <altText>Error</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f809">
-            <image file="ArrowNormal.png">
+            <image file=".\Media\ArrowNormal.png">
                 <altText>Arrow Normal</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f810">
-            <image file="QuickStart.png">
+            <image file=".\Media\QuickStart.png">
                 <altText>Quick Start</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f811">
-            <image file="Introduction.png">
+            <image file=".\Media\Introduction.png">
                 <altText>Introduction</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f812">
-            <image file="ConceptsStruct.png">
+            <image file=".\Media\ConceptsStruct.png">
                 <altText>Conceptual Content Schema</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f813">
-            <image file="Codes.png" usemap="#Codes" resolveMapLinks="False">
+            <image file=".\Media\Codes.png" usemap="#Codes" resolveMapLinks="False">
                 <altText>Testing Image Maps</altText>
             </image>
             <map name="Codes">
@@ -94,22 +94,22 @@
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f815" type="Pdf" width="100" height="100" unit="Percent">
-            <image file="PdfTest.pdf">
+            <image file=".\Media\PdfTest.pdf">
                 <altText>Testing PDF document media type.</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f816" type="Xps" width="100" height="100" unit="Percent">
-            <image file="XpsTest.xps">
+            <image file=".\Media\XpsTest.xps">
                 <altText>Testing XPS document media type.</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f817" type="Flash" width="550" height="400" unit="Pixel">
-            <image file="DialUseCase.swf">
+            <image file=".\Media\DialUseCase.swf">
                 <altText>Testing Flash media type.</altText>
             </image>
         </item>
         <item id="2aca5da4-6f94-43a0-9817-5f413d16f818" type="Silverlight" width="100" height="100" unit="Percent">
-            <image file="SilverlightApplication2.xap">
+            <image file=".\Media\SilverlightApplication2.xap">
                 <altText>Testing Silverlight media type.</altText>
             </image>
         </item>

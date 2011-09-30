@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Construction.ProjectChooseElement" Collapsed="true">
+    <Position X="2.5" Y="13.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAgQBAAAAACAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>ProjectChooseElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectElement" Collapsed="true">
+    <Position X="2.75" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CABgBAAAEESAABAACBAAQAACAggABAAAAQAAoAACAAA=</HashCode>
+      <FileName>ProjectElement.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ElementType" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.148" />
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectContainerElement" Collapsed="true">
+    <Position X="2.75" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAhQAAAIAAQACCAAAAgEAAQAAAIAAAAEAIAAAgICAAg=</HashCode>
+      <FileName>ProjectContainerElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectExtensionsElement" Collapsed="true">
+    <Position X="1.25" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAABkCAAAAACAAAAAACAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>ProjectExtensionsElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectImportElement" Collapsed="true">
+    <Position X="1.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAEAAAAAAAAAACAAAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>ProjectImportElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectImportGroupElement" Collapsed="true">
+    <Position X="1" Y="11.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAAAAAAAAAAAEAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>ProjectImportGroupElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectItemDefinitionElement" Collapsed="true">
+    <Position X="1" Y="10" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAEAgA=</HashCode>
+      <FileName>ProjectItemDefinitionElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectItemDefinitionGroupElement" Collapsed="true">
+    <Position X="4" Y="10" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAgABAIAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>ProjectItemDefinitionGroupElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectItemElement" Collapsed="true">
+    <Position X="1.5" Y="7.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAEAAAAAAAIIADAAAAAAAAAAAAgAAAAAGAgA=</HashCode>
+      <FileName>ProjectItemElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectItemGroupElement" Collapsed="true">
+    <Position X="4" Y="7.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAAAACAAAAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ProjectItemGroupElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectMetadataElement" Collapsed="true">
+    <Position X="4" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAAQAAAAAAAAAAAQAAAAAAAAAAAAgAAACAAA=</HashCode>
+      <FileName>ProjectMetadataElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectOnErrorElement" Collapsed="true">
+    <Position X="1.25" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAABBAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>ProjectOnErrorElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectOtherwiseElement" Collapsed="true">
+    <Position X="5" Y="13.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>SAgABAAAAACAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ProjectOtherwiseElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectOutputElement" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAABCAhA=</HashCode>
+      <FileName>ProjectOutputElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectPropertyElement" Collapsed="true">
+    <Position X="1.25" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAAQAAAAAAAAAAAQAAAAAAAAAAAAgAAACAAA=</HashCode>
+      <FileName>ProjectPropertyElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectPropertyGroupElement" Collapsed="true">
+    <Position X="4" Y="11.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAAAAABAAAAAAAAAAAAEAAAAIAAAAAAACAAA=</HashCode>
+      <FileName>ProjectPropertyGroupElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectRootElement" Collapsed="true">
+    <Position X="0.5" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>aSgEBIogAMDMK5wRABCckAICoCgmA8UZQAAElAwHAAA=</HashCode>
+      <FileName>ProjectRootElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectTargetElement" Collapsed="true">
+    <Position X="4" Y="12.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>TAgABCAAQEEAABUAAAAAAAQAEIAAAAAAAAgMABACAAA=</HashCode>
+      <FileName>ProjectTargetElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectTaskElement" Collapsed="true">
+    <Position X="1.5" Y="12.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>DAgQBQAAAEEAAIAAAAAAAEQAAAABAAAAAMAAAACCAAA=</HashCode>
+      <FileName>ProjectTaskElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectUsingTaskBodyElement" Collapsed="true">
+    <Position X="4" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAEaAAAAAAAAAAgAAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>ProjectUsingTaskBodyElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectUsingTaskElement" Collapsed="true">
+    <Position X="1.25" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAwABAAAAEMAAAAABAAAAAACBAgAAAAAAAAAAAACQAA=</HashCode>
+      <FileName>ProjectUsingTaskElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectUsingTaskParameterElement" Collapsed="true">
+    <Position X="4" Y="2.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAEHAAAAAAAAIAAQAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>ProjectUsingTaskParameterElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectWhenElement" Collapsed="true">
+    <Position X="0.5" Y="13.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>SAgABAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ProjectWhenElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectUsingTaskParameterGroupElement" Collapsed="true">
+    <Position X="4" Y="8.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>CAgABAAAAACAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>ProjectUsingTaskParameterGroupElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectCommentElement" Collapsed="true">
+    <Position X="4" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAEAESAAAAAAAAAAAACAAAAAAAAAAAAgAACAAA=</HashCode>
+      <FileName>ProjectCommentElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Construction.ProjectElementType" Collapsed="true">
+    <Position X="5" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AABAAAIEACCAACEAIggIICAEAAIAAgIAAEgAAQEGAAA=</HashCode>
+      <FileName>ProjectElementType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

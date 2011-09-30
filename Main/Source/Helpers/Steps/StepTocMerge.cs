@@ -164,11 +164,11 @@ namespace Sandcastle.Steps
                             {
                                 if (_isHierarchical)
                                 {
-                                    context["$HelpHierarchicalTocRoot"] = reader.GetAttribute("id");
+                                    context["$HelpHierarchicalTocRoot"] = reader.GetAttribute("file");
                                 }
                                 else
                                 {
-                                    context["$HelpTocRoot"] = reader.GetAttribute("id");
+                                    context["$HelpTocRoot"] = reader.GetAttribute("file");
                                 }
                                 break;
                             }
@@ -239,7 +239,7 @@ namespace Sandcastle.Steps
                                         String.Equals(reader.Name, "topic",
                                         StringComparison.OrdinalIgnoreCase))
                                     {
-                                        _tocContext.SetValue(tocKey + "-HelpTocRoot", reader.GetAttribute("id"));
+                                        _tocContext.SetValue(tocKey + "-HelpTocRoot", reader.GetAttribute("file"));
                                         break;
                                     }
                                 }
@@ -486,7 +486,7 @@ namespace Sandcastle.Steps
 
                 if (groupToc != null)
                 {
-                    if (!groupToc.Exclude)
+                    if (!groupToc.Exclude && groupToc.Count != 0)
                     {
                         listToc.AddRange(groupToc.Items);
                     }

@@ -4,7 +4,6 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Sandcastle
 {
@@ -19,6 +18,43 @@ namespace Sandcastle
     /// <typeparam name="U">
     /// The underlying value type of the <see cref="BuildContent{T, U}"/> generic type. 
     /// </typeparam>
+    /// <remarks>
+    /// <para>
+    /// The <c>Sandcastle Assist</c> framework provides a number of objects
+    /// for defining various documentation information items. This provides
+    /// the corresponding container for such items.
+    /// </para>
+    /// <para>
+    /// Most of these items and containers are defined in the <see cref="Sandcastle.Contents"/>
+    /// namespace.
+    /// </para>
+    /// <para>
+    /// Containers are created with either the <see cref="BuildList{T}"/> for
+    /// non-keyed items or the <see cref="BuildKeyedList{T}"/> for keyed items.
+    /// </para>
+    /// <para>
+    /// The keyed containers provide an additional indexer for accessing the
+    /// items by the string keys or names.
+    /// </para>
+    /// <note type="caution">
+    /// <para>
+    /// Some containers are backed by a file, and to conserve computer resources,
+    /// the items may not be loaded into memory until requested.
+    /// </para>
+    /// <para>
+    /// Such containers provide <c>IsLoaded</c> property to make it easier to
+    /// check that state of the container.
+    /// </para>
+    /// <para>
+    /// A reliable way of checking whether a container is empty or not, is 
+    /// using the <see cref="IsEmpty"/> property instead of the 
+    /// <see cref="Count"/> property.
+    /// </para>
+    /// </note>
+    /// </remarks>
+    /// <seealso cref="BuildItem{T}"/>
+    /// <seealso cref="IBuildContent"/>
+    /// <seealso cref="Sandcastle.Contents"/>
     [Serializable]
     public abstract class BuildContent<T, U> : BuildObject, IBuildContent
         where T : BuildItem<T>
@@ -27,7 +63,7 @@ namespace Sandcastle
         #region Private Fields
 
         private bool     _isModified;
-        private bool     _isInitialized;
+        private bool?    _isInitialized;
         private IList<T> _listItems;
 
         #endregion
@@ -61,7 +97,8 @@ namespace Sandcastle
         {                                          
             BuildExceptions.NotNull(itemList, "itemList");
 
-            _listItems = itemList;
+            _listItems     = itemList;
+            _isInitialized = null;
         }
 
         /// <summary>
@@ -80,20 +117,59 @@ namespace Sandcastle
         {
             BuildExceptions.NotNull(source, "source");
 
-            _listItems = source._listItems;
+            _listItems     = source._listItems;
+            _isModified    = source._isModified;
+            _isInitialized = source._isInitialized;
         }
 
         #endregion
 
         #region Public Events
 
+        /// <summary>
+        /// Occurs when the value of the <see cref="Modified"/> property 
+        /// has changed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This event is raised if the <see cref="Modified"/> property is changed by 
+        /// either a programmatic modification or user interaction. 
+        /// </para>
+        /// <para>
+        /// This event is only raised after the initialization of this content.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Modified"/>
+        /// <seealso cref="OnModifiedChanged()"/>
         public event EventHandler ModifiedChanged;
 
         #endregion
 
         #region Public Properties
 
-        public virtual int Count
+        /// <summary>
+        /// Gets the number of items in this content.
+        /// </summary>
+        /// <value>
+        /// The number of items contained in this content.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// A value of <c>0</c> is not necessarily an indication of an empty
+        /// container, since some contents are backed by files and may not 
+        /// load their items until requested.
+        /// </para>
+        /// <para>
+        /// Checking the <see cref="IsEmpty"/> property value will be a better
+        /// way of testing if the container is empty. The implementation of the
+        /// <see cref="IsEmpty"/> property depends on the container.
+        /// </para>
+        /// <para>
+        /// This is done to improve speed and save computer memory or resources.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IsEmpty"/>
+        public int Count
         {
             get
             {
@@ -106,7 +182,22 @@ namespace Sandcastle
             }
         }
 
-        public virtual T this[int index]
+        /// <summary>
+        /// Gets the item at the specified index. 
+        /// </summary>
+        /// <param name="index">
+        /// The zero-based index of the element to get or set.
+        /// </param>
+        /// <value>
+        /// The item, <see cref="BuildItem{T}"/>, at the specified index.
+        /// </value>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// If the <paramref name="index"/> is less than <c>0</c>.
+        /// <para>-or-</para>
+        /// If the <paramref name="index"/> is equal to or greater than the
+        /// <see cref="Count"/>.
+        /// </exception>
+        public T this[int index]
         {
             get
             {
@@ -117,23 +208,26 @@ namespace Sandcastle
 
                 return null;
             }
-            set 
-            {
-                if (value != null)
-                {
-                    _listItems[index] = value;
-                }
-            }
         }
 
-        public virtual IList<T> Items
-        {
-            get
-            {
-                return _listItems;
-            }
-        }
-
+        /// <summary>
+        /// Gets a value indicating whether this container is empty.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if this container is empty;
+        /// otherwise, it is <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// For most containers, this simply checks whether the <see cref="Count"/>
+        /// property value is <c>0</c>.
+        /// </para>
+        /// <para>
+        /// For file-based containers, a further check is required to indicate
+        /// whether the container list is actually empty, since the file may
+        /// not be loaded to conserve computer resources.
+        /// </para>
+        /// </remarks>
         public virtual bool IsEmpty
         {
             get
@@ -142,6 +236,20 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this container is keyed, with each
+        /// item having a unique name or identifier.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if this container is keyed;
+        /// otherwise, it is <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        /// The items, <seealso cref="BuildItem{T}"/>, of keyed containers
+        /// implement the <see cref="IBuildNamedItem"/> to provide unique name
+        /// or identifiers. The actual property name defining the unique name
+        /// depends on the item.
+        /// </remarks>
         public virtual bool IsKeyed
         {
             get
@@ -150,6 +258,17 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this container is hierarchical.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if this container is 
+        /// hierarchical; otherwise, it is <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        /// The hierarchical items and container define a tree structure
+        /// documentation information model.
+        /// </remarks>
         public virtual bool IsHierarchical
         {
             get
@@ -158,10 +277,50 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets an object that exposes an enumerator, which supports a simple
+        /// iteration over the collection of the items of in this container.
+        /// </summary>
+        /// <value>
+        /// An object providing a simple iteration over the collection of the
+        /// items in this container.
+        /// </value>
+        /// <typeparam name="T">
+        /// The type of the items in this container.
+        /// </typeparam>
+        public IEnumerable<T> Items
+        {
+            get
+            {
+                return _listItems;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// </value>
+        public abstract string XmlTagName
+        {
+            get;
+        }
+
         #endregion
 
         #region Protected Properties
 
+        /// <summary>
+        /// Gets the list of items in this container.
+        /// </summary>
+        /// <value>
+        /// An object providing a simple iteration over the collection of the
+        /// items in this container.
+        /// </value>
+        /// <typeparam name="T">
+        /// The type of the items in this container.
+        /// </typeparam>
         protected IList<T> List
         {
             get
@@ -249,6 +408,28 @@ namespace Sandcastle
 
         #region Protected Methods
 
+        /// <summary>
+        /// Raises the <see cref="ModifiedChanged"/> event, whenever the state
+        /// of this content is changed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// As a <c>.NET</c> framework feature, raising an event invokes the 
+        /// event handler through a delegate.
+        /// </para>
+        /// <para>
+        /// This method allows the derived classes to handle the event without
+        /// attaching the delegate. The derived classes can then perform custom
+        /// actions before and/or after the event.
+        /// </para>
+        /// <note type="inheritinfo">
+        /// When overriding this method in a derived class, be sure to call 
+        /// the base class's method so that registered delegates receive 
+        /// the event.
+        /// </note>
+        /// </remarks>
+        /// <seealso cref="Modified"/>
+        /// <seealso cref="ModifiedChanged"/>
         protected virtual void OnModifiedChanged()
         {
             EventHandler handler = this.ModifiedChanged;
@@ -262,7 +443,10 @@ namespace Sandcastle
 
         #region IBuildContent Members
 
-        public bool IsInitialized
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool? IsInitialized
         {
             get
             {
@@ -274,6 +458,28 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value that indicates that the build content has 
+        /// been modified by the user since the object was created or 
+        /// its contents were last set.
+        /// </summary>
+        /// <value>
+        /// This property is <see langword="true"/> if the object's contents 
+        /// have been modified; otherwise, <see langword="false"/>. The 
+        /// default is <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// This is set to <see langword="false"/> when the initialization of
+        /// this object is completed.
+        /// </para>
+        /// <para>
+        /// If this object is already initialized, the <see cref="ModifiedChanged"/>
+        /// event is raised when this property changes.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ModifiedChanged"/>
+        /// <seealso cref="OnModifiedChanged()"/>
         public bool Modified
         {
             get
@@ -284,16 +490,23 @@ namespace Sandcastle
             {
                 _isModified = value;
 
-                if (_isInitialized)
+                if (_isInitialized == null ||
+                    (_isInitialized != null && _isInitialized.Value))
                 {
                     this.OnModifiedChanged();
                 } 
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
         public virtual void ItemModified(IBuildItem item)
         {
-            if (!_isInitialized)
+            BuildExceptions.NotNull(item, "item");
+
+            if (_isInitialized != null && !_isInitialized.Value)
             {
                 return;
             }
@@ -311,7 +524,7 @@ namespace Sandcastle
         /// This property is reserved, apply the <see cref="XmlSchemaProviderAttribute"/> to the class instead.
         /// </summary>
         /// <returns>
-        /// An <see cref="XmlSchema"/> that describes the XML representation of 
+        /// An <see cref="XmlSchema"/> that describes the <c>XML</c> representation of 
         /// the object that is produced by the <see cref="WriteXml"/> method and 
         /// consumed by the <see cref="ReadXml"/> method.
         /// </returns>
@@ -321,11 +534,11 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -336,10 +549,10 @@ namespace Sandcastle
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">

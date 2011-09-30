@@ -38,7 +38,7 @@ namespace Sandcastle.Components.MediaLinks
         /// </summary>
         Pdf         = 6,
         /// <summary>
-        /// Indicates the Microsoft XML Paper Specification Format (XPS) media type.
+        /// Indicates the Microsoft <c>XML</c> Paper Specification Format (XPS) media type.
         /// </summary>
         Xps         = 7
     }

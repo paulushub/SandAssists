@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Reference" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">be96b214-1314-4a3e-945c-b05f8c511b0d</property>
+        <property name="Name">Test API References</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: Test API Reference</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Reference">
+        <property name="XmlnsForXaml">False</property>
+        <property name="RootTitle">SampleLibrary Test References</property>
+        <property name="RootTopicId"></property>
+        <property name="VersionType">Advanced</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Media" source="..\SampleTopics\MediaContent.media" />
+        <content type="CodeSnippets" source="..\SampleLibrary\CodeSnippetSample.snippets" />
+        <content type="Reference" source=".\MainReference.sandrefs" />
+    </contents>
+    <!-- The version information for this group. -->
+    <versionInfo>
+        <propertyGroup name="Reference">
+            <property name="Id">Ver443d1d62</property>
+            <property name="Title">Testing .NET Versions</property>
+            <property name="RipOldApis">True</property>
+            <property name="VersionLabel">2.0</property>
+        </propertyGroup>
+        <contentSources>
+            <contentSource name="Sandcastle.References.ReferenceVersionSource">
+                <propertyGroup name="General">
+                    <property name="Id">Ver8f6cbb24</property>
+                    <property name="Title">ReferenceSourceacb2fc42</property>
+                    <property name="VersionLabel">1.0</property>
+                </propertyGroup>
+                <content type="Reference">
+                    <referenceContent version="1.0">
+                        <!-- 1. The content directory, if not the same as the content file. -->
+                        <location />
+                        <!-- 2. The general content settings -->
+                        <propertyGroup name="General">
+                            <property name="Id">b5eeb4c6-ce24-4cc0-a131-3598c97f8b28</property>
+                            <property name="FrameworkType">Framework20</property>
+                        </propertyGroup>
+                        <!-- 3. The reference items defining the API content -->
+                        <referenceItems>
+                            <referenceItem xamlSyntax="False">
+                                <assembly>
+                                    <path value="..\SampleLibraryVersion\Output\TestLibrary.dll" />
+                                </assembly>
+                                <comments>
+                                    <path value="..\SampleLibraryVersion\Output\TestLibrary.xml" />
+                                </comments>
+                                <source />
+                            </referenceItem>
+                        </referenceItems>
+                        <!-- 4. The various contents required for documentation -->
+                        <contents>
+                            <content type="Comments">
+                                <doc />
+                            </content>
+                            <content type="Dependencies">
+                                <dependencyContent />
+                            </content>
+                            <content type="HierarchicalToc">
+                                <hierarchicalTocContent />
+                            </content>
+                        </contents>
+                        <!-- 5. The API/attribute filters associated with the documentations -->
+                        <filters>
+                            <filter name="ftaca053ec" expose="True" type="ApiFilter" />
+                            <filter name="ft7b287da5" expose="True" type="AttributeFilter" />
+                        </filters>
+                    </referenceContent>
+                </content>
+                <!-- The various contents required for documentation -->
+                <contents>
+                    <content type="Comments">
+                        <doc />
+                    </content>
+                    <content type="HierarchicalToc">
+                        <hierarchicalTocContent />
+                    </content>
+                </contents>
+                <!-- The API/attribute filters associated with the documentations -->
+                <filters>
+                    <filter name="ft4cdf0cfd" expose="True" type="ApiFilter" />
+                    <filter name="ft6a90ac53" expose="True" type="AttributeFilter" />
+                </filters>
+            </contentSource>
+        </contentSources>
+        <relatedVersions>
+            <relatedVersion>
+                <propertyGroup name="General">
+                    <property name="Id">Verbc7a8c4d</property>
+                    <property name="Title">Testing Silverlight Versions</property>
+                </propertyGroup>
+                <contentSources>
+                    <contentSource name="Sandcastle.References.ReferenceVersionSource">
+                        <propertyGroup name="General">
+                            <property name="Id">Vere518d1c0</property>
+                            <property name="Title">ReferenceSource6950201c</property>
+                            <property name="VersionLabel">2.0</property>
+                        </propertyGroup>
+                        <content type="Reference">
+                            <referenceContent version="1.0">
+                                <!-- 1. The content directory, if not the same as the content file. -->
+                                <location />
+                                <!-- 2. The general content settings -->
+                                <propertyGroup name="General">
+                                    <property name="Id">17d7d76e-8360-4517-8674-a8afc6ff9273</property>
+                                    <property name="FrameworkType">Silverlight30</property>
+                                </propertyGroup>
+                                <!-- 3. The reference items defining the API content -->
+                                <referenceItems>
+                                    <referenceItem xamlSyntax="False">
+                                        <assembly>
+                                            <path value="..\SampleLibrarySilverlight\Output\TestLibrary.dll" />
+                                        </assembly>
+                                        <comments>
+                                            <path value="..\SampleLibrarySilverlight\Output\TestLibrary.xml" />
+                                        </comments>
+                                        <source />
+                                    </referenceItem>
+                                </referenceItems>
+                                <!-- 4. The various contents required for documentation -->
+                                <contents>
+                                    <content type="Comments">
+                                        <doc />
+                                    </content>
+                                    <content type="Dependencies">
+                                        <dependencyContent />
+                                    </content>
+                                    <content type="HierarchicalToc">
+                                        <hierarchicalTocContent />
+                                    </content>
+                                </contents>
+                                <!-- 5. The API/attribute filters associated with the documentations -->
+                                <filters>
+                                    <filter name="fte1bd5059" expose="True" type="ApiFilter" />
+                                    <filter name="ft5126cacf" expose="True" type="AttributeFilter" />
+                                </filters>
+                            </referenceContent>
+                        </content>
+                        <!-- The various contents required for documentation -->
+                        <contents>
+                            <content type="Comments">
+                                <doc />
+                            </content>
+                            <content type="HierarchicalToc">
+                                <hierarchicalTocContent />
+                            </content>
+                        </contents>
+                        <!-- The API/attribute filters associated with the documentations -->
+                        <filters>
+                            <filter name="ftbace22c9" expose="True" type="ApiFilter" />
+                            <filter name="ft486a5383" expose="True" type="AttributeFilter" />
+                        </filters>
+                    </contentSource>
+                </contentSources>
+            </relatedVersion>
+        </relatedVersions>
+    </versionInfo>
+</documentGroup>

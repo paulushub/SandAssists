@@ -3,36 +3,40 @@
   <Class Name="Sandcastle.BuildComponentConfiguration" Collapsed="true">
     <Position X="3" Y="6" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAIAABAIAwQMAAEUBAARQAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <HashCode>IABAAAABAIAwQMAAEEBAARQAAAAAAAAAAABAAAgACAA=</HashCode>
       <FileName>BuildComponentConfiguration.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EngineType" />
+      <Property Name="InsertType" />
+    </ShowAsAssociation>
     <Lollipop Position="1.419" />
   </Class>
   <Class Name="Sandcastle.References.ReferenceComponentConfiguration" Collapsed="true">
-    <Position X="3" Y="7" Width="2.5" />
+    <Position X="3" Y="7.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAARAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>References\ReferenceComponentConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualComponentConfiguration" Collapsed="true">
     <Position X="3" Y="5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAARAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Conceptual\ConceptualComponentConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceMissingTagsConfiguration" Collapsed="true">
-    <Position X="4.75" Y="9.5" Width="2.75" />
+    <Position X="4.75" Y="10" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>MABBCAEhEAAwBVEAYFFAISAAAAgCAAMAABAAAAgAGFw=</HashCode>
+      <HashCode>MABBCAEhEAAwBVEAYFFAISQCAAgCAAMAABAAgAgAGFw=</HashCode>
       <FileName>References\ReferenceMissingTagsConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceCloneConfiguration" Collapsed="true">
-    <Position X="5.75" Y="7" Width="2.25" />
+    <Position X="5.75" Y="7.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>oABAAAABAAAwBUAAEEBAAABAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>oABAAAABAAAwBUAAEEBAAARCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>References\ReferenceCloneConfiguration.cs</FileName>
       <NewMemberFileName>References\ReferenceCodeConfiguration.cs</NewMemberFileName>
     </TypeIdentifier>
@@ -47,135 +51,146 @@
   <Class Name="Sandcastle.Conceptual.ConceptualIntelliSenseConfiguration" Collapsed="true">
     <Position X="4.75" Y="3.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>IIhAAAABCGQwgUBIAMBBEQAIEBICAiAABAgQBAwAaFg=</HashCode>
+      <HashCode>IIhAAAABCGQwgUBIAMBBEQQKEBICAiAABAgQhQwAaFg=</HashCode>
       <FileName>Conceptual\ConceptualIntelliSenseConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceIntelliSenseConfiguration" Collapsed="true">
-    <Position X="4.75" Y="8.25" Width="2.75" />
+    <Position X="4.75" Y="8.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwAUAAAEBAAAAAAAACAAAAAAAAAAwAIFg=</HashCode>
+      <HashCode>IABAAAABAAAwAUAAAEBAAAQCAAACAAAAAAAAgAwAIFg=</HashCode>
       <FileName>References\ReferenceIntelliSenseConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceCodeConfiguration" Collapsed="true">
-    <Position X="0.5" Y="7" Width="2.25" />
+    <Position X="0.5" Y="7.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IAhAAAABQAA0BUABsEBAAAAACEwCAAAAAAAAIAgAABg=</HashCode>
+      <HashCode>IAhIAAABQAA0BUABsEBAAAQCCEwCAAAAAACAoAgAABg=</HashCode>
       <FileName>References\ReferenceCodeConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceAutoDocConfiguration" Collapsed="true">
-    <Position X="1.25" Y="10.75" Width="2.5" />
+    <Position X="1.25" Y="11.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAAEABEAAwAEAAEEBQAAAACAACAAEAAAAAAAgAABA=</HashCode>
+      <HashCode>IABAAEABEAAwAEAAEEBQAAQCCAACAAEAAAAAgAgAABA=</HashCode>
       <FileName>References\ReferenceAutoDocConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceMathConfiguration" Collapsed="true">
-    <Position X="4.75" Y="10.75" Width="2.25" />
+    <Position X="4.75" Y="11.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>MABCAgQBEAAwBdAAEFFAAACAQAADAAQoAANAACgQCJg=</HashCode>
+      <HashCode>MABCAgQBEAAwBdAAEFFAAASCQAADAAQoAANAgCgQCJg=</HashCode>
       <FileName>References\ReferenceMathConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferencePostTransConfiguration" Collapsed="true">
-    <Position X="1.25" Y="9.5" Width="2.5" />
+    <Position X="1.25" Y="10" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAkEBAAAAAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAkEBAAAQCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>References\ReferencePostTransConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceMediaConfiguration" Collapsed="true">
-    <Position X="0.5" Y="11.75" Width="2.25" />
+    <Position X="0.5" Y="12.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAgEBAAAAAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAgEBAAAQCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>References\ReferenceMediaConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceLinkConfiguration" Collapsed="true">
-    <Position X="1.5" Y="8.25" Width="2.25" />
+    <Position X="1.5" Y="8.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAkEBAAAAAAAACAAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAkEBAAAQCAAACAAAAAAAAgAgAAFg=</HashCode>
       <FileName>References\ReferenceLinkConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualLinkConfiguration" Collapsed="true">
     <Position X="1.5" Y="3.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IABAABABBAAwBUBAAEBAAAAAAAACQAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAABABBAAwBUBAAEBAAAQCAAACQAAAAAAAgAgAAFg=</HashCode>
       <FileName>Conceptual\ConceptualLinkConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualPostTransConfiguration" Collapsed="true">
     <Position X="4.75" Y="1.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAgEBAAAAAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAgEBAAAQCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>Conceptual\ConceptualPostTransConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualMediaConfiguration" Collapsed="true">
     <Position X="4.75" Y="2.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwAUAAAEBAAAAAAAACAAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAAEBAAAQCAAACAAAAAAAAgAgAAFg=</HashCode>
       <FileName>Conceptual\ConceptualMediaConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualMathConfiguration" Collapsed="true">
     <Position X="1.25" Y="2.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>MABCAgQBEAAwBdAAEFFAAACAQAADAAQoAANAACgQCJg=</HashCode>
+      <HashCode>MABCAgQBEAAwBdAAEFFAAASCQAADAAQoAANAgCgQCJg=</HashCode>
       <FileName>Conceptual\ConceptualMathConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualCloneConfiguration" Collapsed="true">
     <Position X="5.75" Y="5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>oABAAAABAAAwBUAAAEBAAABAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>oABAAAABAAAwBUAAAEBAAARCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>Conceptual\ConceptualCloneConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualCodeConfiguration" Collapsed="true">
     <Position X="0.5" Y="5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IAhAAAABQAA0BUABsEBAAAAACEwCAAAAAAAAIAgAABg=</HashCode>
+      <HashCode>IAhIAAABQAA0BUABsEBAAAQCCEwCAAAAAACAoAgAABg=</HashCode>
       <FileName>Conceptual\ConceptualCodeConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualPreTransConfiguration" Collapsed="true">
     <Position X="1.25" Y="1.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IEBAAAQBAAAxBUAAgGBAAAACEAACAAAAAAAAAAgAEBo=</HashCode>
+      <HashCode>IEBAAAQBAAAxBUAAgGBAAAQCEAACAAAAAAAAgAgAEBo=</HashCode>
       <FileName>Conceptual\ConceptualPreTransConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualReferenceLinkConfiguration" Collapsed="true">
     <Position X="1" Y="0.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAAEBAAAAAAAACAAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAAEBAAAQCAAACAAAAAAAAgAgAAFg=</HashCode>
       <FileName>Conceptual\ConceptualReferenceLinkConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualSharedConfiguration" Collapsed="true">
     <Position X="4.75" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAgEBAAAAAAAACAAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAgEBAAAQCAAACAAAAAAAAgAgAAFg=</HashCode>
       <FileName>Conceptual\ConceptualSharedConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceSharedConfiguration" Collapsed="true">
-    <Position X="5.75" Y="11.75" Width="2.25" />
+    <Position X="5.75" Y="12.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAkEBAAAAAAAACAAAAAAAAAAgAAFg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAkEBAAAQCAAACAAAAAAAAgAgAAFg=</HashCode>
       <FileName>References\ReferenceSharedConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferencePreTransConfiguration" Collapsed="true">
-    <Position X="3" Y="11.75" Width="2.5" />
+    <Position X="3" Y="12.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>IABAAAABAAAwBUAAkEBAAAAAAAACAAAAAAAAAAgAABg=</HashCode>
+      <HashCode>IABAAAABAAAwBUAAkEBAAAQCAAACAAAAAAAAgAgAABg=</HashCode>
       <FileName>References\ReferencePreTransConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Enum Name="Sandcastle.BuildEngineType" Collapsed="true">
+    <Position X="6.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAA=</HashCode>
+      <FileName>BuildEngineType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.BuildInsertType" Collapsed="true">
+    <Position X="6.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier />
+  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

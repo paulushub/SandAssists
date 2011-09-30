@@ -12,12 +12,13 @@ namespace Sandcastle.References
     {
         #region Public Fields
 
-        public const string TagName = "apiFilter";
+        public const string TagName = "filter";
 
         #endregion
 
         #region Private Fields
 
+        private bool _isAttributes;
         private BuildList<ReferenceNamespaceFilter> _listNamespaces;
 
         #endregion
@@ -25,14 +26,22 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         public ReferenceRootFilter()
-            : base(Guid.NewGuid().ToString(), true)
+            : base(String.Format("ft{0:x}", Guid.NewGuid().ToString().GetHashCode()), true)
         {
+            _listNamespaces = new BuildList<ReferenceNamespaceFilter>();
+        }
+
+        public ReferenceRootFilter(bool isAttributes)
+            : base(String.Format("ft{0:x}", Guid.NewGuid().ToString().GetHashCode()), true)
+        {
+            _isAttributes   = isAttributes;
             _listNamespaces = new BuildList<ReferenceNamespaceFilter>();
         }
 
         public ReferenceRootFilter(ReferenceRootFilter source)
             : base(source)
         {
+            _isAttributes   = source._isAttributes;
             _listNamespaces = source._listNamespaces;
         }
 
@@ -47,6 +56,22 @@ namespace Sandcastle.References
                 return ReferenceFilterType.Root;
             }
         }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return (_listNamespaces == null || _listNamespaces.Count == 0);
+            }
+        }
+
+        public bool IsAttributes
+        {
+            get
+            {
+                return _isAttributes;
+            }
+        }  
 
         public int Count
         {
@@ -238,10 +263,31 @@ namespace Sandcastle.References
             {
                 return;
             }
-            if (!String.Equals(reader.Name, TagName,
+            if (String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                string tempText = reader.GetAttribute("type");
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    _isAttributes = tempText.Equals("attributeFilter", 
+                        StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            else if (String.Equals(reader.Name, "apiFilter",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _isAttributes = false;
+            }
+            else if (String.Equals(reader.Name, "attributeFilter",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _isAttributes = true;
+            }
+            else
+            {
+                throw new BuildException(String.Format(
+                    "The content/root element name '{0}' is not supported.",
+                    reader.Name));
             }
 
             string nodeText = reader.GetAttribute("name");
@@ -260,7 +306,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            if (_listNamespaces == null)
+            if (_listNamespaces == null || _listNamespaces.Count != 0)
             {
                 _listNamespaces = new BuildList<ReferenceNamespaceFilter>();
             }
@@ -311,6 +357,8 @@ namespace Sandcastle.References
             writer.WriteStartElement(TagName);
             writer.WriteAttributeString("name", this.Name);
             writer.WriteAttributeString("expose", isExposed.ToString());
+            writer.WriteAttributeString("type", _isAttributes ? 
+                "AttributeFilter" : "ApiFilter");
 
             int itemCount = _listNamespaces == null ? 0 : _listNamespaces.Count;
             if (isExposed)
@@ -318,7 +366,7 @@ namespace Sandcastle.References
                 for (int i = 0; i < itemCount; i++)
                 {
                     ReferenceNamespaceFilter namespaceFilter = _listNamespaces[i];
-                    if (!namespaceFilter.Expose)
+                    //if (!namespaceFilter.Expose)
                     {
                         namespaceFilter.WriteXml(writer);
                     }
@@ -329,7 +377,7 @@ namespace Sandcastle.References
                 for (int i = 0; i < itemCount; i++)
                 {
                     ReferenceNamespaceFilter namespaceFilter = _listNamespaces[i];
-                    if (namespaceFilter.Expose)
+                    //if (namespaceFilter.Expose)
                     {
                         namespaceFilter.WriteXml(writer);
                     }

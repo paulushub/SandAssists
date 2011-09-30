@@ -159,6 +159,7 @@ namespace Sandcastle
 
         public virtual void CreateProperties(string indexValue)
         {
+            this["$GroupIndex"] = indexValue;
         }
 
         #endregion

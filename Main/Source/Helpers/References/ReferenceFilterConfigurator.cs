@@ -360,41 +360,56 @@ namespace Sandcastle.References
                 throw new BuildException("No valid framework is specified.");
             }
 
-            // For Silver, we use the equivalent .NET Framework version, since
-            // the current reflection tool does not directly support Silverlight.
-            if (framework.FrameworkType.IsSilverlight)
+            // For Silverlight/Portable, we use the equivalent .NET Framework 
+            // version, since the current reflection tool does not directly 
+            // support Silverlight/Portable.
+            BuildFrameworkKind kind = framework.FrameworkType.Kind;
+            if (kind == BuildFrameworkKind.Silverlight || 
+                kind == BuildFrameworkKind.Portable)
             {
                 int major = framework.Version.Major;
 
                 BuildFramework netFramework = null;
                 switch (major)
                 {
-                    case 4:
+                    case 5:
                         netFramework = BuildFrameworks.GetFramework(
-                            major, false);
+                            major, BuildFrameworkKind.DotNet);
                         if (netFramework == null)
                         {
+                            // If not found, we move a version down...
+                            major = major - 1;
+                            goto case 4;
+                        }
+                        break;
+                    case 4:
+                        netFramework = BuildFrameworks.GetFramework(
+                            major, BuildFrameworkKind.DotNet);
+                        if (netFramework == null)
+                        {
+                            // If not found, we move a version down...
                             major = major - 1;
                             goto case 3;
                         }
                         break;
                     case 3:
                         netFramework = BuildFrameworks.GetFramework(
-                            major, 5, false);
+                            major, 5, BuildFrameworkKind.DotNet);
                         if (netFramework == null)
                         {
                             netFramework = BuildFrameworks.GetFramework(
-                                major, false);
+                                major, BuildFrameworkKind.DotNet);
                         }
                         if (netFramework == null)
                         {
+                            // If not found, we move a version down...
                             major = major - 1;
                             goto case 2;
                         }
                         break;
                     case 2:
                         netFramework = BuildFrameworks.GetFramework(
-                            major, false);
+                            major, BuildFrameworkKind.DotNet);
                         break;
                     default:
                         throw new BuildException(
@@ -406,6 +421,35 @@ namespace Sandcastle.References
                     throw new BuildException(
                         "The equivalent .NET Framework for the specified Silverlight version cannot be found.");
                 }   
+
+                framework = netFramework;
+            }
+            else if (kind == BuildFrameworkKind.ScriptSharp)
+            {
+                int major = framework.Version.Major;
+
+                BuildFramework netFramework = null;
+                switch (major)
+                {
+                    case 1:
+                        // The current v1.0 is released for .NET 4.0                         
+                        netFramework = BuildFrameworks.GetFramework(
+                            4, BuildFrameworkKind.DotNet);
+                        if (netFramework == null)
+                        {
+                            netFramework = BuildFrameworks.LatestFramework;
+                        }
+                        break;
+                    default:
+                        throw new BuildException(
+                            "The specified Silverlight version is not supported.");
+                }
+
+                if (netFramework == null)
+                {
+                    throw new BuildException(
+                        "The equivalent .NET Framework for the specified Silverlight version cannot be found.");
+                }
 
                 framework = netFramework;
             }
@@ -423,7 +467,8 @@ namespace Sandcastle.References
                 writer.WriteAttributeString("version", "2.0");
                 if (version.Major == 3)
                 {
-                    Version version2 = BuildFrameworks.GetVersion(2, -1, false);
+                    Version version2 = BuildFrameworks.GetVersion(2, -1, 
+                        BuildFrameworkKind.DotNet);
 
                     writer.WriteAttributeString("path", String.Format(
                         @"%SystemRoot%\Microsoft.NET\Framework\v{0}\", version2.ToString(3)));
@@ -609,7 +654,7 @@ namespace Sandcastle.References
                 }
             }
 
-            ReferenceRootFilter typeFilters = _group.TypeFilters;
+            ReferenceRootFilter typeFilters = _group.Content.TypeFilters;
 
             if (typeFilters != null && typeFilters.Count != 0)
             {
@@ -633,7 +678,7 @@ namespace Sandcastle.References
 
         private void OnAttributeFilterItem(string keyword, XPathNavigator navigator)
         {
-            ReferenceRootFilter attributeFilters = _group.AttributeFilters;
+            ReferenceRootFilter attributeFilters = _group.Content.AttributeFilters;
 
             // If there is customization of the attribute filters, we use it...
             if (attributeFilters != null && attributeFilters.Count != 0)

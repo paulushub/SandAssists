@@ -26,6 +26,7 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool _notApplicable;
         private BuildList<string> _listTocExcludes;
         private ReferenceTocExcludeConfiguration _tocExclude;
 
@@ -82,6 +83,8 @@ namespace Sandcastle.References
                 return;
             }
 
+            _notApplicable = false;
+
             context["$TocExcludedNamespaces"] = String.Empty;
 
             if (_tocExclude == null)
@@ -112,6 +115,14 @@ namespace Sandcastle.References
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
+            }
+            // We do not have to spell check embedded documents...
+            string embeddedText = groupContext["$IsEmbeddedGroup"];
+            if (!String.IsNullOrEmpty(embeddedText) &&
+                embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                _notApplicable = true;
+                return;
             }
 
             IList<string> commentFiles = groupContext.CommentFiles;
@@ -163,7 +174,7 @@ namespace Sandcastle.References
             {
                 return;
             }
-            if (!this.IsInitialized)
+            if (!this.IsInitialized || _notApplicable)
             {
                 return;
             }

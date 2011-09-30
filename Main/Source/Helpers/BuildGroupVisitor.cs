@@ -2,9 +2,18 @@
 
 namespace Sandcastle
 {
-    [Serializable]
-    public abstract class BuildGroupVisitor<T> : BuildObject<T>, IBuildNamedItem
-                where T : BuildGroupVisitor<T>
+    /// <summary>
+    /// <para>
+    /// This is an <see cref="abstract"/> base class for build group visitors,
+    /// which prepare the groups for the build process.
+    /// </para>
+    /// </summary>
+    /// <remarks>
+    /// Group visitors provide group specific processing by extracting or 
+    /// customizing the group properties prior to the build process. This is 
+    /// done during the initialization or preparation stage of the build process.
+    /// </remarks>
+    public abstract class BuildGroupVisitor : BuildObject, IDisposable
     {
         #region Private Fields
 
@@ -55,30 +64,26 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuildGroupVisitor{T}"/> class
-        /// with parameters copied from the specified instance of the 
-        /// <see cref="BuildGroupVisitor{T}"/> class, a copy constructor.
+        /// This allows the <see cref="BuildObject{T}"/> instance to attempt to free 
+        /// resources and perform other cleanup operations before the 
+        /// <see cref="BuildObject{T}"/> instance is reclaimed by garbage collection.
         /// </summary>
-        /// <param name="source">
-        /// An instance of the <see cref="BuildGroupVisitor{T}"/> class from which the
-        /// initialization parameters or values will be copied.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
-        /// </exception>
-        protected BuildGroupVisitor(BuildGroupVisitor<T> source)
-            : base(source)
+        ~BuildGroupVisitor()
         {
-            _isInitialized   = source._isInitialized;
-            _name            = source._name;
-            _isEnabled       = source._isEnabled;
-            _continueOnError = source._continueOnError;
+            Dispose(false);
         }
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets a value specifying the category or type of this group.
+        /// </summary>
+        /// <value>
+        /// An enumeration of the type <see cref="BuildGroupType"/> specifying
+        /// the category or type of the group.
+        /// </value>
         public abstract BuildGroupType GroupType
         {
             get;
@@ -167,6 +172,14 @@ namespace Sandcastle
 
         #region Protected Properties
 
+        /// <summary>
+        /// Gets the build context for this group visitor during the build
+        /// process.
+        /// </summary>
+        /// <value>
+        /// An instance of the type, <see cref="BuildContext"/>, if this 
+        /// visitor is initialized; otherwise, this is <see langword="null"/>.
+        /// </value>
         protected BuildContext Context
         {
             get
@@ -179,12 +192,35 @@ namespace Sandcastle
 
         #region Public Methods
 
+        /// <summary>
+        /// Prepares or initializes this group visitor for processing of its
+        /// operations.
+        /// </summary>
+        /// <param name="context">
+        /// An instance of the <see cref="BuildContext"/> specifying the
+        /// build context for this visitor.
+        /// </param>
+        /// <remarks>
+        /// This will not be initialized, if already in the initialized state.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="context"/> is <see langword="null"/>.
+        /// </exception>
+        /// <seealso cref="BuildGroupVisitor.Uninitialize()"/>
+        /// <seealso cref="BuildGroupVisitor.IsInitialized"/>
         public virtual void Initialize(BuildContext context)
-        {
+        {                  
             BuildExceptions.NotNull(context, "context");
 
             if (_isInitialized)
             {
+                BuildLogger logger = context.Logger;
+                if (logger != null)
+                {
+                    logger.WriteLine("This visitor is already initialized.",
+                        BuildLoggerLevel.Warn);
+                }
+
                 return;
             }
 
@@ -192,12 +228,65 @@ namespace Sandcastle
             _isInitialized = true;
         }
 
+        /// <summary>
+        /// Applies the processing operations defined by this visitor to the
+        /// specified build group.
+        /// </summary>
+        /// <param name="group">
+        /// The <see cref="BuildGroup">build group</see> to which the processing
+        /// operations defined by this visitor will be applied.
+        /// </param>
+        /// <remarks>
+        /// The visitor must be initialized before any call this method.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="group"/> is <see langword="null"/>.
+        /// </exception>
         public abstract void Visit(BuildGroup group);
 
+        /// <summary>
+        /// Provides the un-initialization by this group visitor, any object
+        /// created for the processing is disposed.
+        /// <para>
+        /// The group visitor returns to an uninitialized state.
+        /// </para>
+        /// </summary>
+        /// <seealso cref="BuildGroupVisitor.Initialize(BuildContext)"/>
+        /// <seealso cref="BuildGroupVisitor.IsInitialized"/>
         public virtual void Uninitialize()
         {
             _context       = null;
             _isInitialized = false;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        /// <overloads>
+        /// This performs build object tasks associated with freeing, releasing, or 
+        /// resetting unmanaged resources.
+        /// </overloads>
+        /// <summary>
+        /// This performs build object tasks associated with freeing, releasing, or 
+        /// resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// This cleans up any resources being used.
+        /// </summary>
+        /// <param name="disposing">
+        /// This is <see langword="true"/> if managed resources should be 
+        /// disposed; otherwise, <see langword="false"/>.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            _context = null;
         }
 
         #endregion

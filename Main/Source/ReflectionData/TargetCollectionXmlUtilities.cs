@@ -91,9 +91,13 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        #endregion
+
+        #region Private Methods - Targets
+
         // Target factory methods
 
-        public static Target CreateTarget(XPathNavigator topic, ReferenceLinkType type)
+        private static Target CreateTarget(XPathNavigator topic, ReferenceLinkType type)
         {
             if (topic == null)
                 throw new ArgumentNullException("topic");
@@ -125,12 +129,12 @@ namespace Sandcastle.ReflectionData
                 throw new XmlSchemaValidationException(String.Format(
                     "The target file '{0}' is not valid.", topic.BaseURI));
 
-            target.defaultType = type;
+            target.type = type;
 
             return target;
         }
 
-        public static MemberTarget CreateMemberTarget(XPathNavigator api)
+        private static MemberTarget CreateMemberTarget(XPathNavigator api)
         {
             string subgroup = (string)api.Evaluate(apiSubgroupExpression);
 
@@ -162,10 +166,6 @@ namespace Sandcastle.ReflectionData
 
             return target;
         }
-
-        #endregion
-
-        #region Private Methods - Targets
 
         private static Target CreateApiTarget(XPathNavigator api, ReferenceLinkType linkType)
         {
@@ -285,7 +285,7 @@ namespace Sandcastle.ReflectionData
                 MemberTarget member = new MemberTarget();
                 member.id             = memberId; // get Id from element
                 member.file           = file; // get file from type file
-                member.defaultType    = linkType;
+                member.type           = linkType;
                 member.name           = memberName; // get name from element
                 member.containingType = new SimpleTypeReference(typeId); // get containing type from this type
                 members.Add(member);

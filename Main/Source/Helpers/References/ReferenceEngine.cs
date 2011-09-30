@@ -127,7 +127,7 @@ namespace Sandcastle.References
 
             listSteps.Add(stepInit);
 
-            string helpStyle = BuildStyleUtils.StyleFolder(
+            string helpStyle = BuildStyle.StyleFolder(
                 outputStyle.StyleType);
             string workingDir = this.Context.WorkingDirectory;
 
@@ -151,17 +151,12 @@ namespace Sandcastle.References
                     {
                         continue;
                     }
-                    IList<ResourceItem> listResources = resourceContent.Items;
-                    if (listResources == null || listResources.Count == 0)
-                    {
-                        continue;
-                    }
 
-                    int itemCount = listResources.Count;
+                    int itemCount = resourceContent.Count;
 
                     for (int i = 0; i < itemCount; i++)
                     {
-                        ResourceItem resource = listResources[i];
+                        ResourceItem resource = resourceContent[i];
                         if (resource != null && !resource.IsEmpty)
                         {
                             string destFolder = resource.Destination;
@@ -281,41 +276,7 @@ namespace Sandcastle.References
                 return;
             }
 
-            BuildSettings settings = this.Settings;
-
-            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
-                BuildEngineType.Reference];
-            Debug.Assert(_engineSettings != null,
-                "The settings does not include the reference engine settings.");
-            if (_engineSettings == null)
-            {
-                this.IsInitialized = false;
-                return;
-            }
-
-            _listFormats = new BuildFormatList();
-
-            BuildFormatList listFormats = this.Settings.Formats;
-            if (listFormats == null || listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-                return;
-            }
-            int itemCount = listFormats.Count;
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = listFormats[i];
-                if (format != null && format.Enabled)
-                {
-                    _listFormats.Add(format);
-                }
-            }
-            if (_listFormats == null || _listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-                return;
-            }
-            itemCount = _listGroups.Count;
+            int itemCount = _listGroups.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 ReferenceGroup group = _listGroups[i];
@@ -333,10 +294,58 @@ namespace Sandcastle.References
                     indexText = (i + 1).ToString();
                 }
 
-                groupContext["$GroupIndex"] = indexText;
+                // Create the build dynamic properties...
                 groupContext.CreateProperties(indexText);
-                
-                group.Initialize(this.Context);
+
+                group.BeginSources(context);
+            }
+
+            // Turn the link sources to dynamic groups...
+            this.CreateLinkGroups(context);
+
+            BuildSettings settings = this.Settings;
+
+            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
+                BuildEngineType.Reference];
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+
+            // Cache the list of applicable formats...
+            _listFormats = new BuildFormatList();
+
+            BuildFormatList listFormats = this.Settings.Formats;
+            if (listFormats == null || listFormats.Count == 0)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+            itemCount = listFormats.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                BuildFormat format = listFormats[i];
+                if (format != null && format.Enabled)
+                {
+                    _listFormats.Add(format);
+                }
+            }
+            if (_listFormats == null || _listFormats.Count == 0)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+
+            // Finally, initialize the build groups...
+            itemCount = _listGroups.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                ReferenceGroup group = _listGroups[i];
+
+                group.Initialize(context);
                 if (!group.IsInitialized)
                 {
                     this.IsInitialized = false;
@@ -434,50 +443,21 @@ namespace Sandcastle.References
 
         public override void Uninitialize()
         {
+            if (_listGroups != null)
+            {
+                int itemCount = _listGroups.Count;
+                for (int i = 0; i < itemCount; i++)
+                {
+                    ReferenceGroup group = _listGroups[i];
+                    if (group != null)
+                    {
+                        group.EndSources();
+                        group.Uninitialize();
+                    }
+                }
+            }     
+
             base.Uninitialize();
-
-            //BuildSettings settings = this.Settings;
-            //if (settings == null)
-            //{
-            //    return;
-            //}
-            //bool cleanIntermediate = settings.CleanIntermediate;
-
-            //string workingDir = context.WorkingDirectory;
-
-            //if (settings.IsCombinedBuild == false)
-            //{
-            //    if (cleanIntermediate)
-            //    {
-            //        try
-            //        {
-            //            string tempFile = Path.Combine(workingDir, 
-            //                "ApiManifest.xml");
-            //            if (File.Exists(tempFile))
-            //            {
-            //                File.Delete(tempFile);
-            //            }
-            //            tempFile = Path.Combine(workingDir, "reflection.org");
-            //            if (File.Exists(tempFile))
-            //            {
-            //                File.Delete(tempFile);
-            //            }
-            //            tempFile = Path.Combine(workingDir, "reflection.xml");
-            //            if (File.Exists(tempFile))
-            //            {
-            //                File.Delete(tempFile);
-            //            }
-            //            tempFile = Path.Combine(workingDir, "ApiToc.xml");
-            //            if (File.Exists(tempFile))
-            //            {
-            //                File.Delete(tempFile);
-            //            }
-            //        }
-            //        catch
-            //        {   
-            //        }   
-            //    }
-            //}
         }
 
         #endregion
@@ -730,6 +710,139 @@ namespace Sandcastle.References
             tocProcess.CopyrightNotice = 2;
             
             listSteps.Add(tocProcess);
+        }
+
+        #endregion
+
+        #region CreateLinkGroups Method
+
+        private void CreateLinkGroups(BuildContext context)
+        {
+            context["$EmbeddedScriptSharp"] = Boolean.FalseString;
+
+            if (_listGroups == null || _listGroups.Count == 0)
+            {
+                return;
+            }
+
+            List<ReferenceGroup> linkGroups = new List<ReferenceGroup>();
+            IList<BuildGroupContext> groupContexts = context.GroupContexts;
+
+            bool hasScriptSharp = false;
+            BuildFrameworkType latestScriptSharp = BuildFrameworkType.None;
+
+            int itemCount = _listGroups.Count;
+            int index = 0;
+            for (int i = 0; i < itemCount; i++)
+            {
+                ReferenceGroup group = _listGroups[i];
+
+                ReferenceContent content = group.Content;
+                if (content != null)
+                {
+                    BuildFrameworkType frameworkType = content.FrameworkType;
+
+                    if (frameworkType.Kind == BuildFrameworkKind.ScriptSharp)
+                    {
+                        hasScriptSharp = true;
+
+                        if (frameworkType > latestScriptSharp)
+                        {
+                            latestScriptSharp = frameworkType;
+                        }
+                    }
+                }
+
+                ReferenceLinkSource linkSource = group.Links;
+                if (linkSource != null && linkSource.IsValid)
+                {
+                    ReferenceGroup linkGroup = new ReferenceGroup(
+                        "Embedded - " + ReferenceGroup.NextGroupName(), Guid.NewGuid().ToString(), linkSource);
+
+                    linkGroup.ExcludeToc = true;
+
+                    linkGroups.Add(linkGroup);
+
+                    // Create the group context...
+                    BuildGroupContext groupContext = 
+                        new ReferenceGroupContext(linkGroup);
+                    groupContext["$IsEmbeddedGroup"] = Boolean.TrueString;
+                    groupContexts.Add(groupContext);
+
+                    string indexText = (itemCount + index + 1).ToString();
+
+                    // Create the build dynamic properties...
+                    groupContext.CreateProperties(indexText);
+
+                    // This has no effect, since the newly created group will
+                    // not have any content source.
+                    linkGroup.BeginSources(context);
+
+                    index++;
+                }   
+            }
+
+            // Include contents from the Script# framework for correct 
+            // linking, since there is MSDN links for the Script#...
+            if (hasScriptSharp && _engineSettings.EmbedScriptSharpFramework &&
+                latestScriptSharp.Kind == BuildFrameworkKind.ScriptSharp)
+            {
+                BuildFramework framework = BuildFrameworks.GetFramework(latestScriptSharp);
+                if (framework == null)
+                {
+                    framework = BuildFrameworks.LatestScriptSharp;
+                }
+
+                if (framework != null)
+                {   
+                    ReferenceGroup linkGroup = new ReferenceGroup(
+                        "Embedded ScriptSharp - " + ReferenceGroup.NextGroupName(), 
+                        Guid.NewGuid().ToString());
+
+                    ReferenceContent content = linkGroup.Content;
+
+                    string[] assemblies = Directory.GetFiles(framework.AssemblyDir,
+                        "*.dll", SearchOption.AllDirectories);
+
+                    for (int i = 0; i < assemblies.Length; i++)
+                    {
+                        string assembly = assemblies[i];
+                        string comments = Path.ChangeExtension(assembly, ".xml");
+
+                        if (File.Exists(comments))
+                        {
+                            content.AddItem(comments, assembly);
+                        }
+                    }
+
+                    linkGroup.ExcludeToc = true;
+                    linkGroup.SyntaxType = BuildSyntaxType.CSharp | BuildSyntaxType.JavaScript;
+
+                    linkGroups.Add(linkGroup);
+
+                    // Create the group context...
+                    BuildGroupContext groupContext =
+                        new ReferenceGroupContext(linkGroup);
+                    groupContext["$IsEmbeddedGroup"] = Boolean.TrueString;
+                    groupContexts.Add(groupContext);
+
+                    string indexText = (itemCount + index + 1).ToString();
+
+                    // Create the build dynamic properties...
+                    groupContext.CreateProperties(indexText);
+
+                    // This has no effect, since the newly created group will
+                    // not have any content source.
+                    linkGroup.BeginSources(context);
+
+                    context["$EmbeddedScriptSharp"] = Boolean.TrueString;
+                }
+            }
+
+            if (linkGroups.Count != 0)
+            {
+                _listGroups.AddRange(linkGroups);
+            }
         }
 
         #endregion

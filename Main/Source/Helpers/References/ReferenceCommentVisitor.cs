@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 using System.Diagnostics;
@@ -25,6 +26,11 @@ namespace Sandcastle.References
         #endregion
 
         #region Private Fields
+
+        private static Regex _cppGenericFixRegex = new Regex("`[0-9]+(\\{)");
+
+        private static XPathExpression _cppGenericExpression =
+            XPathExpression.Compile("//member[starts-with(@name, 'M:')]/@name");
 
         private static XPathExpression _seeExpression =
             XPathExpression.Compile("//see[@topic or @dref]");
@@ -198,16 +204,6 @@ namespace Sandcastle.References
                 int itemFound = 0;
                 int itemFixed = 0;
 
-                KeyValuePair<int, int> errorSeeCount = this.OnFixErrorLinks(
-                    documentNavigator, _errorSeeExpression, logger);
-                itemFound += errorSeeCount.Key;
-                itemFixed += errorSeeCount.Value;
-
-                KeyValuePair<int, int> errorSeealsoCount = this.OnFixErrorLinks(
-                    documentNavigator, _errorSeealsoExpression, logger);
-                itemFound += errorSeealsoCount.Key;
-                itemFixed += errorSeealsoCount.Value;
-
                 bool conceptualTopics = false;
 
                 if (context.Settings.BuildConceptual)
@@ -222,6 +218,27 @@ namespace Sandcastle.References
                             break;
                         }
                     }
+                }           
+
+                KeyValuePair<int, int> errorSeeCount = this.OnFixErrorLinks(
+                    documentNavigator, _errorSeeExpression, logger);
+                itemFound += errorSeeCount.Key;
+                itemFixed += errorSeeCount.Value;
+
+                KeyValuePair<int, int> errorSeealsoCount = this.OnFixErrorLinks(
+                    documentNavigator, _errorSeealsoExpression, logger);
+                itemFound += errorSeealsoCount.Key;
+                itemFixed += errorSeealsoCount.Value;
+
+                // Counting this fixes is time wasting, we might have to
+                // compare the input and output texts
+                XPathNodeIterator it = documentNavigator.Select(_cppGenericExpression);
+                while (it.MoveNext())
+                {
+                    string methodName = _cppGenericFixRegex.Replace(
+                        it.Current.Value, "$1");
+
+                    it.Current.SetValue(methodName);
                 }
 
                 if (conceptualTopics)

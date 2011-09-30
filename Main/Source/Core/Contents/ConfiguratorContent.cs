@@ -68,6 +68,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="BuildContent{T}"/> class instance, this property is 
+        /// <see langword="null"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         #region Public Method
@@ -163,10 +181,16 @@ namespace Sandcastle.Contents
 
         public override void ReadXml(XmlReader reader)
         {
+            // We will not support the serialization of this object, it is
+            // dynamically created and never saved...
+            throw new NotImplementedException();
         }
 
         public override void WriteXml(XmlWriter writer)
         {
+            // We will not support the serialization of this object, it is
+            // dynamically created and never saved...
+            throw new NotImplementedException();
         }
 
         #endregion

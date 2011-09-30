@@ -4,12 +4,20 @@ using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle.References
 {
     [Serializable]
     public sealed class ReferenceVersionRelated : 
         BuildObject<ReferenceVersionRelated>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "relatedVersion";
+
+        #endregion
+
         #region Private Fields
 
         private string _title;
@@ -29,7 +37,7 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceVersionRelated()
         {
-            _sourceId    = "Ver" + Guid.NewGuid().ToString().Replace("-", String.Empty);
+            _sourceId    = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
             _listSources = new BuildKeyedList<ReferenceVersionSource>();
         }
 
@@ -47,7 +55,8 @@ namespace Sandcastle.References
         public ReferenceVersionRelated(ReferenceVersionRelated source)
             : base(source)
         {
-            _sourceId = source._sourceId;
+            _sourceId    = source._sourceId;
+            _listSources = source._listSources;
         }
 
         #endregion
@@ -159,6 +168,24 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ReferenceVersionRelated"/> class instance, 
+        /// this property is <see cref="ReferenceVersionRelated.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -242,25 +269,114 @@ namespace Sandcastle.References
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
         /// </exception>
         public override void ReadXml(XmlReader reader)
         {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_listSources == null)
+            {
+                _listSources = new BuildKeyedList<ReferenceVersionSource>();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "propertyGroup",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.NodeType == XmlNodeType.Element)
+                            {
+                                if (String.Equals(reader.Name, "property", 
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    switch (reader.GetAttribute("name").ToLower())
+                                    {
+                                        case "id":
+                                            _sourceId = reader.ReadString();
+                                            break;
+                                        case "title":
+                                            _title = reader.ReadString();
+                                            break;
+                                        default:
+                                            // Should normally not reach here...
+                                            throw new NotImplementedException(reader.GetAttribute("name"));
+                                    }
+                                }
+                            }
+                            else if (reader.NodeType == XmlNodeType.EndElement)
+                            {
+                                if (String.Equals(reader.Name, "propertyGroup", 
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if (String.Equals(reader.Name, ReferenceSource.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string sourceName = reader.GetAttribute("name");
+                        if (String.Equals(sourceName, ReferenceVersionSource.SourceName,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            ReferenceVersionSource source = new ReferenceVersionSource();
+
+                            source.ReadXml(reader);
+
+                            _listSources.Add(source);
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -268,6 +384,32 @@ namespace Sandcastle.References
         /// </exception>
         public override void WriteXml(XmlWriter writer)
         {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - TagName
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Id",    _sourceId);
+            writer.WritePropertyElement("Title", _title);
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            writer.WriteStartElement("contentSources");  // start - contentSources
+            if (_listSources != null && _listSources.Count != 0)
+            {
+                for (int i = 0; i < _listSources.Count; i++)
+                {
+                    _listSources[i].WriteXml(writer);
+                }
+            }
+            writer.WriteEndElement();                    // end - contentSources
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion
@@ -276,9 +418,9 @@ namespace Sandcastle.References
 
         string IBuildNamedItem.Name
         {
-            get 
+            get
             {
-                return _sourceId; 
+                return _sourceId;
             }
         }
 

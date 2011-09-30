@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Sandcastle;
 
@@ -10,6 +11,17 @@ namespace ConsoleSample
         {
             // This is our documentation content and settings definitions
             BuildDocumenter documenter = new BuildDocumenter();
+
+            Console.WriteLine("Installed Frameworks:");
+            IList<BuildFramework> frameworks = BuildFrameworks.InstalledFrameworks;
+            for (int i = 0; i < frameworks.Count; i++)
+            {
+                BuildFramework framework = frameworks[i];
+
+                Console.WriteLine("\t{0}: {1} - {2}", i, framework.Version,
+                    framework.FrameworkType);
+            }
+            Console.WriteLine();
 
             try
             {
@@ -36,6 +48,9 @@ namespace ConsoleSample
                 // The reference topics...
                 ReferenceTopics.Create(documenter, options);
 
+                // The local reference topics...
+                //LocalReferenceTopics.Create(documenter, options);
+
                 // Create custom TOC, if necessary...
                 TestTocOptions.Create(documenter, options);
             }
@@ -54,6 +69,9 @@ namespace ConsoleSample
                 // of system and the type of build...
                 project = new BuildProject(documenter, 
                     BuildSystem.Console, BuildType.Testing);
+
+                //project.TargetPlatform      = "Win32";
+                //project.TargetConfiguration = "Debug";
 
                 // Initialize the project, if successful, build it...
                 project.Initialize();

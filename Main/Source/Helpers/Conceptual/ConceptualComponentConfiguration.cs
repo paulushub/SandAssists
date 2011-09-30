@@ -23,25 +23,6 @@ namespace Sandcastle.Conceptual
         /// to the default values.
         /// </summary>
         protected ConceptualComponentConfiguration()
-            : this(Guid.NewGuid().ToString())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualOptions"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        protected ConceptualComponentConfiguration(string optionsName)
-            : base(optionsName, BuildEngineType.Conceptual)
         {
         }
 
@@ -108,6 +89,23 @@ namespace Sandcastle.Conceptual
             get
             {
                 return BuildInsertType.None;
+            }
+        }
+
+        /// <summary>
+        /// Gets the build engine type, which is targeted by this set of
+        /// configurations.
+        /// </summary>
+        /// <value>
+        /// An enumeration of the type, <see cref="BuildEngineType"/>, specifying
+        /// the build engine type targeted by this set of configurations. This
+        /// will always return <see cref="BuildEngineType.Conceptual"/>.
+        /// </value>
+        public override BuildEngineType EngineType
+        {
+            get
+            {
+                return BuildEngineType.Conceptual;
             }
         }
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Conceptual
 {
@@ -26,7 +28,10 @@ namespace Sandcastle.Conceptual
         #region Private Fields
 
         [NonSerialized]
-        private BuildFormat _format;
+        private BuildFormat  _format;
+
+        [NonSerialized]
+        private BuildContext _context;
 
         #endregion
 
@@ -40,25 +45,6 @@ namespace Sandcastle.Conceptual
         /// to the default values.
         /// </summary>
         public ConceptualMediaConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualMediaConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ConceptualMediaConfiguration(string optionsName)
-            : base(optionsName)
         {
         }
 
@@ -85,6 +71,25 @@ namespace Sandcastle.Conceptual
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the name of this category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ConceptualMediaConfiguration.ConfigurationName"/>
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ConceptualMediaConfiguration.ConfigurationName;
+            }
+        }
 
         /// <summary>
         /// Gets the source of the build component supported by this configuration.
@@ -235,6 +240,8 @@ namespace Sandcastle.Conceptual
                     return;
                 }
             }
+
+            _context = context;
         }
 
         public void Initialize(BuildContext context, BuildFormat format)
@@ -248,7 +255,8 @@ namespace Sandcastle.Conceptual
 
         public override void Uninitialize()
         {
-            _format = null;
+            _format  = null;
+            _context = null;
 
             base.Uninitialize();
         }
@@ -285,10 +293,6 @@ namespace Sandcastle.Conceptual
             }
 
             IList<MediaContent> listMedia = group.MediaContents;
-            if (listMedia == null || listMedia.Count == 0)
-            {
-                return false;
-            }
 
             // The HtmlHelp3 supports a different media link format...
             BuildFormatType formatType = _format.FormatType;
@@ -297,7 +301,9 @@ namespace Sandcastle.Conceptual
             //<targets input="..\TestLibrary\Media" baseOutput=".\Output" 
             //       outputPath="string('media')" link="../media" 
             //       map="..\TestLibrary\Media\MediaContent.xml" />
-            int contentCount = listMedia.Count;
+            int contentCount  = listMedia == null ? 0 : listMedia.Count;
+            bool isConfigured = contentCount > 0;
+
             for (int i = 0; i < contentCount; i++)
             {
                 MediaContent mediaContent = listMedia[i];
@@ -305,10 +311,14 @@ namespace Sandcastle.Conceptual
                 {
                     continue;
                 }
-                string mediaDir = mediaContent.ContentDir;
+                string mediaDir = Path.GetDirectoryName(mediaContent.ContentFile);
                 if (String.IsNullOrEmpty(mediaDir))
                 {
-                    mediaDir = Path.GetExtension(mediaContent.ContentFile);
+                    continue;
+                }
+                if (!mediaDir.EndsWith("\\"))
+                {
+                    mediaDir += "\\";
                 }
                 writer.WriteStartElement("targets");
                 writer.WriteAttributeString("input", mediaDir);
@@ -326,7 +336,148 @@ namespace Sandcastle.Conceptual
                 writer.WriteEndElement();
             }
 
-            return true;
+            string workingDir = _context.WorkingDirectory;
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                return isConfigured;
+            }
+
+            string mediaFile      = Path.Combine(workingDir, groupContext["$MediaFile"]);
+            string mediaDirectory = Path.Combine(workingDir, groupContext["$DdueMedia"]);
+
+            if (File.Exists(mediaFile) && (Directory.Exists(mediaDirectory) 
+                && !DirectoryUtils.IsDirectoryEmpty(mediaDirectory)))
+            {
+                isConfigured = true;
+
+                string mediaDir = Path.GetDirectoryName(mediaFile);
+                if (!mediaDir.EndsWith("\\"))
+                {
+                    mediaDir += "\\";
+                }
+                writer.WriteStartElement("targets");
+                writer.WriteAttributeString("input", mediaDir);
+                writer.WriteAttributeString("baseOutput", @".\Output");
+                writer.WriteAttributeString("outputPath", "string('media')");
+                if (formatType == BuildFormatType.HtmlHelp3)
+                {
+                    writer.WriteAttributeString("link", "media");
+                }
+                else
+                {
+                    writer.WriteAttributeString("link", "../" + "media");
+                }
+                writer.WriteAttributeString("map", mediaFile);
+                writer.WriteEndElement();
+            }
+
+            return isConfigured;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) &&
+                    String.Equals(reader.Name, "property",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled", this.Enabled);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

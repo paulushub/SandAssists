@@ -19,9 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReflectionData", "ReflectionData\ReflectionData.csproj", "{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Construction", "Construction\Construction.csproj", "{B2012E7F-8F8D-4908-8045-413F2BD1022D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Composition", "Composition\Composition.csproj", "{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
 		SccLocalPath0 = .
@@ -40,6 +44,12 @@ Global
 		SccProjectUniqueName5 = ReflectionData\\ReflectionData.csproj
 		SccProjectName5 = ReflectionData
 		SccLocalPath5 = ReflectionData
+		SccProjectUniqueName6 = Construction\\Construction.csproj
+		SccProjectName6 = Construction
+		SccLocalPath6 = Construction
+		SccProjectUniqueName7 = Composition\\Composition.csproj
+		SccProjectName7 = Composition
+		SccLocalPath7 = Composition
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -88,6 +98,22 @@ Global
 		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Analysis|Any CPU.ActiveCfg = Documentation|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Analysis|Any CPU.Build.0 = Documentation|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2012E7F-8F8D-4908-8045-413F2BD1022D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Analysis|Any CPU.ActiveCfg = Documentation|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Analysis|Any CPU.Build.0 = Documentation|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

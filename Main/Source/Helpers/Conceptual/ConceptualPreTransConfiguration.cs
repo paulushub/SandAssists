@@ -4,6 +4,7 @@ using System.Xml;
 using System.Diagnostics;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Conceptual
 {
@@ -26,7 +27,6 @@ namespace Sandcastle.Conceptual
         #region Private Fields
 
         private int  _outlineDepth;
-
         private bool _resolveTokens;
         private bool _outlineTokens;
         private bool _lineBreakTokens;
@@ -49,25 +49,6 @@ namespace Sandcastle.Conceptual
         /// to the default values.
         /// </summary>
         public ConceptualPreTransConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualPreTransConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ConceptualPreTransConfiguration(string optionsName)
-            : base(optionsName)
         {
             // Set the default values...
             _outlineDepth          = 3;
@@ -103,6 +84,25 @@ namespace Sandcastle.Conceptual
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the name of this category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ConceptualPreTransConfiguration.ConfigurationName"/>
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ConceptualPreTransConfiguration.ConfigurationName;
+            }
+        }
 
         /// <summary>
         /// Gets the source of the build component supported by this configuration.
@@ -385,7 +385,186 @@ namespace Sandcastle.Conceptual
 
             writer.WriteEndElement();                   //end: resolveTokens
 
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                return true;
+            }
+
+            string workingDir = _context.WorkingDirectory;
+            string indexFile = Path.Combine(workingDir, groupContext["$IndexFile"]);
+            if (String.IsNullOrEmpty(indexFile) || !File.Exists(indexFile))
+            {
+                return true;
+            }
+
+            string linkResolverPrefix = groupContext["$LinkResolverPrefix"];
+            string linkResolverName   = groupContext["$LinkResolverName"];
+            string linkResolverValue  = groupContext["$LinkResolverValue"];
+            if (!String.IsNullOrEmpty(linkResolverPrefix) &&
+                !String.IsNullOrEmpty(linkResolverName) &&
+                !String.IsNullOrEmpty(linkResolverValue))
+            {
+                writer.WriteStartElement("linkResolver");
+                writer.WriteAttributeString("indexFile", indexFile);
+                writer.WriteAttributeString("topicType",
+                    groupContext["$LinkResolverTopicType"]);
+
+                writer.WriteStartElement("xpath");
+                writer.WriteAttributeString("value",  linkResolverValue);
+                writer.WriteAttributeString("name",   linkResolverName);
+                writer.WriteAttributeString("prefix", linkResolverPrefix);
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+            }
+
             return true;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) &&
+                    String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "resolveoutlinedepth":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _outlineDepth = Convert.ToInt32(tempText);
+                            }
+                            break;
+                        case "resolvetokens":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _resolveTokens = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "resolveoutlinetokens":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _outlineTokens = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "resolvelinebreaktokens":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _lineBreakTokens = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "resolvetableiconcolumntokens":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _tableIconColumnTokens = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled",              this.Enabled);
+            writer.WritePropertyElement("ResolveOutlineDepth",  _outlineDepth);
+            writer.WritePropertyElement("ResolveTokens",        _resolveTokens);
+            writer.WritePropertyElement("ResolveOutlineTokens", _outlineTokens);
+            writer.WritePropertyElement("ResolveLineBreakTokens", _lineBreakTokens);
+            writer.WritePropertyElement("ResolveTableIconColumnTokens", _tableIconColumnTokens);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

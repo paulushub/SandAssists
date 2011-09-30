@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B2012E7F-8F8D-4908-8045-413F2BD1022D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sandcastle.Construction</RootNamespace>
+    <AssemblyName>Sandcastle.Construction</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\..\Output\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\..\Output\Sandcastle.Construction.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ProjectCommentElement.cs" />
+    <Compile Include="ProjectExtensionsElement.cs" />
+    <Compile Include="ProjectSections\ProjectInfo.cs" />
+    <Compile Include="ProjectWhenElement.cs" />
+    <Compile Include="ProjectOtherwiseElement.cs" />
+    <Compile Include="ProjectOutputElement.cs" />
+    <Compile Include="ProjectTaskElement.cs" />
+    <Compile Include="ProjectOnErrorElement.cs" />
+    <Compile Include="ProjectUsingTaskParameterElement.cs" />
+    <Compile Include="ProjectUsingTaskBodyElement.cs" />
+    <Compile Include="ProjectUsingTaskParameterGroupElement.cs" />
+    <Compile Include="ProjectUsingTaskElement.cs" />
+    <Compile Include="ProjectTargetElement.cs" />
+    <Compile Include="ProjectItemDefinitionElement.cs" />
+    <Compile Include="ProjectItemDefinitionGroupElement.cs" />
+    <Compile Include="ProjectChooseElement.cs" />
+    <Compile Include="ProjectElement.cs" />
+    <Compile Include="ProjectContainerElement.cs" />
+    <Compile Include="ProjectImportElement.cs" />
+    <Compile Include="ProjectImportGroupElement.cs" />
+    <Compile Include="ProjectItemElement.cs" />
+    <Compile Include="ProjectItemGroupElement.cs" />
+    <Compile Include="ProjectMetadataElement.cs" />
+    <Compile Include="ProjectPropertyElement.cs" />
+    <Compile Include="ProjectPropertyGroupElement.cs" />
+    <Compile Include="ProjectRootElement.cs" />
+    <Compile Include="Evaluation\Project.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Evaluation\ProjectCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Evaluation\ProjectItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Evaluation\ProjectLoadSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\InvalidProjectFileException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\ReadOnlyCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\FilteredEnumerable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Internal\ReverseEnumerable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utils\StorageInterop.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="ProjectElementType.cs" />
+    <Compile Include="Utils\ProjectExceptions.cs" />
+    <Compile Include="VcProjects\Internal\ProjectProperties.cs" />
+    <Compile Include="VcProjects\Internal\FilteringEnumerable.cs" />
+    <Compile Include="VcProjects\Internal\ReadOnlyCollection.cs" />
+    <Compile Include="VcProjects\VcProjectActiveXReferenceElement.cs" />
+    <Compile Include="VcProjects\VcProjectAssemblyReferenceElement.cs" />
+    <Compile Include="VcProjects\VcProjectCollectionElement.cs" />
+    <Compile Include="VcProjects\VcProjectCommentElement.cs" />
+    <Compile Include="VcProjects\VcProjectConfigurationElement.cs" />
+    <Compile Include="VcProjects\VcProjectConfigurationsElement.cs" />
+    <Compile Include="VcProjects\VcProjectContainerElement.cs" />
+    <Compile Include="VcProjects\VcProjectDebuggerToolElement.cs" />
+    <Compile Include="VcProjects\VcProjectDefaultToolFileElement.cs" />
+    <Compile Include="VcProjects\VcProjectDeploymentToolElement.cs" />
+    <Compile Include="VcProjects\VcProjectElement.cs" />
+    <Compile Include="VcProjects\VcProjectElementType.cs" />
+    <Compile Include="VcProjects\VcProjectFileElement.cs" />
+    <Compile Include="VcProjects\VcProjectFilesElement.cs" />
+    <Compile Include="VcProjects\VcProjectFilterElement.cs" />
+    <Compile Include="VcProjects\VcProjectGlobalElement.cs" />
+    <Compile Include="VcProjects\VcProjectGlobalsElement.cs" />
+    <Compile Include="VcProjects\VcProjectPlatformElement.cs" />
+    <Compile Include="VcProjects\VcProjectPlatformsElement.cs" />
+    <Compile Include="VcProjects\VcProjectProjectReferenceElement.cs" />
+    <Compile Include="VcProjects\VcProjectPublishingDataElement.cs" />
+    <Compile Include="VcProjects\VcProjectPublishingItemElement.cs" />
+    <Compile Include="VcProjects\VcProjectReferenceElement.cs" />
+    <Compile Include="VcProjects\VcProjectReferencesElement.cs" />
+    <Compile Include="VcProjects\VcProjectRootElement.cs" />
+    <Compile Include="VcProjects\VcProjectToolElement.cs" />
+    <Compile Include="VcProjects\VcProjectToolFileElement.cs" />
+    <Compile Include="VcProjects\VcProjectToolFilesElement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\CharBuffer.cs" />
+    <Compile Include="Utils\CharTypeBits.cs" />
+    <Compile Include="Utils\StreamTokenizer.cs" />
+    <Compile Include="Utils\StreamTokenizerSettings.cs" />
+    <Compile Include="Utils\Token.cs" />
+    <Compile Include="Utils\TokenizerException.cs" />
+    <Compile Include="ProjectSections\MsBuildProjectSection.cs" />
+    <Compile Include="ProjectSections\ProjectSection.cs" />
+    <Compile Include="ProjectSections\ProjectSectionContext.cs" />
+    <Compile Include="ProjectSections\ProjectSectionFactory.cs" />
+    <Compile Include="ProjectSections\StandardProjectSection.cs" />
+    <Compile Include="ProjectSections\StandardProjectType.cs" />
+    <Compile Include="ProjectSections\VcProjectSection.cs" />
+    <Compile Include="ProjectSections\VcxProjectSection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="Diagrams\VsProjects.cd" />
+    <None Include="Diagrams\ProjectElements.cd" />
+    <None Include="Diagrams\ProjectOthers.cd" />
+    <None Include="Diagrams\ProjectSections.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

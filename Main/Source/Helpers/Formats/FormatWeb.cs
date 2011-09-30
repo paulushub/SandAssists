@@ -2,10 +2,12 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Steps;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
 {
@@ -27,8 +29,8 @@ namespace Sandcastle.Formats
 
         public FormatWeb()
         {
-            _theme     = "Smoothness";
-            _framework = "JQuery";
+            _theme             = "Smoothness";
+            _framework         = "JQuery";
 
             this.AddProperty("SharedContentSuffix", "Web");
         }
@@ -36,6 +38,12 @@ namespace Sandcastle.Formats
         public FormatWeb(FormatWeb source)
             : base(source)
         {
+            _useTabView        = source._useTabView;
+            _includeIndex      = source._includeIndex;
+            _includeSearch     = source._includeSearch;
+            _includeServerSide = source._includeServerSide;
+            _theme             = source._theme;
+            _framework         = source._framework;
         }
 
         #endregion
@@ -293,6 +301,122 @@ namespace Sandcastle.Formats
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadPropertyGroupXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            if (!String.Equals(startElement, "propertyGroup",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "OnReadPropertyGroupXml: The current element is '{0}' not the expected 'propertyGroup'.",
+                    startElement));
+            }
+
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatWeb-General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "usetabview":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _useTabView = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includeindex":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeIndex = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includesearch":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeSearch = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includeserverside":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeServerSide = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "theme":
+                                _theme = reader.ReadString();
+                                break;
+                            case "framework":
+                                _framework = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override void OnWritePropertyGroupXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatWeb-General");
+            writer.WritePropertyElement("UseTabView",        _useTabView);
+            writer.WritePropertyElement("IncludeIndex",      _includeIndex);
+            writer.WritePropertyElement("IncludeSearch",     _includeSearch);
+            writer.WritePropertyElement("IncludeServerSide", _includeServerSide);
+            writer.WritePropertyElement("Theme",             _theme);
+            writer.WritePropertyElement("Framework",         _framework);
+            writer.WriteEndElement();                   // end - propertyGroup
+        }
+
+        protected override void OnReadContentXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteContentXml(XmlWriter writer)
+        {
+        }
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+        }
+
+        #endregion
+
         #region Private Methods
 
         #endregion
@@ -302,6 +426,17 @@ namespace Sandcastle.Formats
         public override BuildFormat Clone()
         {
             FormatWeb format = new FormatWeb(this);
+
+            base.Clone(format);
+
+            if (_theme != null)
+            {
+                format._theme = String.Copy(_theme);
+            }
+            if (_framework != null)
+            {
+                format._framework = String.Copy(_framework);
+            }
 
             return format;
         }

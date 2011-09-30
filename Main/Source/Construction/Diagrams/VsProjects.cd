@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectActiveXReferenceElement" Collapsed="true">
+    <Position X="5.25" Y="11" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAQBCAAAAAAAABAAAAAAEoAAEAAAAAAAAhAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectActiveXReferenceElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectAssemblyReferenceElement" Collapsed="true">
+    <Position X="8.5" Y="11" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>ABAQBCAAAAAAAAAAAAAAAEsCAABAAAAAAABAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectAssemblyReferenceElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectConfigurationElement" Collapsed="true">
+    <Position X="7.5" Y="6.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AJlABEAAAAAAECAACBAAAASCAAgAAACAQkAAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectConfigurationElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectConfigurationsElement" Collapsed="true">
+    <Position X="3.25" Y="12" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAABAAAAAAAAAAAAAAAAAAAAAAABAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectConfigurationsElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectContainerElement" Collapsed="true">
+    <Position X="4.5" Y="6.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAhQAEBIAAAAiCAACAAEAAQAAAIAAAAAAIBAAiIAAAA=</HashCode>
+      <FileName>VcProjects\VcProjectContainerElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectDefaultToolFileElement" Collapsed="true">
+    <Position X="6" Y="2.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABABAAAAAAAAAQAAAAAAAACAAAAAAAAAAAAgABACAA=</HashCode>
+      <FileName>VcProjects\VcProjectDefaultToolFileElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectElement" Collapsed="true">
+    <Position X="4.75" Y="5.25" Width="1.5" />
+    <AssociationLine Name="ElementType" Type="Sandcastle.Construction.VcProjects.VcProjectElementType" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="5.562" />
+        <Point X="8.75" Y="5.562" />
+        <Point X="8.75" Y="5.062" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Parent" Type="Sandcastle.Construction.VcProjects.VcProjectContainerElement" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="5.625" />
+        <Point X="3.5" Y="5.625" />
+        <Point X="3.5" Y="6.438" />
+        <Point X="4.5" Y="6.438" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Root" Type="Sandcastle.Construction.VcProjects.VcProjectRootElement" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="5.438" />
+        <Point X="2.125" Y="5.438" />
+        <Point X="2.125" Y="6.25" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABgBAAAEAAQACAAgBAAQAASAAhAAIAAAAAAgAAAAiA=</HashCode>
+      <FileName>VcProjects\VcProjectElement.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ElementType" />
+      <Property Name="Parent" />
+      <Property Name="Root" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.956" />
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectFileElement" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAhABEAAAAAAEAAACAAAAAACAIBAAACAAAAAgAAACIA=</HashCode>
+      <FileName>VcProjects\VcProjectFileElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectFilesElement" Collapsed="true">
+    <Position X="3.25" Y="11" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAAAACIA=</HashCode>
+      <FileName>VcProjects\VcProjectFilesElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectFilterElement" Collapsed="true">
+    <Position X="5.75" Y="7.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAhABEAAAAAAEAAACIAAAAQCAAAAAACAAAAAgAAACIA=</HashCode>
+      <FileName>VcProjects\VcProjectFilterElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectGlobalElement" Collapsed="true">
+    <Position X="3" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ABBAJAAAAAAAAAAAAAAAAAQCAAAAAAAAAAAggAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectGlobalElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectGlobalsElement" Collapsed="true">
+    <Position X="4.5" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAAAAAAAAAAAAAAAAAAAAAAAAAABACAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectGlobalsElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectPlatformElement" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAJAAAAAAAAAAAAAAAAAQCAAAAAAAAAAAAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectPlatformElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectPlatformsElement" Collapsed="true">
+    <Position X="0.5" Y="11" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAAAAAAAAAAAAAAAAAAAAAAAACABAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectPlatformsElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectProjectReferenceElement" Collapsed="true">
+    <Position X="7" Y="10" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQBCAAAAABAAAIAAAAAE4AAAAAAAAAAABAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectProjectReferenceElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectPublishingDataElement" Collapsed="true">
+    <Position X="3.25" Y="10" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAAAAAAAAAAAAAAAAgAAAAAAAAABAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectPublishingDataElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectPublishingItemElement" Collapsed="true">
+    <Position X="6" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABABAAEAAAAEAAACAAAAAACAACAABCAAABAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectPublishingItemElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectReferenceElement" Collapsed="true">
+    <Position X="7.25" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAhAAEAAAAAAEAAACIAAAAACAAAAAACAAABAgAAAAAA=</HashCode>
+      <FileName>VcProjects\VcProjectReferenceElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectReferencesElement" Collapsed="true">
+    <Position X="0.5" Y="10" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAggBEAAAAAAAAAAAAAAAAAAAAgAAAAAACBAAAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectReferencesElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectRootElement" Collapsed="true">
+    <Position X="1.25" Y="6.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>Ig3ApMAAAADAMAAACAAAAAQOwAgQgQCACiCgiAQACIA=</HashCode>
+      <FileName>VcProjects\VcProjectRootElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectToolFileElement" Collapsed="true">
+    <Position X="3" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABABAAAAAAAAAAAABAAAAACAABAAAAAAAAAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectToolFileElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectToolFilesElement" Collapsed="true">
+    <Position X="0.5" Y="12" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgABEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAQACAA=</HashCode>
+      <FileName>VcProjects\VcProjectToolFilesElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectToolElement" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AABABAAEAAAAEAAACAAAAAQCAACAABCAAABAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectToolElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectDebuggerToolElement" Collapsed="true">
+    <Position X="6" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABABAAEAAAAEAAACAAAAAACAACAABCAAABAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectDebuggerToolElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectDeploymentToolElement" Collapsed="true">
+    <Position X="2.5" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AABABAAEAAAAEAAACAAAAAACAACAABCAAABAgAAACAA=</HashCode>
+      <FileName>VcProjects\VcProjectDeploymentToolElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectCommentElement" Collapsed="true">
+    <Position X="6.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABABAAEEAAAAAAAAAAAAAACAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>VcProjects\VcProjectCommentElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.VcProjects.VcProjectCollectionElement" Collapsed="true">
+    <Position X="2" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAABAgAAAAAA=</HashCode>
+      <FileName>VcProjects\VcProjectCollectionElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Construction.VcProjects.VcProjectElementType" Collapsed="true">
+    <Position X="7.75" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAiAAAGEAABAACAAAAAAEAEAgBAUAAAAiCAACAUBAIA=</HashCode>
+      <FileName>VcProjects\VcProjectElementType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

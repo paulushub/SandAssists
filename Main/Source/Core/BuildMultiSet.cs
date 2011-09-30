@@ -24,6 +24,13 @@ namespace Sandcastle
             _dictionary = new Dictionary<T, HashSet<V>>();
         }
 
+        public BuildMultiSet(IEqualityComparer<T> comparer)
+        {
+            BuildExceptions.NotNull(comparer, "comparer");
+
+            _dictionary = new Dictionary<T, HashSet<V>>(comparer);
+        }
+
         #endregion
 
         #region Public Properties

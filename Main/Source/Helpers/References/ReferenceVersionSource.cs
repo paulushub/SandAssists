@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -30,7 +34,7 @@ namespace Sandcastle.References
         /// with the default parameters.
         /// </summary>
         public ReferenceVersionSource()
-            : this("Ver" + Guid.NewGuid().ToString().Replace("-", String.Empty))
+            : this(String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode()))
         {
         }
 
@@ -38,7 +42,7 @@ namespace Sandcastle.References
         {
             if (String.IsNullOrEmpty(sourceId))
             {
-                _sourceId = "Ver" + Guid.NewGuid().ToString().Replace("-", String.Empty);
+                _sourceId = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
             }
             else
             {
@@ -135,8 +139,34 @@ namespace Sandcastle.References
 
         #region Public Methods
 
-        public override ReferenceContent Create()
+        public override ReferenceContent Create(BuildGroupContext groupContext)
         {
+            BuildExceptions.NotNull(groupContext, "groupContext");
+
+            BuildContext context = groupContext.Context;
+            BuildLogger logger = null;
+            if (context != null)
+            {
+                logger = context.Logger;
+            }
+
+            if (!this.IsInitialized)
+            {
+                throw new BuildException(String.Format(
+                    "The content source '{0}' is not yet initialized.", this.Title));
+            }
+            if (!this.IsValid)
+            {
+                if (logger != null)
+                {
+                    logger.WriteLine(String.Format(
+                        "The content group source '{0}' is invalid.", this.Title),
+                        BuildLoggerLevel.Warn);
+                }
+
+                return null;
+            }
+
             return _content;
         }
 
@@ -154,12 +184,224 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region Private Methods
+
+        #region ReadPropertyGroup Method
+
+        private void ReadPropertyGroup(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "id":
+                                _sourceId = reader.ReadString();
+                                break;
+                            case "title":
+                                this.Title = reader.ReadString();
+                                break;
+                            case "versionlabel":
+                                _label = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "propertyGroup",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadPropertyGroup(reader);
+                    }
+                    else if (String.Equals(reader.Name, "content",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (_content == null)
+                        {
+                            _content = new ReferenceContent();
+                        }
+                        if (reader.IsEmptyElement)
+                        {
+                            string sourceFile = reader.GetAttribute("source");
+                            if (!String.IsNullOrEmpty(sourceFile))
+                            {
+                                _content.ContentFile = new BuildFilePath(sourceFile);
+                                _content.Load();
+                            }
+                        }
+                        else
+                        {
+                            if (reader.ReadToDescendant(ReferenceContent.TagName))
+                            {
+                                _content.ReadXml(reader);
+                            }
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "contents",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadContents(reader);
+                    }
+                    else if (String.Equals(reader.Name, "filters",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadFilters(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (!this.IsValid)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", this.Name);
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Id",           _sourceId);
+            writer.WritePropertyElement("Title",        this.Title);
+            writer.WritePropertyElement("VersionLabel", _label);
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            if (_content != null)
+            {
+                BuildFilePath filePath = _content.ContentFile;
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Reference");
+                if (filePath != null && filePath.IsValid)
+                {
+                    BuildPathResolver resolver = BuildPathResolver.Resolver;
+                    Debug.Assert(resolver != null && resolver.Id == this.Id);
+
+                    writer.WriteAttributeString("source",
+                        resolver.ResolveRelative(filePath));
+
+                    _content.Save();
+                }
+                else
+                {
+                    _content.WriteXml(writer);
+                }
+                writer.WriteEndElement();
+            }
+
+            // Write the user-defined contents...
+            this.WriteContents(writer);
+
+            // Write the filters...
+            this.WriteFilters(writer);
+
+            writer.WriteEndElement();           // end - TagName
+        }
+
+        #endregion
+
         #region ICloneable Members
 
-        public override BuildSource Clone()
+        public override ReferenceSource Clone()
         {
             ReferenceVersionSource source = new ReferenceVersionSource(this);
 
+            this.Clone(source);
+
+            if (this.Title != null)
+            {
+                source.Title = String.Copy(this.Title);
+            }
             if (_label != null)
             {
                 source._label = String.Copy(_label);

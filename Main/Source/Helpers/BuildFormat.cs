@@ -2,17 +2,21 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 using Sandcastle.Conceptual;
 using Sandcastle.References;
 
 namespace Sandcastle
 {
     /// <summary>
-    /// This specifies the help output format of a Sandcastle build.
+    /// This specifies the help output format of a Sandcastle build. The
+    /// Sandcastle documentation system can produce various help formats, and
+    /// this specifies the options and build sequence specific to each format.
     /// </summary>
     /// <remarks>
     /// There are four main output formats supported by the Sandcastle help
@@ -51,20 +55,27 @@ namespace Sandcastle
     [Serializable]
     public abstract class BuildFormat : BuildOptions<BuildFormat>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "format";
+
+        #endregion
+
         #region Private Fields
 
         private bool   _optimizeStyle;
 
         private bool   _closeBeforeBuild;
         private bool   _openAfterBuild;
-        private bool   _outputIndent;
-        private bool   _outputEnabled;
+        private bool   _isIndented;
+        private bool   _isEnabled;
         private bool   _omitRoot;
         private bool   _omitXmlDeclaration;
         private bool   _addXhtmlNamespace;
 
-        private string _formatDir;
-        private string _outputDir;
+        private string _formatFolder;
+
+        private string _outputFolder;
         private string _outputPath;
         private string _outputLink;
         private string _outputSelect;
@@ -86,19 +97,48 @@ namespace Sandcastle
 
         #region Constructors and Destructor
 
+        /// <overloads>
+        /// 
+        /// </overloads>
+        /// <summary>
+        /// 
+        /// </summary>
         protected BuildFormat()
         {
-            _openAfterBuild   = true;
-            _closeBeforeBuild = true;
-            _properties       = new BuildProperties();
+            _openAfterBuild     = true;
+            _closeBeforeBuild   = true;
+            _properties         = new BuildProperties();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
         protected BuildFormat(BuildFormat source)
             : base(source)
         {
-            _closeBeforeBuild = source._closeBeforeBuild;
-            _openAfterBuild   = source._openAfterBuild;
-            _properties       = source._properties;
+            _optimizeStyle      = source._optimizeStyle;
+            _closeBeforeBuild   = source._closeBeforeBuild;
+            _openAfterBuild     = source._openAfterBuild;
+            _isIndented         = source._isIndented;
+            _isEnabled          = source._isEnabled;
+            _omitRoot           = source._omitRoot;
+            _omitXmlDeclaration = source._omitXmlDeclaration;
+            _addXhtmlNamespace  = source._addXhtmlNamespace;
+            _formatFolder       = source._formatFolder;
+            _outputFolder       = source._outputFolder;
+            _outputPath         = source._outputPath;
+            _outputLink         = source._outputLink;
+            _outputSelect       = source._outputSelect;
+            _linkFormat         = source._linkFormat;
+            _linkBaseUrl        = source._linkBaseUrl;
+            _linkContainer      = source._linkContainer;     
+            _tocContent         = source._tocContent;
+            _properties         = source._properties;        
+            _linkType           = source._linkType;
+            _extLinkType        = source._extLinkType;
+            _extLinkTarget      = source._extLinkTarget;
+            _integrationTarget  = source._integrationTarget;
         }
 
         #endregion
@@ -188,11 +228,11 @@ namespace Sandcastle
         {
             get
             {
-                return _formatDir;
+                return _formatFolder;
             }
             set
             {
-                _formatDir = value;
+                _formatFolder = value;
             }
         }
 
@@ -218,13 +258,13 @@ namespace Sandcastle
         {
             get
             {
-                return _outputDir;
+                return _outputFolder;
             }
             set
             {
                 if (!String.IsNullOrEmpty(value))
                 {
-                    _outputDir = value;
+                    _outputFolder = value;
                 }
             }
         }
@@ -351,7 +391,7 @@ namespace Sandcastle
         /// <remarks>
         /// This is an advanced feature or option, and needs not be set. 
         /// <para>
-        /// A typical API XML entry (a contructor member) in a reflection file is shown
+        /// A typical API <c>XML</c> entry (a contructor member) in a reflection file is shown
         /// below, you can notice the containers tag.
         /// </para>
         /// <code lang="xml">
@@ -504,11 +544,11 @@ namespace Sandcastle
         {
             get
             {
-                return _outputIndent;
+                return _isIndented;
             }
             set
             {
-                _outputIndent = value;
+                _isIndented = value;
             }
         }
 
@@ -524,11 +564,11 @@ namespace Sandcastle
         {
             get
             {
-                return _outputEnabled;
+                return _isEnabled;
             }
             set
             {
-                _outputEnabled = value;
+                _isEnabled = value;
             }
         }
 
@@ -554,11 +594,11 @@ namespace Sandcastle
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to write an XML declaration. 
+        /// Gets or sets a value indicating whether to write an <c>XML</c> declaration. 
         /// </summary>
         /// <value>
-        /// This is <see langword="true"/> to omit the XML declaration; otherwise, it is
-        /// <see langword="false"/>. The default is <see langword="true"/>, an XML 
+        /// This is <see langword="true"/> to omit the <c>XML</c> declaration; otherwise, it is
+        /// <see langword="false"/>. The default is <see langword="true"/>, an <c>XML</c> 
         /// declaration is not written.
         /// </value>
         public virtual bool OmitXmlDeclaration
@@ -972,14 +1012,14 @@ namespace Sandcastle
 
         public override void Reset()
         {
-            _outputIndent       = false;
-            _outputEnabled      = false;
+            _isIndented       = false;
+            _isEnabled      = false;
             _omitRoot           = false;
             _omitXmlDeclaration = true;
             _optimizeStyle      = true;
 
-            _formatDir          = "html";
-            _outputDir          = String.Empty;
+            _formatFolder          = "html";
+            _outputFolder          = String.Empty;
             _outputPath         = String.Empty;
             _outputSelect       = String.Empty;
 
@@ -999,12 +1039,546 @@ namespace Sandcastle
 
         #region Protected Methods
 
+        protected abstract void OnReadPropertyGroupXml(XmlReader reader);
+
+        protected abstract void OnWritePropertyGroupXml(XmlWriter writer);
+
+        protected abstract void OnReadContentXml(XmlReader reader);
+
+        protected abstract void OnWriteContentXml(XmlWriter writer);
+
+        protected abstract void OnReadXml(XmlReader reader);
+
+        protected abstract void OnWriteXml(XmlWriter writer);
+
+        #endregion
+
+        #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "enabled":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _isEnabled = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "indent":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _isIndented = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "optimizestyle":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _optimizeStyle = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "closeviewerbeforebuild":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _closeBeforeBuild = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "openviewerafterbuild":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _openAfterBuild = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "omitroot":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _omitRoot = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "omitxmldeclaration":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _omitXmlDeclaration = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "addxhtmlnamespace":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _addXhtmlNamespace = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "formatfolder":
+                                _formatFolder = reader.ReadString();
+                                break;
+                            case "integrationtarget":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _integrationTarget = (BuildIntegrationTarget)Enum.Parse(
+                                        typeof(BuildIntegrationTarget), tempText, true);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlOutputs Method
+
+        private void ReadXmlOutputs(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "Outputs"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "outputfolder":
+                                _outputFolder = reader.ReadString();
+                                break;
+                            case "outputpath":
+                                _outputPath = reader.ReadString();
+                                break;
+                            case "outputlink":
+                                _outputLink = reader.ReadString();
+                                break;
+                            case "outputselect":
+                                _outputSelect = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException();
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlLinks Method
+
+        private void ReadXmlLinks(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "Links"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "linkformat":
+                                _linkFormat = reader.ReadString();
+                                break;
+                            case "linkbaseurl":
+                                _linkBaseUrl = reader.ReadString();
+                                break;
+                            case "linkcontainer":
+                                _linkContainer = reader.ReadString();
+                                break;
+                            case "linktype":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _linkType = (BuildLinkType)Enum.Parse(
+                                        typeof(BuildLinkType), tempText, true);
+                                }
+                                break;
+                            case "externallinktype":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _extLinkType = (BuildLinkType)Enum.Parse(
+                                        typeof(BuildLinkType), tempText, true);
+                                }
+                                break;
+                            case "externallinktarget":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _extLinkTarget = (BuildLinkTargetType)Enum.Parse(
+                                        typeof(BuildLinkTargetType), tempText, true);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException();
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, "The processing of the format ReadXml failed.");
+                return;
+            }
+            string tempText = reader.GetAttribute("type"); 
+            if (String.IsNullOrEmpty(tempText))
+            {
+                throw new BuildException(
+                    "ReadXml: The format type is not specified and it is unknown.");
+            }
+            BuildFormatType formatType = BuildFormatType.Parse(tempText);
+            if (formatType != this.FormatType)
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The format type '{0}' does not match the current type '{1}'.",
+                    formatType, this.FormatType));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            // Sample format:
+            //
+            //<format type="WebHelp" name="Sandcastle.Formats.FormatWeb">
+            //    <propertyGroup name="General">
+            //        <property name="Enabled">False</property>
+            //    </propertyGroup>
+            //    <propertyGroup name="Outputs">
+            //        <property name="OutputFolder">WebHelp</property>
+            //    </propertyGroup>
+            //    <propertyGroup name="Links">
+            //        <property name="LinkFormat">{0}.htm</property>
+            //    </propertyGroup>
+            //    <propertyGroup name="WebHelp">
+            //        <property name="UseTabView">False</property>
+            //    </propertyGroup>
+            //    <propertyBag>
+            //        <property name="SharedContentSuffix">Web</property>
+            //    </propertyBag>
+            //    <contents />
+            //</format> 
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "propertyGroup",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "general":
+                                this.ReadXmlGeneral(reader);
+                                break;
+                            case "outputs":
+                                this.ReadXmlOutputs(reader);
+                                break;
+                            case "links":
+                                this.ReadXmlLinks(reader);
+                                break;
+                            default:
+                                this.OnReadPropertyGroupXml(reader);
+                                break;
+                        }
+                    }
+                    else if (String.Equals(reader.Name, BuildProperties.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (_properties == null)
+                        {
+                            _properties = new BuildProperties();
+                        }
+                        _properties.ReadXml(reader);
+                    }
+                    else if (String.Equals(reader.Name, "contents",
+                        StringComparison.OrdinalIgnoreCase))
+                    {   
+                        if (!reader.IsEmptyElement)
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader.NodeType == XmlNodeType.Element)
+                                {
+                                    if (!reader.IsEmptyElement && 
+                                        String.Equals(reader.Name, "content",
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        tempText = reader.GetAttribute("type");
+                                        if (String.Equals(tempText, "Toc",
+                                            StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            if (_tocContent == null)
+                                            {
+                                                _tocContent = new TocContent();
+                                            }
+                                            if (reader.ReadToDescendant(TocContent.TagName))
+                                            {
+                                                _tocContent.ReadXml(reader);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.OnReadContentXml(reader);
+                                        }         
+                                    }
+                                }
+                                else if (reader.NodeType == XmlNodeType.EndElement)
+                                {
+                                    if (String.Equals(reader.Name, "contents",
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this.OnReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - format
+            writer.WriteAttributeString("type", this.FormatType.ToString());
+            writer.WriteAttributeString("name", this.GetType().ToString());
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled",                _isEnabled);
+            writer.WritePropertyElement("Indent",                 _isIndented);
+            writer.WritePropertyElement("OptimizeStyle",          _optimizeStyle);
+            writer.WritePropertyElement("CloseViewerBeforeBuild", _closeBeforeBuild);
+            writer.WritePropertyElement("OpenViewerAfterBuild",   _openAfterBuild);
+            writer.WritePropertyElement("OmitRoot",               _omitRoot);
+            writer.WritePropertyElement("OmitXmlDeclaration",     _omitXmlDeclaration);
+            writer.WritePropertyElement("AddXhtmlNamespace",      _addXhtmlNamespace);
+            writer.WritePropertyElement("FormatFolder",           _formatFolder);
+            writer.WritePropertyElement("IntegrationTarget",      _integrationTarget.ToString());
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "Outputs");
+            writer.WritePropertyElement("OutputFolder", _outputFolder);
+            writer.WritePropertyElement("OutputPath",   _outputPath);
+            writer.WritePropertyElement("OutputLink",   _outputLink);
+            writer.WritePropertyElement("OutputSelect", _outputSelect);
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "Links");
+            writer.WritePropertyElement("LinkFormat",         _linkFormat);
+            writer.WritePropertyElement("LinkBaseUrl",        _linkBaseUrl);
+            writer.WritePropertyElement("LinkContainer",      _linkContainer);
+            writer.WritePropertyElement("LinkType",           _linkType.ToString());
+            writer.WritePropertyElement("ExternalLinkType",   _extLinkType.ToString());
+            writer.WritePropertyElement("ExternalLinkTarget", _extLinkTarget.ToString());
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            // Write the format specific property groups...
+            this.OnWritePropertyGroupXml(writer);
+
+            if (_properties != null)
+            {
+                _properties.WriteXml(writer);
+            }
+
+            writer.WriteStartElement("contents");  // start - contents
+            if (_tocContent != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Toc");
+                _tocContent.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            // Write the format specific contents, if any...
+            this.OnWriteContentXml(writer);         
+            writer.WriteEndElement();              // end - contents
+
+            // Write other format specific options
+            this.OnWriteXml(writer);
+
+            writer.WriteEndElement();           // end - format
+        }
+
         #endregion
 
         #region ICloneable Members
 
         protected virtual BuildFormat Clone(BuildFormat clonedformat)
         {                       
+            if (clonedformat == null)
+            {
+                clonedformat = (BuildFormat)this.MemberwiseClone();
+            }
+
+            if (_formatFolder != null)
+            {
+                clonedformat._formatFolder = String.Copy(_formatFolder);
+            }
+
+            if (_outputFolder != null)
+            {
+                clonedformat._outputFolder = String.Copy(_outputFolder);
+            }
+            if (_outputPath != null)
+            {
+                clonedformat._outputPath = String.Copy(_outputPath);
+            }
+            if (_outputLink != null)
+            {
+                clonedformat._outputLink = String.Copy(_outputLink);
+            }
+            if (_outputSelect != null)
+            {
+                clonedformat._outputSelect = String.Copy(_outputSelect);
+            }
+
+            if (_linkFormat != null)
+            {
+                clonedformat._linkFormat = String.Copy(_linkFormat);
+            }
+            if (_linkBaseUrl != null)
+            {
+                clonedformat._linkBaseUrl = String.Copy(_linkBaseUrl);
+            }
+            if (_linkContainer != null)
+            {
+                clonedformat._linkContainer = String.Copy(_linkContainer);
+            }
+
+            if (_tocContent != null)
+            {
+                clonedformat._tocContent = _tocContent.Clone();
+            }
+            if (_properties != null)
+            {
+                clonedformat._properties = _properties.Clone();
+            }
+
             return clonedformat;
         }
 

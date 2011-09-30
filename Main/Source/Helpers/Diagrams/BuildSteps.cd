@@ -78,9 +78,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepTocMerge" Collapsed="true">
-    <Position X="5" Y="0.5" Width="1.25" />
+    <Position X="7" Y="0.5" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>BIYABAAACCAAAQCQAAAAAAgQAAAAAAIAAAQABBAAAAg=</HashCode>
+      <HashCode>BIIABEIAACAAAgCQAAEAAAgQIAEAAgAAAASQAAAAAAA=</HashCode>
       <FileName>Steps\StepTocMerge.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -149,7 +149,7 @@
   <Class Name="Sandcastle.Steps.StepWebBuilder" Collapsed="true">
     <Position X="2.5" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAAAAAASAAAQAAAAAAAAAAAAAAAAAAAABAAABAAAA=</HashCode>
+      <HashCode>AAIAAAAAASAAAQAAAAAAAAAAAAgAAAAAAABAAABAAEA=</HashCode>
       <FileName>Steps\StepWebBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -177,7 +177,7 @@
   <Class Name="Sandcastle.Steps.StepReflectionBuilder" Collapsed="true">
     <Position X="5.5" Y="10.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAIABEAAACAAAAAEAAAAAAACAAAAABgBAAAAAAAAAAA=</HashCode>
+      <HashCode>AAoABUAAACAAAAAEAQAQACgDAAAAABgBAAAAAAAAAAA=</HashCode>
       <FileName>Steps\StepReflectionBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -189,7 +189,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepMhvBuilder" Collapsed="true">
-    <Position X="0.75" Y="5.5" Width="1.5" />
+    <Position X="0.5" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>GAICQKAhAGgQBQABAAAAAIAAAAAACAAAASAoCIAAAAQ=</HashCode>
       <FileName>Steps\StepMhvBuilder.cs</FileName>
@@ -205,12 +205,12 @@
   <Class Name="Sandcastle.Steps.StepReferenceRefine" Collapsed="true">
     <Position X="0.5" Y="6.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAIAEEAAACAAgAAACAAAAACAAAAAAAADoAAAAAAAABA=</HashCode>
+      <HashCode>AAIAEEAAACAAgAAACAAAAACAgAAAAAADoAAAAAAAABA=</HashCode>
       <FileName>Steps\StepReferenceRefine.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepConceptualInit" Collapsed="true">
-    <Position X="2" Y="0.5" Width="1.75" />
+    <Position X="0.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAIAAEAAACAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
       <FileName>Steps\StepConceptualInit.cs</FileName>
@@ -219,14 +219,14 @@
   <Class Name="Sandcastle.Steps.StepReferenceInit" Collapsed="true">
     <Position X="6.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAAEAAACAAAAAAAAAAAgAAAAAAAAIBAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAAEAAQCAAAAAAAAAAAAAAAAACAAAFAAAAABBAAAA=</HashCode>
       <FileName>Steps\StepReferenceInit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Steps.StepReferenceToc" Collapsed="true">
     <Position X="3.5" Y="11.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAEEAAACAAgAAACAAAAACAAAAAAAABgAAAAAEAABA=</HashCode>
+      <HashCode>AAMAEEAAACAAgAAACAAAAACAgAAAAAABgIAAAAAAABA=</HashCode>
       <FileName>Steps\StepReferenceToc.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -254,8 +254,22 @@
   <Class Name="Sandcastle.Steps.StepReferenceModel" Collapsed="true">
     <Position X="5.5" Y="11.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAIAAEAAACAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAAEAAACAAAAAAAAAAAAAAAACAAAABAAAAAAAAAEA=</HashCode>
       <FileName>Steps\StepReferenceModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Steps.StepMhvViewerStart" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AIIBAAAIITgAAISCAQIAIIAGAAQEKAAAYAABIAQAAAA=</HashCode>
+      <FileName>Steps\StepMhvViewerStart.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Steps.StepMhvViewerClose" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Steps\StepMhvViewerClose.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

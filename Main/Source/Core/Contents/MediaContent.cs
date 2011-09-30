@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Utilities;
@@ -133,7 +134,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (!String.IsNullOrEmpty(_contentFile))
+                if (_contentFile != null && _contentFile.Exists)
                 {
                     return false;
                 }
@@ -222,6 +223,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="MediaContent"/> class instance, this property is 
+        /// <see cref="MediaContent.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Public Method
@@ -241,10 +260,8 @@ namespace Sandcastle.Contents
                     Path.GetDirectoryName(_contentFile));
             }
 
-            //BuildPathResolver resolver = BuildPathResolver.Create(
-            //    Path.GetDirectoryName(_contentFile));
-            BuildPathResolver resolver = BuildPathResolver.Create(_contentDir,
-                _contentId);
+            BuildPathResolver resolver = BuildPathResolver.Create(
+                Path.GetDirectoryName(_contentFile), _contentId);
 
             this.Load(resolver);
         }
@@ -282,11 +299,13 @@ namespace Sandcastle.Contents
 
                 reader = XmlReader.Create(_contentFile, settings);
 
-                lock (BuildPathResolver.Push(resolver))
+                reader.MoveToContent();
+
+                string resolverId = BuildPathResolver.Push(resolver);
                 {
                     this.ReadXml(reader);
 
-                    BuildPathResolver.Pop();
+                    BuildPathResolver.Pop(resolverId);
                 }
 
                 _isLoaded = true;
@@ -325,10 +344,8 @@ namespace Sandcastle.Contents
                     Path.GetDirectoryName(_contentFile));
             }
 
-            //BuildPathResolver resolver = BuildPathResolver.Create(
-            //    Path.GetDirectoryName(_contentFile));
-            BuildPathResolver resolver = BuildPathResolver.Create(_contentDir,
-                _contentId);
+            BuildPathResolver resolver = BuildPathResolver.Create(
+                Path.GetDirectoryName(_contentFile), _contentId);
 
             this.Save(resolver);
         }
@@ -336,6 +353,16 @@ namespace Sandcastle.Contents
         public void Save(BuildPathResolver resolver)
         {
             BuildExceptions.NotNull(resolver, "resolver");
+
+            // If this is not yet located, and the contents is empty, we
+            // will simply not continue from here...
+            if (_contentFile != null && _contentFile.Exists)
+            {
+                if (!this._isLoaded && base.IsEmpty)
+                {
+                    return;
+                }
+            }
 
             XmlWriterSettings settings  = new XmlWriterSettings();
             settings.Indent             = true;
@@ -348,7 +375,7 @@ namespace Sandcastle.Contents
             {
                 writer = XmlWriter.Create(_contentFile, settings);
 
-                lock (BuildPathResolver.Push(resolver))
+                string resolverId = BuildPathResolver.Push(resolver);
                 {
                     writer.WriteStartDocument();
 
@@ -356,7 +383,7 @@ namespace Sandcastle.Contents
 
                     writer.WriteEndDocument();
 
-                    BuildPathResolver.Pop();
+                    BuildPathResolver.Pop(resolverId);
                 }
 
                 // The file content is now same as the memory, so it can be
@@ -469,11 +496,11 @@ namespace Sandcastle.Contents
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -481,6 +508,28 @@ namespace Sandcastle.Contents
         public override void ReadXml(XmlReader reader)
         {
             BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            this.Clear();
 
             while (reader.Read())
             {
@@ -490,6 +539,7 @@ namespace Sandcastle.Contents
                         StringComparison.OrdinalIgnoreCase))
                     {
                         MediaItem item = new MediaItem();
+                        item.Content = this;
                         item.ReadXml(reader);
 
                         this.Add(item);
@@ -511,44 +561,9 @@ namespace Sandcastle.Contents
                     else if (String.Equals(reader.Name, "location",
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        BuildPathResolver pathResolver = BuildPathResolver.Resolver;
-
-                        if (!reader.IsEmptyElement && String.Equals(
-                            pathResolver.Id, _contentId, StringComparison.OrdinalIgnoreCase))
+                        if (!reader.IsEmptyElement)
                         {
-                            while (reader.Read())
-                            {
-                                if (reader.NodeType == XmlNodeType.Element)
-                                {
-                                    if (String.Equals(reader.Name, BuildDirectoryPath.TagName,
-                                        StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        // The location is relative to the content
-                                        // file, so we reset the current...
-                                        pathResolver.Uninitialize();
-                                        pathResolver.Initialize(Path.GetDirectoryName(_contentFile));
-
-                                        BuildDirectoryPath contentDir = 
-                                            new BuildDirectoryPath();
-                                        contentDir.ReadXml(reader);
-
-                                        if (contentDir.IsValid)
-                                        {
-                                            // Now, set it to the content directory...
-                                            pathResolver.Uninitialize();
-                                            pathResolver.Initialize(contentDir.Path);
-                                        }
-                                    }
-                                }
-                                else if (reader.NodeType == XmlNodeType.EndElement)
-                                {
-                                    if (String.Equals(reader.Name, "location",
-                                        StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
+                            _contentDir = BuildDirectoryPath.ReadLocation(reader);
                         }
                     }
                 }
@@ -565,10 +580,10 @@ namespace Sandcastle.Contents
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -585,21 +600,7 @@ namespace Sandcastle.Contents
             writer.WriteStartElement("location"); // location
             if (!_contentDir.IsDirectoryOf(_contentFile))
             {
-                //_contentDir.WriteXml(writer);
-                writer.WriteStartElement(BuildDirectoryPath.TagName);
-                string hintPath = _contentDir.HintPath;
-                if (String.IsNullOrEmpty(hintPath))
-                {
-                    writer.WriteAttributeString("value", 
-                        PathUtils.GetRelativePath(Path.GetDirectoryName(_contentFile),
-                        _contentDir.Path));
-                }
-                else
-                {
-                    writer.WriteAttributeString("value", _contentDir.Name);
-                    writer.WriteString(hintPath);
-                }
-                writer.WriteEndElement();
+                _contentDir.WriteXml(writer);
             }
             writer.WriteEndElement();             // location
 

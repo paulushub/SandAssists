@@ -22,11 +22,15 @@ namespace Sandcastle
     public abstract class BuildComponentConfiguration
         : BuildOptions<BuildComponentConfiguration>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "componentConfiguration";
+
+        #endregion
+
         #region Private Fields
 
-        private bool   _isEnabled;
-        private string _name;           
-        private BuildEngineType _engineType;
+        private bool _isEnabled;
 
         #endregion
 
@@ -40,36 +44,8 @@ namespace Sandcastle
         /// to the default values.
         /// </summary>
         protected BuildComponentConfiguration()
-            : this(Guid.NewGuid().ToString(), BuildEngineType.None)
-        {               
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualOptions"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        protected BuildComponentConfiguration(string optionsName,
-            BuildEngineType engineType)
         {
-            if (optionsName != null)
-            {
-                optionsName = optionsName.Trim();
-            }
-
-            BuildExceptions.NotNullNotEmpty(optionsName, "optionsName");
-
-            _name       = optionsName;
-            _isEnabled  = true;
-            _engineType = engineType;
+            _isEnabled = true;
         }
 
         /// <summary>
@@ -87,9 +63,7 @@ namespace Sandcastle
         protected BuildComponentConfiguration(BuildComponentConfiguration source)
             : base(source)
         {
-            _name       = source._name;
-            _isEnabled  = source._isEnabled;
-            _engineType = source._engineType;
+            _isEnabled = source._isEnabled;
         }
 
         #endregion
@@ -102,12 +76,9 @@ namespace Sandcastle
         /// <value>
         /// A <see cref="System.String"/> specifying the name of this category of options.
         /// </value>
-        public string Name
+        public abstract string Name
         {
-            get
-            {
-                return _name;
-            }
+            get;
         }
 
         /// <summary>
@@ -153,12 +124,9 @@ namespace Sandcastle
         /// An enumeration of the type, <see cref="BuildEngineType"/>, specifying
         /// the build engine type targeted by this configuration.
         /// </value>
-        public BuildEngineType EngineType
+        public abstract BuildEngineType EngineType
         {
-            get
-            {
-                return _engineType;
-            }
+            get;
         }
 
         /// <summary>
@@ -307,6 +275,24 @@ namespace Sandcastle
         public abstract BuildInsertType InsertType
         {
             get; 
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ReferenceEngineSettings"/> class instance, 
+        /// this property is <see cref="TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
         }
 
         #endregion
@@ -617,6 +603,24 @@ namespace Sandcastle
                     _multiMap.Clear();
                     break;
             }
+        }
+
+        #endregion
+
+        #region ICloneable Members
+
+        public override BuildKeyedList<BuildComponentConfiguration> Clone()
+        {
+            BuildComponentConfigurationList clonedList = 
+                new BuildComponentConfigurationList(this);
+
+            int itemCount = this.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                clonedList.Add(this[i].Clone());
+            }
+
+            return clonedList;
         }
 
         #endregion

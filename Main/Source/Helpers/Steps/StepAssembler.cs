@@ -232,7 +232,7 @@ namespace Sandcastle.Steps
             if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
             {
                 configFile = Path.Combine(configDir, 
-                    BuildStyleUtils.StyleFolder(styleType) + ".config");
+                    BuildStyle.StyleFolder(styleType) + ".config");
                 finalConfigFile = Path.Combine(workingDir, groupContext["$ConfigurationFile"]);
             }
             if (!File.Exists(configFile))

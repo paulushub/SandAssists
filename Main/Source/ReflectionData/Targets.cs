@@ -37,9 +37,7 @@ namespace Sandcastle.ReflectionData
         internal string    container;
         internal string    file;
 
-        internal ReferenceLinkType defaultType;
-        [NonSerialized]
-        private ReferenceLinkType type;
+        internal ReferenceLinkType type;
 
         #endregion
 
@@ -94,18 +92,6 @@ namespace Sandcastle.ReflectionData
             get
             {
                 return type;
-            }
-            set
-            {
-                type = value;
-            }
-        }
-
-        public ReferenceLinkType DefaultLinkType
-        {
-            get
-            {
-                return defaultType;
             }
         }
 
@@ -1822,6 +1808,11 @@ namespace Sandcastle.ReflectionData
                 return;
             }
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
             parameters   = new List<Parameter>();
             templateArgs = new List<TypeReference>();
             templates    = new List<string>();
@@ -2123,6 +2114,11 @@ namespace Sandcastle.ReflectionData
                 StringComparison.OrdinalIgnoreCase))
             {
                 name = reader.GetAttribute("name");
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
             }
 
             XmlNodeType nodeType = XmlNodeType.None;

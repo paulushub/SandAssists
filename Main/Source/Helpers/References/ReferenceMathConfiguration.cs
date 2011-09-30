@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -62,25 +63,6 @@ namespace Sandcastle.References
         /// to the default values.
         /// </summary>
         public ReferenceMathConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReferenceMathConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ReferenceMathConfiguration(string optionsName)
-            : base(optionsName)
         {
             _inlineSize            = 10;
             _displayedSize         = 10;
@@ -136,6 +118,25 @@ namespace Sandcastle.References
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the name of this category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ReferenceMathConfiguration.ConfigurationName"/>
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ReferenceMathConfiguration.ConfigurationName;
+            }
+        }
 
         /// <summary>
         /// Gets a value specifying whether this options category is active, and should
@@ -732,6 +733,196 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) &&
+                    String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "inlinemathsize":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _inlineSize = Convert.ToInt32(tempText);
+                            }
+                            break;
+                        case "inlinemathzoom":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _inlineZoom = Convert.ToInt32(tempText);
+                            }
+                            break;
+                        case "displayedmathsize":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _displayedSize = Convert.ToInt32(tempText);
+                            }
+                            break;
+                        case "displayedmathzoom":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _displayedZoom = Convert.ToInt32(tempText);
+                            }
+                            break;
+                        case "inputpath":
+                            _inputPath = reader.ReadString();
+                            break;
+                        case "baseoutput":
+                            _baseOutput = reader.ReadString();
+                            break;
+                        case "outputpath":
+                            _outputPath = reader.ReadString();
+                            break;
+                        case "namingprefix":
+                            _namingPrefix = reader.ReadString();
+                            break;
+                        case "namingmethod":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _namingMethod = (MathNamingMethod)Enum.Parse(
+                                    typeof(MathNamingMethod), tempText, true);
+                            }
+                            break;
+                        case "numberingenabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _numEnabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "numberingbypage":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _numByPage = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "numberingformatincludespage":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _numFormatIncludesPage = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "numberingformat":
+                            _numFormat = reader.ReadString();
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled", this.Enabled);
+            writer.WritePropertyElement("InlineMathSize", _inlineSize);
+            writer.WritePropertyElement("InlineMathZoom", _inlineZoom);
+            writer.WritePropertyElement("DisplayedMathSize", _displayedSize);
+            writer.WritePropertyElement("DisplayedMathZoom", _displayedZoom);
+            writer.WritePropertyElement("InputPath", _inputPath);
+            writer.WritePropertyElement("BaseOutput", _baseOutput);
+            writer.WritePropertyElement("OutputPath", _outputPath);
+            writer.WritePropertyElement("NamingPrefix", _namingPrefix);
+            writer.WritePropertyElement("NamingMethod", _namingMethod.ToString());
+            writer.WritePropertyElement("NumberingEnabled", _numEnabled);
+            writer.WritePropertyElement("NumberingByPage", _numByPage);
+            writer.WritePropertyElement("NumberingFormatIncludesPage", _numFormatIncludesPage);
+            writer.WritePropertyElement("NumberingFormat", _numFormat);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteEndElement();           // end - TagName
+        }
+
+        #endregion
+
         #region ICloneable Members
 
         /// <summary>
@@ -744,6 +935,26 @@ namespace Sandcastle.References
         public override BuildComponentConfiguration Clone()
         {
             ReferenceMathConfiguration options = new ReferenceMathConfiguration(this);
+            if (_inputPath != null)
+            {
+                options._inputPath = String.Copy(_inputPath);
+            }
+            if (_baseOutput != null)
+            {
+                options._baseOutput = String.Copy(_baseOutput);
+            }
+            if (_outputPath != null)
+            {
+                options._outputPath = String.Copy(_outputPath);
+            }
+            if (_namingPrefix != null)
+            {
+                options._namingPrefix = String.Copy(_namingPrefix);
+            }
+            if (_numFormat != null)
+            {
+                options._numFormat = String.Copy(_numFormat);
+            }
 
             return options;
         }

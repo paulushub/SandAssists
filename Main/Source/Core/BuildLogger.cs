@@ -52,7 +52,7 @@ namespace Sandcastle
     /// </item>
     /// <item>
     /// <description>
-    /// <bold>Sandcastle.Loggers.XmlLogger</bold>, the XML format logger
+    /// <bold>Sandcastle.Loggers.XmlLogger</bold>, the <c>XML</c> format logger
     /// </description>
     /// </item>
     /// <item>
@@ -523,8 +523,6 @@ namespace Sandcastle
             if (_baseWriter != null)
             {
                 _baseWriter.Close();
-
-                _baseWriter.Dispose();
                 _baseWriter = null;
             }
 

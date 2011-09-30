@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.Contents
@@ -133,6 +134,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="CommentContent"/> class instance, this property is 
+        /// <see cref="CommentContent.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Public Method
@@ -195,6 +214,16 @@ namespace Sandcastle.Contents
                 return;
             }
 
+            // If this is not yet located, and the contents is empty, we
+            // will simply not continue from here...
+            if (_contentFile != null && _contentFile.Exists)
+            {
+                if (!this._isLoaded && this.IsEmpty)
+                {
+                    return;
+                }
+            }
+
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.Encoding = Encoding.UTF8;
@@ -215,6 +244,46 @@ namespace Sandcastle.Contents
                 // The file content is now same as the memory, so it can be
                 // considered loaded...
                 _isLoaded = true;
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }
+        }
+
+        public void SaveCopyAs(string contentFile)
+        {
+            if (String.IsNullOrEmpty(contentFile))
+            {
+                return;
+            }
+
+            string contentDir = Path.GetDirectoryName(contentFile);
+            if (!Directory.Exists(contentDir))
+            {
+                Directory.CreateDirectory(contentDir);
+            }
+
+            XmlWriterSettings settings  = new XmlWriterSettings();
+            settings.Indent             = true;
+            settings.Encoding           = Encoding.UTF8;
+            settings.IndentChars        = new string(' ', 4);
+            settings.OmitXmlDeclaration = false;
+
+            XmlWriter writer = null;
+            try
+            {
+                writer = XmlWriter.Create(contentFile, settings);
+
+                writer.WriteStartDocument();
+
+                this.WriteXml(writer);
+
+                writer.WriteEndDocument();
             }
             finally
             {
@@ -322,11 +391,11 @@ namespace Sandcastle.Contents
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -334,6 +403,28 @@ namespace Sandcastle.Contents
         public override void ReadXml(XmlReader reader)
         {
             BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            this.Clear();
 
             while (reader.Read())
             {
@@ -375,6 +466,7 @@ namespace Sandcastle.Contents
                                     StringComparison.OrdinalIgnoreCase))
                                 {
                                     CommentItem item = new CommentItem();
+                                    item.Content = this;
                                     item.ReadXml(reader);
 
                                     this.Add(item);
@@ -404,10 +496,10 @@ namespace Sandcastle.Contents
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -419,21 +511,24 @@ namespace Sandcastle.Contents
 
             writer.WriteStartElement(TagName);
 
-            if (!String.IsNullOrEmpty(_assemblyName))
+            if (!this.IsEmpty)
             {   
-                writer.WriteStartElement("assembly");  // start - assembly
-                writer.WriteStartElement("name");      // start - name
-                writer.WriteString(_assemblyName);
-                writer.WriteEndElement();              // end - name
-                writer.WriteEndElement();              // end - assembly
-            }
+                if (!String.IsNullOrEmpty(_assemblyName))
+                {   
+                    writer.WriteStartElement("assembly");  // start - assembly
+                    writer.WriteStartElement("name");      // start - name
+                    writer.WriteString(_assemblyName);
+                    writer.WriteEndElement();              // end - name
+                    writer.WriteEndElement();              // end - assembly
+                }
 
-            writer.WriteStartElement("members");  // start - members
-            for (int i = 0; i < this.Count; i++)
-            {
-                this[i].WriteXml(writer);
-            }
-            writer.WriteEndElement();              // end - members
+                writer.WriteStartElement("members");  // start - members
+                for (int i = 0; i < this.Count; i++)
+                {
+                    this[i].WriteXml(writer);
+                }
+                writer.WriteEndElement();              // end - members
+            }   
 
             writer.WriteEndElement();
         }

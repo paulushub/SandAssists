@@ -28,6 +28,8 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool                             _notApplicable;
+
         private HashSet<string>                  _targetTags;
         private HashSet<string>                  _skipTags;
         private BuildSpellChecker                _spellChecker;
@@ -101,6 +103,21 @@ namespace Sandcastle.References
         {
             base.Initialize(context, group);
 
+            _notApplicable = false;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext != null)
+            {
+                // We do not have to spell check embedded documents...
+                string embeddedText = groupContext["$IsEmbeddedGroup"];
+                if (!String.IsNullOrEmpty(embeddedText) && 
+                    embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+                {
+                    _notApplicable = true;
+                    return;
+                }
+            }
+
             if (this.IsInitialized)
             {
                 if (_spellChecking == null)
@@ -152,6 +169,11 @@ namespace Sandcastle.References
             BuildExceptions.NotNull(referenceDocument, "referenceDocument");
             if (referenceDocument.DocumentType != ReferenceDocumentType.Comments || 
                 !_spellChecking.Enabled)
+            {
+                return;
+            }
+
+            if (_notApplicable)
             {
                 return;
             }

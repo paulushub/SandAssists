@@ -11,7 +11,7 @@ namespace TestLibraryCLR
     {
     public:  
         /// <summary>
-        ///
+        /// A constructor.
         /// </summary>
         Base(void)
         {

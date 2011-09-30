@@ -20,10 +20,13 @@ namespace Sandcastle
         private int             _conceptuals;
         private bool            _isBuildSuccess;
 
+        private bool            _isInitialized;
+
+        private string          _targetPlatform;
+        private string          _targetConfiguration;
+
         private DateTime        _startTime;
         private DateTime        _endTime;
-
-        private bool            _isInitialized;
 
         private BuildType       _buildType;
         private BuildSystem     _buildSystem;  
@@ -69,10 +72,6 @@ namespace Sandcastle
 
             _buildType   = type;
             _buildSystem = system;
-
-            _logger      = new BuildLoggers();
-            _context     = new BuildContext(system, type);
-            _listSteps   = new List<BuildStep>(16);
         }
 
         ~BuildProject()
@@ -89,6 +88,30 @@ namespace Sandcastle
             get
             {
                 return _isInitialized;
+            }
+        }
+
+        public string TargetPlatform
+        {
+            get
+            {
+                return _targetPlatform;
+            }
+            set
+            {
+                _targetPlatform = value;
+            }
+        }
+
+        public string TargetConfiguration
+        {
+            get
+            {
+                return _targetConfiguration;
+            }
+            set
+            {
+                _targetConfiguration = value;
             }
         }
 
@@ -149,6 +172,11 @@ namespace Sandcastle
             DateTime startTime = DateTime.Now;
 
             _startTime = startTime;
+
+            _logger    = new BuildLoggers();
+            _context   = new BuildContext(_buildSystem, _buildType,
+                _targetPlatform, _targetConfiguration);
+            _listSteps = new List<BuildStep>(16);
 
             // 1. Prepare all the build directories...
             this.OnBeginDocumentation();
@@ -469,14 +497,18 @@ namespace Sandcastle
                 }
             }
 
+
             // 3. Update the logger settings...
             bool keepLogFile = logging.KeepFile;
+            _logger.Verbosity = logging.Verbosity;
+            _logger.KeepLog   = keepLogFile;
             for (int i = 0; i < _logger.Count; i++)
             {
                 BuildLogger logger = _logger[i];
                 if (logger != null)
                 {
-                    logger.KeepLog = keepLogFile;
+                    logger.KeepLog   = keepLogFile;
+                    logger.Verbosity = logging.Verbosity;
                 }
             }
 
@@ -703,10 +735,10 @@ namespace Sandcastle
                 }
             }
 
-            _context["$HelpFormatCount"]         = _listFormats.Count.ToString();
-            _context["$HelpTocFile"]             = _settings.Toc.TocFile;
-            _context["$HelpTocMarkers"]          = Boolean.FalseString;
-            _context["$HelpHierarchicalToc"]     = Boolean.FalseString;
+            _context["$HelpFormatCount"]     = _listFormats.Count.ToString();
+            _context["$HelpTocFile"]         = _settings.Toc.TocFile;
+            _context["$HelpTocMarkers"]      = Boolean.FalseString;
+            _context["$HelpHierarchicalToc"] = Boolean.FalseString;
 
             _isInitialized = this.OnCreateSteps();
         }
@@ -1269,7 +1301,7 @@ namespace Sandcastle
             }
 
             BuildStyleType styleType = buildStyle.StyleType;
-            string helpStyle = BuildStyleUtils.StyleFolder(styleType);
+            string helpStyle = BuildStyle.StyleFolder(styleType);
             int formatCount = _listFormats.Count;
 
             // Ensure that we have a valid list of folders...

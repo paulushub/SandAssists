@@ -16,7 +16,7 @@ using Sandcastle.Utilities;
 namespace Sandcastle.Steps
 {
     /// <summary>
-    /// This step will validate the Microsoft Help Viewer 1.0 installations,
+    /// This step will validate the Microsoft Help Viewer 1.x installations,
     /// uninstall the current help book, if any, install the help book and start
     /// a browser to view it.
     /// </summary>
@@ -171,11 +171,11 @@ namespace Sandcastle.Steps
         /// </returns>
         private bool ValidViewerInstallation(BuildContext context)
         {
-            _helpRoot       = null;
-            _helpLocalStore = null;
-            _registryCatalogs   = null;
+            _helpRoot          = null;
+            _helpLocalStore    = null;
+            _registryCatalogs  = null;
 
-            bool isValid = false;
+            bool isValid       = false;
             BuildLogger logger = context.Logger;
             if (logger != null)
             {
@@ -522,8 +522,8 @@ namespace Sandcastle.Steps
 
             try
             {
-                string companyName = feedback.Company;
-                string productName = feedback.Product;
+                string companyName = feedback.CompanyName;
+                string productName = feedback.ProductName;
                 string bookName    = settings.HelpTitle;
 
                 if (logger != null)
@@ -602,8 +602,8 @@ namespace Sandcastle.Steps
 
             try
             {
-                string companyName = feedback.Company;
-                string productName = feedback.Product;
+                string companyName = feedback.CompanyName;
+                string productName = feedback.ProductName;
                 string bookName    = settings.HelpTitle;
 
                 if (logger != null)
@@ -794,8 +794,8 @@ namespace Sandcastle.Steps
             BuildSettings settings = context.Settings;
             BuildFeedback feedback = settings.Feedback;
 
-            string companyName = feedback.Company;
-            string productName = feedback.Product;
+            string companyName = feedback.CompanyName;
+            string productName = feedback.ProductName;
             string bookName    = settings.HelpTitle;
             string locale      = settings.CultureInfo.Name.ToLower();
             string fileName    = Path.GetFileName(_helpPath);

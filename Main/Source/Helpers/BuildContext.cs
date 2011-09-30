@@ -38,6 +38,9 @@ namespace Sandcastle
         private string          _sandcastleDir;
         private string          _sandcastleToolsDir;
 
+        private string          _targetPlatform;
+        private string          _targetConfiguration;
+
         private BuildType       _buildType;
         private BuildState      _buildState;
         private BuildLogger     _logger;
@@ -76,11 +79,28 @@ namespace Sandcastle
             _buildSystem  = system;
             _properties   = new BuildProperties();
 
+            _targetPlatform      = String.Empty;
+            _targetConfiguration = String.Empty;
+
             _tocContext   = new BuildTocContext();
             _buildOutputs = new List<BuildTuple<BuildFormatType, string>>();
 
             // Reset to the default properties
             this.Reset();
+        }
+
+        public BuildContext(BuildSystem system, BuildType type,
+            string targetPlatform, string targetConfiguration)
+            : this(system, type)
+        {
+            if (!String.IsNullOrEmpty(targetPlatform))
+            {
+                _targetPlatform = targetPlatform;
+            }
+            if (!String.IsNullOrEmpty(targetConfiguration))
+            {
+                _targetConfiguration = targetConfiguration;
+            }
         }
 
         /// <summary>
@@ -340,7 +360,23 @@ namespace Sandcastle
 
                 return reflectionDir;
             }
-        }    
+        }
+
+        public string TargetPlatform
+        {
+            get
+            {
+                return _targetPlatform;
+            }
+        }
+
+        public string TargetConfiguration
+        {
+            get
+            {
+                return _targetConfiguration;
+            }
+        }
 
         public bool BuildResult
         {

@@ -20,6 +20,12 @@ namespace TestLibraryCLR
         // visible inside and outside assembly
     public: 
 
+        /// <summary>
+        /// Gets and sets the name.
+        /// </summary>
+        /// <value>
+        /// A string containing the name.
+        /// </value>
         property String^ Name 
         {
             String^ get()
@@ -32,17 +38,20 @@ namespace TestLibraryCLR
             }
         }
 
+        /// <overloads>
+        /// Overloads summary of the <c>TestMethod</c>
+        /// </overloads>
         /// <summary>
-        ///
+        /// Summary of the <c>TestMethod</c> without parameter.
         /// </summary>
         virtual void TestMethod()
         {
         }
 
         /// <summary>
-        ///
+        /// Summary of the <c>TestMethod</c> with parameter.
         /// </summary>
-        /// <param name="testValue"></param>
+        /// <param name="testValue">The test value.</param>
         virtual void TestMethod(Object^ testValue)
         {
         }

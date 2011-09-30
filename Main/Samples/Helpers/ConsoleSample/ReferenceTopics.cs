@@ -52,7 +52,7 @@ namespace ConsoleSample
                 ReferenceTocLayoutConfiguration tocLayout =
                     engineSettings.TocLayout;
                 tocLayout.ContentsAfter = false;
-                tocLayout.LayoutType = ReferenceTocLayoutType.Hierarchical;
+                tocLayout.LayoutType    = ReferenceTocLayoutType.Hierarchical;
             }
 
             // Test most reference topic options, including...
@@ -87,6 +87,7 @@ namespace ConsoleSample
             // 1. Testing C++/CLR library
             // 2. Version information: Assembly-And-File
             //    Has no file version. Assembly version is auto-incremental.
+            // 3. Support for Visual C++ Project content source.
             TestOthers(documenter, options, engineSettings);
         }
 
@@ -131,9 +132,9 @@ namespace ConsoleSample
                 new ReferenceNamespaceFilter("TestLibrary", true);
             namespaceFilter.Add(new ReferenceTypeFilter("Point3D", false, false));
 
-            apiGroup.TypeFilters.Add(namespaceFilter);
+            apiContent.TypeFilters.Add(namespaceFilter);
 
-            documenter.Add(apiGroup);
+            documenter.AddGroup(apiGroup);
 
             ReferenceVersionInfo versionInfo = null;
             if (versionType == ReferenceVersionType.Advanced)
@@ -221,8 +222,8 @@ namespace ConsoleSample
                 Path.Combine(outputDir, "SampleHierarchicalToc.dll"));
 
             //apiContent.AddDependency(Path.Combine(outputDir, "TestLibrary.dll"));
-
-            documenter.Add(apiGroup);
+            
+            documenter.AddGroup(apiGroup);
         }
 
         #endregion
@@ -268,40 +269,61 @@ namespace ConsoleSample
             //apiContent.AddDependency(Path.Combine(outputDir, "Tests.Shapes.dll"));
             //apiContent.AddDependency(Path.Combine(outputDir, "Tests.Geometries.dll"));
 
-            documenter.Add(apiGroup);
+            documenter.AddGroup(apiGroup);
 
             // Testing embedded documents...
-            apiGroup = new ReferenceGroup(
-                "Testing Embeddeding", Guid.NewGuid().ToString());
-            apiGroup.ExcludeToc = true; //NOTE!!!
-            apiGroup.RunningHeaderText = "Sandcastle Helpers: Testing Assembly Redirection";
+            //apiGroup = new ReferenceGroup(
+            //    "Testing Embeddeding", Guid.NewGuid().ToString());
+            //apiGroup.ExcludeToc = true; //NOTE!!!
+            //apiGroup.RunningHeaderText = "Sandcastle Helpers: Testing Assembly Redirection";
 
-            apiGroup.SyntaxType |= BuildSyntaxType.Xaml;
-            apiGroup.EnableXmlnsForXaml = true;
-            apiGroup.VersionType = ReferenceVersionType.Assembly;
+            //apiGroup.SyntaxType |= BuildSyntaxType.Xaml;
+            //apiGroup.EnableXmlnsForXaml = true;
+            //apiGroup.VersionType = ReferenceVersionType.Assembly;
 
-            if (engineSettings.RootNamespaceContainer)
-            {
-                apiGroup.RootNamespaceTitle = "Testing Assembly Redirection";
-            }
+            //if (engineSettings.RootNamespaceContainer)
+            //{
+            //    apiGroup.RootNamespaceTitle = "Testing Assembly Redirection";
+            //}
 
-            apiContent = apiGroup.Content;
-            apiContent.FrameworkType = BuildFrameworkType.Framework40;
+            //apiContent = apiGroup.Content;
+            //apiContent.FrameworkType = BuildFrameworkType.Framework40;
+            //apiContent.AddItem(projectDoc, null);
 
-            apiContent.AddItem(projectDoc, null);
+            //apiContent.AddItem(projectDoc, null);
+            //refItem = new ReferenceItem(
+            //    Path.Combine(outputDir, "Tests.Shapes.xml"),
+            //    Path.Combine(outputDir, "Tests.Shapes.dll"));
+            //refItem.XamlSyntax = true;
+            //apiContent.Add(refItem);
+
+            //refItem = new ReferenceItem(
+            //    Path.Combine(outputDir, "Tests.Geometries.xml"),
+            //    Path.Combine(outputDir, "Tests.Geometries.dll"));
+            //refItem.XamlSyntax = true;
+            //apiContent.Add(refItem);
+
+            //documenter.AddGroup(apiGroup);
+
+            ReferenceLinkSource linkSource = new ReferenceLinkSource();
+
+            refItem = new ReferenceItem(projectDoc, null);
+            refItem.XamlSyntax = true;
+            linkSource.Add(refItem);
+
             refItem = new ReferenceItem(
                 Path.Combine(outputDir, "Tests.Shapes.xml"),
                 Path.Combine(outputDir, "Tests.Shapes.dll"));
             refItem.XamlSyntax = true;
-            apiContent.Add(refItem);
+            linkSource.Add(refItem);
 
             refItem = new ReferenceItem(
                 Path.Combine(outputDir, "Tests.Geometries.xml"),
                 Path.Combine(outputDir, "Tests.Geometries.dll"));
             refItem.XamlSyntax = true;
-            apiContent.Add(refItem);
+            linkSource.Add(refItem);
 
-            documenter.Add(apiGroup);
+            apiGroup.Links = linkSource;
         }
 
         #endregion
@@ -352,7 +374,7 @@ namespace ConsoleSample
 
                 //apiContent.AddDependency(Path.Combine(outputDir, "System.Windows.Interactivity.dll"));
 
-                documenter.Add(apiGroup);
+                documenter.AddGroup(apiGroup);
             }
             else
             {
@@ -385,7 +407,7 @@ namespace ConsoleSample
 
                 //apiContent.AddDependency(Path.Combine(outputDir, "System.Windows.Interactivity.dll"));
 
-                documenter.Add(apiGroup);
+                documenter.AddGroup(apiGroup);
             }
         }
 
@@ -394,6 +416,66 @@ namespace ConsoleSample
         #region TestOthers Method
 
         private static void TestOthers(BuildDocumenter documenter,
+            TestOptions options, ReferenceEngineSettings engineSettings)
+        {
+            if (tocType == CustomTocType.ReferenceRoot)
+            {
+                return;
+            }
+
+            //string libraryDir = Path.Combine(sampleDir, @"SampleTestLibraryCLR\");
+            //string outputDir = Path.Combine(libraryDir, @"Output\");
+            //string projectDoc = Path.Combine(outputDir, "Project.xml");
+
+            string sourceFile =
+                @"F:\SandcastleAssist\Main\Samples\HelpersSamples.sln";
+            ReferenceVsNetSource vsSource = new ReferenceVsNetSource();
+            ReferenceVsNetItem vsItem = new ReferenceVsNetItem(
+                new BuildFilePath(sourceFile));
+            vsItem.XamlSyntax = false;
+            vsItem.AddInclude("{41A48F1C-3E52-4995-B181-363EDBC02CA0}");
+            vsSource.Add(vsItem);
+
+            CommentContent comments = vsSource.Comments;
+            CommentItem projItem = new CommentItem("R:Project", 
+                CommentItemType.Project);
+            projItem.Value.Add(new CommentPart("Summary of the project", 
+                CommentPartType.Summary));
+            comments.Add(projItem);
+            CommentItem nsItem = new CommentItem("N:TestLibraryCLR",
+                CommentItemType.Namespace);
+            nsItem.Value.Add(new CommentPart("Summary of the namespace",
+                CommentPartType.Summary));
+            comments.Add(nsItem);   
+
+            ReferenceGroup apiGroup = new ReferenceGroup(
+                "Test CPP-CLR Library", Guid.NewGuid().ToString(), vsSource);
+            apiGroup.RunningHeaderText = "Sandcastle Helpers: C++/CLR Library";
+
+            apiGroup.VersionType = ReferenceVersionType.AssemblyAndFile;
+
+            if (engineSettings.RootNamespaceContainer)
+            {
+                apiGroup.RootNamespaceTitle = "Testing C++/CLR Library";
+            }
+
+            //ReferenceContent apiContent = apiGroup.Content;
+            //apiContent.FrameworkType = BuildFrameworkType.Framework20;
+
+            //apiGroup.AddItem(projectDoc, null);
+            //apiContent.AddItem(Path.Combine(outputDir, "SampleLibraryCLR.xml"),
+            //    Path.Combine(outputDir, "SampleLibraryCLR.dll"));
+
+            //apiContent.AddDependency(Path.Combine(outputDir, ""));
+
+            documenter.AddGroup(apiGroup);
+        }
+
+        #endregion
+
+        #region TestOthers0 Method
+
+        private static void TestOthers0(BuildDocumenter documenter,
             TestOptions options, ReferenceEngineSettings engineSettings)
         {
             if (tocType == CustomTocType.ReferenceRoot)
@@ -426,7 +508,7 @@ namespace ConsoleSample
 
             //apiContent.AddDependency(Path.Combine(outputDir, ""));
 
-            documenter.Add(apiGroup);
+            documenter.AddGroup(apiGroup);
         }
 
         #endregion

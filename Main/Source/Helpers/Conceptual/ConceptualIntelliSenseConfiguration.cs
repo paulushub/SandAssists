@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Conceptual
 {
@@ -24,9 +27,6 @@ namespace Sandcastle.Conceptual
 
         #region Private Fields
 
-        private string _outputDir;
-        private string _workingDir;
-
         private string _rootExpression;
         private string _assemblyExpression;
         private string _summaryExpression;
@@ -41,6 +41,11 @@ namespace Sandcastle.Conceptual
         private string _enumerationApiExpression;
         private string _memberSummaryExpression;
 
+        private BuildDirectoryPath _workingDir;
+
+        [NonSerialized]
+        private string _outputDir;
+
         #endregion
 
         #region Constructors and Destructor
@@ -53,25 +58,6 @@ namespace Sandcastle.Conceptual
         /// to the default values.
         /// </summary>
         public ConceptualIntelliSenseConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualIntelliSenseConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ConceptualIntelliSenseConfiguration(string optionsName)
-            : base(optionsName)
         {
             _rootExpression             = "/html/body/div[@id='mainSection']/div[@id='mainBody']";
             _assemblyExpression         = "string(span[@sdata='assembly'])";
@@ -126,6 +112,25 @@ namespace Sandcastle.Conceptual
         #region Public Properties
 
         /// <summary>
+        /// Gets the name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the name of this category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ConceptualIntelliSenseConfiguration.ConfigurationName"/>
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ConceptualIntelliSenseConfiguration.ConfigurationName;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the working directory of the IntelliSense component.
         /// This is the directory where the IntelliSense output is generated.
         /// </summary>
@@ -134,7 +139,7 @@ namespace Sandcastle.Conceptual
         /// component. The default is <see langword="null"/>, and the default
         /// directory is used.
         /// </value>
-        public string WorkingDirectory
+        public BuildDirectoryPath WorkingDirectory
         {
             get
             {
@@ -526,6 +531,200 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
+        #region Private Methods
+
+        private static void WriteExpression(XmlWriter writer, string name,
+            string value)
+        {
+            writer.WriteStartElement("expression");
+            writer.WriteAttributeString("name", String.IsNullOrEmpty(name) ? String.Empty : name);
+            writer.WriteString(String.IsNullOrEmpty(value) ? String.Empty : value);
+            writer.WriteEndElement();
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "enabled":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    this.Enabled = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "expression",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "root":
+                                _rootExpression = reader.ReadString();
+                                break;
+                            case "assembly":
+                                _assemblyExpression = reader.ReadString();
+                                break;
+                            case "summary":
+                                _summaryExpression = reader.ReadString();
+                                break;
+                            case "parameters":
+                                _parametersExpression = reader.ReadString();
+                                break;
+                            case "parametercontent":
+                                _parameterContentExpression = reader.ReadString();
+                                break;
+                            case "templates":
+                                _templatesExpression = reader.ReadString();
+                                break;
+                            case "templatecontent":
+                                _templateContentExpression = reader.ReadString();
+                                break;
+                            case "returns":
+                                _returnsExpression = reader.ReadString();
+                                break;
+                            case "exception":
+                                _exceptionExpression = reader.ReadString();
+                                break;
+                            case "exceptioncref":
+                                _exceptionCrefExpression = reader.ReadString();
+                                break;
+                            case "enumeration":
+                                _enumerationExpression = reader.ReadString();
+                                break;
+                            case "enumerationapi":
+                                _enumerationApiExpression = reader.ReadString();
+                                break;
+                            case "membersummary":
+                                _memberSummaryExpression = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "workingDirectory",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        _workingDir = BuildDirectoryPath.ReadLocation(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled", this.Enabled);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            BuildDirectoryPath.WriteLocation(_workingDir, "workingDirectory",
+                writer);
+
+            // Write out the expressions
+            writer.WriteStartElement("expressions"); // start - expressions
+            WriteExpression(writer, "Root",             _rootExpression);
+            WriteExpression(writer, "Assembly",         _assemblyExpression);
+            WriteExpression(writer, "Summary",          _summaryExpression);
+            WriteExpression(writer, "Parameters",       _parametersExpression);
+            WriteExpression(writer, "ParameterContent", _parameterContentExpression);
+            WriteExpression(writer, "Templates",        _templatesExpression);
+            WriteExpression(writer, "TemplateContent",  _templateContentExpression);
+            WriteExpression(writer, "Returns",          _returnsExpression);
+            WriteExpression(writer, "Exception",        _exceptionExpression);
+            WriteExpression(writer, "ExceptionCref",    _exceptionCrefExpression);
+            WriteExpression(writer, "Enumeration",      _enumerationExpression);
+            WriteExpression(writer, "EnumerationApi",   _enumerationApiExpression);
+            WriteExpression(writer, "MemberSummary",    _memberSummaryExpression);
+            writer.WriteEndElement();                // end - expressions
+
+            writer.WriteEndElement();           // end - TagName
+        }
+
+        #endregion
+
         #region ICloneable Members
 
         /// <summary>
@@ -538,6 +737,67 @@ namespace Sandcastle.Conceptual
         public override BuildComponentConfiguration Clone()
         {
             ConceptualIntelliSenseConfiguration options = new ConceptualIntelliSenseConfiguration(this);
+            if (_workingDir != null)
+            {
+                options._workingDir = _workingDir.Clone();
+            }
+            if (_outputDir != null)
+            {
+                options._outputDir = String.Copy(_outputDir);
+            }
+
+            if (_rootExpression != null)
+            {
+                options._rootExpression = String.Copy(_rootExpression);
+            }
+            if (_assemblyExpression != null)
+            {
+                options._assemblyExpression = String.Copy(_assemblyExpression);
+            }
+            if (_summaryExpression != null)
+            {
+                options._summaryExpression = String.Copy(_summaryExpression);
+            }
+            if (_parametersExpression != null)
+            {
+                options._parametersExpression = String.Copy(_parametersExpression);
+            }
+            if (_parameterContentExpression != null)
+            {
+                options._parameterContentExpression = String.Copy(_parameterContentExpression);
+            }
+            if (_templatesExpression != null)
+            {
+                options._templatesExpression = String.Copy(_templatesExpression);
+            }
+            if (_templateContentExpression != null)
+            {
+                options._templateContentExpression = String.Copy(_templateContentExpression);
+            }
+            if (_returnsExpression != null)
+            {
+                options._returnsExpression = String.Copy(_returnsExpression);
+            }
+            if (_exceptionExpression != null)
+            {
+                options._exceptionExpression = String.Copy(_exceptionExpression);
+            }
+            if (_exceptionCrefExpression != null)
+            {
+                options._exceptionCrefExpression = String.Copy(_exceptionCrefExpression);
+            }
+            if (_enumerationExpression != null)
+            {
+                options._enumerationExpression = String.Copy(_enumerationExpression);
+            }
+            if (_enumerationApiExpression != null)
+            {
+                options._enumerationApiExpression = String.Copy(_enumerationApiExpression);
+            }
+            if (_memberSummaryExpression != null)
+            {
+                options._memberSummaryExpression = String.Copy(_memberSummaryExpression);
+            }
 
             return options;
         }

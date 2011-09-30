@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Conceptual" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">cc1479e2-110b-4c51-828c-9bdb22a004e6</property>
+        <property name="Name">XsdDocs - WiX Schema</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle XsdDocs: WiX Schema</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Conceptual">
+        <property name="DocumentId">49ae0dca-79d7-40de-b589-5eeaaae88f77</property>
+        <property name="ProjectId">ab9d7768-4fb8-4feb-be9b-d35d370b94e6</property>
+        <property name="RepositoryId">9952f174-5768-4446-a3d2-c453bf2691e4</property>
+        <property name="ProjectName">ProjectName</property>
+        <property name="ProjectTitle">ProjectTitle</property>
+        <property name="DocumentWriter"></property>
+        <property name="DocumentEditor"></property>
+        <property name="DocumentManager"></property>
+        <property name="FileVersion">1.0.0.0</property>
+        <property name="FreshnessFormat">D</property>
+        <property name="FreshnessDate"></property>
+        <property name="ChangeHistory">Show</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents />
+    <contentSource name="Sandcastle.Conceptual.ConceptualXsdDocSource">
+        <propertyGroup name="General">
+            <property name="Title">ConceptualSource14d75c36</property>
+            <property name="DocumentConstraints">True</property>
+            <property name="DocumentRootElements">True</property>
+            <property name="DocumentRootSchemas">True</property>
+            <property name="DocumentSchemas">True</property>
+            <property name="DocumentSyntax">True</property>
+            <property name="NamespaceContainer">True</property>
+            <property name="SchemaSetContainer">True</property>
+            <property name="UndocumentedElementInheritsTypeDoc">True</property>
+            <property name="UndocumentedAttributeInheritsTypeDoc">True</property>
+            <property name="IncludeLinkUriInKeywordK">False</property>
+            <property name="IncludeAutoOutline">True</property>
+            <property name="IncludeMoveToTop">True</property>
+            <property name="SchemaSetTitle">WiX Installer Schema References</property>
+        </propertyGroup>
+        <namespaceRenaming>
+            <namespace name="http://schemas.microsoft.com/wix/2006/localization" title="Localization Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/2006/wi" title="Database Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/ComPlusExtension" title="COM+ Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/DifxAppExtension" title="Driver Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/FirewallExtension" title="Firewall Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/GamingExtension" title="Gaming Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/IIsExtension" title="IIS Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/MsmqExtension" title="MSMQ Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/NetFxExtension" title=".NET Framework Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/PSExtension" title="PowerShell Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/SqlExtension" title="SQL Server Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/UtilExtension" title="Utility Extension Schema" />
+            <namespace name="http://schemas.microsoft.com/wix/VSExtension" title="Visual Studio Extension Schema" />
+        </namespaceRenaming>
+        <transformFilePath>
+            <path value="..\SampleXsdDocs\WiX\AnnotationTranform.xslt" />
+        </transformFilePath>
+        <schemaFilePaths>
+            <path value="..\SampleXsdDocs\WiX\Schemas\complus.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\difxapp.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\firewall.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\gaming.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\iis.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\msmq.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\netfx.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\ps.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\sql.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\util.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\vs.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\wix.xsd" />
+            <path value="..\SampleXsdDocs\WiX\Schemas\wixloc.xsd" />
+        </schemaFilePaths>
+        <schemaDependencyFilePaths />
+        <externalDocumentFilePaths>
+            <path value="..\SampleXsdDocs\WiX\SchemaSetDoc.xml" />
+        </externalDocumentFilePaths>
+    </contentSource>
+</documentGroup>

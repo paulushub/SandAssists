@@ -61,14 +61,17 @@ namespace Sandcastle.ReflectionData
         {
             get
             {
-                Target target = null;
+                Target target             = null;
+                this.RecentLinkType       = ReferenceLinkType.None;
+                this.RecentLinkTypeIsMsdn = false;
 
                 if (_localStorage != null && _localStorage.Count != 0)
                 {
                     target = _localStorage[id];
                     if (target != null)
                     {
-                        target.LinkType = _localLink;
+                        this.RecentLinkType       = _localLink;
+                        this.RecentLinkTypeIsMsdn = false;
 
                         return target;
                     }
@@ -78,7 +81,8 @@ namespace Sandcastle.ReflectionData
                     target = _msdnStorage[id];
                     if (target != null)
                     {
-                        target.LinkType = _msdnLink;
+                        this.RecentLinkType       = _msdnLink;
+                        this.RecentLinkTypeIsMsdn = true;
 
                         return target;
                     }

@@ -35,6 +35,8 @@ namespace Sandcastle.Components
         private XPathExpression _codeProtoSelector;
         private XPathExpression _spanSelector;
 
+        private XPathExpression _tokensSelector;
+
         #endregion
 
         #region Constructors and Destructor
@@ -81,6 +83,9 @@ namespace Sandcastle.Components
                     _spanSelector = XPathExpression.Compile(
                         "span[@name='SandAssist' and @class='tgtSentence']");
                 }
+
+                _tokensSelector = XPathExpression.Compile(
+                  "//span[@name='SandTokens' and @class='tgtSentence']");
             }
             catch (Exception ex)
             {
@@ -141,6 +146,9 @@ namespace Sandcastle.Components
 
                 // 3. Apply the header for logo and others
                 ApplyHeader(docNavigator);
+
+                // 4. Apply the tokens...
+                ApplyTokens(docNavigator);
             }
             catch (Exception ex)
             {
@@ -647,6 +655,76 @@ namespace Sandcastle.Components
                         }
                     }  
                 }
+            }
+        }
+
+        #endregion
+
+        #region ApplyTokens Method
+
+        private void ApplyTokens(XPathNavigator documentNavigator)
+        {
+            XPathNodeIterator iterator = documentNavigator.Select(_tokensSelector);
+            if (iterator == null || iterator.Count == 0)
+            {
+                return;
+            }
+
+            XPathNavigator[] navigators =
+                BuildComponentUtilities.ConvertNodeIteratorToArray(iterator);
+
+            int itemCount = navigators.Length;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                XPathNavigator navigator = navigators[i];
+
+                string tokenText = navigator.Value;
+                if (tokenText != null)
+                {
+                    tokenText = tokenText.Trim();
+                }
+                if (!String.IsNullOrEmpty(tokenText))
+                {
+                    if (tokenText.Equals("lineBreak", StringComparison.OrdinalIgnoreCase))
+                    {
+                        XmlWriter writer = navigator.InsertAfter();
+
+                        writer.WriteStartElement("br");
+                        writer.WriteEndElement();
+
+                        writer.Close();
+                    }
+                    else if (tokenText.Equals("iconColumn", StringComparison.OrdinalIgnoreCase))
+                    {
+                        XPathNavigator tableNode = navigator.Clone();
+
+                        while (tableNode.MoveToParent())
+                        {
+                            if (String.Equals(tableNode.LocalName, "table",
+                                StringComparison.OrdinalIgnoreCase) ||
+                                String.Equals(tableNode.LocalName, "div",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                break;
+                            }
+                        }
+
+                        if (String.Equals(tableNode.LocalName, "table",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            XmlWriter writer = tableNode.PrependChild();
+
+                            writer.WriteStartElement("col");
+                            writer.WriteAttributeString("style", "width:24px");
+                            writer.WriteEndElement();
+
+                            writer.Close();
+                        }
+                    }
+                }
+
+                navigator.DeleteSelf();
             }
         }
 

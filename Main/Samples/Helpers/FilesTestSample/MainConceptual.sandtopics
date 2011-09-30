@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<conceptualContent version="1.0">
+    <!-- 1. The content directory, if not the same as the content file. -->
+    <location>
+        <path value="..\SampleTopics\Documents\" />
+    </location>
+    <!-- 2. The general content settings -->
+    <propertyGroup name="General">
+        <property name="Id">14b46ee5-c547-4f08-8b25-1f3a561ff89b</property>
+        <property name="CompanionFiles">False</property>
+    </propertyGroup>
+    <!-- 3. The list of categories defined by this conceptual contents. -->
+    <categories />
+    <!-- 4. The hierarchical list of topics in this contents. -->
+    <topics default="2aca5da4-6f94-43a0-9817-5f413d16f101">
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f101" type="Topic" visible="True" revision="1">
+            <title>Quick Start</title>
+            <path value="..\SampleTopics\Documents\Document.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f102" type="Topic" visible="True" revision="1">
+            <title>Math Document</title>
+            <path value="..\SampleTopics\Documents\MathDocument.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f103" type="Topic" visible="True" revision="1">
+            <title>Formula Gallery</title>
+            <path value="..\SampleTopics\Documents\FormulaGallery.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f104" type="Topic" visible="True" revision="1">
+            <title>Code Tests</title>
+            <path value="..\SampleTopics\Documents\CodeTest.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f105" type="Topic" visible="True" revision="1">
+            <title>Testing</title>
+            <path value="..\SampleTopics\Documents\Testing.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f106" type="Topic" visible="True" revision="1">
+            <title>Embedded PDF Document</title>
+            <path value="..\SampleTopics\Documents\EmbedPdf.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f107" type="Topic" visible="True" revision="1">
+            <title>Embedded XPS Document</title>
+            <path value="..\SampleTopics\Documents\EmbedXps.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f108" type="Topic" visible="True" revision="1">
+            <title>Embedded Flash Media</title>
+            <path value="..\SampleTopics\Documents\EmbedFlash.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f109" type="Topic" visible="True" revision="1">
+            <title>Embedded Silverlight Media</title>
+            <path value="..\SampleTopics\Documents\EmbedSilverlight.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f110" type="Html" visible="True" revision="1">
+            <title>Test HTML Topic</title>
+            <path value="..\SampleTopics\Documents\TestHtmlDocument.htm" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f502" type="Topic" visible="True" revision="1">
+            <title>Getting Started</title>
+            <path value="..\SampleTopics\Documents\Tutorials\Tutorial.aml" />
+            <excludes />
+            <metadata />
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f500" type="Topic" visible="True" revision="1">
+                <title>Introduction</title>
+                <path value="..\SampleTopics\Documents\Tutorials\Introduction.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f501" type="Topic" visible="True" revision="1">
+                <title>Quick Start</title>
+                <path value="..\SampleTopics\Documents\Tutorials\QuickStart.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f503" type="Topic" visible="True" revision="1">
+                <title>Issues</title>
+                <path value="..\SampleTopics\Documents\Tutorials\Issues.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f504" type="Topic" visible="True" revision="1">
+                <title>Code Tests</title>
+                <path value="..\SampleTopics\Documents\Tutorials\CodeTest.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f400" type="Topic" visible="True" revision="1">
+            <title>Document Types</title>
+            <path value="..\SampleTopics\Documents\DocumentTypes\Documents.aml" />
+            <excludes />
+            <metadata />
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f551" type="Topic" visible="True" revision="1">
+                <title>The Conceptual Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Conceptual.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f550" type="Topic" visible="True" revision="1">
+                <title>The How to Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\HowTo.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f552" type="Topic" visible="True" revision="1">
+                <title>The Orientation Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Orientations.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f553" type="Topic" visible="True" revision="1">
+                <title>The Samples Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Samples.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f557" type="Topic" visible="True" revision="1">
+                <title>The WhitePaper Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\WhitePaper.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f558" type="Topic" visible="True" revision="1">
+                <title>The Walkthrough Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Walkthrough.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f559" type="Topic" visible="True" revision="1">
+                <title>The UI Reference Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\UIReference.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f560" type="Topic" visible="True" revision="1">
+                <title>The XML Reference Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\XmlReference.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f561" type="Topic" visible="True" revision="1">
+                <title>The Reference Without Syntax Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\ReferenceWithoutSyntax.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f562" type="Topic" visible="True" revision="1">
+                <title>The Reference With Syntax Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\ReferenceWithSyntax.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f554" type="Topic" visible="True" revision="1">
+                <title>The Error Messages Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\ErrorMessages.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f556" type="Topic" visible="True" revision="1">
+                <title>The Troubleshooting Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Troubleshooting.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f555" type="Topic" visible="True" revision="1">
+                <title>The Glossary Document</title>
+                <path value="..\SampleTopics\Documents\DocumentTypes\Glossary.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+        </topic>
+        <topic id="2aca5da4-6f94-43a0-9817-5f413d16f600" type="Topic" visible="True" revision="1">
+            <title>Illustrative Examples</title>
+            <path value="..\SampleTopics\Documents\Examples\Examples.aml" />
+            <excludes />
+            <metadata />
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f601" type="Topic" visible="True" revision="1">
+                <title>Example 1 - General</title>
+                <path value="..\SampleTopics\Documents\Examples\General.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f602" type="Topic" visible="True" revision="1">
+                <title>Example 2 - Table</title>
+                <path value="..\SampleTopics\Documents\Examples\Tables.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f603" type="Topic" visible="True" revision="1">
+                <title>Example 3 - Definition Table</title>
+                <path value="..\SampleTopics\Documents\Examples\DefinitionTables.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f604" type="Topic" visible="True" revision="1">
+                <title>Example 4 - Alerts</title>
+                <path value="..\SampleTopics\Documents\Examples\Alerts.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f605" type="Topic" visible="True" revision="1">
+                <title>Example 5 - Links</title>
+                <path value="..\SampleTopics\Documents\Examples\Links.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f606" type="Topic" visible="True" revision="1">
+                <title>Example 6 - Codes</title>
+                <path value="..\SampleTopics\Documents\Examples\Codes.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f607" type="Topic" visible="True" revision="1">
+                <title>Example 7 - Lists</title>
+                <path value="..\SampleTopics\Documents\Examples\Lists.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f608" type="Topic" visible="True" revision="1">
+                <title>Example 8 - Images</title>
+                <path value="..\SampleTopics\Documents\Examples\Images.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+            <topic id="2aca5da4-6f94-43a0-9817-5f413d16f609" type="Topic" visible="True" revision="1">
+                <title>Example 9 - Others</title>
+                <path value="..\SampleTopics\Documents\Examples\Others.aml" />
+                <excludes />
+                <metadata />
+            </topic>
+        </topic>
+        <topic id="e36e744f-c053-4e94-9ac9-b1ee054d8de1" type="Marker" visible="True" revision="1">
+            <title>Sample Reference Root Topic</title>
+            <excludes />
+            <metadata />
+            <marker sourceId="e36798c6-2fac-4661-b1d1-f6db67e52c7d" sourceType="Conceptual" />
+        </topic>
+        <topic id="ec7d5bba-9570-4e4f-a1ba-77dc7b3cd1c4" type="Topic" visible="True" revision="1">
+            <title>References</title>
+            <path value="..\SampleTopics\Documents\References.aml" />
+            <excludes />
+            <metadata />
+            <topic id="e36e744f-c053-4e94-9ac9-b1ee054d8de2" type="Marker" visible="True" revision="1">
+                <title>Sample Reference Root Topic</title>
+                <excludes />
+                <metadata />
+                <marker sourceId="be96b214-1314-4a3e-945c-b05f8c511b0d" sourceType="Reference" />
+            </topic>
+            <topic id="e36e744f-c053-4e94-9ac9-b1ee054d8de3" type="Marker" visible="True" revision="1">
+                <title>Sample Root Topic - 1</title>
+                <excludes />
+                <metadata />
+                <marker sourceId="d34335a7-e075-40a5-a3bf-65db392d9904" sourceType="Reference" />
+            </topic>
+            <topic id="e36e744f-c053-4e94-9ac9-b1ee054d8de4" type="Marker" visible="True" revision="1">
+                <title>Sample Root Topic - 2</title>
+                <excludes />
+                <metadata />
+                <marker sourceId="6aca5da4-6f94-43a0-9817-5f413d16f001" sourceType="Topic" />
+            </topic>
+        </topic>
+    </topics>
+    <!-- 5. A list of related topics, which may or may not be compiled, but not included in the TOC. -->
+    <relatedTopics>
+        <topic id="d36e744f-c053-4e94-9ac9-b1ee054d8de1" type="Related" visible="True" revision="1">
+            <title>Sample Reference Root Topic</title>
+            <path value="..\SampleTopics\Documents\RootNamespaces.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+        <topic id="d36e744f-c053-4e94-9ac9-b1ee054d8de2" type="Related" visible="True" revision="1">
+            <title>Sample Root Topic</title>
+            <path value="..\SampleTopics\Documents\RootTopic.aml" />
+            <excludes />
+            <metadata />
+        </topic>
+    </relatedTopics>
+</conceptualContent>

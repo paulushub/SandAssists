@@ -14,7 +14,7 @@ namespace Sandcastle
 
         #region Public Properties
 
-        bool IsInitialized
+        bool? IsInitialized
         {
             get;
         }

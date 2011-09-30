@@ -26,6 +26,8 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool _notApplicable;
+
         private ReferenceVisibilityConfiguration _visibility;
 
         #endregion
@@ -76,6 +78,21 @@ namespace Sandcastle.References
         {
             base.Initialize(context, group);
 
+            _notApplicable = false;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext != null)
+            {
+                // We do not have to spell check embedded documents...
+                string embeddedText = groupContext["$IsEmbeddedGroup"];
+                if (!String.IsNullOrEmpty(embeddedText) &&
+                    embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+                {
+                    _notApplicable = true;
+                    return;
+                }
+            }
+
             if (this.IsInitialized)
             {
                 if (_visibility == null)
@@ -118,7 +135,7 @@ namespace Sandcastle.References
             {
                 return;
             }
-            if (_visibility == null || !_visibility.Enabled)
+            if (_visibility == null || !_visibility.Enabled || _notApplicable)
             {
                 return;
             }

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Conceptual" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">e36798c6-2fac-4661-b1d1-f6db67e52c7d</property>
+        <property name="Name">HelpRegister User Manual</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle HelpRegister: User Manual</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Conceptual">
+        <property name="DocumentId">5bfa878d-c560-4fbb-8a2a-0c7f65ac0c19</property>
+        <property name="ProjectId">5c067498-2b93-4908-bf90-457a564d52de</property>
+        <property name="RepositoryId">13af0056-34d7-4ca0-862b-74459400c36b</property>
+        <property name="ProjectName">ProjectName</property>
+        <property name="ProjectTitle">ProjectTitle</property>
+        <property name="DocumentWriter"></property>
+        <property name="DocumentEditor"></property>
+        <property name="DocumentManager"></property>
+        <property name="FileVersion">1.0.0.0</property>
+        <property name="FreshnessFormat">D</property>
+        <property name="FreshnessDate"></property>
+        <property name="ChangeHistory">Show</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Media" source="..\SampleRegisterTopics\MediaContent.media" />
+        <content type="Conceptual" source=".\OtherConceptual.sandtopics" />
+    </contents>
+</documentGroup>

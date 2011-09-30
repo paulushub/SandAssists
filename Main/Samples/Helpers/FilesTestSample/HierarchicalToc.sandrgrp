@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Reference" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">d34335a7-e075-40a5-a3bf-65db392d9904</property>
+        <property name="Name">Test Hierarchical Toc References</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: Test Hierarchical Toc</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Reference">
+        <property name="XmlnsForXaml">False</property>
+        <property name="RootTitle">HierarchicalToc Test References</property>
+        <property name="RootTopicId">d36e744f-c053-4e94-9ac9-b1ee054d8de1</property>
+        <property name="VersionType">AssemblyAndFile</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents>
+        <content type="Reference" source=".\HierarchicalToc.sandrefs" />
+    </contents>
+</documentGroup>

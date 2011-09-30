@@ -1,14 +1,22 @@
 using System;
+using System.Xml;
+using System.Diagnostics;
 
 namespace Sandcastle.Contents
 {
     [Serializable]
     public sealed class ResourceItem : BuildItem<ResourceItem>
     {
+        #region Public Fields
+
+        public const string TagName = "resourceItem";
+
+        #endregion
+
         #region Private Fields
 
-        private string _source;
-        private string _destination;
+        private BuildDirectoryPath _source;
+        private BuildDirectoryPath _destination;
 
         #endregion
 
@@ -19,6 +27,19 @@ namespace Sandcastle.Contents
         }
 
         public ResourceItem(string source, string destination)
+        {
+            if (!String.IsNullOrEmpty(source))
+            {
+                _source = new BuildDirectoryPath(source);
+            }
+            if (!String.IsNullOrEmpty(destination))
+            {
+                _destination = new BuildDirectoryPath(destination);
+            }
+        }
+
+        public ResourceItem(BuildDirectoryPath source, 
+            BuildDirectoryPath destination)
         {
             _source      = source;
             _destination = destination;
@@ -39,8 +60,8 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_source) ||
-                    String.IsNullOrEmpty(_destination))
+                if ((_source == null || !_source.Exists) ||
+                    (_destination == null || !_destination.Exists))
                 {
                     return true;
                 }
@@ -49,7 +70,7 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string Source
+        public BuildDirectoryPath Source
         {
             get
             {
@@ -61,7 +82,7 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string Destination
+        public BuildDirectoryPath Destination
         {
             get
             {
@@ -70,6 +91,24 @@ namespace Sandcastle.Contents
             set
             {
                 _destination = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ResourceItem"/> class instance, this property is 
+        /// <see cref="ResourceItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
             }
         }
 
@@ -123,6 +162,95 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.Name.ToLower())
+                    {
+                        case "source":
+                            _source = BuildDirectoryPath.ReadLocation(reader);
+                            break;
+                        case "destination":
+                            _destination = BuildDirectoryPath.ReadLocation(reader);
+                            break;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - attribute
+            BuildDirectoryPath.WriteLocation(_source, "source", writer);
+            BuildDirectoryPath.WriteLocation(_destination, "destination", writer);
+            writer.WriteEndElement();           // end - attribute
+        }
+
+        #endregion
+
         #region ICloneable Members
 
         public override ResourceItem Clone()
@@ -130,11 +258,11 @@ namespace Sandcastle.Contents
             ResourceItem resource = new ResourceItem(this);
             if (_source != null)
             {
-                resource._source = String.Copy(_source);
+                resource._source = _source.Clone();
             }
             if (_destination != null)
             {
-                resource._destination = String.Copy(_destination);
+                resource._destination = _destination.Clone();
             }
 
             return resource;

@@ -30,7 +30,7 @@ namespace Sandcastle.Contents
         #region Constructors and Destructor
 
         public TocItem()
-            : this(Guid.NewGuid().ToString(), String.Empty)
+            : this(String.Format("tc{0:x}", Guid.NewGuid().ToString().GetHashCode()), String.Empty)
         {
         }
 
@@ -40,7 +40,7 @@ namespace Sandcastle.Contents
 
             if (String.IsNullOrEmpty(tocItemId))
             {
-                tocItemId = Guid.NewGuid().ToString();
+                tocItemId = String.Format("tcid{0:x}", Guid.NewGuid().ToString().GetHashCode());
             }
 
             _isRecursive = true;
@@ -195,6 +195,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="TocItem"/> class instance, this property is 
+        /// <see cref="TocItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -305,11 +323,11 @@ namespace Sandcastle.Contents
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -330,28 +348,8 @@ namespace Sandcastle.Contents
                 return;
             }
 
-            _name        = reader.GetAttribute("name");
-            _tocId       = reader.GetAttribute("tocId");
-            _sourceId    = reader.GetAttribute("sourceId");
-            switch (reader.GetAttribute("name").ToLower())
-            {
-                case "topic":
-                    _sourceType = TocItemSourceType.Topic;
-                    break;
-                case "group":
-                    _sourceType = TocItemSourceType.Group;
-                    break;
-                case "namespace":
-                    _sourceType = TocItemSourceType.Namespace;
-                    break;
-                case "namespaceroot":
-                    _sourceType = TocItemSourceType.NamespaceRoot;
-                    break;
-                default:
-                    _sourceType = TocItemSourceType.None;
-                    break;
-            }
-            _isRecursive = Convert.ToBoolean(reader.GetAttribute("recursive"));
+            _name  = reader.GetAttribute("name");
+            _tocId = reader.GetAttribute("id");    
 
             if (reader.IsEmptyElement)
             {
@@ -366,15 +364,42 @@ namespace Sandcastle.Contents
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
-                {   
-                    if (String.Equals(reader.Name, TagName, 
+                {
+                    if (String.Equals(reader.Name, "source", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        _sourceId = reader.GetAttribute("id");
+                        switch (reader.GetAttribute("type").ToLower())
+                        {
+                            case "topic":
+                                _sourceType = TocItemSourceType.Topic;
+                                break;
+                            case "group":
+                                _sourceType = TocItemSourceType.Group;
+                                break;
+                            case "namespace":
+                                _sourceType = TocItemSourceType.Namespace;
+                                break;
+                            case "namespaceroot":
+                                _sourceType = TocItemSourceType.NamespaceRoot;
+                                break;
+                            default:
+                                _sourceType = TocItemSourceType.None;
+                                break;
+                        }
+                        _isRecursive = Convert.ToBoolean(reader.GetAttribute("recursive"));
+                    }
+                    else if (String.Equals(reader.Name, TagName,
                         StringComparison.OrdinalIgnoreCase))
                     {
                         TocItem item = new TocItem();
 
-                        this.Add(item);
-
                         item.ReadXml(reader);
+
+                        if (!item.IsEmpty)
+                        {
+                            this.Add(item);
+                        }
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
@@ -390,10 +415,10 @@ namespace Sandcastle.Contents
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -409,11 +434,14 @@ namespace Sandcastle.Contents
             }
 
             writer.WriteStartElement(TagName);  // start - item
-            writer.WriteAttributeString("name",       _name);
-            writer.WriteAttributeString("tocId",      _tocId);
-            writer.WriteAttributeString("sourceId",   _sourceId);
-            writer.WriteAttributeString("sourceType", _sourceType.ToString());
+            writer.WriteAttributeString("name", _name);
+            writer.WriteAttributeString("id",   _tocId);
+
+            writer.WriteStartElement("source"); // start - source
+            writer.WriteAttributeString("id",   _sourceId);
+            writer.WriteAttributeString("type", _sourceType.ToString());
             writer.WriteAttributeString("recursive",  _isRecursive.ToString());
+            writer.WriteEndElement();           // end - source
 
             if (_listItems != null && _listItems.Count != 0)
             {

@@ -452,8 +452,10 @@ namespace Sandcastle.ReflectionData
         private void WriteSpecialization(Specialization specialization, 
             ReferenceLinkDisplayOptions options, XmlWriter writer)
         {
-            // write the type itself (without outer types, because those will be written be other calls to this routine)
-            WriteSimpleType(specialization.TemplateType, (options & ~ReferenceLinkDisplayOptions.ShowTemplates),
+            // write the type itself (without outer types, because those 
+            // will be written be other calls to this routine)
+            WriteSimpleType(specialization.TemplateType, 
+                (options & ~ReferenceLinkDisplayOptions.ShowTemplates),
                 false, writer);
 
             // then write the template arguments

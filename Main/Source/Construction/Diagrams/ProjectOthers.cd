@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Construction.Evaluation.Project" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAACAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAiAEAAAAA=</HashCode>
+      <FileName>Evaluation\Project.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.Evaluation.ProjectCollection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAEAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Evaluation\ProjectCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Sandcastle.Construction.Evaluation.ProjectItem" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Evaluation\ProjectItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.Exceptions.InvalidProjectFileException" Collapsed="true">
+    <Position X="3.25" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQgBAAAAAAAAAIAACgBggAAAAAAAAAIBAAAAA=</HashCode>
+      <FileName>Exceptions\InvalidProjectFileException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.Internal.ReadOnlyCollection&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ACIAAAAAAAAAABAQAAAADAQAAAAAAAAAAAAAAABQIAA=</HashCode>
+      <FileName>Internal\ReadOnlyCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Sandcastle.Construction.Internal.ReverseEnumerable&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAABAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Internal\ReverseEnumerable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Sandcastle.Construction.Internal.FilteredEnumerable&lt;U, V&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAIAAAABAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Internal\FilteredEnumerable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Enum Name="Sandcastle.Construction.Evaluation.ProjectLoadSettings">
+    <Position X="0.5" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAIIAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Evaluation\ProjectLoadSettings.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

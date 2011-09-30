@@ -2,8 +2,11 @@
 
 namespace Sandcastle.Conceptual
 {
-    [Serializable]
-    public abstract class ConceptualGroupVisitor : BuildGroupVisitor<ConceptualGroupVisitor>
+    /// <summary>
+    /// This is an <see cref="abstract"/> base class for conceptual group 
+    /// visitors, which prepare the groups for the build process.
+    /// </summary>
+    public abstract class ConceptualGroupVisitor : BuildGroupVisitor
     {
         #region Private Fields
 
@@ -41,27 +44,16 @@ namespace Sandcastle.Conceptual
         {   
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConceptualGroupVisitor"/> class
-        /// with parameters copied from the specified instance of the 
-        /// <see cref="ConceptualGroupVisitor"/> class, a copy constructor.
-        /// </summary>
-        /// <param name="source">
-        /// An instance of the <see cref="ConceptualGroupVisitor"/> class from which the
-        /// initialization parameters or values will be copied.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the parameter <paramref name="source"/> is <see langword="null"/>.
-        /// </exception>
-        protected ConceptualGroupVisitor(ConceptualGroupVisitor source)
-            : base(source)
-        {
-        }
-
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets a value specifying the category or type of this group.
+        /// </summary>
+        /// <value>
+        /// This will always return <see cref="BuildGroupType.Conceptual"/>.
+        /// </value>
         public override BuildGroupType GroupType
         {
             get
@@ -74,6 +66,27 @@ namespace Sandcastle.Conceptual
 
         #region Public Methods
 
+        /// <overloads>
+        /// Applies the processing operations defined by this conceptual visitor 
+        /// to the specified build group.
+        /// </overloads>
+        /// <summary>
+        /// Applies the processing operations defined by this visitor to the
+        /// specified build group.
+        /// </summary>
+        /// <param name="group">
+        /// The <see cref="BuildGroup">build group</see> to which the processing
+        /// operations defined by this visitor will be applied.
+        /// </param>
+        /// <remarks>
+        /// The visitor must be initialized before any call this method.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="group"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// If the specified <paramref name="group"/> is not of conceptual type.
+        /// </exception>
         public override void Visit(BuildGroup group)
         {
             BuildExceptions.NotNull(group, "group");
@@ -88,8 +101,27 @@ namespace Sandcastle.Conceptual
             {
                 this.OnVisit((ConceptualGroup)group);
             }
+            else
+            {
+                throw new ArgumentException(
+                    "ReferenceGroupVisitor: The group visitor can only process conceptual group.");
+            }
         }
 
+        /// <summary>
+        /// Applies the processing operations defined by this visitor to the
+        /// specified conceptual group.
+        /// </summary>
+        /// <param name="group">
+        /// The <see cref="ConceptualGroup">conceptual group</see> to which the processing
+        /// operations defined by this visitor will be applied.
+        /// </param>
+        /// <remarks>
+        /// The visitor must be initialized before any call this method.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="group"/> is <see langword="null"/>.
+        /// </exception>
         public void Visit(ConceptualGroup group)
         {
             BuildExceptions.NotNull(group, "group");
@@ -107,6 +139,17 @@ namespace Sandcastle.Conceptual
 
         #region Protected Methods
 
+        /// <summary>
+        /// Applies the processing operations defined by this visitor to the
+        /// specified conceptual group.
+        /// </summary>
+        /// <param name="group">
+        /// The <see cref="ConceptualGroup">conceptual group</see> to which 
+        /// the processing operations defined by this visitor will be applied.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="group"/> is <see langword="null"/>.
+        /// </exception>
         protected abstract void OnVisit(ConceptualGroup group);
 
         #endregion

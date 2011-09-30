@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<referenceContent version="1.0">
+    <!-- 1. The content directory, if not the same as the content file. -->
+    <location />
+    <!-- 2. The general content settings -->
+    <propertyGroup name="General">
+        <property name="Id">ae042e30-964d-41bb-9529-56cb384adb5e</property>
+        <property name="FrameworkType">Framework40</property>
+    </propertyGroup>
+    <!-- 3. The reference items defining the API content -->
+    <referenceItems>
+        <referenceItem xamlSyntax="False">
+            <assembly />
+            <comments>
+                <path value="..\SampleLibrary\Libraries\Redirects\Project.xml" />
+            </comments>
+            <source />
+        </referenceItem>
+        <referenceItem xamlSyntax="True">
+            <assembly>
+                <path value="..\SampleLibrary\Libraries\Redirects\Tests.Drawings.dll" />
+            </assembly>
+            <comments>
+                <path value="..\SampleLibrary\Libraries\Redirects\Tests.Drawings.xml" />
+            </comments>
+            <source />
+        </referenceItem>
+    </referenceItems>
+    <!-- 4. The various contents required for documentation -->
+    <contents>
+        <content type="Comments">
+            <doc />
+        </content>
+        <content type="Dependencies">
+            <dependencyContent />
+        </content>
+        <content type="HierarchicalToc">
+            <hierarchicalTocContent />
+        </content>
+    </contents>
+    <!-- 5. The API/attribute filters associated with the documentations -->
+    <filters>
+        <filter name="ft99b86d3a" expose="True" type="ApiFilter" />
+        <filter name="ft36555cbe" expose="True" type="AttributeFilter" />
+    </filters>
+</referenceContent>

@@ -21,7 +21,7 @@ namespace Sandcastle
         private string _topicsFile;
 
         private string _commentsDir;
-        private string _referencesDir;
+        private string _assembliesDir;
         private string _dependenciesDir;
         private string _imagesDir;
 
@@ -271,11 +271,11 @@ namespace Sandcastle
             }
         }
 
-        public string ReferencesDir
+        public string AssembliesDir
         {
             get
             {
-                return _referencesDir;
+                return _assembliesDir;
             }
             set
             {
@@ -293,7 +293,7 @@ namespace Sandcastle
                     return;
                 }
 
-                _referencesDir = value;
+                _assembliesDir = value;
             }
         }
 
@@ -400,9 +400,9 @@ namespace Sandcastle
             {
                 _commentsDir = Path.Combine(workingDir, "Comments");
             }
-            if (String.IsNullOrEmpty(_referencesDir))
+            if (String.IsNullOrEmpty(_assembliesDir))
             {
-                _referencesDir = Path.Combine(workingDir, "References");
+                _assembliesDir = Path.Combine(workingDir, "References");
             }
             if (String.IsNullOrEmpty(_dependenciesDir))
             {

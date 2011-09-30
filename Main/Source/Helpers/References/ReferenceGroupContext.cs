@@ -280,6 +280,12 @@ namespace Sandcastle.References
 
             base.CreateProperties(indexValue);
 
+            this["$MediaFile"]    = String.Format("ApiMedia{0}.xml", indexValue);
+            this["$ContentsFile"] = String.Format("ApiTableOfContents{0}.xml", indexValue);
+            this["$DdueMedia"]    = String.Format("ApiDdueMedia{0}", indexValue);
+                        
+            this["$CommentsFile"] = String.Format("ApiProjectComments{0}.xml", indexValue);
+
             this["$SharedContentFile"] =
                 String.Format("ApiSharedContent{0}.xml", indexValue);
             this["$TocFile"] =

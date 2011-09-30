@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sandcastle.Construction.ProjectSections.ProjectSection" Collapsed="true">
+    <Position X="2" Y="1.5" Width="1.25" />
+    <TypeIdentifier>
+      <HashCode>AAAwgQABAhAAtAACGGoAEAQCxgIAAAgDjkGEEAAAAAA=</HashCode>
+      <FileName>ProjectSections\ProjectSection.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Context" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.MsBuildProjectSection" Collapsed="true">
+    <Position X="1.75" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAYAACAAAAAACAACAAAACAAABAAAAAAAAIAIAA=</HashCode>
+      <FileName>ProjectSections\MsBuildProjectSection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.VcProjectSection" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>IAAgAAAAAAAAIAAAQCAACAAAAAAAAAAAAAAAAAIAAIA=</HashCode>
+      <FileName>ProjectSections\VcProjectSection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.VcxProjectSection" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAACAAAAAEAAAAAAAAAAAAEAAAAAAAAAAIAA=</HashCode>
+      <FileName>ProjectSections\VcxProjectSection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.StandardProjectSection" Collapsed="true">
+    <Position X="3.25" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAUgAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>ProjectSections\StandardProjectSection.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="StandardType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.ProjectSectionContext" Collapsed="true">
+    <Position X="3.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAYAAAAAJAADAABAIAAAAggAAAiAEQBgAIAgA=</HashCode>
+      <FileName>ProjectSections\ProjectSectionContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.Construction.ProjectSections.ProjectSectionFactory" Collapsed="true">
+    <Position X="2" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAAABAAAAAIAAAAAAAAAAQIAAAQAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>ProjectSections\ProjectSectionFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Sandcastle.Construction.ProjectSections.StandardProjectType" Collapsed="true">
+    <Position X="3.75" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAAAQAAAAAAAAAAAAgBAAAAAAAAAAAAAGAAAA=</HashCode>
+      <FileName>ProjectSections\StandardProjectType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

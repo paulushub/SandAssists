@@ -2,12 +2,14 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Microsoft.Win32;
 
 using Sandcastle.Steps;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
 {
@@ -36,16 +38,17 @@ namespace Sandcastle.Formats
         private bool   _keepSources;
         private bool   _separateIndex;
         private bool   _includeStopWords;
-        private string _compilerFile;
-        private string _compilerDir;
+
+        private BuildFilePath      _compilerFile;
+        private BuildDirectoryPath _compilerDir;
 
         private string _helpTitleId;
 
         // Plugin properties...
         private bool         _pluginTocFlat;
         private string       _pluginTitle;
-        private List<string> _pluginParents;
-        private List<string> _pluginChildren;
+        private BuildList<string> _pluginParents;
+        private BuildList<string> _pluginChildren;
 
         // Named Url Properties...
         private string _homePage;
@@ -77,17 +80,42 @@ namespace Sandcastle.Formats
             _sampleDirPage    = String.Empty;
             _searchHelpPage   = String.Empty;
 
-            _pluginParents    = new List<string>();
-            _pluginChildren   = new List<string>();
+            _pluginParents    = new BuildList<string>();
+            _pluginChildren   = new BuildList<string>();
 
-            this.AddProperty("CollectionPrefix", "Coll");
-            this.AddProperty("RegistrationLevel", "Basic");
+            this.AddProperty("CollectionPrefix",    "Coll");
+            this.AddProperty("RegistrationLevel",   "Basic");
             this.AddProperty("SharedContentSuffix", "Hxs");
         }
 
         public FormatHxs(FormatHxs source)
             : base(source)
-        {
+        {   
+            _keepSources      = source._keepSources;
+            _separateIndex    = source._separateIndex;
+            _includeStopWords = source._includeStopWords;
+            _compilerFile     = source._compilerFile;
+            _compilerDir      = source._compilerDir;
+
+            _helpTitleId      = source._helpTitleId;
+
+            // Plugin properties...
+            _pluginTocFlat    = source._pluginTocFlat;
+            _pluginTitle      = source._pluginTitle;
+            _pluginParents    = source._pluginParents;
+            _pluginChildren   = source._pluginChildren;
+
+            // Named Url Properties...
+            _homePage         = source._homePage;
+            _defaultPage      = source._defaultPage;
+            _navFailPage      = source._navFailPage;
+            _aboutPageInfo    = source._aboutPageInfo;
+            _aboutPageIcon    = source._aboutPageIcon;
+            _filterEditPage   = source._filterEditPage;
+            _helpPage         = source._helpPage;
+            _supportPage      = source._supportPage;
+            _sampleDirPage    = source._sampleDirPage;
+            _searchHelpPage   = source._searchHelpPage;
         }
 
         #endregion
@@ -149,7 +177,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public string Compiler
+        public BuildFilePath CompilerFile
         {
             get
             {
@@ -192,7 +220,7 @@ namespace Sandcastle.Formats
             }
         }
 
-        public string CompilerDirectory
+        public BuildDirectoryPath CompilerDirectory
         {
             get 
             {
@@ -567,7 +595,7 @@ namespace Sandcastle.Formats
                 listSteps.Add(hxsBuilder); 
 
                 // 3. Compile the Html help files hxcomp.exe -p Help\Manual.hxc
-                string application = this.Compiler;
+                string application = this.CompilerFile;
                 string arguments   = String.Format(
                     @"-p {0}\{1}.HxC -n Output\{1}.log", helpFolder, helpName);
                 StepHxsCompiler hxsCompiler = new StepHxsCompiler(workingDir, 
@@ -613,27 +641,353 @@ namespace Sandcastle.Formats
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadPropertyGroupXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            if (!String.Equals(startElement, "propertyGroup",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "OnReadPropertyGroupXml: The current element is '{0}' not the expected 'propertyGroup'.",
+                    startElement));
+            }
+
+            string groupName = reader.GetAttribute("name");
+            Debug.Assert(String.Equals(groupName, "FormatHxs-General") ||
+                String.Equals(groupName, "FormatHxs-NamedUrl"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (String.Equals(groupName, "FormatHxs-General",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                this.ReadXmlGeneral(reader);
+            }
+            else if (String.Equals(groupName, "FormatHxs-NamedUrl",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                this.ReadXmlNamedUrl(reader);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        protected override void OnWritePropertyGroupXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatHxs-General");
+            writer.WritePropertyElement("KeepSources",       _keepSources);
+            writer.WritePropertyElement("SeparateIndexFile", _separateIndex);
+            writer.WritePropertyElement("IncludeStopWords",  _includeStopWords);
+            writer.WritePropertyElement("HelpTitleId",       _helpTitleId);
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatHxs-NamedUrl");
+            writer.WritePropertyElement("HomePage",       _homePage);
+            writer.WritePropertyElement("DefaultPage",    _defaultPage);
+            writer.WritePropertyElement("NavFailPage",    _navFailPage);
+            writer.WritePropertyElement("AboutPageInfo",  _aboutPageInfo);
+            writer.WritePropertyElement("AboutPageIcon",  _aboutPageIcon);
+            writer.WritePropertyElement("FilterEditPage", _filterEditPage);
+            writer.WritePropertyElement("HelpPage",       _helpPage);
+            writer.WritePropertyElement("SupportPage",    _supportPage);
+            writer.WritePropertyElement("SampleDirPage",  _sampleDirPage);
+            writer.WritePropertyElement("SearchHelpPage", _searchHelpPage);
+            writer.WriteEndElement();                   // end - propertyGroup
+        }
+
+        protected override void OnReadContentXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteContentXml(XmlWriter writer)
+        {
+        }
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (String.Equals(reader.Name, "compilerFile",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _compilerFile = BuildFilePath.ReadLocation(reader);
+            }
+            else if (String.Equals(reader.Name, "compilerDirectory",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _compilerDir = BuildDirectoryPath.ReadLocation(reader);
+            }
+            else if (String.Equals(reader.Name, "plugin",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                //<plugin flatToc="False">
+                //    <title></title>
+                //    <parents>
+                //      <parent>ParentName</parent>
+                //    </parents>
+                //    <children>
+                //      <child>ChildName</child>
+                //    </children>
+                //</plugin>  
+
+                if (_pluginParents == null)
+                {
+                    _pluginParents = new BuildList<string>();
+                }
+                if (_pluginChildren == null)
+                {
+                    _pluginChildren = new BuildList<string>();
+                }
+
+                string tempText = reader.GetAttribute("flatToc");
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    _pluginTocFlat = Convert.ToBoolean(tempText);
+                }
+
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name.ToLower())
+                        {
+                            case "title":
+                                _pluginTitle = reader.ReadString();
+                                break;
+                            case "parent":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _pluginParents.Add(tempText);
+                                }
+                                break;
+                            case "child":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _pluginChildren.Add(tempText);
+                                }
+                                break;
+                        }
+                    }
+                    else if (reader.NodeType == XmlNodeType.EndElement)
+                    {
+                        if (String.Equals(reader.Name, "plugin",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+       }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+            BuildFilePath.WriteLocation(_compilerFile,
+                "compilerFile", writer);
+            BuildDirectoryPath.WriteLocation(_compilerDir,
+                "compilerDirectory", writer);
+
+            writer.WriteStartElement("plugin");  // start - plugin
+            writer.WriteAttributeString("flatToc", _pluginTocFlat.ToString());
+            writer.WriteTextElement("title", _pluginTitle);
+            writer.WriteStartElement("parents"); // start - parents
+            if (_pluginParents != null && _pluginParents.Count != 0)
+            {
+                for (int i = 0; i < _pluginParents.Count; i++)
+                {
+                    writer.WriteTextElement("parent", _pluginParents[i]);
+                }
+            }
+            writer.WriteEndElement();            // end - parents
+
+            writer.WriteStartElement("children"); // start - children
+            if (_pluginChildren != null && _pluginChildren.Count != 0)
+            {
+                for (int i = 0; i < _pluginChildren.Count; i++)
+                {
+                    writer.WriteTextElement("child", _pluginChildren[i]);
+                }
+            }
+            writer.WriteEndElement();            // end - children
+
+            writer.WriteEndElement();            // end - plugin
+        }
+
+        #endregion
+
         #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatHxs-General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "keepsources":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _keepSources = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "separateindexfile":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _separateIndex = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includestopwords":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeStopWords = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "helptitleid":
+                                _helpTitleId = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlNamedUrl Method
+
+        private void ReadXmlNamedUrl(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatHxs-NamedUrl"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "homepage":
+                                _homePage = reader.ReadString();
+                                break;
+                            case "defaultpage":
+                                _defaultPage = reader.ReadString();
+                                break;
+                            case "navfailpage":
+                                _navFailPage = reader.ReadString();
+                                break;
+                            case "aboutpageinfo":
+                                _aboutPageInfo = reader.ReadString();
+                                break;
+                            case "aboutpageicon":
+                                _aboutPageIcon = reader.ReadString();
+                                break;
+                            case "filtereditpage":
+                                _filterEditPage = reader.ReadString();
+                                break;
+                            case "helppage":
+                                _helpPage = reader.ReadString();
+                                break;
+                            case "supportpage":
+                                _supportPage = reader.ReadString();
+                                break;
+                            case "sampledirpage":
+                                _sampleDirPage = reader.ReadString();
+                                break;
+                            case "searchhelppage":
+                                _searchHelpPage = reader.ReadString();
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region FindHtmlHelpCompiler Method
 
         private void FindHtmlHelpCompiler()
         {
             // 1. If the compiler path is set, may be by the user...
-            if (!String.IsNullOrEmpty(_compilerFile) && File.Exists(_compilerFile))
+            if (_compilerFile != null && _compilerFile.Exists)
             {
-                if (String.IsNullOrEmpty(_compilerDir) == true ||
-                    Directory.Exists(_compilerDir) == false)
+                if (_compilerDir == null || !_compilerDir.Exists)
                 {
-                    _compilerDir = Path.GetDirectoryName(_compilerFile);
+                    _compilerDir = new BuildDirectoryPath(
+                        Path.GetDirectoryName(_compilerFile.Path));
                 }
                 return;
             }
 
             // 2. If the directory path is set, may be by the user...
-            if (!String.IsNullOrEmpty(_compilerDir) && Directory.Exists(_compilerDir))
+            if (_compilerDir != null && _compilerDir.Exists)
             {
-                _compilerFile = Path.Combine(_compilerDir, "hxcomp.exe");
+                _compilerFile = new BuildFilePath(Path.Combine(
+                    _compilerDir, "hxcomp.exe"));
 
-                if (File.Exists(_compilerFile))
+                if (_compilerFile.Exists)
                 {
                     return;
                 }
@@ -641,19 +995,20 @@ namespace Sandcastle.Formats
 
             // 3. If the Visual Studio .NET Help Integration Kit 2003 is installed,
             // http://www.microsoft.com/downloads/details.aspx?FamilyID=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&displaylang=en
-            _compilerDir = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.ProgramFiles), "Microsoft Help 2.0 SDK");
-            if (Directory.Exists(_compilerDir))
+            _compilerDir = new BuildDirectoryPath(Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFiles), "Microsoft Help 2.0 SDK"));
+            if (_compilerDir.Exists)
             {
-                _compilerFile = Path.Combine(_compilerDir, "hxcomp.exe");
+                _compilerFile = new BuildFilePath(Path.Combine(_compilerDir, 
+                    "hxcomp.exe"));
 
-                if (File.Exists(_compilerFile))
+                if (_compilerFile.Exists)
                 {
                     return;
                 }
             }
 
-            _compilerDir = null;
+            _compilerDir  = null;
             _compilerFile = null;
 
             // 4. If all fail, search the registry, in case any other SDK is installed... 
@@ -694,18 +1049,20 @@ namespace Sandcastle.Formats
                             string val = key.GetValue(null) as string;
                             if (val != null)
                             {
-                                _compilerDir = Path.GetDirectoryName(val);
+                                _compilerDir = new BuildDirectoryPath(
+                                    Path.GetDirectoryName(val));
                             }
                         }
                     }
                 }
             }
 
-            if (Directory.Exists(_compilerDir))
+            if (_compilerDir.Exists)
             {
-                _compilerFile = Path.Combine(_compilerDir, "hxcomp.exe");
+                _compilerFile = new BuildFilePath(Path.Combine(_compilerDir, 
+                    "hxcomp.exe"));
 
-                if (File.Exists(_compilerFile) == false)
+                if (_compilerFile.Exists == false)
                 {
                     _compilerDir = null;
                 }
@@ -714,11 +1071,81 @@ namespace Sandcastle.Formats
 
         #endregion
 
+        #endregion
+
         #region ICloneable Members
 
         public override BuildFormat Clone()
         {
             FormatHxs format = new FormatHxs(this);
+
+            base.Clone(format);
+
+            if (_compilerFile != null)
+            {
+                format._compilerFile = _compilerFile.Clone();
+            }
+            if (_compilerDir != null)
+            {
+                format._compilerDir = _compilerDir.Clone();
+            }
+            if (_helpTitleId != null)
+            {
+                format._helpTitleId = String.Copy(_helpTitleId);
+            }
+            if (_pluginTitle != null)
+            {
+                format._pluginTitle = String.Copy(_pluginTitle);
+            }
+            if (_homePage != null)
+            {
+                format._homePage = String.Copy(_homePage);
+            }
+            if (_defaultPage != null)
+            {
+                format._defaultPage = String.Copy(_defaultPage);
+            }
+            if (_navFailPage != null)
+            {
+                format._navFailPage = String.Copy(_navFailPage);
+            }
+            if (_aboutPageInfo != null)
+            {
+                format._aboutPageInfo = String.Copy(_aboutPageInfo);
+            }
+            if (_aboutPageIcon != null)
+            {
+                format._aboutPageIcon = String.Copy(_aboutPageIcon);
+            }
+            if (_filterEditPage != null)
+            {
+                format._filterEditPage = String.Copy(_filterEditPage);
+            }
+            if (_helpPage != null)
+            {
+                format._helpPage = String.Copy(_helpPage);
+            }
+            if (_supportPage != null)
+            {
+                format._supportPage = String.Copy(_supportPage);
+            }
+            if (_sampleDirPage != null)
+            {
+                format._sampleDirPage = String.Copy(_sampleDirPage);
+            }
+            if (_searchHelpPage != null)
+            {
+                format._searchHelpPage = String.Copy(_searchHelpPage);
+            }
+
+            if (_pluginParents != null)
+            {
+                format._pluginParents = _pluginParents.Clone();
+            }
+            if (_pluginChildren != null)
+            {
+                format._pluginChildren = _pluginChildren.Clone();
+            }
 
             return format;
         }

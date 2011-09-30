@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 
-using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -14,9 +16,7 @@ namespace Sandcastle.References
         #region Private Fields
 
         private bool                  _rootContainer;
-
-        private SharedContent         _sharedContent;
-        private IncludeContent        _includeContent;
+        private bool                  _embedScriptSharp;
 
         private ReferenceNamer        _refNamer;
         private ReferenceNamingMethod _refNaming;
@@ -30,15 +30,12 @@ namespace Sandcastle.References
         /// with the default parameters.
         /// </summary>
         public ReferenceEngineSettings()
-            : base("Sandcastle.ReferenceEngineSettings", BuildEngineType.Reference)
+            : base("Sandcastle.References.ReferenceEngineSettings", BuildEngineType.Reference)
         {  
-            _rootContainer   = false;
-
-            _refNamer        = ReferenceNamer.Orcas;
-            _refNaming       = ReferenceNamingMethod.Guid;
-
-            _sharedContent   = new SharedContent("References");
-            _includeContent  = new IncludeContent("References");
+            _rootContainer    = false;
+            _embedScriptSharp = true;
+            _refNamer         = ReferenceNamer.Orcas;
+            _refNaming        = ReferenceNamingMethod.Guid;
 
             IBuildNamedList<BuildConfiguration> configurations = this.Configurations;
             if (configurations != null)
@@ -57,16 +54,16 @@ namespace Sandcastle.References
                     new ReferenceXPathConfiguration();
                 pathDocumentVisibility.Enabled = false;
 
-                configurations.Add(comments);
-                configurations.Add(documentVisibility);
-                configurations.Add(pathDocumentVisibility);
-                configurations.Add(spellCheck);
-
                 // For the ReferenceTocVistors...
                 ReferenceTocExcludeConfiguration excludeToc = 
                     new ReferenceTocExcludeConfiguration();
                 ReferenceTocLayoutConfiguration layoutToc = 
                     new ReferenceTocLayoutConfiguration();
+
+                configurations.Add(comments);
+                configurations.Add(documentVisibility);
+                configurations.Add(pathDocumentVisibility);
+                configurations.Add(spellCheck);
 
                 configurations.Add(excludeToc);
                 configurations.Add(layoutToc);
@@ -138,10 +135,10 @@ namespace Sandcastle.References
         public ReferenceEngineSettings(ReferenceEngineSettings source)
             : base(source)
         {
-            _rootContainer   = source._rootContainer;
-            _refNaming       = source._refNaming;
-            _refNamer        = source._refNamer;
-            _sharedContent   = source._sharedContent;
+            _refNaming        = source._refNaming;
+            _refNamer         = source._refNamer;
+            _rootContainer    = source._rootContainer;
+            _embedScriptSharp = source._embedScriptSharp;
         }
 
         #endregion
@@ -184,19 +181,15 @@ namespace Sandcastle.References
             }
         }
 
-        public override SharedContent SharedContent
+        public bool EmbedScriptSharpFramework
         {
             get
             {
-                return _sharedContent;
+                return _embedScriptSharp;
             }
-        }
-
-        public override IncludeContent IncludeContent
-        {
-            get
+            set
             {
-                return _includeContent;
+                _embedScriptSharp = value;
             }
         }
 
@@ -515,6 +508,146 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "namer":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _refNamer = (ReferenceNamer)Enum.Parse(
+                                        typeof(ReferenceNamer), tempText, true);
+                                }
+                                break;
+                            case "naming":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _refNaming = (ReferenceNamingMethod)Enum.Parse(
+                                        typeof(ReferenceNamingMethod), tempText, true);
+                                }
+                                break;
+                            case "rootnamespacecontainer":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _rootContainer = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "embedscriptsharpframework":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _embedScriptSharp = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Namer",  _refNamer.ToString());
+            writer.WritePropertyElement("Naming", _refNaming.ToString());
+            writer.WritePropertyElement("RootNamespaceContainer",    _rootContainer);
+            writer.WritePropertyElement("EmbedScriptSharpFramework", _embedScriptSharp);
+            writer.WriteEndElement();            // end - propertyGroup
+        }
+
+        protected override BuildConfiguration
+            OnCreateConfiguration(string name, bool isPlugin)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            switch (name.ToLower())
+            {
+                case "sandcastle.references.referencecommentconfiguration":
+                    return new ReferenceCommentConfiguration();
+                case "sandcastle.references.referencespellcheckconfiguration":
+                    return new ReferenceSpellCheckConfiguration();
+                case "sandcastle.references.referencevisibilityconfiguration":
+                    return new ReferenceVisibilityConfiguration();
+                case "sandcastle.references.referencexpathconfiguration":
+                    return new ReferenceXPathConfiguration();
+                case "sandcastle.references.referencetocexcludeconfiguration":
+                    return new ReferenceTocExcludeConfiguration();
+                case "sandcastle.references.referencetoclayoutconfiguration":
+                    return new ReferenceTocLayoutConfiguration();
+            }
+
+            return base.OnCreateConfiguration(name, isPlugin);
+        }
+
+        protected override BuildComponentConfiguration
+            OnCreateComponentConfiguration(string name, bool isPlugin)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            switch (name.ToLower())
+            {
+                case "sandcastle.references.referencepretransconfiguration":
+                    return new ReferencePreTransConfiguration();
+                case "sandcastle.references.referencemissingtagsconfiguration":
+                    return new ReferenceMissingTagsConfiguration();
+                case "sandcastle.references.referenceautodocconfiguration":
+                    return new ReferenceAutoDocConfiguration();
+                case "sandcastle.references.referenceintellisenseconfiguration":
+                    return new ReferenceIntelliSenseConfiguration();
+                case "sandcastle.references.referencecloneconfiguration":
+                    return new ReferenceCloneConfiguration();
+                case "sandcastle.references.referenceposttransconfiguration":
+                    return new ReferencePostTransConfiguration();
+                case "sandcastle.references.referencecodeconfiguration":
+                    return new ReferenceCodeConfiguration();
+                case "sandcastle.references.referencemathconfiguration":
+                    return new ReferenceMathConfiguration();
+                case "sandcastle.references.referencemediaconfiguration":
+                    return new ReferenceMediaConfiguration();
+                case "sandcastle.references.referencelinkconfiguration":
+                    return new ReferenceLinkConfiguration();
+                case "sandcastle.references.referencesharedconfiguration":
+                    return new ReferenceSharedConfiguration();
+            }
+
+            return base.OnCreateComponentConfiguration(name, isPlugin);
+        }
+
+        #endregion  
+
         #region ICloneable Members
 
         /// <summary>
@@ -528,14 +661,7 @@ namespace Sandcastle.References
         {
             ReferenceEngineSettings settings = new ReferenceEngineSettings(this);
 
-            if (_sharedContent != null)
-            {
-                settings._sharedContent = _sharedContent.Clone();
-            }
-            if (_includeContent != null)
-            {
-                settings._includeContent = _includeContent.Clone();
-            }
+            this.OnClone(settings);
 
             return settings;
         }

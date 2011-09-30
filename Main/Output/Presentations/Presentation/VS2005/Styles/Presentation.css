@@ -1270,3 +1270,18 @@ table.members th.valueColumn {
 table.members th.descriptionColumn {
 /*	No fixed width, use whatever is left over */
 }
+
+div.OH_outerContent table
+{
+    border: 0px;
+}
+ 
+div.OH_outerContent table th
+{
+    border: 0px;
+}
+    
+div.OH_outerContent table td
+{
+    border: 0px;
+}

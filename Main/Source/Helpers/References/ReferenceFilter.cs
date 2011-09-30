@@ -16,7 +16,7 @@ namespace Sandcastle.References
         #region Constructors and Destructor
 
         protected ReferenceFilter()
-            : this(Guid.NewGuid().ToString(), true)
+            : this(String.Format("ft{0:x}", Guid.NewGuid().ToString().GetHashCode()), true)
         {
         }
 

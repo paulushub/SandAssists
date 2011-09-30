@@ -129,7 +129,10 @@ namespace Sandcastle.Components
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
+                        if (!File.Exists(outputFile))
+                        {
+                            File.Move(_latexFormatter.ImagePath, outputFile);
+                        }
 
                         //return (_linkPath + mathFile);
                         return mathFile;
@@ -145,7 +148,10 @@ namespace Sandcastle.Components
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
+                        if (!File.Exists(outputFile))
+                        {
+                            File.Move(_latexFormatter.ImagePath, outputFile);
+                        }
 
                         //return (_linkPath + mathFile);
                         return mathFile;
@@ -163,7 +169,10 @@ namespace Sandcastle.Components
                         string mathFile  = _latexFormatter.ImageFile;
 
                         string outputFile = Path.Combine(_outputPath, mathFile);
-                        File.Move(_latexFormatter.ImagePath, outputFile);
+                        if (!File.Exists(outputFile))
+                        {
+                            File.Move(_latexFormatter.ImagePath, outputFile);
+                        }
 
                         _isNumbered = false;
                         //return (_linkPath + mathFile);

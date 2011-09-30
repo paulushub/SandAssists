@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Xml;
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
-using Sandcastle.References;
+using Sandcastle.Utilities;
 
 namespace Sandcastle
 {
@@ -22,7 +24,7 @@ namespace Sandcastle
     /// <item>
     /// <term>Transformations</term>
     /// <description>
-    /// These are the XSL files used to perform the transformation of the XML comments
+    /// These are the XSL files used to perform the transformation of the <c>XML</c> comments
     /// and topics to HTML.
     /// </description>
     /// </item>
@@ -66,12 +68,18 @@ namespace Sandcastle
     /// </remarks>
     /// <seealso cref="BuildStyleType"/>
     [Serializable]
-    public class BuildStyle : BuildOptions<BuildStyle>, IBuildNamedItem
+    public sealed class BuildStyle : BuildOptions<BuildStyle>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "option";
+
+        #endregion
+
         #region Private Fields
 
         private string             _styleName;
-        private string             _stylePresent;
+        private BuildFilePath      _stylePresentation;
         private BuildStyleType     _styleType;
         private BuildDirectoryPath _styleDir;
 
@@ -112,7 +120,7 @@ namespace Sandcastle
             _styleType    = type;
             _scripts      = new ScriptContent("CommonScripts");
             _styleSheets  = new StyleSheetContent("CommonStyleSheets");
-            _snippets     = new SnippetContent();
+            _snippets     = new SnippetContent("CommonSnippets");
 
             _mathPackages = new MathPackageContent();
             _mathCommands = new MathCommandContent();
@@ -124,7 +132,7 @@ namespace Sandcastle
                 @"Styles\IrisModifiedVS.css");
             string assistStyleFile = Path.Combine(sandAssistDir,
                 String.Format(@"Styles\{0}\SandAssist.css",
-                BuildStyleUtils.StyleFolder(type)));
+                BuildStyle.StyleFolder(type)));
 
             StyleSheetItem codeStyle = new StyleSheetItem("CodeStyle", 
                 codeStyleFile);
@@ -136,7 +144,7 @@ namespace Sandcastle
 
             string assistScriptFile = Path.Combine(sandAssistDir,
                 String.Format(@"Scripts\{0}\SandAssist.js",
-                BuildStyleUtils.StyleFolder(type)));
+                BuildStyle.StyleFolder(type)));
             ScriptItem assistScript = new ScriptItem("AssistScripts", 
                 assistScriptFile);
             _scripts.Add(assistScript);
@@ -188,7 +196,7 @@ namespace Sandcastle
         {
             _styleDir     = source._styleDir;
             _styleName    = source._styleName;
-            _stylePresent = source._stylePresent;
+            _stylePresentation = source._stylePresentation;
             _styleType    = source._styleType;
             _scripts      = source._scripts;
             _snippets     = source._snippets;
@@ -210,7 +218,7 @@ namespace Sandcastle
         /// The default value is <see langword="null"/>.
         /// </para>
         /// </value>
-        public string Name
+        public string StyleName
         {
             get 
             { 
@@ -277,7 +285,7 @@ namespace Sandcastle
         /// style type.
         /// </summary>
         /// <value>
-        /// A <see cref="System.String"/> containing the path of the custom 
+        /// A <see cref="BuildFilePath"/> specifying the path of the custom 
         /// presentation style sheet.
         /// <para>
         /// The default value is <see langword="null"/>.
@@ -288,15 +296,15 @@ namespace Sandcastle
         /// of the specified style type, but replacing the presentation style sheet with
         /// a customized version.
         /// </remarks>
-        public string Presentation
+        public BuildFilePath Presentation
         {
             get
             {
-                return _stylePresent;
+                return _stylePresentation;
             }
             set
             {
-                _stylePresent = value;
+                _stylePresentation = value;
             }
         }
 
@@ -372,7 +380,7 @@ namespace Sandcastle
 
         #region GetSkeleton Method
 
-        public virtual string GetSkeleton(BuildEngineType engineType)
+        public string GetSkeleton(BuildEngineType engineType)
         {
             //<data file="%DXROOT%\Presentation\Vs2005\transforms\skeleton_conceptual.xml" />
             //<data file="%DXROOT%\Presentation\vs2005\Transforms\skeleton.xml" />
@@ -398,14 +406,14 @@ namespace Sandcastle
             }
 
             return path + String.Format(@"{0}\Transforms\{1}",
-                BuildStyleUtils.StyleFolder(_styleType), skeleton);
+                BuildStyle.StyleFolder(_styleType), skeleton);
         }
 
         #endregion
 
         #region GetTransform Method
 
-        public virtual string GetTransform(BuildEngineType engineType)
+        public string GetTransform(BuildEngineType engineType)
         {
             //<transform file="%DXROOT%\Presentation\Vs2005\transforms\main_conceptual.xsl">
             //<transform file="%DXROOT%\Presentation\vs2005\Transforms\main_sandcastle.xsl">
@@ -432,25 +440,25 @@ namespace Sandcastle
             }
 
             return path + String.Format(@"{0}\Transforms\{1}",
-                BuildStyleUtils.StyleFolder(_styleType), transform);
+                BuildStyle.StyleFolder(_styleType), transform);
         }
 
         #endregion
 
         #region GetSharedContents Methods
 
-        public virtual IList<string> GetSharedContents()
+        public IList<string> GetSharedContents()
         {
             //TODO: Must be reviewed later for a more optimized code...
             List<string> sharedContents = new List<string>();
 
-            string contentFile = BuildStyleUtils.StyleFolder(_styleType) + ".xml";
+            string contentFile = BuildStyle.StyleFolder(_styleType) + ".xml";
             sharedContents.Add(contentFile);
 
             return sharedContents;
         }
 
-        public virtual IList<string> GetSharedContents(BuildEngineType engineType)
+        public IList<string> GetSharedContents(BuildEngineType engineType)
         {
             List<string> sharedContents = new List<string>();
             string path = _styleDir;
@@ -516,6 +524,297 @@ namespace Sandcastle
 
         #endregion
 
+        public static string StyleFolder(BuildStyleType styleType)
+        {
+            if (styleType == BuildStyleType.ClassicWhite ||
+                styleType == BuildStyleType.ClassicBlue)
+            {
+                return "Vs2005";
+            }
+
+            return "Vs2005";
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "stylename":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _styleName = tempText;
+                                }
+                                break;
+                            case "styletype":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _styleType = (BuildStyleType)Enum.Parse(
+                                        typeof(BuildStyleType), tempText, true);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlContents Method
+
+        private void ReadXmlContents(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "contents"));
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (!reader.IsEmptyElement && String.Equals(reader.Name, "content",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("type").ToLower())
+                        {
+                            case "scripts":
+                                if (_scripts == null)
+                                {
+                                    _scripts = new ScriptContent();
+                                }
+                                if (reader.ReadToDescendant(ScriptContent.TagName))
+                                {
+                                    _scripts.ReadXml(reader);
+                                }
+                                break;
+                            case "snippets":
+                                if (_snippets == null)
+                                {
+                                    _snippets = new SnippetContent();
+                                }
+                                if (reader.ReadToDescendant(SnippetContent.TagName))
+                                {
+                                    _snippets.ReadXml(reader);
+                                }
+                                break;
+                            case "stylesheets":
+                                if (_styleSheets == null)
+                                {
+                                    _styleSheets = new StyleSheetContent();
+                                }
+                                if (reader.ReadToDescendant(StyleSheetContent.TagName))
+                                {
+                                    _styleSheets.ReadXml(reader);
+                                }
+                                break;
+                            case "packages":
+                                if (_mathPackages == null)
+                                {
+                                    _mathPackages = new MathPackageContent();
+                                }
+                                if (reader.ReadToDescendant(MathPackageContent.TagName))
+                                {
+                                    _mathPackages.ReadXml(reader);
+                                }
+                                break;
+                            case "commands":
+                                if (_mathCommands == null)
+                                {
+                                    _mathCommands = new MathCommandContent();
+                                }
+                                if (reader.ReadToDescendant(MathCommandContent.TagName))
+                                {
+                                    _mathCommands.ReadXml(reader);
+                                }
+                                break;
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.Name.ToLower())
+                    {
+                        case "propertygroup":
+                            this.ReadXmlGeneral(reader);
+                            break;
+                        case "location":
+                            _styleDir = BuildDirectoryPath.ReadLocation(reader);
+                            break;
+                        case "presentation":
+                            _stylePresentation = BuildFilePath.ReadLocation(reader);
+                            break;
+                        case "contents":
+                            this.ReadXmlContents(reader);
+                            break;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - styleOptions
+            writer.WriteAttributeString("type", "Style");
+            writer.WriteAttributeString("name", this.GetType().ToString());
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("StyleName", _styleName);
+            writer.WritePropertyElement("StyleType", _styleType.ToString());
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            BuildDirectoryPath.WriteLocation(_styleDir, "location", writer);
+            BuildFilePath.WriteLocation(_stylePresentation, "presentation", writer);
+
+            writer.WriteStartElement("contents");  // start - contents
+            if (_scripts != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Scripts");
+                _scripts.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            if (_snippets != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Snippets");
+                _snippets.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            if (_styleSheets != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "StyleSheets");
+                _styleSheets.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            if (_mathPackages != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Packages");
+                _mathPackages.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            if (_mathCommands != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Commands");
+                _mathCommands.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();              // end - contents
+
+            writer.WriteEndElement();           // end - styleOptions
+        }
+
         #endregion
 
         #region ICloneable Members
@@ -547,9 +846,9 @@ namespace Sandcastle
             {
                 style._styleDir = _styleDir.Clone();
             }
-            if (_stylePresent != null)
+            if (_stylePresentation != null)
             {
-                style._stylePresent = String.Copy(_stylePresent);
+                style._stylePresentation = _stylePresentation.Clone();
             }
 
             if (_scripts != null)
@@ -574,6 +873,27 @@ namespace Sandcastle
             }
 
             return style;
+        }
+
+        #endregion
+
+        #region IBuildNamedItem Members
+
+        string IBuildNamedItem.Name
+        {
+            get 
+            { 
+                return _styleName; 
+            }
+        }
+
+        #endregion
+
+        #region ICloneable Members
+
+        object ICloneable.Clone()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

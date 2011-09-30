@@ -13,8 +13,10 @@ namespace Sandcastle
     {
         #region Private Fields
 
-        private static BuildFramework _default;
+        private static BuildFramework     _default;
+        private static BuildList<Version> _portableVersions;
         private static BuildList<Version> _frameworkVersions;
+        private static BuildList<Version> _scriptSharpVersions;
         private static BuildList<Version> _silverlightVersions;
         private static BuildList<BuildFramework> _installedFrameworks;
 
@@ -54,7 +56,7 @@ namespace Sandcastle
             {
                 if (_frameworkVersions == null)
                 {
-                    _frameworkVersions = InstalledDotNetVersions();
+                    _frameworkVersions = GetDotNetVersions();
                 }
 
                 return _frameworkVersions;
@@ -67,10 +69,36 @@ namespace Sandcastle
             {
                 if (_silverlightVersions == null)
                 {
-                    _silverlightVersions = InstalledSilverlighVersions();
+                    _silverlightVersions = GetSilverlightVersions();
                 }
 
                 return _silverlightVersions;
+            }
+        }
+
+        public static IList<Version> InstalledPortableVersions
+        {
+            get
+            {
+                if (_portableVersions == null)
+                {
+                    _portableVersions = GetPortableVersions();
+                }
+
+                return _portableVersions;
+            }
+        }
+
+        public static IList<Version> InstalledScriptSharpVersions
+        {
+            get
+            {
+                if (_scriptSharpVersions == null)
+                {
+                    _scriptSharpVersions = GetScriptSharpVersions();
+                }
+
+                return _scriptSharpVersions;
             }
         }
 
@@ -99,6 +127,21 @@ namespace Sandcastle
             }
         }
 
+        public static BuildFramework LatestFramework
+        {
+            get
+            {
+                Version version = BuildFrameworks.LatestFrameworkVersion;
+                if (version == null)
+                {
+                    return null;
+                }
+
+                return BuildFrameworks.GetFramework(version.Major,
+                    version.Minor, BuildFrameworkKind.DotNet);
+            }
+        }
+
         public static Version LatestSilverlightVersion
         {
             get
@@ -121,6 +164,101 @@ namespace Sandcastle
                 }
 
                 return version;
+            }
+        }
+
+        public static BuildFramework LatestSilverlight
+        {
+            get
+            {
+                Version version = BuildFrameworks.LatestSilverlightVersion;
+                if (version == null)
+                {
+                    return null;
+                }
+
+                return BuildFrameworks.GetFramework(version.Major,
+                    version.Minor, BuildFrameworkKind.Silverlight);
+            }
+        }
+
+        public static Version LatestPortableVersion
+        {
+            get
+            {
+                IList<Version> installedVersions =
+                    BuildFrameworks.InstalledPortableVersions;
+                if (installedVersions == null || installedVersions.Count == 0)
+                {
+                    return null;
+                }
+
+                Version version = new Version(1, 0, 0, 0);
+                for (int i = 0; i < installedVersions.Count; i++)
+                {
+                    Version installedVersion = installedVersions[i];
+                    if (installedVersion > version)
+                    {
+                        version = installedVersion;
+                    }
+                }
+
+                return version;
+            }
+        }
+
+        public static BuildFramework LatestPortable
+        {
+            get
+            {
+                Version version = BuildFrameworks.LatestPortableVersion;
+                if (version == null)
+                {
+                    return null;
+                }
+
+                return BuildFrameworks.GetFramework(version.Major,
+                    version.Minor, BuildFrameworkKind.Portable);
+            }
+        }
+
+        public static Version LatestScriptSharpVersion
+        {
+            get
+            {
+                IList<Version> installedVersions =
+                    BuildFrameworks.InstalledScriptSharpVersions;
+                if (installedVersions == null || installedVersions.Count == 0)
+                {
+                    return null;
+                }
+
+                Version version = new Version(1, 0, 0, 0);
+                for (int i = 0; i < installedVersions.Count; i++)
+                {
+                    Version installedVersion = installedVersions[i];
+                    if (installedVersion > version)
+                    {
+                        version = installedVersion;
+                    }
+                }
+
+                return version;
+            }
+        }
+
+        public static BuildFramework LatestScriptSharp
+        {
+            get
+            {
+                Version version = BuildFrameworks.LatestScriptSharpVersion;
+                if (version == null)
+                {
+                    return null;
+                }
+
+                return BuildFrameworks.GetFramework(version.Major,
+                    version.Minor, BuildFrameworkKind.ScriptSharp);
             }
         }
 
@@ -148,12 +286,14 @@ namespace Sandcastle
             return null;
         }
 
-        public static BuildFramework GetFramework(int major, bool isSilverlight)
+        public static BuildFramework GetFramework(int major, 
+            BuildFrameworkKind kind)
         {
-            return GetFramework(major, -1, isSilverlight);
+            return GetFramework(major, -1, kind);
         }
 
-        public static BuildFramework GetFramework(int major, int minor, bool isSilverlight)
+        public static BuildFramework GetFramework(int major, int minor, 
+            BuildFrameworkKind kind)
         {
             IList<BuildFramework> frameworks = BuildFrameworks.InstalledFrameworks;
             if (frameworks == null || frameworks.Count == 0)
@@ -164,7 +304,7 @@ namespace Sandcastle
             for (int i = 0; i < frameworks.Count; i++)
             {
                 BuildFramework framework = frameworks[i];
-                if (framework.FrameworkType.IsSilverlight == isSilverlight)
+                if (framework.FrameworkType.Kind == kind)
                 {
                     Version version = framework.Version;
                     if (minor < 0)
@@ -187,16 +327,31 @@ namespace Sandcastle
             return null;
         }
 
-        public static Version GetVersion(int major, bool isSilverlight)
+        public static Version GetVersion(int major, BuildFrameworkKind kind)
         {
-            return GetVersion(major, -1, isSilverlight);
+            return GetVersion(major, -1, kind);
         }
 
-        public static Version GetVersion(int major, int minor, bool isSilverlight)
+        public static Version GetVersion(int major, int minor, 
+            BuildFrameworkKind kind)
         {
-            IList<Version> frameworkVersions = isSilverlight ?
-                BuildFrameworks.InstalledSilverlightVersions : 
-                BuildFrameworks.InstalledFrameworkVersions;
+            IList<Version> frameworkVersions = null;
+            if (kind == BuildFrameworkKind.Silverlight)
+            {
+                frameworkVersions = BuildFrameworks.InstalledSilverlightVersions;
+            }
+            else if (kind == BuildFrameworkKind.Portable)
+            {
+                frameworkVersions = BuildFrameworks.InstalledPortableVersions;
+            }
+            else if (kind == BuildFrameworkKind.ScriptSharp)
+            {
+                frameworkVersions = BuildFrameworks.InstalledScriptSharpVersions;
+            }
+            else
+            {
+                frameworkVersions = BuildFrameworks.InstalledFrameworkVersions;
+            }
 
             if (frameworkVersions != null && frameworkVersions.Count != 0)
             {
@@ -227,6 +382,8 @@ namespace Sandcastle
 
         #region Private Methods
 
+        #region GetInstalledFrameworks Methods
+
         private static BuildList<BuildFramework> GetInstalledFrameworks()
         {
             BuildList<BuildFramework> frameworks = new BuildList<BuildFramework>();
@@ -234,21 +391,59 @@ namespace Sandcastle
             string programFilesDir = PathUtils.ProgramFiles32;
 
             // 1. For the .NET framework... 
+            GetDotNetFrameworks(frameworks, programFilesDir);
+
+            // 2. For the Silverlight framework...
+            GetSilverlightFrameworks(frameworks, programFilesDir);
+
+            // 3. For the Portable framework...
+            GetPortableFrameworks(frameworks, programFilesDir);
+
+            // 4. For the ScriptSharp framework...
+            GetScriptSharpFrameworks(frameworks, programFilesDir);
+
+            return frameworks;
+        }
+
+        private static bool IsVersionExpression(string numericText)
+        {
+            if (String.IsNullOrEmpty(numericText))
+            {
+                return false;
+            }
+
+            foreach (char c in numericText)
+            {
+                if (c != '.' && !Char.IsNumber(c))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region GetDotNetFrameworks Method
+
+        private static void GetDotNetFrameworks(IList<BuildFramework> frameworks,
+            string programFilesDir)
+        {
             IList<Version> frameworkVersions =
                 BuildFrameworks.InstalledFrameworkVersions;
             if (frameworkVersions != null && frameworkVersions.Count != 0)
             {
                 string assemblyFolder = null;
-                string fSharpDir = null;
-                string otherDir = null;
-                string assemblyDir = null;
+                string fSharpDir      = null;
+                string otherDir       = null;
+                string assemblyDir    = null;
                 for (int i = 0; i < frameworkVersions.Count; i++)
                 {
                     Version version = frameworkVersions[i];
 
                     BuildFrameworkType frameworkType = BuildFrameworkType.Null;
 
-                    List<string> commentsDir = new List<string>();
+                    List<string> commentDirs = new List<string>();
                     switch (version.Major)
                     {
                         case 1:
@@ -265,7 +460,7 @@ namespace Sandcastle
                                             @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
                             if (Directory.Exists(assemblyDir))
                             {
-                                commentsDir.Add(assemblyDir);
+                                commentDirs.Add(assemblyDir);
                             }
                             break;
                         case 2:
@@ -275,17 +470,18 @@ namespace Sandcastle
                                             @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
                             if (Directory.Exists(assemblyDir))
                             {
-                                commentsDir.Add(assemblyDir);
+                                commentDirs.Add(assemblyDir);
                             }
                             fSharpDir = Path.Combine(programFilesDir,
                                @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v2.0");
                             if (Directory.Exists(fSharpDir))
                             {
-                                commentsDir.Add(fSharpDir);
+                                commentDirs.Add(fSharpDir);
                             }
                             break;
                         case 3:
-                            Version version2 = BuildFrameworks.GetVersion(2, false);
+                            Version version2 = BuildFrameworks.GetVersion(2, 
+                                BuildFrameworkKind.DotNet);
                             Debug.Assert(version2 != null);
                             if (version2 == null)
                             {
@@ -296,7 +492,7 @@ namespace Sandcastle
                                             @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
                             if (Directory.Exists(assemblyDir))
                             {
-                                commentsDir.Add(assemblyDir);
+                                commentDirs.Add(assemblyDir);
                             }
                             if (version.Minor == 0)
                             {
@@ -305,7 +501,7 @@ namespace Sandcastle
                                    @"Reference Assemblies\Microsoft\Framework\v3.0");
                                 if (Directory.Exists(otherDir))
                                 {
-                                    commentsDir.Add(otherDir);
+                                    commentDirs.Add(otherDir);
                                 }
                             }
                             else if (version.Minor == 5)
@@ -315,20 +511,20 @@ namespace Sandcastle
                                    @"Reference Assemblies\Microsoft\Framework\v3.0");
                                 if (Directory.Exists(otherDir))
                                 {
-                                    commentsDir.Add(otherDir);
+                                    commentDirs.Add(otherDir);
                                 }
                                 otherDir = Path.Combine(programFilesDir,
                                    @"Reference Assemblies\Microsoft\Framework\v3.5");
                                 if (Directory.Exists(otherDir))
                                 {
-                                    commentsDir.Add(otherDir);
+                                    commentDirs.Add(otherDir);
                                 }
                             }
                             fSharpDir = Path.Combine(programFilesDir,
                                @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v2.0");
                             if (Directory.Exists(fSharpDir))
                             {
-                                commentsDir.Add(fSharpDir);
+                                commentDirs.Add(fSharpDir);
                             }
                             break;
                         case 4:
@@ -339,26 +535,26 @@ namespace Sandcastle
                             if (Directory.Exists(assemblyDir))
                             {
                                 // there is really no comment here...
-                                commentsDir.Add(assemblyDir);  
+                                commentDirs.Add(assemblyDir);  
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Reference Assemblies\Microsoft\Framework\v4.0");
                             if (Directory.Exists(otherDir))
                             {
                                 // will normally not exists...
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             fSharpDir = Path.Combine(programFilesDir,
                                @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0");
                             if (Directory.Exists(fSharpDir))
                             {
-                                commentsDir.Add(fSharpDir);
+                                commentDirs.Add(fSharpDir);
                             }
                             break;
                         default:
@@ -367,14 +563,22 @@ namespace Sandcastle
                     }
 
                     BuildFramework framework = new BuildFramework(frameworkType,
-                        assemblyDir, commentsDir, version);
+                        assemblyDir, commentDirs, version);
 
                     frameworks.Add(framework);
                 }
             }
+        }
 
-            // 2. For the Silverlight light...
-            frameworkVersions = BuildFrameworks.InstalledSilverlightVersions;
+        #endregion
+
+        #region GetSilverlightFrameworks Method
+
+        private static void GetSilverlightFrameworks(IList<BuildFramework> frameworks,
+            string programFilesDir)
+        {
+            IList<Version> frameworkVersions =
+                BuildFrameworks.InstalledSilverlightVersions;
             if (frameworkVersions != null && frameworkVersions.Count != 0)
             {
                 for (int i = 0; i < frameworkVersions.Count; i++)
@@ -385,7 +589,7 @@ namespace Sandcastle
 
                     BuildFrameworkType frameworkType = BuildFrameworkType.Null;
 
-                    List<string> commentsDir = new List<string>();
+                    List<string> commentDirs = new List<string>();
                     switch (version.Major)
                     {
                         case 1:  // not possible, but we leave it...
@@ -413,19 +617,19 @@ namespace Sandcastle
                                @"Microsoft SDKs\Silverlight\v2.0\Reference Assemblies");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v2.0\Libraries\Client");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v2.0\Libraries\Server\en-US");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             break;
                         case 3:
@@ -442,19 +646,19 @@ namespace Sandcastle
                                @"Reference Assemblies\Microsoft\Framework\Silverlight\v3.0");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v3.0\Libraries\Client");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v3.0\Libraries\Server");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             break;
                         case 4:
@@ -471,19 +675,19 @@ namespace Sandcastle
                                @"Reference Assemblies\Microsoft\Framework\Silverlight\v4.0");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v4.0\Libraries\Client");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             otherDir = Path.Combine(programFilesDir,
                                @"Microsoft SDKs\Silverlight\v4.0\Libraries\Server");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
 
                             // Consider the extension libraries...
@@ -492,7 +696,7 @@ namespace Sandcastle
                                @"Microsoft SDKs\RIA Services\v1.0\Libraries\Silverlight");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
                             }
                             // 2. For the Silverlight Toolkit...
                             otherDir = Path.Combine(programFilesDir,
@@ -519,11 +723,10 @@ namespace Sandcastle
                                         }
                                     }
 
-                                    otherDir = Path.Combine(otherDir,
-                                        dir + @"\Bin");
+                                    otherDir = Path.Combine(otherDir, dir + @"\Bin");
                                     if (Directory.Exists(otherDir))
                                     {
-                                        commentsDir.Add(otherDir);
+                                        commentDirs.Add(otherDir);
                                     }
                                 }
                             }
@@ -532,7 +735,102 @@ namespace Sandcastle
                                @"Microsoft SDKs\Expression\Blend\Silverlight\v4.0\Libraries");
                             if (Directory.Exists(otherDir))
                             {
-                                commentsDir.Add(otherDir);
+                                commentDirs.Add(otherDir);
+                            }
+                            break;
+                        case 5:
+                            frameworkType = BuildFrameworkType.Silverlight50;
+                            assemblyDir = Path.Combine(programFilesDir,
+                               @"Microsoft Silverlight\" + version.ToString());
+                            if (!Directory.Exists(assemblyDir))
+                            {
+                                assemblyDir = Path.Combine(programFilesDir,
+                                  @"Reference Assemblies\Microsoft\Framework\Silverlight\v5.0");
+                            }
+                            
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Reference Assemblies\Microsoft\Framework\Silverlight\v5.0");
+                            if (Directory.Exists(otherDir))
+                            {
+                                commentDirs.Add(otherDir);
+                            }
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Microsoft SDKs\Silverlight\v5.0\Libraries\Client");
+                            if (Directory.Exists(otherDir))
+                            {
+                                commentDirs.Add(otherDir);
+                            }
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Microsoft SDKs\Silverlight\v5.0\Libraries\Server");
+                            if (Directory.Exists(otherDir))
+                            {
+                                commentDirs.Add(otherDir);
+                            }
+
+                            // Consider the extension libraries...
+                            // 1. The RIA Services...
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Microsoft SDKs\RIA Services\v1.0\Libraries\Silverlight");
+                            if (Directory.Exists(otherDir))
+                            {
+                                commentDirs.Add(otherDir);
+                            }
+                            // 2. For the Silverlight Toolkit...
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Microsoft SDKs\Silverlight\v5.0\Toolkit");
+
+                            if (!Directory.Exists(otherDir))
+                            {
+                                // Try looking for the earlier version...
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Microsoft SDKs\Silverlight\v4.0\Toolkit");
+                            }
+
+                            if (Directory.Exists(otherDir))
+                            {
+                                // Get the latest installed version...
+                                string[] dirs = Directory.GetDirectories(otherDir);
+                                if (dirs != null && dirs.Length != 0)
+                                {
+                                    string dir = String.Empty;
+                                    DateTime latestDt = DateTime.MinValue;
+                                    for (int j = 0; j < dirs.Length; j++)
+                                    {
+                                        string latestDir = Path.GetFileName(dirs[j]);
+                                        DateTime dt;
+                                        if (DateTime.TryParse(latestDir, out dt))
+                                        {
+                                            if (dt > latestDt)
+                                            {
+                                                latestDt = dt;
+                                                dir = latestDir;
+                                            }
+                                        }
+                                    }
+
+                                    otherDir = Path.Combine(otherDir, dir + @"\Bin");
+                                    if (Directory.Exists(otherDir))
+                                    {
+                                        commentDirs.Add(otherDir);
+                                    }
+                                }
+                            }
+                            // 3. The Expression 5.0 Blend SDK...
+                            otherDir = Path.Combine(programFilesDir,
+                               @"Microsoft SDKs\Expression\Blend\Silverlight\v5.0\Libraries");
+                            if (Directory.Exists(otherDir))
+                            {
+                                commentDirs.Add(otherDir);
+                            }
+                            else
+                            {
+                                // Try looking for the Expression 4.0 Blend SDK...
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Microsoft SDKs\Expression\Blend\Silverlight\v4.0\Libraries");
+                                if (Directory.Exists(otherDir))
+                                {
+                                    commentDirs.Add(otherDir);
+                                }
                             }
                             break;
                         default:
@@ -541,16 +839,147 @@ namespace Sandcastle
                     }
 
                     BuildFramework framework = new BuildFramework(frameworkType,
-                        assemblyDir, commentsDir, version);
+                        assemblyDir, commentDirs, version);
 
                     frameworks.Add(framework);
                 }
             }
-
-            return frameworks;
         }
 
-        private static BuildList<Version> InstalledDotNetVersions()
+        #endregion
+
+        #region GetPortableFrameworks Method
+
+        private static void GetPortableFrameworks(IList<BuildFramework> frameworks,
+            string programFilesDir)
+        {
+            IList<Version> frameworkVersions =
+                BuildFrameworks.InstalledPortableVersions;
+            if (frameworkVersions != null && frameworkVersions.Count != 0)
+            {
+                for (int i = 0; i < frameworkVersions.Count; i++)
+                {
+                    string otherDir = null;
+                    string assemblyDir = null;
+                    Version version = frameworkVersions[i];
+
+                    BuildFrameworkType frameworkType = BuildFrameworkType.Null;
+
+                    List<string> commentDirs  = new List<string>();
+                    List<string> commentFiles = new List<string>();
+                    switch (version.Major)
+                    {
+                        case 4:
+                            frameworkType = BuildFrameworkType.Portable40;
+                            assemblyDir = Path.Combine(programFilesDir, 
+                                @"Reference Assemblies\Microsoft\Framework\.NETPortable\v4.0");
+
+                            otherDir = Path.Combine(assemblyDir, @"Profile\Profile4");
+                            if (Directory.Exists(otherDir))
+                            {
+                                // The Profile4 directory contains all the
+                                // comment files with the exception of the
+                                // System.ComponentModel.Composition.xml file,
+                                // which is in the Profile3...
+                                commentDirs.Add(otherDir);
+                                string commentFile = Path.Combine(assemblyDir,
+                                    @"Profile\Profile3\System.ComponentModel.Composition.xml");
+
+                                if (File.Exists(commentFile))
+                                {
+                                    commentFiles.Add(commentFile);
+                                }
+                            }
+                            else
+                            {  
+                                // If no profile is found, we treat it as .NET 4
+                                BuildFramework framework4 = GetFramework(BuildFrameworkType.Framework40);
+                                if (framework4 != null)
+                                {
+                                    Version ver4 = framework4.Version;
+                                    string assemblyFolder = "v" + ver4.ToString(3);
+                                    assemblyDir = Environment.ExpandEnvironmentVariables(
+                                                    @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
+                                    if (Directory.Exists(assemblyDir))
+                                    {
+                                        // there is really no comment here...
+                                        commentDirs.Add(assemblyDir);
+                                    }
+                                    otherDir = Path.Combine(programFilesDir,
+                                       @"Reference Assemblies\Microsoft\Framework\v4.0");
+                                    if (Directory.Exists(otherDir))
+                                    {
+                                        // will normally not exists...
+                                        commentDirs.Add(otherDir);
+                                    }
+                                    otherDir = Path.Combine(programFilesDir,
+                                       @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0");
+                                    if (Directory.Exists(otherDir))
+                                    {
+                                        commentDirs.Add(otherDir);
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            throw new PlatformNotSupportedException(
+                                String.Format("The platform with version '{0}' is not supported.", version));
+                    }
+
+                    BuildFramework framework = new BuildFramework(frameworkType,
+                        assemblyDir, commentDirs, commentFiles, version);
+
+                    frameworks.Add(framework);
+                }
+            }
+        }
+
+        #endregion
+
+        #region GetScriptSharpFrameworks Method
+
+        private static void GetScriptSharpFrameworks(IList<BuildFramework> frameworks,
+            string programFilesDir)
+        {
+            IList<Version> frameworkVersions =
+                BuildFrameworks.InstalledScriptSharpVersions;
+            if (frameworkVersions != null && frameworkVersions.Count != 0)
+            {
+                for (int i = 0; i < frameworkVersions.Count; i++)
+                {
+                    string assemblyDir = null;
+                    Version version    = frameworkVersions[i];
+
+                    BuildFrameworkType frameworkType = BuildFrameworkType.Null;
+
+                    List<string> commentDirs = new List<string>();
+                    switch (version.Major)
+                    {
+                        case 1:
+                            frameworkType = BuildFrameworkType.ScriptSharp10;
+                            assemblyDir = Path.Combine(programFilesDir,
+                                @"ScriptSharp\v1.0\Framework");
+
+                            commentDirs.Add(assemblyDir);
+                            break;
+                        default:
+                            throw new PlatformNotSupportedException(
+                                String.Format("The platform with version '{0}' is not supported.", version));
+                    }
+
+                    BuildFramework framework = new BuildFramework(frameworkType,
+                        assemblyDir, commentDirs, version);
+
+                    frameworks.Add(framework);
+                }
+            }
+        }
+
+        #endregion
+
+        #region GetDotNetVersions Method
+
+        private static BuildList<Version> GetDotNetVersions()
         {
             BuildList<Version> versions = new BuildList<Version>();
             using (RegistryKey NDPKey = Registry.LocalMachine.OpenSubKey(
@@ -580,7 +1009,46 @@ namespace Sandcastle
             return versions;
         }
 
-        private static BuildList<Version> InstalledSilverlighVersions()
+        private static void GetDotNetVersion(RegistryKey parentKey,
+            string subVersionName, BuildList<Version> versions)
+        {
+            if (parentKey == null)
+            {
+                return;
+            }
+
+            string installed = Convert.ToString(parentKey.GetValue("Install"));
+            if (installed == "1")
+            {
+                string version = Convert.ToString(parentKey.GetValue("Version"));
+                if (String.IsNullOrEmpty(version))
+                {
+                    if (subVersionName.StartsWith("v",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        version = subVersionName.Substring(1);
+                    }
+                    else
+                    {
+                        version = subVersionName;
+                    }
+                }
+
+                if (IsVersionExpression(version))
+                {
+                    Version ver = new Version(version);
+
+                    if (!versions.Contains(ver))
+                        versions.Add(ver);
+                }
+            }
+        }
+
+        #endregion
+
+        #region GetSilverlightVersions Method
+
+        private static BuildList<Version> GetSilverlightVersions()
         {
             Version installedVersion = null;
 
@@ -592,7 +1060,8 @@ namespace Sandcastle
                     string installed = Convert.ToString(
                         silverlightKey.GetValue("Version"));
 
-                    if (!String.IsNullOrEmpty(installed))
+                    if (!String.IsNullOrEmpty(installed) &&
+                        IsVersionExpression(installed))
                     {
                         installedVersion = new Version(installed);
                     }
@@ -606,32 +1075,39 @@ namespace Sandcastle
             BuildList<Version> versions = new BuildList<Version>();
             if (installedVersion != null)
             {
-                versions.Add(installedVersion);
-
                 // Silverlight is backward compatible and will only display
                 // the latest installed version...
                 switch (installedVersion.Major)
                 {
-                    case 4:
-                        GetSilverVersion(searchDir, 3, versions);
-                        GetSilverVersion(searchDir, 2, versions);
-                        break;
                     case 3:
-                        GetSilverVersion(searchDir, 2, versions);
+                        GetSilverlightVersion(searchDir, 2, versions);
+                        break;
+                    case 4:
+                        GetSilverlightVersion(searchDir, 2, versions);
+                        GetSilverlightVersion(searchDir, 3, versions);
+                        break;
+                    case 5:
+                        GetSilverlightVersion(searchDir, 2, versions);
+                        GetSilverlightVersion(searchDir, 3, versions);
+                        GetSilverlightVersion(searchDir, 4, versions);
                         break;
                 }
+
+                versions.Add(installedVersion);
             }
             else
             {
-                GetSilverVersion(searchDir, 3, versions);
-                GetSilverVersion(searchDir, 2, versions);
+                GetSilverlightVersion(searchDir, 2, versions);
+                GetSilverlightVersion(searchDir, 3, versions);
             }
+
+            
 
             return versions;
         }
 
-        private static void GetSilverVersion(string searchDir, int number, 
-            BuildList<Version> versions)
+        private static void GetSilverlightVersion(string searchDir, 
+            int number, BuildList<Version> versions)
         {
             string sdkDir = null;
             switch (number)
@@ -643,6 +1119,10 @@ namespace Sandcastle
                 case 3:
                     sdkDir = Path.Combine(searchDir,
                         @"Reference Assemblies\Microsoft\Framework\Silverlight\v3.0");
+                    break;
+                case 4:
+                    sdkDir = Path.Combine(searchDir,
+                        @"Reference Assemblies\Microsoft\Framework\Silverlight\v4.0");
                     break;
             }
             if (String.IsNullOrEmpty(sdkDir) || !Directory.Exists(sdkDir))
@@ -665,37 +1145,111 @@ namespace Sandcastle
             versions.Add(new Version(versionInfo.ProductVersion));
         }
 
-        private static void GetDotNetVersion(RegistryKey parentKey,
-            string subVersionName, BuildList<Version> versions)
+        #endregion
+
+        #region GetPortableVersions Method
+
+        private static BuildList<Version> GetPortableVersions()
         {
-            if (parentKey == null)
+            BuildList<Version> versions = new BuildList<Version>();
+
+            string programFiles = PathUtils.ProgramFiles32;
+            DirectoryInfo portableDir = new DirectoryInfo(Path.Combine(
+                programFiles, @"Reference Assemblies\Microsoft\Framework\.NETPortable"));
+
+            if (!portableDir.Exists)
             {
-                return;
+                return versions;
             }
 
-            string installed = Convert.ToString(parentKey.GetValue("Install"));
-            if (installed == "1")
+            DirectoryInfo[] versionDirs = portableDir.GetDirectories();
+            if (versionDirs != null && versionDirs.Length != 0)
             {
-                string version = Convert.ToString(parentKey.GetValue("Version"));
-                if (string.IsNullOrEmpty(version))
+                for (int i = 0; i < versionDirs.Length; i++)
                 {
-                    if (subVersionName.StartsWith("v",
+                    string versionFolder = versionDirs[i].Name;
+                    string version = null;
+                    if (versionFolder.StartsWith("v",
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        version = subVersionName.Substring(1);
+                        version = versionFolder.Substring(1);
                     }
                     else
                     {
-                        version = subVersionName;
+                        version = versionFolder;
+                    }
+
+                    if (!String.IsNullOrEmpty(version) &&
+                        IsVersionExpression(version))
+                    {
+                        Version ver = new Version(version);
+
+                        if (!versions.Contains(ver))
+                            versions.Add(ver);
                     }
                 }
-
-                Version ver = new Version(version);
-
-                if (!versions.Contains(ver))
-                    versions.Add(ver);
             }
+
+            return versions;
         }
+
+        #endregion
+
+        #region GetScriptSharpVersions Method
+
+        private static BuildList<Version> GetScriptSharpVersions()
+        {
+            BuildList<Version> versions = new BuildList<Version>();
+
+            string programFiles = PathUtils.ProgramFiles32;
+            DirectoryInfo scriptSharpDir = new DirectoryInfo(Path.Combine(
+                programFiles, @"ScriptSharp"));
+
+            if (!scriptSharpDir.Exists)
+            {
+                return versions;
+            }
+
+            DirectoryInfo[] versionDirs = scriptSharpDir.GetDirectories();
+            if (versionDirs != null && versionDirs.Length != 0)
+            {
+                for (int i = 0; i < versionDirs.Length; i++)
+                {
+                    DirectoryInfo versionDir = versionDirs[i];
+                    string versionFolder     = versionDir.Name;
+                    string version = null;
+                    if (versionFolder.StartsWith("v",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        version = versionFolder.Substring(1);
+                    }
+                    else
+                    {
+                        version = versionFolder;
+                    }
+
+                    string frameworkDir = Path.Combine(versionDir.FullName,
+                        "Framework");
+
+                    if (Directory.Exists(frameworkDir) && 
+                        !DirectoryUtils.IsDirectoryEmpty(frameworkDir))
+                    { 
+                        if (!String.IsNullOrEmpty(version) &&
+                            IsVersionExpression(version))
+                        {
+                            Version ver = new Version(version);
+
+                            if (!versions.Contains(ver))
+                                versions.Add(ver);
+                        }
+                    }
+                }
+            }
+
+            return versions;
+        }
+
+        #endregion
 
         #endregion
     }

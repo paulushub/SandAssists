@@ -2,12 +2,14 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Microsoft.Win32;
 
 using Sandcastle.Steps;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
 {
@@ -33,7 +35,7 @@ namespace Sandcastle.Formats
         private bool _tocSingleExpand;
         private bool _tocFullrowSelect;
 
-        private string _helpCompiler;
+        private BuildFilePath _compilerFile;
 
         #endregion
 
@@ -71,7 +73,7 @@ namespace Sandcastle.Formats
             _includeStopWords      = source._includeStopWords;
             _includeAdvancedSearch = source._includeAdvancedSearch;
 
-            _helpCompiler          = source._helpCompiler;
+            _compilerFile          = source._compilerFile;
 
             _tocHasButtons         = source._tocHasButtons;
             _tocHasLines           = source._tocHasLines;
@@ -141,20 +143,20 @@ namespace Sandcastle.Formats
             }
         }
 
-        public string Compiler
+        public BuildFilePath CompilerFile
         {
             get
             {
-                if (String.IsNullOrEmpty(_helpCompiler) || !File.Exists(_helpCompiler))
+                if (_compilerFile == null || !_compilerFile.Exists)
                 {
                     FindHtmlHelpCompiler();
                 }
 
-                return _helpCompiler;
+                return _compilerFile;
             }
             set
             {
-                _helpCompiler = value;
+                _compilerFile = value;
             }
         }
 
@@ -454,6 +456,14 @@ namespace Sandcastle.Formats
                 return null;
             }
 
+            // Accessing the property will force a lookup for the compiler...
+            BuildFilePath helpCompiler = this.CompilerFile;
+            if (helpCompiler == null || !helpCompiler.Exists)
+            {
+                throw new BuildException(
+                    "The CHM format compiler cannot be found. If installed, manually set its path.");
+            }
+
             BuildSettings settings = context.Settings;
 
             string helpDirectory = context.OutputDirectory;
@@ -569,7 +579,7 @@ namespace Sandcastle.Formats
                 listSteps.Add(dbcsFixProcess);
 
                 // 3. Compile the Html help files: hhc Help\Manual.hhp
-                application = this.Compiler;
+                application = helpCompiler.Path;
                 arguments   = String.Format(@"{0}\{1}.hhp", helpFolder, helpName);
                 if (String.IsNullOrEmpty(appLocale) == false && 
                     File.Exists(appLocale))
@@ -581,7 +591,7 @@ namespace Sandcastle.Formats
                 StepChmCompiler hhcProcess = new StepChmCompiler(workingDir,
                     application, arguments);
                 hhcProcess.LogTitle        = String.Empty;
-                hhcProcess.Message         = "Compiling the help file (HHC Tool)";
+                hhcProcess.Message         = "Compiling HtmlHelp 1.x help file";
                 hhcProcess.CopyrightNotice = 2;
                 hhcProcess.KeepSources     = _keepSources;
                 hhcProcess.HelpName        = helpName;
@@ -613,24 +623,307 @@ namespace Sandcastle.Formats
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadPropertyGroupXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            if (!String.Equals(startElement, "propertyGroup",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "OnReadPropertyGroupXml: The current element is '{0}' not the expected 'propertyGroup'.",
+                    startElement));
+            }
+
+            string groupName = reader.GetAttribute("name");
+            Debug.Assert(String.Equals(groupName, "FormatChm-General") ||
+                String.Equals(groupName, "FormatChm-TreeView"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (String.Equals(groupName, "FormatChm-General",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                this.ReadXmlGeneral(reader);
+            }
+            else if (String.Equals(groupName, "FormatChm-TreeView",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                this.ReadXmlTreeView(reader);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        protected override void OnWritePropertyGroupXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatChm-General");
+            writer.WritePropertyElement("KeepSources",           _keepSources);
+            writer.WritePropertyElement("UseAutoIndex",          _useAutoIndex);
+            writer.WritePropertyElement("UseBinaryToc",          _useBinaryToc);
+            writer.WritePropertyElement("UseBinaryIndex",        _useBinaryIndex);
+            writer.WritePropertyElement("UseFullTextSearch",     _useFullTextSearch);
+            writer.WritePropertyElement("IncludeFavorites",      _includeFavorites);
+            writer.WritePropertyElement("IncludeStopWords",      _includeStopWords);
+            writer.WritePropertyElement("IncludeAdvancedSearch", _includeAdvancedSearch);
+            writer.WriteEndElement();                   // end - propertyGroup
+            
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatChm-TreeView");
+            writer.WritePropertyElement("HasButtons",    _tocHasButtons);
+            writer.WritePropertyElement("HasLines",      _tocHasLines);
+            writer.WritePropertyElement("LinesAtRoot",   _tocLinesAtRoot);
+            writer.WritePropertyElement("ShowSelAlways", _tocShowSelAlways);
+            writer.WritePropertyElement("TrackSelect",   _tocTrackSelect);
+            writer.WritePropertyElement("SingleExpand",  _tocSingleExpand);
+            writer.WritePropertyElement("FullrowSelect", _tocFullrowSelect);
+            writer.WriteEndElement();                   // end - propertyGroup
+        }
+
+        protected override void OnReadContentXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteContentXml(XmlWriter writer)
+        {
+        }
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (String.Equals(reader.Name, "compilerFile", 
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _compilerFile = BuildFilePath.ReadLocation(reader);
+            }
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+            BuildFilePath.WriteLocation(_compilerFile,
+                "compilerFile", writer);
+        }
+
+        #endregion
+
         #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatChm-General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "keepsources":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _keepSources = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "useautoindex":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _useAutoIndex = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "usebinarytoc":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _useBinaryToc = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "usebinaryindex":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _useBinaryIndex = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "usefulltextsearch":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _useFullTextSearch = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includefavorites":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeFavorites = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includestopwords":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeStopWords = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "includeadvancedsearch":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _includeAdvancedSearch = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlTreeView Method
+
+        private void ReadXmlTreeView(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatChm-TreeView"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "hasbuttons":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocHasButtons = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "haslines":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocHasLines = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "linesatroot":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocLinesAtRoot = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "showselalways":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocShowSelAlways = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "trackselect":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocTrackSelect = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "singleexpand":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocSingleExpand = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "fullrowselect":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocFullrowSelect = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region FindHtmlHelpCompiler Method
 
         private void FindHtmlHelpCompiler()
         {
-            if (!String.IsNullOrEmpty(_helpCompiler) && File.Exists(_helpCompiler))
+            if (!String.IsNullOrEmpty(_compilerFile) && File.Exists(_compilerFile))
             {
                 return;
             }
 
             // 1. Search the default installed directory, the "Programs Files" folder...
-            _helpCompiler = Path.Combine(Environment.GetFolderPath(
+            _compilerFile = new BuildFilePath(Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.ProgramFiles),
-                @"HTML Help Workshop\hhc.exe");
-            if (File.Exists(_helpCompiler))
+                @"HTML Help Workshop\hhc.exe"));
+            if (_compilerFile.Exists)
             {
                 return;
             }
-            _helpCompiler = null;
+            _compilerFile = null;
 
             // 2. Search the MS installed programs, the Help Workshop is one of them...
             string key = @"HKEY_CURRENT_USER\Software\Microsoft\HTML Help Workshop";
@@ -640,13 +933,13 @@ namespace Sandcastle.Formats
             if (String.IsNullOrEmpty(installDir) == false &&
                 Directory.Exists(installDir))
             {
-                _helpCompiler = Path.Combine(installDir, "hhc.exe");
-                if (File.Exists(_helpCompiler))
+                _compilerFile = new BuildFilePath(Path.Combine(installDir, "hhc.exe"));
+                if (_compilerFile.Exists)
                 {
                     return;
                 }
             }
-            _helpCompiler = null;
+            _compilerFile = null;
 
             // 3. Finally, search using the registered file types...
             RegistryKey hhwKey = Registry.ClassesRoot.OpenSubKey("hhc.file");
@@ -675,20 +968,22 @@ namespace Sandcastle.Formats
                             if (splitIndex > 0)
                             {
                                 hhwPath = hhwPath.Substring(0, splitIndex);
-                                _helpCompiler = Path.Combine(
-                                    Path.GetDirectoryName(hhwPath), "hhc.exe");
+                                _compilerFile = new BuildFilePath(Path.Combine(
+                                    Path.GetDirectoryName(hhwPath), "hhc.exe"));
                             }
                         }
                     }
                 }
             }
 
-            if (File.Exists(_helpCompiler))
+            if (_compilerFile.Exists)
             {
                 return;
             }
-            _helpCompiler = null;
+            _compilerFile = null;
         }
+
+        #endregion
 
         #endregion
 
@@ -697,9 +992,12 @@ namespace Sandcastle.Formats
         public override BuildFormat Clone()
         {
             FormatChm format = new FormatChm(this);
-            if (_helpCompiler != null)
+
+            base.Clone(format);
+
+            if (_compilerFile != null)
             {
-                format._helpCompiler = String.Copy(_helpCompiler);
+                format._compilerFile = _compilerFile.Clone();
             }
 
             return format;

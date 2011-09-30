@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Sandcastle.BuildGroupVisitor&lt;T&gt;" Collapsed="true">
-    <Position X="3.25" Y="2.5" Width="1.75" />
+  <Class Name="Sandcastle.BuildGroupVisitor" Collapsed="true">
+    <Position X="0.75" Y="2.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAIAAQAoAABYQAAAAAAAQAAAAAAAAAAAAAhBAAAAg=</HashCode>
+      <HashCode>AAAAIAAQAqAABYQAAAAAAAQAAAAAAAAAAAAAhBAAAAg=</HashCode>
       <FileName>BuildGroupVisitor.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -12,63 +12,35 @@
     <Lollipop Position="1.085" />
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualGroupVisitor" Collapsed="true">
-    <Position X="2.75" Y="3.5" Width="2.75" />
+    <Position X="0.75" Y="3.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAACAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>Conceptual\ConceptualGroupVisitor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceGroupVisitor" Collapsed="true">
-    <Position X="2.75" Y="1.5" Width="2.75" />
+    <Position X="0.75" Y="1.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAACAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>References\ReferenceGroupVisitor.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualManifest" Collapsed="true">
-    <Position X="6" Y="3.5" Width="1.75" />
+  <Class Name="Sandcastle.References.ReferenceProjectVisitor" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ABAAQAAAAAAAAIAAAEACAAAAEAQAAAAAAAAAEAAIMBA=</HashCode>
-      <FileName>Conceptual\ConceptualManifest.cs</FileName>
+      <HashCode>AAkAFABAACCAAACBAAACAIAAAAAAEAAAUgAAEAAAAAA=</HashCode>
+      <FileName>References\ReferenceProjectVisitor.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualMetadata" Collapsed="true">
-    <Position X="0.5" Y="3.5" Width="1.75" />
+  <Class Name="Sandcastle.Conceptual.ConceptualProjectVisitor" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AACAAAAAAEAAAAAACAECAAAAIAAAAAACAEAAEAAAABA=</HashCode>
-      <FileName>Conceptual\ConceptualMetadata.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualSettingsLoc" Collapsed="true">
-    <Position X="0.75" Y="5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AgAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAgAEAAIABA=</HashCode>
-      <FileName>Conceptual\ConceptualSettingsLoc.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualTableOfContents" Collapsed="true">
-    <Position X="3" Y="5" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAIAAAAAACAAAAAAAAAAACAAAQEAAABBA=</HashCode>
-      <FileName>Conceptual\ConceptualTableOfContents.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.Conceptual.ConceptualLinkTargets" Collapsed="true">
-    <Position X="5.5" Y="5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAACEAAAABA=</HashCode>
-      <FileName>Conceptual\ConceptualLinkTargets.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Sandcastle.References.ReferenceDependencyResolver" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAACAAAACAAAAAAAAAAAAAAAAEAAAABA=</HashCode>
-      <FileName>References\ReferenceDependencyResolver.cs</FileName>
+      <HashCode>EAAAIEEAACCAAgCAEAACAAAwEAAAAAABACAIEAAAAAA=</HashCode>
+      <FileName>Conceptual\ConceptualProjectVisitor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="Sandcastle.BuildGroupType">
-    <Position X="0.5" Y="2" Width="1.5" />
+    <Position X="3.5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAA=</HashCode>
       <FileName>BuildGroupType.cs</FileName>

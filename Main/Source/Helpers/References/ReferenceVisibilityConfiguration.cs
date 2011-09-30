@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -66,25 +70,6 @@ namespace Sandcastle.References
         /// to the default values.
         /// </summary>
         public ReferenceVisibilityConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReferenceVisibilityConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ReferenceVisibilityConfiguration(string optionsName)
-            : base(optionsName)
         {
             _attributeInfo                        = false;
             _explicitInterfaceMembers             = false;
@@ -103,7 +88,8 @@ namespace Sandcastle.References
             _protectedInternalsAsProtectedMembers = false;
             _sealedProtectedMembers               = true;
 
-            _attributesToKeep = new Dictionary<string, bool>(StringComparer.Ordinal);
+            _attributesToKeep = new Dictionary<string, bool>(
+                StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -143,6 +129,26 @@ namespace Sandcastle.References
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the unique name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the unique name of this 
+        /// category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ReferenceVisibilityConfiguration.ConfigurationName"/>.
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ReferenceVisibilityConfiguration.ConfigurationName;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value specifying whether the attributes are documented 
@@ -261,7 +267,7 @@ namespace Sandcastle.References
         /// Gets or sets a value specifying whether the framework inherited private 
         /// members are documented and visible.
         /// </summary>
-        /// <value>
+        /// <value>             
         /// This is <see langword="true"/> if the framework inherited private members 
         /// are documented and visible; otherwise, this is <see langword="false"/>. 
         /// The default is <see langword="false"/>.
@@ -503,6 +509,295 @@ namespace Sandcastle.References
             }
 
             return false;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) && String.Equals(
+                    reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                {
+                    string tempText = null;
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "continueonerror":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.ContinueOnError = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "attributeinformation":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _attributeInfo = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "explicitinterfacemembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _explicitInterfaceMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "emptynamespaces":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _emptyNamespaces = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "privatefields":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _privateFields = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "internalmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _internalMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "privatemembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _privateMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "inheritedmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _inheritedMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "frameworkinheritedmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _frameworkInheritedMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "frameworkinheritedinternalmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _frameworkInheritedInternalMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "frameworkinheritedprivatemembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _frameworkInheritedPrivateMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "protectedmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _protectedMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "protectedinternalsasprotectedmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _protectedInternalsAsProtectedMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "sealedprotectedmembers":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _sealedProtectedMembers = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_attributesToKeep == null)
+            {
+                _attributesToKeep = new Dictionary<string, bool>(
+                    StringComparer.Ordinal);
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "propertyGroup", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadXmlGeneral(reader);
+                    }
+                    else if (String.Equals(reader.Name, "attributeToKeep", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        bool isKeep = true;
+                        tempText = reader.GetAttribute("keep");
+                        if (!String.IsNullOrEmpty(tempText))
+                        {
+                            isKeep = Convert.ToBoolean(tempText);
+                        }
+                        tempText = reader.ReadString();
+                        if (!String.IsNullOrEmpty(tempText))
+                        {
+                            _attributesToKeep[tempText] = isKeep;
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled", this.Enabled);
+            writer.WritePropertyElement("ContinueOnError", this.ContinueOnError);
+            writer.WritePropertyElement("AttributeInformation", _attributeInfo);
+            writer.WritePropertyElement("ExplicitInterfaceMembers", _explicitInterfaceMembers);
+            writer.WritePropertyElement("EmptyNamespaces", _emptyNamespaces);
+            writer.WritePropertyElement("PrivateFields", _privateFields);
+            writer.WritePropertyElement("InternalMembers", _internalMembers);
+            writer.WritePropertyElement("PrivateMembers", _privateMembers);
+            writer.WritePropertyElement("InheritedMembers", _inheritedMembers);
+            writer.WritePropertyElement("FrameworkInheritedMembers", _frameworkInheritedMembers);
+            writer.WritePropertyElement("FrameworkInheritedInternalMembers", _frameworkInheritedInternalMembers);
+            writer.WritePropertyElement("FrameworkInheritedPrivateMembers", _frameworkInheritedPrivateMembers);
+            writer.WritePropertyElement("ProtectedMembers", _protectedMembers);
+            writer.WritePropertyElement("ProtectedInternalsAsProtectedMembers", _protectedInternalsAsProtectedMembers);
+            writer.WritePropertyElement("SealedProtectedMembers", _sealedProtectedMembers);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteStartElement("attributesToKeep"); // start - attributesToKeep;
+            if (_attributesToKeep != null && _attributesToKeep.Count != 0)
+            {
+                foreach (KeyValuePair<string, bool> pair in _attributesToKeep)
+                {
+                    if (!String.IsNullOrEmpty(pair.Key))
+                    {
+                        writer.WriteStartElement("attributeToKeep"); // start - attributeToKeep;
+                        writer.WriteAttributeString("keep", pair.Value.ToString());
+                        writer.WriteString(pair.Key);
+                        writer.WriteEndElement();                    // end - attributeToKeep   
+                    }
+                }
+            }
+            writer.WriteEndElement();                     // end - attributesToKeep   
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

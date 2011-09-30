@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <SchemaVersion>2.0</SchemaVersion>
+        <ProjectGuid>{5E424792-7095-45d5-8A6D-1F0E64219A7F}</ProjectGuid>
+        <BuilderVersion>1.0.0.0</BuilderVersion>
+        <Documentation>Documentation.sanddocs</Documentation>
+    </PropertyGroup>
+
+    <!-- List of possible configurations and platforms. -->
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\Debug\</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <LoggingLevel>Normal</LoggingLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\Release\</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <LoggingLevel>Normal</LoggingLevel>
+    </PropertyGroup>
+
+    <!-- List of all the documentation groups in this projects -->
+    <ItemGroup>
+        <DocumentGroup Include="ReferenceGroup.sandrgrp">
+            <GroupType>References</GroupType>
+        </DocumentGroup>
+        <DocumentGroup Include="ConceptualGroup.sandcgrp">
+            <GroupType>Conceptual</GroupType>
+        </DocumentGroup>
+        <DocumentGroup Include="ConceptualGroupOther.sandcgrp">
+            <GroupType>Conceptual</GroupType>
+        </DocumentGroup>
+    </ItemGroup>
+
+    <!-- List of all the documentation contents in this projects -->
+    <ItemGroup>
+        <DocumentContent Include="ReferenceContent.sandrefs">
+            <ContentType>References</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="ConceptualContent.sandtopics">
+            <ContentType>Conceptual</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="ConceptualOther.sandtopics">
+            <ContentType>Conceptual</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="TokenContent.tokens">
+            <ContentType>Tokens</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="MediaContent.media">
+            <ContentType>Media</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="SharedContent.shared">
+            <ContentType>Shared</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="CodeSnippets.snippets">
+            <ContentType>CodeSnippets</ContentType>
+        </DocumentContent>
+        <DocumentContent Include="BibliographyContent.biblio">
+            <ContentType>Bibliography</ContentType>
+        </DocumentContent>
+    </ItemGroup>
+    
+    <!-- Include a list of media files -->
+    <ItemGroup>
+        <Media Include="Media\File1.jpg" />
+        <Media Include="Media\File2.jpg" />
+        <Media Include="Media\File3.jpg" />
+    </ItemGroup>
+    
+    <!-- Include a list of topic files -->
+    <ItemGroup>
+        <Topic Include="TopicsA\Topic1.maml" />
+        <Companion Include="TopicsA\Topic1.cmp">
+            <DependentUpon>Topic1.maml</DependentUpon>
+        </Companion>
+        <Topic Include="TopicsB\Topic2.maml" />
+        <Companion Include="TopicsA\Topic2.cmp">
+            <DependentUpon>Topic2.maml</DependentUpon>
+        </Companion>
+        <Topic Include="TopicsC\Topic3.maml" />
+        <Companion Include="TopicsA\Topic3.cmp">
+            <DependentUpon>Topic3.maml</DependentUpon>
+        </Companion>
+    </ItemGroup>
+
+    <!-- Import the Sandcastle Assist build targets -->
+    <Import Project="SandcastleDocument35.targets" />
+
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets. -->
+    <!-- -->
+    <Target Name="AfterBuild">
+        <Message Text="AfterBuild: Testing..."/>
+    </Target>
+    <Target Name="BeforeBuild">
+        <Message Text="BeforeBuild: Testing..."/>
+    </Target>
+</Project>

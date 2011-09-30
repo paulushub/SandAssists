@@ -19,8 +19,8 @@ namespace Sandcastle.Conceptual
         #region Constructors and Destructor
 
         protected ConceptualFilter()
+            : this(String.Format("ft{0:x}", Guid.NewGuid().ToString().GetHashCode()))
         {
-            _isEnabled = true;
         }
 
         protected ConceptualFilter(string name)

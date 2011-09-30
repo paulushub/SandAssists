@@ -512,24 +512,27 @@ namespace Sandcastle.References
 
             CultureInfo culture = _settings.CultureInfo;
             string langName     = culture.TwoLetterISOLanguageName;
-            IList<string> commentDirs = framework.CommentDirs;
-            if (commentDirs != null && commentDirs.Count != 0)
+            IEnumerable<string> commentDirs = framework.CommentDirs;
+            if (commentDirs != null)
             {
-                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment files. ");
-                for (int i = 0; i < commentDirs.Count; i++)
-                {
-                    string commentDir = commentDirs[i];
+                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment file directories. ");
+                //for (int i = 0; i < commentDirs.Count; i++)
+                foreach (string commentDir in commentDirs)
+                {                                                              
                     if (!Directory.Exists(commentDir))
                     {
                         continue;
                     }
                     string langDir = Path.Combine(commentDir, langName);
+                    xmlWriter.WriteStartElement("data");  // start - data                  
                     if (Directory.Exists(langDir))
                     {
-                        commentDir = langDir;
+                        xmlWriter.WriteAttributeString("base", langDir);
                     }
-                    xmlWriter.WriteStartElement("data");  // start - data                  
-                    xmlWriter.WriteAttributeString("base", commentDir);
+                    else
+                    {
+                        xmlWriter.WriteAttributeString("base", commentDir);
+                    }
                     xmlWriter.WriteAttributeString("recurse", "false");
                     xmlWriter.WriteAttributeString("warnOverride", warnOverride ? "true" : "false");
                     xmlWriter.WriteAttributeString("files", "*.xml");
@@ -537,27 +540,28 @@ namespace Sandcastle.References
                 }
             }
 
-            ReferenceContent contents = _group.Content;
-            if (contents != null && contents.Count != 0)
+            IEnumerable<string> commentFiles = framework.CommentFiles;
+            if (commentFiles != null)
+            {                         
+                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment files. ");
+                foreach (string commentFile in commentFiles)
+                {
+                    xmlWriter.WriteStartElement("data");
+                    xmlWriter.WriteAttributeString("files", commentFile);
+                    xmlWriter.WriteAttributeString("warnOverride", "false");
+                    xmlWriter.WriteEndElement();
+                }
+            }
+
+            IList<string> targetCommentFiles = groupContext.CommentFiles;
+            if (targetCommentFiles != null && targetCommentFiles.Count != 0)
             {
                 xmlWriter.WriteComment(" The following are the target comment files. ");
-                int itemCount = contents.Count;
-                for (int i = 0; i < itemCount; i++)
+                for (int i = 0; i < targetCommentFiles.Count; i++)
                 {
-                    ReferenceItem item = contents[i];
-                    if (item == null || item.IsEmpty)
-                    {
-                        continue;
-                    }
-                    string referenceFile = Path.GetFileName(item.Comments);
-                    if (String.IsNullOrEmpty(referenceFile) == false)
-                    {
-                        xmlWriter.WriteStartElement("data");
-                        xmlWriter.WriteAttributeString("files", Path.Combine(
-                            String.Format(@".\{0}\", groupContext.CommentFolder), 
-                            referenceFile));
-                        xmlWriter.WriteEndElement();
-                    }
+                    xmlWriter.WriteStartElement("data");
+                    xmlWriter.WriteAttributeString("files", targetCommentFiles[i]);
+                    xmlWriter.WriteEndElement();
                 }
             }
 

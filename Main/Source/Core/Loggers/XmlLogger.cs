@@ -6,7 +6,7 @@ namespace Sandcastle.Loggers
 {
     /// <summary>
     /// This logger records all the relevant build events, information, warnings, 
-    /// and errors in an XML text format.  
+    /// and errors in an <c>XML</c> text format.  
     /// </summary>
     public class XmlLogger : BuildLogger
     {

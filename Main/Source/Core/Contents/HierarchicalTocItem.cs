@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.Contents
@@ -6,11 +8,18 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class HierarchicalTocItem : BuildItem<HierarchicalTocItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "hierarchicalTocItem";
+
+        #endregion
+
         #region Private Fields
 
         private string       _fileName;
         private string       _projectName;
         private string       _namespaceName;
+
         [NonSerialized]
         private List<string> _namespaceParts;
 
@@ -58,6 +67,15 @@ namespace Sandcastle.Contents
         #endregion
 
         #region Public Properties
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return String.IsNullOrEmpty(_namespaceName) ||
+                    String.IsNullOrEmpty(_fileName);
+            }
+        }
 
         public string this[int index]
         {
@@ -159,6 +177,24 @@ namespace Sandcastle.Contents
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="HierarchicalTocItem"/> class instance, this property is 
+        /// <see cref="HierarchicalTocItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -238,6 +274,66 @@ namespace Sandcastle.Contents
             }
 
             return hashCode;
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _namespaceName = reader.GetAttribute("id");
+                _projectName   = reader.GetAttribute("project");
+                _fileName      = reader.GetAttribute("file");
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("id",      _namespaceName);
+            writer.WriteAttributeString("project", _projectName);
+            writer.WriteAttributeString("file",    _fileName);
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

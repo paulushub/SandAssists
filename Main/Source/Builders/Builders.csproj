@@ -76,6 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuilderException.cs" />
+    <Compile Include="MSBuilds\ProjectBuilder.cs" />
+    <Compile Include="MSBuilds\ProjectCleaner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -87,11 +89,29 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Templates\FileTemplate.cs" />
+    <Compile Include="Templates\FileTemplateManager.cs" />
+    <Compile Include="Templates\ProjectTemplate.cs" />
+    <Compile Include="Templates\ProjectTemplateManager.cs" />
+    <Compile Include="Templates\TemplateAction.cs" />
+    <Compile Include="Templates\TemplateAssistant.cs" />
+    <Compile Include="Templates\TemplateAuthoring.cs" />
+    <Compile Include="Templates\TemplateConfiguration.cs" />
+    <Compile Include="Templates\TemplateConstants.cs" />
+    <Compile Include="Templates\TemplateDescription.cs" />
+    <Compile Include="Templates\TemplateFile.cs" />
+    <Compile Include="Templates\TemplateFrameworkType.cs" />
+    <Compile Include="Templates\TemplateItem.cs" />
+    <Compile Include="Templates\TemplateItemGroup.cs" />
+    <Compile Include="Templates\TemplateProperty.cs" />
+    <Compile Include="Templates\TemplatePropertyGroup.cs" />
+    <Compile Include="Templates\TemplateTargetFramework.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Sandcastle.Assist.snk">
       <Link>Sandcastle.Assist.snk</Link>
     </None>
+    <None Include="Diagrams\Templates.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -116,7 +136,6 @@
   <ItemGroup>
     <Folder Include="Converters\" />
     <Folder Include="Documenters\" />
-    <Folder Include="MSBuilds\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

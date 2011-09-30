@@ -72,6 +72,12 @@ namespace Sandcastle.Components
 
         private BuildComponentController _buildController;
 
+        /// <summary>
+        /// Used to keep tract of missing keys, so that we do not repeat
+        /// warning for the same key.
+        /// </summary>
+        private IDictionary<string, bool> _missingTags;
+
         #endregion
 
         #region Constructors and Destructor
@@ -124,6 +130,12 @@ namespace Sandcastle.Components
             catch (Exception ex)
             {
                 this.WriteMessage(MessageLevel.Error, ex);
+            }
+
+            if (_applyMissingTags)
+            {
+                _missingTags = new Dictionary<string, bool>(
+                    StringComparer.Ordinal);
             }
         }
 
@@ -704,13 +716,14 @@ namespace Sandcastle.Components
                 {
                     if (_typeParameterTags)
                     {
+                        // 1. First test that it has parameters...
                         XPathNodeIterator iterator = documentNavigator.Select(
                             "document/reference/templates/template");
                         if (iterator != null && iterator.Count != 0)
                         {
                             foreach (XPathNavigator targetNavigator in iterator)
                             {
-                                this.ProcessMissingTag(documentNavigator, targetNavigator, "typeparam",
+                                this.ProcessMissingTag(documentNavigator, commentsNavigator, "typeparam",
                                     targetNavigator.GetAttribute("name", String.Empty), key);
                             }
                         }
@@ -773,13 +786,26 @@ namespace Sandcastle.Components
             string targetKey, string documentKey)
         {
             string tagText = String.Empty;
-            XPathNavigator targetTag = commentsNavigator.SelectSingleNode(targetName);
+            string searchExpression = targetName;
+            if (targetName.Equals("param", StringComparison.Ordinal))
+            {
+                searchExpression = String.Format("param[@name='{0}']",
+                    targetKey);
+            }
+            else if (targetName.Equals("typeparam", StringComparison.Ordinal))
+            {
+                searchExpression = String.Format("typeparam[@name='{0}']",
+                    targetKey);
+            }
+            XPathNavigator targetTag = commentsNavigator.SelectSingleNode(searchExpression);
 
             if (targetTag == null)
             {
                 commentsNavigator.AppendChildElement(commentsNavigator.Prefix, targetName, 
                     commentsNavigator.NamespaceURI, String.Empty);
-                targetTag = commentsNavigator.SelectSingleNode(targetName);
+                // Select the last added child node...
+                targetTag = commentsNavigator.SelectSingleNode(
+                    targetName + "[last()]");
 
                 if (documentKey != null && documentKey.Length > 1 && 
                     documentKey[0] == 'M')
@@ -806,7 +832,9 @@ namespace Sandcastle.Components
                 return;
             }
 
-            if (_missingWarning) // warn, if requested...
+            bool isContained = _missingTags.ContainsKey(targetKey);
+            
+            if (_missingWarning && !isContained) // warn, if requested...
             {
                 if (targetName.Equals("param", StringComparison.Ordinal))
                 {
@@ -826,7 +854,8 @@ namespace Sandcastle.Components
                         "Missing tag, <{0}>, documentation for {1}.", targetName, targetKey));
                 }
             }
-            if (_missingLog)     // log, if requested...
+            
+            if (_missingLog && !isContained) // log, if requested...   
             {
                 if (_missingLogInXml && _xmlWriter != null)
                 {
@@ -862,6 +891,12 @@ namespace Sandcastle.Components
                     }
                 }
             }
+
+            if (!isContained)
+            {
+                _missingTags.Add(targetKey, true);
+            }
+
             if (!_missingIndicate)  // only write the document flags of the missing tags if requested...
             {
                 return;
@@ -922,8 +957,10 @@ namespace Sandcastle.Components
             {
                 return;
             }
-            
-            if (_missingWarning) // warn, if requested...
+
+            bool isContained = _missingTags.ContainsKey(targetKey);
+
+            if (_missingWarning && !isContained) // warn, if requested...
             {
                 if (String.IsNullOrEmpty(crefValue))
                 {
@@ -937,7 +974,7 @@ namespace Sandcastle.Components
                         crefValue == null ? String.Empty : crefValue, targetKey));
                 }
             }
-            if (_missingLog)     // log, if requested...
+            if (_missingLog && !isContained)     // log, if requested...
             {
                 if (_missingLogInXml && _xmlWriter != null)
                 {
@@ -973,6 +1010,12 @@ namespace Sandcastle.Components
                     }
                 }
             }
+
+            if (!isContained)
+            {
+                _missingTags.Add(targetKey, true);
+            }
+
             if (_missingIndicate)  // only write the document flags of the missing tags if requested...
             {
                 if (String.IsNullOrEmpty(tagText))
@@ -1021,18 +1064,20 @@ namespace Sandcastle.Components
                 }
             }
 
+            bool isContained = _missingTags.ContainsKey(targetKey);
+
             foreach (XPathNavigator includeNavigator in includeIterator)
             {
                 string includeFile  = includeNavigator.GetAttribute("file", String.Empty);
                 string includeXPath = includeNavigator.GetAttribute("path", String.Empty);
 
-                if (_missingWarning) // warn, if requested...
+                if (_missingWarning && !isContained) // warn, if requested...
                 {
                     this.WriteMessage(MessageLevel.Warn, String.Format(
                         "Missing tag, <include file='{0}' path='{1}'/>, documentation for {2}.", includeFile, 
                         includeXPath, targetKey));
                 }
-                if (_missingLog)     // log, if requested...
+                if (_missingLog && !isContained)     // log, if requested...
                 {
                     if (_missingLogInXml && _xmlWriter != null)
                     {
@@ -1049,6 +1094,11 @@ namespace Sandcastle.Components
                             "Missing tag, <include file='{0}' path='{1}'/>, documentation for {2}.", 
                             includeFile, includeXPath, targetKey));
                     }
+                }
+
+                if (!isContained)
+                {
+                    _missingTags.Add(targetKey, true);
                 }
                 if (_missingIndicate)  // only write the document flags of the missing tags if requested...
                 {
@@ -1175,7 +1225,42 @@ namespace Sandcastle.Components
                                 if (paramNameNode != null)
                                 {
                                     string paramName = paramNameNode.GetAttribute("name", String.Empty);
-                                    if (!String.IsNullOrEmpty(paramName))
+                                    if (String.IsNullOrEmpty(paramName))
+                                    {
+                                        paramName = "disposing";
+                                        if (paramNameNode.HasAttributes)
+                                        {
+                                            // If there attribute exists, set the value to disposing...
+                                            if (paramNameNode.MoveToAttribute("name", String.Empty))
+                                            {
+                                                paramNameNode.SetValue(paramName);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // If the attribute does not exist, we create it... 
+                                            paramNameNode.CreateAttribute(paramNameNode.Prefix, "name",
+                                                paramNameNode.NamespaceURI, paramName);
+                                        }
+
+                                        paramNode.CreateAttribute(paramNode.Prefix, "name",
+                                            paramNode.NamespaceURI, paramName);
+
+                                        // In the syntax, the parameter will also be missing...
+                                        XPathNodeIterator syntaxNodes = documentNavigator.Select(
+                                            "document/syntax/div/span[@class='parameter']");
+                                        if (syntaxNodes != null && syntaxNodes.Count != 0)
+                                        {
+                                            foreach (XPathNavigator syntaxNode in syntaxNodes)
+                                            {
+                                                if (String.IsNullOrEmpty(syntaxNode.Value))
+                                                {
+                                                    syntaxNode.SetValue(paramName);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
                                     {
                                         paramNode.CreateAttribute(paramNode.Prefix, "name",
                                             paramNode.NamespaceURI, paramName);
@@ -1198,7 +1283,42 @@ namespace Sandcastle.Components
                                     if (paramNameNode != null)
                                     {
                                         string paramName = paramNameNode.GetAttribute("name", String.Empty);
-                                        if (!String.IsNullOrEmpty(paramName))
+                                        if (String.IsNullOrEmpty(paramName))
+                                        {
+                                            paramName = "disposing";
+                                            if (paramNameNode.HasAttributes)
+                                            {
+                                                // If there attribute exists, set the value to disposing...
+                                                if (paramNameNode.MoveToAttribute("name", String.Empty))
+                                                {
+                                                    paramNameNode.SetValue(paramName);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // If the attribute does not exist, we create it... 
+                                                paramNameNode.CreateAttribute(paramNameNode.Prefix, "name",
+                                                    paramNameNode.NamespaceURI, paramName);
+                                            }
+
+                                            paramNode.CreateAttribute(paramNode.Prefix, "name",
+                                                paramNode.NamespaceURI, paramName);
+
+                                            // In the syntax, the parameter will also be missing...
+                                            XPathNodeIterator syntaxNodes = documentNavigator.Select(
+                                                "document/syntax/div/span[@class='parameter']");
+                                            if (syntaxNodes != null && syntaxNodes.Count != 0)
+                                            {
+                                                foreach (XPathNavigator syntaxNode in syntaxNodes)
+                                                {
+                                                    if (String.IsNullOrEmpty(syntaxNode.Value))
+                                                    {
+                                                        syntaxNode.SetValue(paramName);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
                                         {
                                             paramNode.CreateAttribute(paramNode.Prefix, "name",
                                                 paramNode.NamespaceURI, paramName);

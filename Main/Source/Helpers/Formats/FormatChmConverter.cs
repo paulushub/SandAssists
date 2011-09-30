@@ -162,7 +162,7 @@ namespace Sandcastle.Formats
                     if (_metadata == false && reader.Name.ToLower() == "xml" &&
                         reader.NodeType == XmlNodeType.Element)
                     {
-                        //skip xml data island
+                        //skip XML data island
                         //reader.ReadOuterXml();
                         ReadXmlIsland(reader, writer);
                         reader.Skip();

@@ -74,6 +74,10 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Sandcastle.XsdDocs, Version=1.9.1.0, Culture=neutral, PublicKeyToken=1ac0ad2cd16ece73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Sandcastle.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=26d176bb73235da5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -89,10 +93,12 @@
     <Compile Include="BuildComponentConfiguration.cs" />
     <Compile Include="BuildConfiguration.cs" />
     <Compile Include="BuildGroupContext.cs" />
+    <Compile Include="BuildGroupSource.cs" />
     <Compile Include="BuildGroupTocInfo.cs" />
     <Compile Include="BuildGroupVisitor.cs" />
     <Compile Include="BuildLogging.cs" />
     <Compile Include="Conceptual\ConceptualChangeHistory.cs" />
+    <Compile Include="Conceptual\ConceptualDocProjReader.cs" />
     <Compile Include="Conceptual\ConceptualGroupContext.cs" />
     <Compile Include="BuildSource.cs" />
     <Compile Include="BuildComponentType.cs" />
@@ -106,7 +112,6 @@
     <Compile Include="BuildSourceContext.cs" />
     <Compile Include="BuildSpellChecker.cs" />
     <Compile Include="BuildSpellCheckResult.cs" />
-    <Compile Include="BuildStyleUtils.cs" />
     <Compile Include="BuildSyntaxType.cs" />
     <Compile Include="BuildTocContext.cs" />
     <Compile Include="BuildTocInfo.cs" />
@@ -117,11 +122,12 @@
     <Compile Include="Conceptual\ConceptualCodeConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualComponentConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualConfiguration.cs" />
-    <Compile Include="Conceptual\ConceptualDocProjSource.cs" />
+    <Compile Include="Conceptual\ConceptualDoxygenSource.cs" />
     <Compile Include="Conceptual\ConceptualEngineSettings.cs" />
     <Compile Include="Conceptual\ConceptualGroupTocInfo.cs" />
     <Compile Include="Conceptual\ConceptualGroupVisitor.cs" />
     <Compile Include="Conceptual\ConceptualHtmlTopic.cs" />
+    <Compile Include="Conceptual\ConceptualImportSource.cs" />
     <Compile Include="Conceptual\ConceptualIntelliSenseConfiguration.cs" />
     <Compile Include="BuildConverter.cs" />
     <Compile Include="BuildDocumenter.cs" />
@@ -143,16 +149,17 @@
     <Compile Include="BuildVisitor.cs" />
     <Compile Include="Conceptual\ConceptualFormatAssembler.cs" />
     <Compile Include="Conceptual\ConceptualLinkConfiguration.cs" />
-    <Compile Include="Conceptual\ConceptualLinkTargets.cs" />
     <Compile Include="Conceptual\ConceptualMarkerTopic.cs" />
     <Compile Include="Conceptual\ConceptualMathConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualMediaConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualPostTransConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualPreTransConfiguration.cs" />
+    <Compile Include="Conceptual\ConceptualProjectVisitor.cs" />
+    <Compile Include="Conceptual\ConceptualReader.cs" />
     <Compile Include="Conceptual\ConceptualReferenceLinkConfiguration.cs" />
     <Compile Include="Conceptual\ConceptualRelatedTopic.cs" />
     <Compile Include="Conceptual\ConceptualSharedConfiguration.cs" />
-    <Compile Include="Conceptual\ConceptualShfbSource.cs" />
+    <Compile Include="Conceptual\ConceptualShfbReader.cs" />
     <Compile Include="Conceptual\ConceptualSource.cs" />
     <Compile Include="Conceptual\ConceptualTocVisitor.cs" />
     <Compile Include="Conceptual\ConceptualTopic.cs" />
@@ -177,8 +184,6 @@
     <Compile Include="Conceptual\ConceptualFilter.cs" />
     <Compile Include="Conceptual\ConceptualRevisionFilter.cs" />
     <Compile Include="Conceptual\ConceptualEngine.cs" />
-    <Compile Include="Conceptual\ConceptualManifest.cs" />
-    <Compile Include="Conceptual\ConceptualMetadata.cs" />
     <Compile Include="Configurators\ConfiguratorKeywords.cs" />
     <Compile Include="Configurators\GenericConfigurator.cs" />
     <Compile Include="Configurators\IncludeConfigurator.cs" />
@@ -215,18 +220,17 @@
     <Compile Include="References\ReferenceCommentVisitor.cs" />
     <Compile Include="References\ReferenceComponentConfiguration.cs" />
     <Compile Include="References\ReferenceConfiguration.cs" />
-    <Compile Include="References\ReferenceDependencyResolver.cs" />
-    <Compile Include="References\ReferenceDocProjSource.cs" />
+    <Compile Include="References\ReferenceLinkSource.cs" />
+    <Compile Include="References\ReferenceProjectVisitor.cs" />
     <Compile Include="References\ReferenceDocumentType.cs" />
     <Compile Include="References\ReferenceEngineSettings.cs" />
     <Compile Include="References\ReferenceGroupContext.cs" />
     <Compile Include="References\ReferenceGroupTocInfo.cs" />
     <Compile Include="References\ReferenceGroupVisitor.cs" />
-    <Compile Include="References\ReferenceNDocSource.cs" />
+    <Compile Include="References\ReferenceDirectorySource.cs" />
+    <Compile Include="References\ReferenceImportSource.cs" />
     <Compile Include="References\ReferencePreTransConfiguration.cs" />
-    <Compile Include="References\ReferenceScriptSharpSource.cs" />
     <Compile Include="References\ReferenceSharedConfiguration.cs" />
-    <Compile Include="References\ReferenceShfbSource.cs" />
     <Compile Include="References\ReferenceSource.cs" />
     <Compile Include="References\ReferenceTocExcludeConfiguration.cs" />
     <Compile Include="References\ReferenceFilterType.cs" />
@@ -259,13 +263,19 @@
     <Compile Include="References\ReferenceVisibilityConfiguration.cs" />
     <Compile Include="References\ReferenceVisibilityVisitor.cs" />
     <Compile Include="References\ReferenceVisitor.cs" />
+    <Compile Include="References\ReferenceVsNetItem.cs" />
     <Compile Include="References\ReferenceVsNetSource.cs" />
     <Compile Include="References\ReferenceXPathItem.cs" />
     <Compile Include="References\ReferenceXPathConfiguration.cs" />
     <Compile Include="References\ReferenceXPathVisitor.cs" />
+    <Compile Include="Sources\DocProjectGroupSource.cs" />
+    <Compile Include="Sources\ImportGroupSource.cs" />
+    <Compile Include="Sources\NDocGroupSource.cs" />
+    <Compile Include="Sources\ShfbGroupSource.cs" />
     <Compile Include="Steps\StepChmDbcsFix.cs" />
     <Compile Include="Steps\StepCleanup.cs" />
     <Compile Include="Steps\StepConceptualInit.cs" />
+    <Compile Include="Steps\StepMhvViewerClose.cs" />
     <Compile Include="Steps\StepReferenceInit.cs" />
     <Compile Include="Steps\StepReferenceManifest.cs" />
     <Compile Include="Steps\StepReferenceModel.cs" />
@@ -289,8 +299,6 @@
     <Compile Include="Conceptual\ConceptualUtils.cs" />
     <Compile Include="Configurators\SharedContentConfigurator.cs" />
     <Compile Include="Formats\FormatChm.cs" />
-    <Compile Include="Conceptual\ConceptualSettingsLoc.cs" />
-    <Compile Include="Conceptual\ConceptualTableOfContents.cs" />
     <Compile Include="Formats\FormatHxs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BuildEngine.cs" />
@@ -348,6 +356,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Composition\Composition.csproj">
+      <Project>{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}</Project>
+      <Name>Composition</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Construction\Construction.csproj">
+      <Project>{B2012E7F-8F8D-4908-8045-413F2BD1022D}</Project>
+      <Name>Construction</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</Project>
       <Name>Core</Name>

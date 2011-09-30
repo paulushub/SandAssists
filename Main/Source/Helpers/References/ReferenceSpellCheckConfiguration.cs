@@ -2,7 +2,10 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
+
+using Sandcastle.Utilities;
 
 namespace Sandcastle.References
 {
@@ -52,25 +55,6 @@ namespace Sandcastle.References
         /// to the default values.
         /// </summary>
         public ReferenceSpellCheckConfiguration()
-            : this(ConfigurationName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReferenceSpellCheckConfiguration"/> class
-        /// with the specified options or category name.
-        /// </summary>
-        /// <param name="optionsName">
-        /// A <see cref="System.String"/> specifying the name of this category of options.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// If the <paramref name="optionsName"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// If the <paramref name="optionsName"/> is empty.
-        /// </exception>
-        private ReferenceSpellCheckConfiguration(string optionsName)
-            : base(optionsName)
         {
             _log           = true;
             _logXml        = true;
@@ -108,6 +92,26 @@ namespace Sandcastle.References
         #region Public Properties
 
         /// <summary>
+        /// Gets the unique name of the category of options.
+        /// </summary>
+        /// <value>
+        /// <para>
+        /// A <see cref="System.String"/> specifying the unique name of this 
+        /// category of options.
+        /// </para>
+        /// <para>
+        /// The value is <see cref="ReferenceSpellCheckConfiguration.ConfigurationName"/>.
+        /// </para>
+        /// </value>
+        public override string Name
+        {
+            get
+            {
+                return ReferenceSpellCheckConfiguration.ConfigurationName;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value specifying whether the misspelled words are 
         /// logged to a spell checking specific log file.
         /// </summary>
@@ -130,10 +134,10 @@ namespace Sandcastle.References
 
         /// <summary>
         /// Gets or sets a value specifying whether the format of the spell checking 
-        /// specific logging use XML file format.
+        /// specific logging use <c>XML</c> file format.
         /// </summary>
         /// <value>
-        /// This is <see langword="true"/> if the XML file format is used for the 
+        /// This is <see langword="true"/> if the <c>XML</c> file format is used for the 
         /// spell checking logging; otherwise, it is <see langword="false"/>. 
         /// The default is <see langword="true"/>.
         /// </value>
@@ -197,7 +201,7 @@ namespace Sandcastle.References
         }
 
         /// <summary>
-        /// Gets the list of XML documentation tags to skip in the spell checking process.
+        /// Gets the list of <c>XML</c> documentation tags to skip in the spell checking process.
         /// </summary>
         /// <value>
         /// A list, <see cref="ICollection{string}"/>, specifying the current list of tags
@@ -238,6 +242,205 @@ namespace Sandcastle.References
         public override ReferenceVisitor CreateVisitor()
         {
             return new ReferenceSpellCheckVisitor(this);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) && String.Equals(
+                    reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                {
+                    string tempText = null;
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "enabled":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.Enabled = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "continueonerror":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                this.ContinueOnError = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "log":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _log = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "logxml":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _logXml = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "logfileprefix":
+                            _logFilePrefix = reader.ReadString();
+                            break;
+                        case "spellchecker":
+                            _spellChecker = reader.ReadString();
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
+                return;
+            }
+
+            string tempText = reader.GetAttribute("name");
+            if (String.IsNullOrEmpty(tempText) || !String.Equals(tempText,
+                ConfigurationName, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The current name '{0}' does not match the expected name '{1}'.",
+                    tempText, ConfigurationName));
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_skipTags == null)
+            {
+                _skipTags = new HashSet<string>();
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "propertyGroup",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadXmlGeneral(reader);
+                    }
+                    else if (String.Equals(reader.Name, "skipTag", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        tempText = reader.ReadString();
+                        if (!String.IsNullOrEmpty(tempText))
+                        {
+                            _skipTags.Add(tempText);
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("name", ConfigurationName);
+
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Enabled",         this.Enabled);
+            writer.WritePropertyElement("ContinueOnError", this.ContinueOnError);
+            writer.WritePropertyElement("Log",             _log);
+            writer.WritePropertyElement("LogXml",          _logXml);
+            writer.WritePropertyElement("LogFilePrefix",   _logFilePrefix);
+            writer.WritePropertyElement("SpellChecker",    _spellChecker);
+            writer.WriteEndElement();                  // end - propertyGroup
+
+            writer.WriteStartElement("skipTags"); // start - skipTags;
+            if (_skipTags != null && _skipTags.Count != 0)
+            {
+                foreach (string tag in _skipTags)
+                {
+                    if (!String.IsNullOrEmpty(tag))
+                    {
+                        writer.WriteTextElement("skipTag", tag);
+                    }
+                }
+            }
+            writer.WriteEndElement();             // end - skipTags  
+
+            writer.WriteEndElement();           // end - TagName
         }
 
         #endregion

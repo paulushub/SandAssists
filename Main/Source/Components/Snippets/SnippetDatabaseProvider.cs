@@ -48,6 +48,8 @@ namespace Sandcastle.Components.Snippets
         private int         _itemCount;
         private bool        _isRegistering;
 
+        private string      _databaseDir;
+
         private Table       _databaseTable;
         private Session     _databaseSession;
         private Instance    _databaseInstance;
@@ -173,6 +175,7 @@ namespace Sandcastle.Components.Snippets
                     Directory.CreateDirectory(workingDir);
                 }
 
+                _databaseDir   = workingDir;
                 _isRegistering = true;
 
                 this.CreateDatabase(databasePath, clearExisting);
@@ -187,6 +190,11 @@ namespace Sandcastle.Components.Snippets
                 // logfiles that are no longer needed. Most applications
                 // should use it.
                 _databaseInstance.Parameters.CircularLog = true;
+                _databaseInstance.Parameters.BaseName = "snp";
+                _databaseInstance.Parameters.LogFileDirectory = _databaseDir;
+                _databaseInstance.Parameters.SystemDirectory = _databaseDir;
+                _databaseInstance.Parameters.TempDirectory = _databaseDir;
+                _databaseInstance.Parameters.AlternateDatabaseRecoveryDirectory = _databaseDir;
 
                 // Initialize the instance. This creates the logs and temporary database.
                 // If logs are present in the log directory then recovery will run
@@ -333,6 +341,18 @@ namespace Sandcastle.Components.Snippets
         {
             using (var instance = new Instance(Guid.NewGuid().ToString()))
             {
+                if (String.IsNullOrEmpty(_databaseDir))
+                {
+                    _databaseDir = Path.GetDirectoryName(databasePath);
+                }
+
+                instance.Parameters.CircularLog = true;
+                instance.Parameters.BaseName = "snp";
+                instance.Parameters.LogFileDirectory = _databaseDir;
+                instance.Parameters.SystemDirectory = _databaseDir;
+                instance.Parameters.TempDirectory = _databaseDir;
+                instance.Parameters.AlternateDatabaseRecoveryDirectory = _databaseDir;
+
                 instance.Init();
 
                 using (Session session = new Session(instance))
@@ -450,7 +470,19 @@ namespace Sandcastle.Components.Snippets
                 _databaseInstance.Term();
                 _databaseInstance.Dispose();
                 _databaseInstance = null;
-            }                 
+            }      
+           
+            try
+            {
+                if (!String.IsNullOrEmpty(_databaseDir) && 
+                    Directory.Exists(_databaseDir))
+                {
+                    Directory.Delete(_databaseDir, true);
+                }
+            }
+            catch
+            {                 	
+            }
 
             base.Dispose(disposing);
         }

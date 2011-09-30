@@ -1,0 +1,741 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentation version="1.0">
+    <!-- 1. Documentation: Settings of the documentation -->
+    <settings>
+        <!-- A. Settings: General settings -->
+        <propertyGroup name="General">
+            <property name="CleanIntermediate">False</property>
+            <property name="ShowUpdatedDate">False</property>
+            <property name="ShowPreliminary">True</property>
+            <property name="BuildReferences">True</property>
+            <property name="BuildConceptual">True</property>
+            <property name="HelpName">SandcastleHelpers</property>
+            <property name="HelpTitle">Sandcastle Helpers Test Sample</property>
+            <property name="HeaderText">Header: This is the header text.</property>
+            <property name="FooterText">Footer: This is the footer text.</property>
+            <property name="CultureInfo">en-US</property>
+        </propertyGroup>
+        <!-- B. Settings: User properties -->
+        <propertyBag />
+        <!-- C. Settings: Various directories in the settings -->
+        <directories>
+            <directory type="Configuration">
+                <path value="..\..\..\Output\Configurations" />
+            </directory>
+            <directory type="Working">
+                <path value="." />
+            </directory>
+            <directory type="Content">
+                <path value="..\..\..\Output\Contents" />
+            </directory>
+            <directory type="Sandcastle">
+                <path value="">%DXROOT%</path>
+            </directory>
+            <directory type="SandcastleAssist">
+                <path value="..\..\..\Output" />
+            </directory>
+        </directories>
+        <!-- D. Settings: List of the output folders -->
+        <outputFolders>
+            <outputFolder name="icons" />
+            <outputFolder name="scripts" />
+            <outputFolder name="styles" />
+            <outputFolder name="media" />
+            <outputFolder name="images" />
+            <outputFolder name="maths" />
+        </outputFolders>
+        <!-- E. Settings: The common contents -->
+        <contents>
+            <content type="Shared">
+                <content xml:space="preserve" name="Default" />
+            </content>
+            <content type="Include">
+                <includeContent name="Default" />
+            </content>
+            <content type="Attribute">
+                <attributes />
+            </content>
+        </contents>
+        <!-- F. Settings: All available formats or output targets -->
+        <formats>
+            <!-- For the output/target: HtmlHelp 1.x -->
+            <format type="HtmlHelp1" name="Sandcastle.Formats.FormatChm">
+                <propertyGroup name="General">
+                    <property name="Enabled">True</property>
+                    <property name="Indent">True</property>
+                    <property name="OptimizeStyle">True</property>
+                    <property name="CloseViewerBeforeBuild">True</property>
+                    <property name="OpenViewerAfterBuild">True</property>
+                    <property name="OmitRoot">False</property>
+                    <property name="OmitXmlDeclaration">True</property>
+                    <property name="AddXhtmlNamespace">False</property>
+                    <property name="FormatFolder">html</property>
+                    <property name="IntegrationTarget">None</property>
+                </propertyGroup>
+                <propertyGroup name="Outputs">
+                    <property name="OutputFolder">HtmlHelp</property>
+                    <property name="OutputPath"></property>
+                    <property name="OutputLink"></property>
+                    <property name="OutputSelect"></property>
+                </propertyGroup>
+                <propertyGroup name="Links">
+                    <property name="LinkFormat">{0}.htm</property>
+                    <property name="LinkBaseUrl"></property>
+                    <property name="LinkContainer"></property>
+                    <property name="LinkType">Local</property>
+                    <property name="ExternalLinkType">Msdn</property>
+                    <property name="ExternalLinkTarget">Blank</property>
+                </propertyGroup>
+                <propertyGroup name="FormatChm-General">
+                    <property name="KeepSources">False</property>
+                    <property name="UseAutoIndex">True</property>
+                    <property name="UseBinaryToc">False</property>
+                    <property name="UseBinaryIndex">True</property>
+                    <property name="UseFullTextSearch">True</property>
+                    <property name="IncludeFavorites">True</property>
+                    <property name="IncludeStopWords">True</property>
+                    <property name="IncludeAdvancedSearch">True</property>
+                </propertyGroup>
+                <propertyGroup name="FormatChm-TreeView">
+                    <property name="HasButtons">True</property>
+                    <property name="HasLines">True</property>
+                    <property name="LinesAtRoot">True</property>
+                    <property name="ShowSelAlways">False</property>
+                    <property name="TrackSelect">False</property>
+                    <property name="SingleExpand">False</property>
+                    <property name="FullrowSelect">False</property>
+                </propertyGroup>
+                <propertyBag>
+                    <property name="SharedContentSuffix">Chm</property>
+                </propertyBag>
+                <contents>
+                    <content type="Toc">
+                        <tocContent enabled="True">
+                            <tocItem name="tc6b6fbdd3" id="tcid3a372bb8">
+                                <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc65960fe6" id="tciddd66ab66">
+                                <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc550e84de" id="tcidab557fc7">
+                                <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc25857c1c" id="tcid279e95b7">
+                                <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc53eaae0b" id="tcid9fc88daa">
+                                <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc11ebc713" id="tcid9d6df319">
+                                <source id="3177d3c9-3bd3-477c-82b4-ac7e1a77786a" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc31b51693" id="tcidcc944b17">
+                                <source id="2866bd2b-ba61-4bf7-9bb9-2169f42dee10" type="Group" recursive="True" />
+                            </tocItem>
+                            <tocItem name="tc9b5b6179" id="tcid6338230">
+                                <source id="fffadabd-40ef-45fc-bcd6-24c3569e71b4" type="Group" recursive="True" />
+                            </tocItem>
+                        </tocContent>
+                    </content>
+                </contents>
+                <compilerFile />
+            </format>
+            <!-- For the output/target: HtmlHelp 2.x -->
+            <format type="HtmlHelp2" name="Sandcastle.Formats.FormatHxs">
+                <propertyGroup name="General">
+                    <property name="Enabled">False</property>
+                    <property name="Indent">False</property>
+                    <property name="OptimizeStyle">True</property>
+                    <property name="CloseViewerBeforeBuild">True</property>
+                    <property name="OpenViewerAfterBuild">True</property>
+                    <property name="OmitRoot">False</property>
+                    <property name="OmitXmlDeclaration">True</property>
+                    <property name="AddXhtmlNamespace">False</property>
+                    <property name="FormatFolder">html2</property>
+                    <property name="IntegrationTarget">VS2008</property>
+                </propertyGroup>
+                <propertyGroup name="Outputs">
+                    <property name="OutputFolder">MsdnHelp</property>
+                    <property name="OutputPath"></property>
+                    <property name="OutputLink"></property>
+                    <property name="OutputSelect"></property>
+                </propertyGroup>
+                <propertyGroup name="Links">
+                    <property name="LinkFormat">{0}.htm</property>
+                    <property name="LinkBaseUrl"></property>
+                    <property name="LinkContainer"></property>
+                    <property name="LinkType">Local</property>
+                    <property name="ExternalLinkType">Index</property>
+                    <property name="ExternalLinkTarget">Blank</property>
+                </propertyGroup>
+                <propertyGroup name="FormatHxs-General">
+                    <property name="KeepSources">False</property>
+                    <property name="SeparateIndexFile">False</property>
+                    <property name="IncludeStopWords">True</property>
+                    <property name="HelpTitleId"></property>
+                </propertyGroup>
+                <propertyGroup name="FormatHxs-NamedUrl">
+                    <property name="HomePage"></property>
+                    <property name="DefaultPage"></property>
+                    <property name="NavFailPage"></property>
+                    <property name="AboutPageInfo"></property>
+                    <property name="AboutPageIcon"></property>
+                    <property name="FilterEditPage"></property>
+                    <property name="HelpPage"></property>
+                    <property name="SupportPage"></property>
+                    <property name="SampleDirPage"></property>
+                    <property name="SearchHelpPage"></property>
+                </propertyGroup>
+                <propertyBag>
+                    <property name="CollectionPrefix">Coll</property>
+                    <property name="RegistrationLevel">Basic</property>
+                    <property name="SharedContentSuffix">Hxs</property>
+                </propertyBag>
+                <contents />
+                <compilerFile />
+                <compilerDirectory />
+                <plugin flatToc="False">
+                    <title></title>
+                    <parents />
+                    <children />
+                </plugin>
+            </format>
+            <!-- For the output/target: HtmlHelp 3.x -->
+            <format type="HtmlHelp3" name="Sandcastle.Formats.FormatMhv">
+                <propertyGroup name="General">
+                    <property name="Enabled">False</property>
+                    <property name="Indent">False</property>
+                    <property name="OptimizeStyle">True</property>
+                    <property name="CloseViewerBeforeBuild">True</property>
+                    <property name="OpenViewerAfterBuild">True</property>
+                    <property name="OmitRoot">False</property>
+                    <property name="OmitXmlDeclaration">False</property>
+                    <property name="AddXhtmlNamespace">True</property>
+                    <property name="FormatFolder">html3</property>
+                    <property name="IntegrationTarget">VS2010</property>
+                </propertyGroup>
+                <propertyGroup name="Outputs">
+                    <property name="OutputFolder">HelpViewer</property>
+                    <property name="OutputPath"></property>
+                    <property name="OutputLink"></property>
+                    <property name="OutputSelect"></property>
+                </propertyGroup>
+                <propertyGroup name="Links">
+                    <property name="LinkFormat">{0}.htm</property>
+                    <property name="LinkBaseUrl"></property>
+                    <property name="LinkContainer"></property>
+                    <property name="LinkType">Id</property>
+                    <property name="ExternalLinkType">Id</property>
+                    <property name="ExternalLinkTarget">Blank</property>
+                </propertyGroup>
+                <propertyGroup name="FormatMhv-General">
+                    <property name="TocParent">-1</property>
+                    <property name="TopicVersion">100</property>
+                    <property name="TocParentVersion">100</property>
+                    <property name="Selfbranded">True</property>
+                </propertyGroup>
+                <propertyBag>
+                    <property name="SharedContentSuffix">Mshc</property>
+                </propertyBag>
+                <contents />
+            </format>
+            <!-- For the output/target: WebHelp -->
+            <format type="WebHelp" name="Sandcastle.Formats.FormatWeb">
+                <propertyGroup name="General">
+                    <property name="Enabled">False</property>
+                    <property name="Indent">False</property>
+                    <property name="OptimizeStyle">True</property>
+                    <property name="CloseViewerBeforeBuild">False</property>
+                    <property name="OpenViewerAfterBuild">True</property>
+                    <property name="OmitRoot">False</property>
+                    <property name="OmitXmlDeclaration">True</property>
+                    <property name="AddXhtmlNamespace">False</property>
+                    <property name="FormatFolder">html0</property>
+                    <property name="IntegrationTarget">None</property>
+                </propertyGroup>
+                <propertyGroup name="Outputs">
+                    <property name="OutputFolder">WebHelp</property>
+                    <property name="OutputPath"></property>
+                    <property name="OutputLink"></property>
+                    <property name="OutputSelect"></property>
+                </propertyGroup>
+                <propertyGroup name="Links">
+                    <property name="LinkFormat">{0}.htm</property>
+                    <property name="LinkBaseUrl"></property>
+                    <property name="LinkContainer"></property>
+                    <property name="LinkType">Local</property>
+                    <property name="ExternalLinkType">Msdn</property>
+                    <property name="ExternalLinkTarget">Blank</property>
+                </propertyGroup>
+                <propertyGroup name="FormatWeb-General">
+                    <property name="UseTabView">False</property>
+                    <property name="IncludeIndex">False</property>
+                    <property name="IncludeSearch">False</property>
+                    <property name="IncludeServerSide">False</property>
+                    <property name="Theme">Smoothness</property>
+                    <property name="Framework">JQuery</property>
+                </propertyGroup>
+                <propertyBag>
+                    <property name="SharedContentSuffix">Web</property>
+                </propertyBag>
+                <contents />
+            </format>
+        </formats>
+        <!-- G. Settings: The various options -->
+        <options>
+            <!-- Options for custom table of contents -->
+            <option type="Toc" name="Sandcastle.BuildToc">
+                <tocContent enabled="True">
+                    <tocItem name="tc4c3172bc" id="tcid7c7bf3e7">
+                        <source id="d36e744f-c053-4e94-9ac9-b1ee054d8de2" type="Topic" recursive="True" />
+                        <tocItem name="tc82e58788" id="tcid550c096d">
+                            <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tc3e61fc3" id="tcidcd2f7fab">
+                            <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tcfaa8339b" id="tcid19c656c5">
+                            <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tcc8b35ec" id="tcid74b008b4">
+                            <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tc256c0765" id="tcid2e711876">
+                            <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tc7212ef3f" id="tcidb398c2b8">
+                            <source id="3177d3c9-3bd3-477c-82b4-ac7e1a77786a" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tc93a7b552" id="tcida7437ce5">
+                            <source id="2866bd2b-ba61-4bf7-9bb9-2169f42dee10" type="Group" recursive="True" />
+                        </tocItem>
+                        <tocItem name="tc626027d0" id="tcid66151e3c">
+                            <source id="fffadabd-40ef-45fc-bcd6-24c3569e71b4" type="Group" recursive="True" />
+                        </tocItem>
+                    </tocItem>
+                </tocContent>
+            </option>
+            <!-- Options for currently selected style -->
+            <option type="Style" name="Sandcastle.BuildStyle">
+                <propertyGroup name="General">
+                    <property name="StyleName"></property>
+                    <property name="StyleType">ClassicWhite</property>
+                </propertyGroup>
+                <location>
+                    <path value="..\..\..\Output\Presentations" />
+                </location>
+                <presentation />
+                <contents>
+                    <content type="Scripts">
+                        <scriptContent name="CommonScripts">
+                            <scriptItem name="AssistScripts" overrides="False">
+                                <tag></tag>
+                                <condition></condition>
+                                <description></description>
+                                <location>
+                                    <path value="..\..\..\Output\Scripts\Vs2005\SandAssist.js" />
+                                </location>
+                            </scriptItem>
+                        </scriptContent>
+                    </content>
+                    <content type="Snippets">
+                        <snippetContent name="CommonSnippets">
+                            <snippetItem id="8d73c266-265a-4c6b-ad79-6d505315932c">
+                                <path value="..\SampleSnippets" />
+                            </snippetItem>
+                        </snippetContent>
+                    </content>
+                    <content type="StyleSheets">
+                        <styleSheetContent name="CommonStyleSheets">
+                            <styleSheetItem name="CodeStyle" overrides="False">
+                                <tag></tag>
+                                <condition>CodeHighlight</condition>
+                                <description></description>
+                                <location>
+                                    <path value="..\..\..\Output\Styles\IrisModifiedVS.css" />
+                                </location>
+                            </styleSheetItem>
+                            <styleSheetItem name="AssistStyle" overrides="False">
+                                <tag></tag>
+                                <condition></condition>
+                                <description></description>
+                                <location>
+                                    <path value="..\..\..\Output\Styles\Vs2005\SandAssist.css" />
+                                </location>
+                            </styleSheetItem>
+                        </styleSheetContent>
+                    </content>
+                    <content type="Packages">
+                        <mathPackageContent>
+                            <mathPackageItem use="picture">
+                                <options>
+                                    <option value="calc" />
+                                </options>
+                            </mathPackageItem>
+                            <mathPackageItem use="xy">
+                                <options>
+                                    <option value="all" />
+                                    <option value="knot" />
+                                    <option value="poly" />
+                                </options>
+                            </mathPackageItem>
+                        </mathPackageContent>
+                    </content>
+                    <content type="Commands">
+                        <mathCommandContent>
+                            <mathCommandItem name="\quot" value="\dfrac{\varphi \cdot X_{n, #1}}{\varphi_{#2} \times \varepsilon_{#1}}" arguments="2" />
+                            <mathCommandItem name="\exn" value="(x+\varepsilon_{#1})^{#1}" arguments="1" />
+                        </mathCommandContent>
+                    </content>
+                </contents>
+            </option>
+            <!-- Options for logging progress messages -->
+            <option type="Logging" name="Sandcastle.BuildLogging">
+                <propertyGroup name="General">
+                    <property name="Verbosity">Minimal</property>
+                    <property name="UseFile">True</property>
+                    <property name="KeepFile">True</property>
+                    <property name="FileName">HelpBuild.log</property>
+                </propertyGroup>
+                <location />
+                <loggers>
+                    <logger name="Sandcastle.Loggers.ConsoleLogger" />
+                </loggers>
+            </option>
+            <!-- Options for product information used for feedback -->
+            <option type="Feedback" name="Sandcastle.BuildFeedback">
+                <propertyGroup name="General">
+                    <property name="FeedbackType">None</property>
+                    <property name="CopyrightText">Copyright &amp;#169; 2007-2008 Sandcastle Assist. All Rights Reserved.</property>
+                    <property name="CopyrightLink">http://www.codeplex.com/SandAssist</property>
+                    <property name="ProductName">Sandcastle Helpers</property>
+                    <property name="CompanyName">Sandcastle Assist</property>
+                    <property name="EmailAddress">paulselormey@gmail.com</property>
+                    <property name="PostalAddress"></property>
+                </propertyGroup>
+                <logo enabled="True" alignment="Center" placement="Right" width="64" height="64" padding="3">
+                    <text>Sandcastle Assist</text>
+                    <link>http://www.codeplex.com/SandAssist</link>
+                    <image>
+                        <path value="..\..\..\Output\AssistLogo.jpg" />
+                    </image>
+                </logo>
+            </option>
+        </options>
+        <!-- H. Settings: Build engine specific settings -->
+        <engineSettings>
+            <!-- Reference build engine specific settings -->
+            <engineSetting type="Reference" name="Sandcastle.References.ReferenceEngineSettings">
+                <propertyGroup name="General">
+                    <property name="Namer">Orcas</property>
+                    <property name="Naming">Guid</property>
+                    <property name="RootNamespaceContainer">True</property>
+                    <property name="EmbedScriptSharpFramework">True</property>
+                </propertyGroup>
+                <propertyBag />
+                <contents>
+                    <content type="Shared">
+                        <content xml:space="preserve" name="Reference" />
+                    </content>
+                    <content type="Include">
+                        <includeContent name="Reference" />
+                    </content>
+                </contents>
+                <!-- Options for the default configurations -->
+                <configurations type="System">
+                    <configuration name="Sandcastle.References.ReferenceCommentConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ContinueOnError">True</property>
+                            <property name="FixComments">True</property>
+                            <property name="UsesNamespaceDoc">True</property>
+                        </propertyGroup>
+                    </configuration>
+                    <configuration name="Sandcastle.References.ReferenceVisibilityConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ContinueOnError">True</property>
+                            <property name="AttributeInformation">False</property>
+                            <property name="ExplicitInterfaceMembers">False</property>
+                            <property name="EmptyNamespaces">False</property>
+                            <property name="PrivateFields">False</property>
+                            <property name="InternalMembers">False</property>
+                            <property name="PrivateMembers">False</property>
+                            <property name="InheritedMembers">True</property>
+                            <property name="FrameworkInheritedMembers">True</property>
+                            <property name="FrameworkInheritedInternalMembers">False</property>
+                            <property name="FrameworkInheritedPrivateMembers">False</property>
+                            <property name="ProtectedMembers">True</property>
+                            <property name="ProtectedInternalsAsProtectedMembers">False</property>
+                            <property name="SealedProtectedMembers">True</property>
+                        </propertyGroup>
+                        <attributesToKeep />
+                    </configuration>
+                    <configuration name="Sandcastle.References.ReferenceXPathConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">False</property>
+                            <property name="ContinueOnError">True</property>
+                        </propertyGroup>
+                        <xpathItems />
+                    </configuration>
+                    <configuration name="Sandcastle.References.ReferenceSpellCheckConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ContinueOnError">True</property>
+                            <property name="Log">True</property>
+                            <property name="LogXml">True</property>
+                            <property name="LogFilePrefix">SpellChecking</property>
+                            <property name="SpellChecker"></property>
+                        </propertyGroup>
+                        <skipTags>
+                            <skipTag>c</skipTag>
+                            <skipTag>code</skipTag>
+                        </skipTags>
+                    </configuration>
+                    <configuration name="Sandcastle.References.ReferenceTocExcludeConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ContinueOnError">True</property>
+                        </propertyGroup>
+                    </configuration>
+                    <configuration name="Sandcastle.References.ReferenceTocLayoutConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ContinueOnError">True</property>
+                            <property name="ContentsAfter">False</property>
+                            <property name="LayoutType">Hierarchical</property>
+                        </propertyGroup>
+                    </configuration>
+                </configurations>
+                <!-- Options for the plugin configurations -->
+                <configurations type="Plugin" />
+                <!-- Options for the default component configurations -->
+                <componentConfigurations type="System">
+                    <componentConfiguration name="Sandcastle.References.ReferencePreTransConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceAutoDocConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="Warn">False</property>
+                            <property name="Constructors">True</property>
+                            <property name="DisposeMethods">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceMissingTagsConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="Log">True</property>
+                            <property name="LogXml">True</property>
+                            <property name="Warn">True</property>
+                            <property name="Indicate">True</property>
+                            <property name="RootTags">False</property>
+                            <property name="ExceptionTags">True</property>
+                            <property name="IncludeTargetTags">False</property>
+                            <property name="NamespaceTags">True</property>
+                            <property name="ParameterTags">True</property>
+                            <property name="RemarkTags">False</property>
+                            <property name="ReturnTags">True</property>
+                            <property name="SummaryTags">True</property>
+                            <property name="TypeParameterTags">True</property>
+                            <property name="ValueTags">False</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceIntelliSenseConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                        <workingDirectory />
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceCloneConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferencePostTransConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceCodeConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="TabSize">4</property>
+                            <property name="ShowLineNumbers">False</property>
+                            <property name="ShowOutlining">False</property>
+                            <property name="HighlightEnabled">True</property>
+                            <property name="HighlightMode">IndirectIris</property>
+                            <property name="SnippetSeparator">...</property>
+                            <property name="SnippetStorage">Database</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceMathConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="InlineMathSize">10</property>
+                            <property name="InlineMathZoom">2</property>
+                            <property name="DisplayedMathSize">10</property>
+                            <property name="DisplayedMathZoom">3</property>
+                            <property name="InputPath">.\maths\</property>
+                            <property name="BaseOutput">.\Output</property>
+                            <property name="OutputPath">maths</property>
+                            <property name="NamingPrefix">math</property>
+                            <property name="NamingMethod">Sequential</property>
+                            <property name="NumberingEnabled">True</property>
+                            <property name="NumberingByPage">False</property>
+                            <property name="NumberingFormatIncludesPage">True</property>
+                            <property name="NumberingFormat">({0}.{1})</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceMediaConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceLinkConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferenceSharedConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                </componentConfigurations>
+                <!-- Options for the plugin component configurations -->
+                <componentConfigurations type="Plugin" />
+            </engineSetting>
+            <!-- Conceptual build engine specific settings -->
+            <engineSetting type="Conceptual" name="Sandcastle.Conceptual.ConceptualEngineSettings">
+                <propertyGroup name="General" />
+                <propertyBag />
+                <contents>
+                    <content type="Shared">
+                        <content xml:space="preserve" name="Conceptual" />
+                    </content>
+                    <content type="Include">
+                        <includeContent name="Conceptual" />
+                    </content>
+                </contents>
+                <!-- Options for the default configurations -->
+                <configurations type="System" />
+                <!-- Options for the plugin configurations -->
+                <configurations type="Plugin" />
+                <!-- Options for the default component configurations -->
+                <componentConfigurations type="System">
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualPreTransConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ResolveOutlineDepth">3</property>
+                            <property name="ResolveTokens">True</property>
+                            <property name="ResolveOutlineTokens">True</property>
+                            <property name="ResolveLineBreakTokens">True</property>
+                            <property name="ResolveTableIconColumnTokens">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualIntelliSenseConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                        <workingDirectory />
+                        <expressions>
+                            <expression name="Root">/html/body/div[@id='mainSection']/div[@id='mainBody']</expression>
+                            <expression name="Assembly">string(span[@sdata='assembly'])</expression>
+                            <expression name="Summary">span[@sdata='authoredSummary']</expression>
+                            <expression name="Parameters">div[@id='syntaxSection']/div[@id='parameters']/dl</expression>
+                            <expression name="ParameterContent">dd/span[@sdata='authoredParameterSummary']</expression>
+                            <expression name="Templates">div[@id='syntaxSection']/div[@id='genericParameters']/dl</expression>
+                            <expression name="TemplateContent">dd</expression>
+                            <expression name="Returns">div[@id='syntaxSection']/div[@id='returns']/span[@sdata='authoredValueSummary']</expression>
+                            <expression name="Exception">div[@id='ddueExceptionsSection']/div[@class='tableSection']/table/tr/td[2]</expression>
+                            <expression name="ExceptionCref">../td[1]/span[@sdata='cer']</expression>
+                            <expression name="Enumeration">div[@id='enumerationSection']/div[@id='membersSection']/table[@class='members']/tr/td[3]</expression>
+                            <expression name="EnumerationApi">../td[2]</expression>
+                            <expression name="MemberSummary">span[@sdata='memberAuthoredSummary']</expression>
+                        </expressions>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualCodeConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="TabSize">4</property>
+                            <property name="ShowLineNumbers">False</property>
+                            <property name="ShowOutlining">False</property>
+                            <property name="HighlightEnabled">True</property>
+                            <property name="HighlightMode">IndirectIris</property>
+                            <property name="SnippetSeparator">...</property>
+                            <property name="SnippetStorage">Database</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualMathConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="InlineMathSize">10</property>
+                            <property name="InlineMathZoom">2</property>
+                            <property name="DisplayedMathSize">10</property>
+                            <property name="DisplayedMathZoom">3</property>
+                            <property name="InputPath">.\maths\</property>
+                            <property name="BaseOutput">.\Output</property>
+                            <property name="OutputPath">maths</property>
+                            <property name="NamingPrefix">math</property>
+                            <property name="NamingMethod">Sequential</property>
+                            <property name="NumberingEnabled">True</property>
+                            <property name="NumberingByPage">False</property>
+                            <property name="NumberingFormatIncludesPage">True</property>
+                            <property name="NumberingFormat">({0}.{1})</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualMediaConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualPostTransConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualCloneConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualLinkConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                            <property name="ShowLinkText">False</property>
+                            <property name="ShowBrokenLinkText">False</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualReferenceLinkConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.Conceptual.ConceptualSharedConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
+                </componentConfigurations>
+                <!-- Options for the plugin component configurations -->
+                <componentConfigurations type="Plugin" />
+            </engineSetting>
+        </engineSettings>
+    </settings>
+    <!-- 2. Documentation: Group sources of the documentation -->
+    <documentSources />
+    <!-- 3. Documentation: Groups of the documentation -->
+    <documentGroups>
+        <documentGroup type="Conceptual" source=".\MainConceptual.sandcgrp" />
+        <documentGroup type="Conceptual" source=".\OtherConceptual.sandcgrp" />
+        <documentGroup type="Conceptual" source=".\WiXSchemaDocs.sandcgrp" />
+        <documentGroup type="Reference" source=".\MainReference.sandrgrp" />
+        <documentGroup type="Reference" source=".\HierarchicalToc.sandrgrp" />
+        <documentGroup type="Reference" source=".\Redirection.sandrgrp" />
+        <documentGroup type="Reference" source=".\SilverlightWPF.sandrgrp" />
+        <documentGroup type="Reference" source=".\OtherReference.sandrgrp" />
+    </documentGroups>
+</documentation>

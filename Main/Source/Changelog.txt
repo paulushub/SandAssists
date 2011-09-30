@@ -1,0 +1,56 @@
+************* Change Date: 12:47 AM Saturday, October 01, 2011 ***************
+
+In general:
+1. Added Sandcastle.XsdDocs.dll, for XSD documentations.
+	- Uses a customized version of the XML Schema Documenter by Immo Landwerth
+	- Original source available at http://xsddoc.codeplex.com/ 
+2. Added Sandcastle.Composition project: For plugin support.
+	- Based on the current snapshot of the MEF Preview 6
+	- Will be used for both .NET 3.5 and 4.0, renamed/signed to avoid confusion.
+3. Added Sandcastle.Construction project: Manage proj without MSBuild dependency.
+	A. Microsoft.Build.Construction implementations from the Mono Project
+		- This is implemented by Leszek Ciesielski
+	B. VC++ Projects equivalent of the Microsoft.Build.Constructions
+		- Implemented to provide access to VC++ projects from VC++ 2003.
+	C. Project Sections: Extracts relevant info from VS.NET projects and solutions
+		- This presents a common interface to all projects.
+		- The extracted information includes assembly/project references etc.
+4. Completed work on most file formats and serialization of all the classes.
+
+For the Core:
+1. Tag resolver or formatter, for text with macros like ${TagName:Formatting|Function}
+2. Frameworks: Added support for Portable Class Library, Script# and Silverlight 5.0
+3. BuildPathResolver: Reworked and no longer locked.
+
+For the Helpers:
+1. Lots of work on documentation (content and group) sources
+	A. ConceptualXsdDocSource: For XML Schema documentation using Sandcastle.XsdDocs.dll.
+	B. ConceptualImportSource: Imports ConceptualContent from other projects.
+	C. ReferenceImportSource: Imports ReferenceContent from other projects.
+		- You can override TOC, type/attribute filters etc.
+	D. ReferenceVsNetSource: For VS.NET projects/solutions
+		- For VC++ 2005/2008/2010, solution files is required for macros
+		- Also, the active platform/configuration is extracted from the hidden *.suo file.
+	E. ReferenceDirectorySource: Documents all assemblies with comments a dir.
+	F. ReferenceAjaxDocSource: NOT supported for the current version
+		- Delayed due to AjaxDoc implementations
+		- Looking for a more flexible/secured implementation of the Javascript docs
+	G. ReferenceLinkSource: To resolves links to 3rd party libraries.
+		- Importantly, it allows third party library docs to be embedded into yours.
+		- The 3rd parties libraries will not show in the TOC.
+		- For Script#, it is auto-generated since there is no MSDN for Script# base classes.
+2. ReferenceDependencyResolver renamed ReferenceProjectVisitor for consistency
+3. Added ConceptualProjectVisitor, reworking all the previous visitors for speed.
+
+For the Components and ReflectionData:
+1. Fixed a bug in DatabaseTargetTextStorage, it assumed there is a cached database.
+	- This resulted in "Reference link unknown" error in builds
+	- Was working on my local system, which has the cached database.
+
+For the Builders
+1. Started work on the final assembly, which will bring support for MSBuild etc
+2. Completed work on file and project templates handling/creating classes.
+	- The file templates will be used for all file generated for Sandcastle by editors
+	- The project templates are currently MSBuild based for Sandcastle Assist projects.
+	- The templates are improvements on formats by #Develop and similar to VS.NET.
+

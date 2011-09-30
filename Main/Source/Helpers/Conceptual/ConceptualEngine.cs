@@ -113,30 +113,7 @@ namespace Sandcastle.Conceptual
                 return;
             }
 
-            _listFormats = new List<BuildFormat>();
-
-            BuildFormatList listFormats = this.Settings.Formats;
-            if (listFormats == null || listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-                return;
-            }
-            int itemCount = listFormats.Count;
-            _listFormats  = new List<BuildFormat>(itemCount);
-            for (int i = 0; i < itemCount; i++)
-            {
-                BuildFormat format = listFormats[i];
-                if (format != null && format.Enabled)
-                {
-                    _listFormats.Add(format);
-                }
-            }
-            if (_listFormats == null || _listFormats.Count == 0)
-            {
-                this.IsInitialized = false;
-                return;
-            }
-            itemCount = _listGroups.Count;
+            int itemCount = _listGroups.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 ConceptualGroup group = _listGroups[i];
@@ -154,33 +131,42 @@ namespace Sandcastle.Conceptual
                     indexText = (i + 1).ToString();
                 }
 
-                groupContext["$SharedContentFile"] =
-                    String.Format("TopicsSharedContent{0}.xml", indexText);
-                groupContext["$TocFile"] =
-                    String.Format("TopicsToc{0}.xml", indexText);
-                groupContext["$ManifestFile"] =
-                    String.Format("TopicsManifest{0}.xml", indexText);
-                groupContext["$ConfigurationFile"] =
-                    String.Format("TopicsBuildAssembler{0}.config", indexText);
-                groupContext["$MetadataFile"] =
-                    String.Format("TopicsMetadata{0}.xml", indexText);
-                groupContext["$ProjSettings"] =
-                    String.Format("TopicsProjectSettings{0}.xml", indexText);
-                groupContext["$ProjSettingsLoc"] =
-                    String.Format("TopicsProjectSettings{0}.loc.xml", indexText);
-                groupContext["$VersionFile"] =
-                    String.Format("TopicsVersions{0}.xml", indexText);
-                groupContext["$TokenFile"] = String.Format("TopicsTokens{0}.xml", indexText);
-                groupContext["$IndexFile"] = String.Format("TopicsIndex{0}.xml", indexText);
+                // Create the build dynamic properties...
+                groupContext.CreateProperties(indexText);
 
-                groupContext["$DdueXmlDir"] = String.Format("DdueXml{0}", indexText);
-                groupContext["$DdueXmlCompDir"] = String.Format("DdueXmlComp{0}", indexText);
-                groupContext["$DdueHtmlDir"] = String.Format("DdueHtml{0}", indexText);
+                group.BeginSources(context);
+            }
 
-                groupContext["$GroupIndex"] = indexText;
-                
-                group.Initialize(context);
+            _listFormats = new List<BuildFormat>();
 
+            BuildFormatList listFormats = this.Settings.Formats;
+            if (listFormats == null || listFormats.Count == 0)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+            itemCount = listFormats.Count;
+            _listFormats  = new List<BuildFormat>(itemCount);
+            for (int i = 0; i < itemCount; i++)
+            {
+                BuildFormat format = listFormats[i];
+                if (format != null && format.Enabled)
+                {
+                    _listFormats.Add(format);
+                }
+            }
+            if (_listFormats == null || _listFormats.Count == 0)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+
+            itemCount = _listGroups.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                ConceptualGroup group = _listGroups[i];
+
+                group.Initialize(context); 
                 if (!group.IsInitialized)
                 {
                     this.IsInitialized = false;
@@ -228,7 +214,7 @@ namespace Sandcastle.Conceptual
 
             listSteps.Add(stepInit);
 
-            string helpStyle  = BuildStyleUtils.StyleFolder(
+            string helpStyle  = BuildStyle.StyleFolder(
                 outputStyle.StyleType);
             string workingDir = this.Context.WorkingDirectory;
 
@@ -253,17 +239,12 @@ namespace Sandcastle.Conceptual
                     {
                         continue;
                     }
-                    IList<ResourceItem> listResources = resourceContent.Items;
-                    if (listResources == null || listResources.Count == 0)
-                    {
-                        continue;
-                    }
 
-                    int itemCount = listResources.Count;
+                    int itemCount = resourceContent.Count;
 
                     for (int i = 0; i < itemCount; i++)
                     {
-                        ResourceItem resource = listResources[i];
+                        ResourceItem resource = resourceContent[i];
                         if (resource != null && !resource.IsEmpty)
                         {
                             string destFolder = resource.Destination;
@@ -450,12 +431,6 @@ namespace Sandcastle.Conceptual
 
         public override void Uninitialize()
         {
-            BuildSettings settings = this.Settings;
-            if (settings == null)
-            {
-                return;
-            }
-
             if (_listGroups != null)
             {
                 int itemCount = _listGroups.Count;
@@ -464,6 +439,7 @@ namespace Sandcastle.Conceptual
                     ConceptualGroup group = _listGroups[i];
                     if (group != null)
                     {
+                        group.EndSources();
                         group.Uninitialize();
                     }
                 }

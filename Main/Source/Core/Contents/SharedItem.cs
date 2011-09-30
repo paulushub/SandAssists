@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using System.Diagnostics;
 
 namespace Sandcastle.Contents
 {
@@ -8,11 +10,16 @@ namespace Sandcastle.Contents
     [Serializable]
     public sealed class SharedItem : BuildItem<SharedItem>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "item";
+
+        #endregion
+
         #region Private Fields
 
-        private string _key;
+        private string _id;
         private string _value;
-        private SharedItemFormat _format;
 
         #endregion
 
@@ -27,17 +34,15 @@ namespace Sandcastle.Contents
         {
             BuildExceptions.NotNullNotEmpty(key, "key");
 
-            _key    = key;
-            _value  = value;
-            _format = SharedItemFormat.PlainText;
+            _id   = key;
+            _value = value;
         }
 
         public SharedItem(SharedItem source)
             : base(source)
         {
-            _key    = source._key;
-            _value  = source._value;
-            _format = source._format;
+            _id   = source._id;
+            _value = source._value;
         }
 
         #endregion
@@ -48,7 +53,7 @@ namespace Sandcastle.Contents
         {
             get
             {
-                if (String.IsNullOrEmpty(_key))
+                if (String.IsNullOrEmpty(_id))
                 {
                     return true;
                 }
@@ -57,11 +62,11 @@ namespace Sandcastle.Contents
             }
         }
 
-        public string Key
+        public string Id
         {
             get
             {
-                return _key;
+                return _id;
             }
         }
 
@@ -77,15 +82,21 @@ namespace Sandcastle.Contents
             }
         }
 
-        public SharedItemFormat Format
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="SharedItem"/> class instance, this property is 
+        /// <see cref="SharedItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
         {
             get
             {
-                return _format;
-            }
-            set
-            {
-                _format = value;
+                return TagName;
             }
         }
 
@@ -99,13 +110,13 @@ namespace Sandcastle.Contents
             {
                 return false;
             }
-            if (!String.Equals(this._key, other._key))
+            if (!String.Equals(this._id, other._id))
             {
                 return false;
             }
             if (!String.Equals(this._value, other._value))
             {
-                return (this._format == other._format);
+                return false;
             }
 
             return true;
@@ -125,15 +136,14 @@ namespace Sandcastle.Contents
         public override int GetHashCode()
         {
             int hashCode = 7;
-            if (_key != null)
+            if (_id != null)
             {
-                hashCode ^= _key.GetHashCode();
+                hashCode ^= _id.GetHashCode();
             }
             if (_value != null)
             {
                 hashCode ^= _value.GetHashCode();
             }
-            hashCode ^= (int)_format;
 
             return hashCode;
         }
@@ -145,9 +155,9 @@ namespace Sandcastle.Contents
         public override SharedItem Clone()
         {
             SharedItem item = new SharedItem(this);
-            if (_key != null)
+            if (_id != null)
             {
-                item._key = String.Copy(_key);
+                item._id = String.Copy(_id);
             }
             if (_value != null)
             {
@@ -159,13 +169,71 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                _id    = reader.GetAttribute("id");
+                _value = reader.ReadString();
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            if (this.IsEmpty)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(TagName);  // start - attribute
+            writer.WriteAttributeString("id", _id);
+            writer.WriteString(_value);
+            writer.WriteEndElement();           // end - attribute
+        }
+
+        #endregion
+
         #region IBuildNamedItem Members
 
         string IBuildNamedItem.Name
         {
             get 
             {
-                return _key;
+                return _id;
             }
         }
 

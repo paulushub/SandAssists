@@ -281,6 +281,16 @@ namespace Sandcastle.Loggers
                     _xmlWriter.WriteAttributeString("class", "nl");
                     _xmlWriter.WriteString(".");
                 }
+                else if (level == BuildLoggerLevel.Warn)
+                {
+                    _xmlWriter.WriteAttributeString("style", "background-color:#daa520;color:#ffffff;");
+                    _xmlWriter.WriteString(level.ToString());
+                }
+                else if (level == BuildLoggerLevel.Error)
+                {
+                    _xmlWriter.WriteAttributeString("style", "background-color:#ff6347;color:#ffffff;");
+                    _xmlWriter.WriteString(level.ToString());
+                }
                 else
                 {
                     _xmlWriter.WriteString(level.ToString());

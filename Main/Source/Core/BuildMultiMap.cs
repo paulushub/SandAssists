@@ -24,6 +24,13 @@ namespace Sandcastle
             _dictionary = new Dictionary<T, List<V>>();
         }
 
+        public BuildMultiMap(IEqualityComparer<T> comparer)
+        {
+            BuildExceptions.NotNull(comparer, "comparer");
+
+            _dictionary = new Dictionary<T, List<V>>(comparer);
+        }
+
         #endregion
 
         #region Public Properties

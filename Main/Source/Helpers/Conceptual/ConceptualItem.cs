@@ -351,6 +351,24 @@ namespace Sandcastle.Conceptual
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ConceptualItem"/> class instance, this property is 
+        /// <see cref="ConceptualItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Internal Properties
@@ -540,7 +558,7 @@ namespace Sandcastle.Conceptual
                     textWriter = new StreamWriter(documentPath, false,
                         (Encoding)reader.CurrentEncoding.Clone(), bufferSize + 1);
 
-                    textWriter.WriteLine(reader.ReadLine()); // write the XML declaration..
+                    textWriter.WriteLine(reader.ReadLine()); // write the <c>XML</c> declaration..
                     textWriter.WriteLine("<topic id=\"{0}\" revisionNumber=\"{1}\">",
                        _topicId, _revNumber);
 
@@ -966,17 +984,37 @@ namespace Sandcastle.Conceptual
 
             if (_attributes != null && _attributes.Count != 0)
             {
+                if (!isBuildOutput)
+                {
+                    writer.WriteStartElement("attributes"); // start - attributes
+                }
+
                 for (int i = 0; i < _attributes.Count; i++)
                 {
                     _attributes[i].WriteXml(writer);
+                }
+
+                if (!isBuildOutput)
+                {
+                    writer.WriteEndElement();               // end - attributes
                 }
             }
 
             if (_keywords != null && _keywords.Count != 0)
             {
+                if (!isBuildOutput)
+                {
+                    writer.WriteStartElement("keywords"); // start - keywords
+                }
+
                 for (int i = 0; i < _keywords.Count; i++)
                 {
                     _keywords[i].WriteXml(writer);
+                }
+
+                if (!isBuildOutput)
+                {
+                    writer.WriteEndElement();             // end - keywords
                 }
             }
 
@@ -1169,7 +1207,11 @@ namespace Sandcastle.Conceptual
 
             writer.WriteElementString("title", _topicTitle);
 
-            _filePath.WriteXml(writer);
+            // Markers do not have file path...
+            if (_filePath != null)
+            {
+                _filePath.WriteXml(writer);
+            }
 
             this.OnWriteExcludes(writer);
 

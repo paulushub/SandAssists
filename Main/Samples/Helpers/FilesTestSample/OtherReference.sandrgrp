@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<documentGroup type="Reference" version="1.0">
+    <location />
+    <propertyGroup name="General">
+        <property name="Id">fffadabd-40ef-45fc-bcd6-24c3569e71b4</property>
+        <property name="Name">Test CPP-CLR Library</property>
+        <property name="Exclude">False</property>
+        <property name="ExcludeToc">False</property>
+        <property name="SyntaxUsage">False</property>
+        <property name="Description"></property>
+        <property name="RunningHeaderText">Sandcastle Helpers: C++/CLR Library</property>
+        <property name="SyntaxType">Standard</property>
+    </propertyGroup>
+    <propertyGroup name="Reference">
+        <property name="XmlnsForXaml">False</property>
+        <property name="RootTitle">Testing C++/CLR Library</property>
+        <property name="RootTopicId"></property>
+        <property name="VersionType">AssemblyAndFile</property>
+    </propertyGroup>
+    <propertyBag />
+    <contents />
+    <!-- The content source defining this reference group. -->
+    <contentSource name="Sandcastle.References.ReferenceVsNetSource">
+        <propertyGroup name="General">
+            <property name="Title">ReferenceSource697397d6</property>
+            <property name="TargetFrameworkIdentifier"></property>
+        </propertyGroup>
+        <items>
+            <item enabled="True" xamlSyntax="False">
+                <location>
+                    <path value="..\..\HelpersSamples.sln" />
+                </location>
+                <includes>
+                    <include name="{41A48F1C-3E52-4995-B181-363EDBC02CA0}" />
+                </includes>
+            </item>
+        </items>
+        <!-- The various contents required for documentation -->
+        <contents>
+            <content type="Comments">
+                <doc />
+            </content>
+            <content type="HierarchicalToc">
+                <hierarchicalTocContent />
+            </content>
+        </contents>
+        <!-- The API/attribute filters associated with the documentations -->
+        <filters>
+            <filter name="ft25b15cfd" expose="True" type="ApiFilter" />
+            <filter name="ftdcdc4946" expose="True" type="AttributeFilter" />
+        </filters>
+    </contentSource>
+</documentGroup>

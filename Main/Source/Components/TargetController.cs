@@ -330,20 +330,11 @@ namespace Sandcastle.ReflectionData
             try
             {
                 XPathDocument document = new XPathDocument(file);
-                // This will only load into the memory...
+                // This will load into the memory, if the database does not
+                // exists...
 
-                TargetStorage quickStorage = _msdnStorage;
-
-                if (quickStorage != null)
-                {
-                    TargetCollectionXmlUtilities.AddTargets(quickStorage,
-                        document.CreateNavigator(), type);
-                }
-                else
-                {
-                    TargetCollectionXmlUtilities.AddTargets(_msdnStorage,
-                        document.CreateNavigator(), type);
-                }  
+                TargetCollectionXmlUtilities.AddTargets(_msdnStorage,
+                    document.CreateNavigator(), type);
             }
             catch (XmlSchemaException e)
             {

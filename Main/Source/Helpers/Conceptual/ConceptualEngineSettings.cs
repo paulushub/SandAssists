@@ -1,6 +1,6 @@
 ﻿using System;
-
-using Sandcastle.Contents;
+using System.Xml;
+using System.Diagnostics;
 
 namespace Sandcastle.Conceptual
 {
@@ -13,9 +13,6 @@ namespace Sandcastle.Conceptual
     {
         #region Private Fields
 
-        private SharedContent  _sharedContent;
-        private IncludeContent _includeContent;
-
         #endregion
 
         #region Constructors and Destructor
@@ -25,11 +22,8 @@ namespace Sandcastle.Conceptual
         /// with the default parameters.
         /// </summary>
         public ConceptualEngineSettings()
-            : base("Sandcastle.ConceptualEngineSettings", BuildEngineType.Conceptual)
+            : base("Sandcastle.Conceptual.ConceptualEngineSettings", BuildEngineType.Conceptual)
         {
-            _sharedContent  = new SharedContent("Conceptual");
-            _includeContent = new IncludeContent("Conceptual");
-
             IBuildNamedList<BuildComponentConfiguration> componentConfigurations
                 = this.ComponentConfigurations;
             if (componentConfigurations != null)
@@ -92,29 +86,11 @@ namespace Sandcastle.Conceptual
         public ConceptualEngineSettings(ConceptualEngineSettings source)
             : base(source)
         {
-            _sharedContent  = source._sharedContent;
-            _includeContent = source._includeContent;
         }
 
         #endregion
 
         #region Public Properties
-
-        public override SharedContent SharedContent
-        {
-            get
-            {
-                return _sharedContent;
-            }
-        }
-
-        public override IncludeContent IncludeContent
-        {
-            get
-            {
-                return _includeContent;
-            }
-        }
 
         /// <summary>
         /// 
@@ -321,6 +297,99 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) && String.Equals(
+                    reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "":
+                    	    break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WriteEndElement();                  // end - propertyGroup
+        }
+
+        protected override BuildConfiguration
+            OnCreateConfiguration(string name, bool isPlugin)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            //switch (name.ToLower())
+            //{
+            //    case "":
+            //        break;
+            //}
+
+            return base.OnCreateConfiguration(name, isPlugin);
+        }
+
+        protected override BuildComponentConfiguration
+            OnCreateComponentConfiguration(string name, bool isPlugin)
+        {
+            BuildExceptions.NotNullNotEmpty(name, "name");
+
+            switch (name.ToLower())
+            {
+                case "sandcastle.conceptual.conceptualpretransconfiguration":
+                    return new ConceptualPreTransConfiguration();
+                case "sandcastle.conceptual.conceptualintellisenseconfiguration":
+                    return new ConceptualIntelliSenseConfiguration();
+                case "sandcastle.conceptual.conceptualcloneconfiguration":
+                    return new ConceptualCloneConfiguration();
+                case "sandcastle.conceptual.conceptualposttransconfiguration":
+                    return new ConceptualPostTransConfiguration();
+                case "sandcastle.conceptual.conceptualcodeconfiguration":
+                    return new ConceptualCodeConfiguration();
+                case "sandcastle.conceptual.conceptualmathconfiguration":
+                    return new ConceptualMathConfiguration();
+                case "sandcastle.conceptual.conceptualmediaconfiguration":
+                    return new ConceptualMediaConfiguration();
+                case "sandcastle.conceptual.conceptuallinkconfiguration":
+                    return new ConceptualLinkConfiguration();
+                case "sandcastle.conceptual.conceptualreferencelinkconfiguration":
+                    return new ConceptualReferenceLinkConfiguration();
+                case "sandcastle.conceptual.conceptualsharedconfiguration":
+                    return new ConceptualSharedConfiguration();
+            }
+
+            return base.OnCreateComponentConfiguration(name, isPlugin);
+        }
+
+        #endregion  
+
         #region ICloneable Members
 
         /// <summary>
@@ -334,14 +403,7 @@ namespace Sandcastle.Conceptual
         {
             ConceptualEngineSettings settings = new ConceptualEngineSettings(this);
 
-            if (_sharedContent != null)
-            {
-                settings._sharedContent = _sharedContent.Clone();
-            }
-            if (_includeContent != null)
-            {
-                settings._includeContent = _includeContent.Clone();
-            }
+            this.OnClone(settings);
 
             return settings;
         }

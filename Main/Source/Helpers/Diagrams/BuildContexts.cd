@@ -1,68 +1,101 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildContext">
-    <Position X="2.5" Y="2.25" Width="2" />
+    <Position X="2.5" Y="2" Width="2" />
+    <Members>
+      <Field Name="_baseWorkingDir" Hidden="true" />
+      <Field Name="_buildOutputs" Hidden="true" />
+      <Field Name="_buildState" Hidden="true" />
+      <Field Name="_buildSystem" Hidden="true" />
+      <Field Name="_buildType" Hidden="true" />
+      <Field Name="_groupContexts" Hidden="true" />
+      <Field Name="_isBuildSuccess" Hidden="true" />
+      <Field Name="_isInitialized" Hidden="true" />
+      <Field Name="_listGroups" Hidden="true" />
+      <Field Name="_logger" Hidden="true" />
+      <Field Name="_outputDir" Hidden="true" />
+      <Field Name="_processedTopics" Hidden="true" />
+      <Field Name="_properties" Hidden="true" />
+      <Field Name="_sandcastleDir" Hidden="true" />
+      <Field Name="_sandcastleToolsDir" Hidden="true" />
+      <Field Name="_settings" Hidden="true" />
+      <Field Name="_tocContext" Hidden="true" />
+      <Field Name="_workingDir" Hidden="true" />
+      <Method Name="~BuildContext" Hidden="true" />
+      <Method Name="AddOutput" Hidden="true" />
+      <Method Name="AddProcessedTopics" Hidden="true" />
+      <Method Name="BeginDirectories" Hidden="true" />
+      <Method Name="BeginGroups" Hidden="true" />
+      <Method Name="BuildContext" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+      <Method Name="EndDirectories" Hidden="true" />
+      <Method Name="EndGroups" Hidden="true" />
+      <Method Name="Initialize" Hidden="true" />
+      <Method Name="Reset" Hidden="true" />
+      <Field Name="SandcastleVersion" Hidden="true" />
+      <Method Name="SetState" Hidden="true" />
+      <Method Name="StepEnds" Hidden="true" />
+      <Method Name="StepError" Hidden="true" />
+      <Method Name="StepStarts" Hidden="true" />
+      <Method Name="Uninitialize" Hidden="true" />
+      <Method Name="ValidateSandcastle" Hidden="true" />
+      <Field Name="WorkingFolder" Hidden="true" />
+    </Members>
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="State" Type="Sandcastle.BuildState" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.5" Y="2.625" />
-        <Point X="1.25" Y="2.625" />
-        <Point X="1.25" Y="2.148" />
+        <Point X="3.188" Y="2" />
+        <Point X="3.188" Y="1.298" />
+        <Point X="2" Y="1.298" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="BuildType" Type="Sandcastle.BuildType" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.5" Y="4.5" />
-        <Point X="5.75" Y="4.5" />
-        <Point X="5.75" Y="4.069" />
+        <Point X="4.5" Y="4" />
+        <Point X="5.812" Y="4" />
+        <Point X="5.812" Y="3.517" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Logger" Type="Sandcastle.BuildLogger" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.5" Y="4" />
-        <Point X="1.188" Y="4" />
-        <Point X="1.188" Y="3.63" />
+        <Point X="2.5" Y="3.543" />
+        <Point X="1.188" Y="3.543" />
+        <Point X="1.188" Y="3.13" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Settings" Type="Sandcastle.BuildSettings" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.5" Y="4.125" />
-        <Point X="1.188" Y="4.125" />
-        <Point X="1.188" Y="4.5" />
+        <Point X="2.5" Y="3.653" />
+        <Point X="1.188" Y="3.653" />
+        <Point X="1.188" Y="4" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="System" Type="Sandcastle.BuildSystem" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.5" Y="2.562" />
-        <Point X="5.812" Y="2.562" />
-        <Point X="5.812" Y="1.983" />
+        <Point X="3.812" Y="2" />
+        <Point X="3.812" Y="1.313" />
+        <Point X="5" Y="1.313" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="TocContext" Type="Sandcastle.BuildTocContext" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.188" Y="5.265" />
-        <Point X="3.188" Y="5.815" />
-        <Point X="2" Y="5.815" />
+        <Point X="2.5" Y="4.812" />
+        <Point X="1.25" Y="4.812" />
+        <Point X="1.25" Y="5.25" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Groups" Type="Sandcastle.BuildGroup" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.812" Y="5.265" />
-        <Point X="3.812" Y="5.812" />
-        <Point X="5" Y="5.812" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="GroupContexts" Type="Sandcastle.BuildGroupContext" FixedFromPoint="true">
-      <Path>
-        <Point X="3.5" Y="5.265" />
-        <Point X="3.5" Y="6.25" />
+        <Point X="4.5" Y="4.812" />
+        <Point X="5.812" Y="4.812" />
+        <Point X="5.812" Y="5.25" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>BgBCHGAUILKAFxEAiAAAiBAAYAgAAAREhgABLCyAIFo=</HashCode>
+      <HashCode>BgBCFOAUYLMBFxEAiAACiBAAYAgAABREhAABLC6AIFo=</HashCode>
       <FileName>BuildContext.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -72,65 +105,59 @@
       <Property Name="Settings" />
       <Property Name="System" />
       <Property Name="TocContext" />
-      <Property Name="BuildWait" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Groups" />
       <Property Name="GroupContexts" />
     </ShowAsCollectionAssociation>
-    <Lollipop Position="1.293" />
+    <Lollipop Position="1.387" />
   </Class>
   <Class Name="Sandcastle.BuildLogger" Collapsed="true">
-    <Position X="0.5" Y="3" Width="1.5" />
+    <Position X="0.5" Y="2.5" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.648" />
   </Class>
   <Class Name="Sandcastle.BuildSettings" Collapsed="true">
-    <Position X="0.5" Y="4.5" Width="1.75" />
+    <Position X="0.5" Y="4" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAIBCAQwAqAHERAAeAICDoTYqIiJQwKgDQTAAqRYYlo=</HashCode>
+      <HashCode>AAIBAAQwAqAHERAAeAICDoTYrAiJQwCABQTAAKRYYlo=</HashCode>
       <FileName>BuildSettings.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="System.Threading.WaitHandle" Collapsed="true">
-    <Position X="2.75" Y="1" Width="1.5" />
-    <TypeIdentifier />
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="Sandcastle.BuildGroup" Collapsed="true">
-    <Position X="5" Y="5.5" Width="1.5" />
+    <Position X="5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BARikbARRFABEdAACMAAAAagAACAQAAYABAEp4YCYCo=</HashCode>
+      <HashCode>AARCmbARQFABEdAACMAAAAaAAACAQAAYCBAEp4YCYCo=</HashCode>
       <FileName>BuildGroup.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.938" />
   </Class>
   <Class Name="Sandcastle.BuildGroupContext" Collapsed="true">
-    <Position X="2.75" Y="6.25" Width="1.5" />
+    <Position X="2.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAMAQIwAAFwAICAAAAAAAAAAAAAABAAAAhAAAABg=</HashCode>
+      <HashCode>AAACAMAQIwAAFwAICAAAAAAAAAAAAAABAAAAhEAAAhg=</HashCode>
       <FileName>BuildGroupContext.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="1.044" />
+    <Lollipop Position="0.877" />
   </Class>
   <Class Name="Sandcastle.BuildTocContext" Collapsed="true">
-    <Position X="0.5" Y="5.5" Width="1.5" />
+    <Position X="0.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEJBAAAQAAAADQABCAAQBEACAEAAAAAAAAAghABQABk=</HashCode>
+      <HashCode>AEJBAAAQIAAAHwABCAAQBEACAEAAAAAAAAAghABQABk=</HashCode>
       <FileName>BuildTocContext.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualGroupContext" Collapsed="true">
-    <Position X="0.75" Y="7.75" Width="2" />
+    <Position X="0.5" Y="7" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAIEAAAAAAIAAAAAAAAAAAAAAABg=</HashCode>
       <FileName>Conceptual\ConceptualGroupContext.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceGroupContext" Collapsed="true">
-    <Position X="4.25" Y="7.75" Width="2" />
+    <Position X="4.5" Y="7" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAABAAAgAAAAgQAAAAAAAAAAAAAAAAAAAAAAQAAAABg=</HashCode>
+      <HashCode>AAIBAAAgQAAAhQAQAAAAQIAAAIAAAAEACAAQQABAAhg=</HashCode>
       <FileName>References\ReferenceGroupContext.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -143,7 +170,7 @@
     <TypeIdentifier />
   </Enum>
   <Enum Name="Sandcastle.BuildType">
-    <Position X="5" Y="2.75" Width="1.5" />
+    <Position X="5" Y="2.25" Width="1.5" />
     <TypeIdentifier />
   </Enum>
   <Font Name="Tahoma" Size="8.25" />

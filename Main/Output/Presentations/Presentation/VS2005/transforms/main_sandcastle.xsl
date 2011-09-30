@@ -142,29 +142,41 @@
     <xsl:apply-templates select="example"/>
   </xsl:template>
 
-	<xsl:template match="value">
-    <xsl:call-template name="subSection">
-      <xsl:with-param name="title">
-        <include item="fieldValueTitle" />
-      </xsl:with-param>
-      <xsl:with-param name="content">
-        <xsl:apply-templates />
-      </xsl:with-param>
-    </xsl:call-template>
-	</xsl:template>
+    <xsl:template match="value">
+        <xsl:call-template name="subSection">
+            <xsl:with-param name="title">
+                <include item="propertyValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+                <include item="typeLink">
+                    <parameter>
+                        <referenceLink target="{/document/reference/returns/type/@api}" qualified="true"/>
+                    </parameter>
+                </include>
+                <br />
+                <xsl:apply-templates />
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
 
-	<xsl:template match="returns">
-    <xsl:call-template name="subSection">
-      <xsl:with-param name="title">
-        <include item="methodValueTitle" />
-      </xsl:with-param>
-      <xsl:with-param name="content">
-        <xsl:apply-templates />
-      </xsl:with-param>
-    </xsl:call-template>
-  </xsl:template>
+    <xsl:template match="returns">
+        <xsl:call-template name="subSection">
+            <xsl:with-param name="title">
+                <include item="methodValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+                <include item="typeLink">
+                    <parameter>
+                        <referenceLink target="{/document/reference/returns/type/@api}" qualified="true"/>
+                    </parameter>
+                </include>
+                <br />
+                <xsl:apply-templates />
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
 
-  <xsl:template match="templates">
+    <xsl:template match="templates">
     <xsl:call-template name="section">
       <xsl:with-param name="toggleSwitch" select="'templates'" />
       <xsl:with-param name="title">

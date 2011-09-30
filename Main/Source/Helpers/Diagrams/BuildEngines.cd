@@ -9,7 +9,7 @@
       <Path>
         <Point X="4.75" Y="2.312" />
         <Point X="7.125" Y="2.312" />
-        <Point X="7.125" Y="4.25" />
+        <Point X="7.125" Y="4" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -24,17 +24,17 @@
     <Lollipop Position="0.86" />
   </Class>
   <Class Name="Sandcastle.BuildGroup" Collapsed="true">
-    <Position X="3" Y="6.75" Width="2" />
+    <Position X="3" Y="6" Width="2" />
     <TypeIdentifier>
-      <HashCode>BARikbARRFABEdAACMAAAAagAACAQAAYABAEp4YCYCo=</HashCode>
+      <HashCode>AARCmbARQFABEdAACMAAAAaAAACAQAAYCBAEp4YCYCo=</HashCode>
       <FileName>BuildGroup.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.169" />
   </Class>
   <Class Name="Sandcastle.BuildSettings" Collapsed="true">
-    <Position X="3.25" Y="3.25" Width="1.75" />
+    <Position X="3.25" Y="3" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAIBCAQwAqAHERAAeAICDoTYqIiJQwKgDQTAAqRYYlo=</HashCode>
+      <HashCode>AAIBAAQwAqAHERAAeAICDoTYrAiJQwCABQTAAKRYYlo=</HashCode>
       <FileName>BuildSettings.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -53,33 +53,33 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.BuildProject" Collapsed="true">
-    <Position X="3" Y="4.25" Width="2" />
+    <Position X="3" Y="4" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="Logger" Type="Sandcastle.BuildLoggers" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3" Y="4.562" />
-        <Point X="2" Y="4.562" />
+        <Point X="3" Y="4.312" />
+        <Point X="2" Y="4.312" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Context" Type="Sandcastle.BuildContext" FixedToPoint="true">
       <Path>
-        <Point X="5" Y="4.562" />
-        <Point X="5.292" Y="4.562" Type="JumpStart" />
-        <Point X="5.458" Y="4.562" Type="JumpEnd" />
-        <Point X="6.25" Y="4.562" />
+        <Point X="5" Y="4.312" />
+        <Point X="5.292" Y="4.312" Type="JumpStart" />
+        <Point X="5.458" Y="4.312" Type="JumpEnd" />
+        <Point X="6.25" Y="4.312" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Documenter" Type="Sandcastle.BuildDocumenter" FixedToPoint="true">
       <Path>
-        <Point X="3.917" Y="4.88" />
-        <Point X="3.917" Y="5.5" />
+        <Point X="3.917" Y="4.63" />
+        <Point X="3.917" Y="5" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>BIMBgIARIjIARUAQgAQACEVAIAgCggIAgAhBBAAAABo=</HashCode>
+      <HashCode>AIEBgIAQanIARQARgQQAGEVAIAwCgEAAAAEBBAACABo=</HashCode>
       <FileName>BuildProject.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -90,38 +90,38 @@
     <Lollipop Position="0.252" />
   </Class>
   <Class Name="Sandcastle.BuildContext" Collapsed="true">
-    <Position X="6.25" Y="4.25" Width="1.5" />
+    <Position X="6.25" Y="4" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>BgBCHGAUILKAFxEAiAAAiBAAYAgAAAREhgABLCyAIFo=</HashCode>
+      <HashCode>BgBCFOAUYLMBFxEAiAACiBAAYAgAABREhAABLC6AIFo=</HashCode>
       <FileName>BuildContext.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.002" />
   </Class>
   <Class Name="Sandcastle.BuildLoggers" Collapsed="true">
-    <Position X="0.5" Y="4.25" Width="1.5" />
+    <Position X="0.5" Y="4" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.BuildDocumenter" Collapsed="true">
-    <Position X="3" Y="5.5" Width="2" />
+    <Position X="3" Y="5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="Settings" Type="Sandcastle.BuildSettings" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="5" Y="5.812" />
-        <Point X="5.375" Y="5.812" />
-        <Point X="5.375" Y="3.562" />
-        <Point X="5" Y="3.562" />
+        <Point X="5" Y="5.312" />
+        <Point X="5.375" Y="5.312" />
+        <Point X="5.375" Y="3.312" />
+        <Point X="5" Y="3.312" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Groups" Type="Sandcastle.BuildGroup" FixedFromPoint="true">
       <Path>
-        <Point X="3.938" Y="6.13" />
-        <Point X="3.938" Y="6.75" />
+        <Point X="3.938" Y="5.63" />
+        <Point X="3.938" Y="6" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>

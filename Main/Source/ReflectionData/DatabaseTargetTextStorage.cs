@@ -71,6 +71,14 @@ namespace Sandcastle.ReflectionData
         {
             get
             {
+                if (_plusTree == null)
+                {
+                    if (_quickStorage != null)
+                    {
+                        return _quickStorage.Count;
+                    }
+                }
+
                 return _count;
             }
         }
@@ -80,10 +88,6 @@ namespace Sandcastle.ReflectionData
             get
             {
                 Target target = null;
-                if (_plusTree == null)
-                {
-                    return target;
-                }
                 if (_quickStorage != null)
                 {
                     target = _quickStorage[id];
@@ -101,6 +105,10 @@ namespace Sandcastle.ReflectionData
                     }
                 }
 
+                if (_plusTree == null)
+                {
+                    return target;
+                }
                 if (_targetIds != null && _targetIds.Contains(id))
                 {
                     target = TargetsReader.ReadXml(_plusTree[id]);
@@ -157,17 +165,27 @@ namespace Sandcastle.ReflectionData
         }
 
         public override void Add(Target target)
-        {
-            if (target == null || _plusTree == null)
+        {               
+            if (target == null)
             {
                 return;
-            }   
-            if (!_plusTree.ContainsKey(target.id))
-            {
-                _count++;
             }
+            if (_plusTree == null)
+            {   
+                if (_quickStorage != null)
+                {
+                    _quickStorage.Add(target);
+                }
+            }
+            else
+            {
+                if (!_plusTree.ContainsKey(target.id))
+                {
+                    _count++;
+                }
 
-            _plusTree[target.id] = TargetsWriter.WriteXml(target);
+                _plusTree[target.id] = TargetsWriter.WriteXml(target);
+            }
         }
 
         public override void Clear()

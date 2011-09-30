@@ -348,8 +348,8 @@ namespace Sandcastle.Steps
             string helpMshaPath = Path.Combine(_helpOutputDir, HelpContentSetup);
             BuildSettings settings = context.Settings;
             BuildFeedback feedback = settings.Feedback;
-            string companyName     = feedback.Company;
-            string productName     = feedback.Product;
+            string companyName     = feedback.CompanyName;
+            string productName     = feedback.ProductName;
             string displayedName   = settings.HelpTitle;
 
             XmlWriterSettings readerSettings = new XmlWriterSettings();

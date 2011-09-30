@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7A699023-A04D-40CB-97BB-BC8C039F1A63}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FilesTestSample</RootNamespace>
+    <AssemblyName>FilesTestSample</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <ApplicationIcon>Sandcastle.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sandcastle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandcastle.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=642304d803813b6f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConceptualTopics.cs" />
+    <Compile Include="CustomTocType.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferencesTocType.cs" />
+    <Compile Include="ReferenceTopics.cs" />
+    <Compile Include="TestGroupIds.cs" />
+    <Compile Include="TestOptions.cs" />
+    <Compile Include="TestTocOptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sandcastle.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Documentation.sanddocs" />
+    <None Include="HierarchicalToc.sandrefs" />
+    <None Include="HierarchicalToc.sandrgrp" />
+    <None Include="MainConceptual.sandcgrp" />
+    <None Include="MainConceptual.sandtopics" />
+    <None Include="MainReference.sandrefs" />
+    <None Include="MainReference.sandrgrp" />
+    <None Include="OtherConceptual.sandcgrp" />
+    <None Include="OtherConceptual.sandtopics" />
+    <None Include="OtherReference.sandrgrp" />
+    <None Include="ProjectFormat35.sandproj" />
+    <None Include="Redirection.sandrefs" />
+    <None Include="Redirection.sandrgrp" />
+    <None Include="SandcastleDocument35.targets" />
+    <None Include="SilverlightWPF.sandrefs" />
+    <None Include="SilverlightWPF.sandrgrp" />
+    <None Include="WiXSchemaDocs.sandcgrp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

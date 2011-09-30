@@ -28,6 +28,7 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool   _notApplicable;
         private bool   _contentsAfter;
 
         private string _tocFilePath;
@@ -93,6 +94,21 @@ namespace Sandcastle.References
         {
             base.Initialize(context, group);
 
+            _notApplicable = false;
+
+            BuildGroupContext groupContext = context.GroupContexts[group.Id];
+            if (groupContext != null)
+            {
+                // We do not have to spell check embedded documents...
+                string embeddedText = groupContext["$IsEmbeddedGroup"];
+                if (!String.IsNullOrEmpty(embeddedText) &&
+                    embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+                {
+                    _notApplicable = true;
+                    return;
+                }
+            }
+
             if (this.IsInitialized)
             {
                 if (_tocLayout == null)
@@ -140,7 +156,7 @@ namespace Sandcastle.References
             {
                 return;
             }
-            if (!this.IsInitialized)
+            if (!this.IsInitialized || _notApplicable)
             {
                 return;
             }   
@@ -265,7 +281,7 @@ namespace Sandcastle.References
                 foreach (XPathNavigator navigator in iterator)
                 {
                     string nsText = navigator.GetAttribute("id", String.Empty);
-                    if (!String.IsNullOrEmpty(nsText))
+                    if (!String.IsNullOrEmpty(nsText) && nsText.Length > 2)
                     {
                         nsText = nsText.Substring(2);
                         string projName = navigator.GetAttribute("project", String.Empty);
@@ -282,14 +298,14 @@ namespace Sandcastle.References
             }
             else if (layoutType == ReferenceTocLayoutType.Custom)
             {
-                _tocContents = this.Group.HierarchicalToc;
+                _tocContents = this.Group.Content.HierarchicalToc;
 
                 if (_tocContents != null)
                 {
                     foreach (XPathNavigator navigator in iterator)
                     {
                         string nsText = navigator.GetAttribute("id", String.Empty);
-                        if (!String.IsNullOrEmpty(nsText))
+                        if (!String.IsNullOrEmpty(nsText) && nsText.Length > 2)
                         {
                             nsText = nsText.Substring(2);
                             string projName = navigator.GetAttribute("project", String.Empty);

@@ -2,13 +2,18 @@
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 
 using Sandcastle.Steps;
+using Sandcastle.Utilities;
 
 namespace Sandcastle.Formats
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public sealed class FormatMhv : BuildFormat
     {
@@ -31,6 +36,10 @@ namespace Sandcastle.Formats
         public FormatMhv(FormatMhv source)
             : base(source)
         {
+            _tocParent        = source._tocParent;
+            _topicVersion     = source._topicVersion;
+            _tocParentVersion = source._tocParentVersion;
+            _selfbranded      = source._selfbranded;
         }
 
         #endregion
@@ -184,11 +193,11 @@ namespace Sandcastle.Formats
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to write an XML declaration. 
+        /// Gets or sets a value indicating whether to write an <c>XML</c> declaration. 
         /// </summary>
         /// <value>
-        /// This is <see langword="true"/> to omit the XML declaration; otherwise, it is
-        /// <see langword="false"/>. The default is <see langword="false"/>, an XML 
+        /// This is <see langword="true"/> to omit the <c>XML</c> declaration; otherwise, it is
+        /// <see langword="false"/>. The default is <see langword="false"/>, an <c>XML</c> 
         /// declaration is not written.
         /// </value>
         public override bool OmitXmlDeclaration
@@ -315,6 +324,14 @@ namespace Sandcastle.Formats
                 String.Format(@"{0}\{1}", helpFolder, 
                 StepMhvBuilder.HelpContentSetup));
 
+            // Case 1: Closing the HtmlHelp 3.x viewer...
+            if (stage == BuildStage.CloseViewer)
+            {
+                StepMhvViewerClose mhvClose = new StepMhvViewerClose(workingDir);
+
+                return mhvClose;
+            }
+
             // Case 2: Starting the HtmlHelp 3.x viewer...
             if (stage == BuildStage.StartViewer)
             {
@@ -386,9 +403,117 @@ namespace Sandcastle.Formats
             _tocParentVersion       = 100; 
             _selfbranded            = true;
 
-            base.CloseViewerBeforeBuild = false;
+            base.CloseViewerBeforeBuild = true;
 
             base.IntegrationTarget  = BuildIntegrationTarget.VS2010;
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected override void OnReadPropertyGroupXml(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            if (!String.Equals(startElement, "propertyGroup",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BuildException(String.Format(
+                    "OnReadPropertyGroupXml: The current element is '{0}' not the expected 'propertyGroup'.",
+                    startElement));
+            }
+
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "FormatMhv-General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "tocparent":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocParent = Convert.ToInt32(tempText);
+                                }
+                                break;
+                            case "topicversion":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _topicVersion = Convert.ToInt32(tempText);
+                                }
+                                break;
+                            case "tocparentversion":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _tocParentVersion = Convert.ToInt32(tempText);
+                                }
+                                break;
+                            case "selfbranded":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _selfbranded = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override void OnWritePropertyGroupXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "FormatMhv-General");
+            writer.WritePropertyElement("TocParent",        _tocParent);
+            writer.WritePropertyElement("TopicVersion",     _topicVersion);
+            writer.WritePropertyElement("TocParentVersion", _tocParentVersion);
+            writer.WritePropertyElement("Selfbranded",      _selfbranded);
+            writer.WriteEndElement();                   // end - propertyGroup
+        }
+
+        protected override void OnReadContentXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteContentXml(XmlWriter writer)
+        {
+        }
+
+        protected override void OnReadXml(XmlReader reader)
+        {
+            // May check the validity of the parsing process...
+            throw new NotImplementedException();
+        }
+
+        protected override void OnWriteXml(XmlWriter writer)
+        {
         }
 
         #endregion
@@ -398,6 +523,8 @@ namespace Sandcastle.Formats
         public override BuildFormat Clone()
         {
             FormatMhv format = new FormatMhv(this);
+
+            base.Clone(format);
 
             return format;
         }

@@ -1431,6 +1431,11 @@ namespace Sandcastle.ReflectionData
                 }
             }
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
             XmlNodeType nodeType = XmlNodeType.None;
             while (reader.Read())
             {
@@ -1559,6 +1564,11 @@ namespace Sandcastle.ReflectionData
                 {
                     position = Int32.Parse(tempText);
                 }
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
             }
 
             XmlNodeType nodeType = XmlNodeType.None;
@@ -1801,7 +1811,7 @@ namespace Sandcastle.ReflectionData
 
         public override void ReadXml(XmlReader reader)
         {
-            if (reader == null)
+            if (reader == null || reader.IsEmptyElement)
             {
                 return;
             }
@@ -1961,6 +1971,11 @@ namespace Sandcastle.ReflectionData
                 member = reader.GetAttribute("member");
             }
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
             parameters = new List<TypeReference>();
 
             XmlNodeType nodeType = XmlNodeType.None;
@@ -2116,7 +2131,7 @@ namespace Sandcastle.ReflectionData
 
         public void ReadXml(XmlReader reader)
         {
-            if (reader == null)
+            if (reader == null || reader.IsEmptyElement)
             {
                 return;
             }

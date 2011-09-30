@@ -134,6 +134,24 @@ namespace Sandcastle.Contents
 
         #endregion
 
+        #region IXmlSerializable Members
+
+        public override void ReadXml(XmlReader reader)
+        {
+            // We will not support the serialization of this object, it is
+            // dynamically created and never saved...
+            throw new NotImplementedException();
+        }
+
+        public override void WriteXml(XmlWriter writer)
+        {
+            // We will not support the serialization of this object, it is
+            // dynamically created and never saved...
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region ICloneable Members
 
         public override ConfiguratorItem Clone()

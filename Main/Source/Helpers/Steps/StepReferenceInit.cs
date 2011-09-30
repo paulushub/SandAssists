@@ -211,6 +211,32 @@ namespace Sandcastle.Steps
             int itemCount = content.Count;
             List<string> commentFiles = new List<string>(itemCount);
 
+            CommentContent commentContent = content.Comments;
+            if (commentContent != null && !commentContent.IsEmpty)
+            {
+                string commentFile = Path.Combine(commentDir,
+                    groupContext["$CommentsFile"]);
+
+                // If there is a valid file or there is an attached file...
+                BuildFilePath filePath = commentContent.ContentFile;
+                if (filePath != null && filePath.Exists)
+                {   
+                    if (commentContent.IsLoaded)
+                    {
+                        commentContent.Save();
+                    }
+
+                    File.Copy(filePath.Path, commentFile);
+                }
+                else
+                {
+                    commentContent.SaveCopyAs(commentFile);
+                }
+                File.SetAttributes(commentFile, FileAttributes.Normal);
+
+                commentFiles.Add(commentFile);
+            }
+
             for (int i = 0; i < itemCount; i++)
             {
                 ReferenceItem item = content[i];
@@ -254,8 +280,8 @@ namespace Sandcastle.Steps
             groupContext.CommentFiles = commentFiles;
 
             // 1. Copy the dependencies to the expected directory...
-            ReferenceDependencyResolver dependencyResolver =
-                new ReferenceDependencyResolver();
+            ReferenceProjectVisitor dependencyResolver =
+                new ReferenceProjectVisitor();
             dependencyResolver.Initialize(context);
             dependencyResolver.Visit(_group);
             dependencyResolver.Uninitialize();
@@ -551,12 +577,14 @@ namespace Sandcastle.Steps
                         }
                     }
 
+                    //TODO--PAUL: Should the project/namespace summary be included?
+
                     // Finally, store the list of extracted comment file to its context...
                     versionsContext.CommentFiles = commentFiles;
 
                     // 1. Copy the dependencies to the expected directory...
-                    ReferenceDependencyResolver dependencyResolver =
-                        new ReferenceDependencyResolver(source.Id, content);
+                    ReferenceProjectVisitor dependencyResolver =
+                        new ReferenceProjectVisitor(source.Id, content);
                     dependencyResolver.Initialize(context);
                     dependencyResolver.Visit(_group);
                     dependencyResolver.Uninitialize();

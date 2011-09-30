@@ -11,7 +11,7 @@ namespace Sandcastle.References
     {
         #region Public Fields
 
-        public const string TagName = "topic";
+        public const string TagName = "referenceItem";
 
         #endregion
 
@@ -20,6 +20,7 @@ namespace Sandcastle.References
         private bool          _xamlSyntax;
         private BuildFilePath _comments;
         private BuildFilePath _assembly;
+        private BuildFilePath _source;
 
         #endregion
 
@@ -52,6 +53,7 @@ namespace Sandcastle.References
         {
             _comments   = source._comments;
             _assembly   = source._assembly;
+            _source     = source._source;
             _xamlSyntax = source._xamlSyntax;
         }
 
@@ -63,7 +65,7 @@ namespace Sandcastle.References
         {
             get
             {
-                if (_comments == null && _assembly == null)
+                if (_comments == null && _assembly == null && _source == null)
                 {
                     return true;
                 }
@@ -75,6 +77,10 @@ namespace Sandcastle.References
                 {
                     return (_assembly.Exists == false);
                 }
+                else if (_source != null)
+                {
+                    return (_source.Exists == false);
+                }
 
                 return false;
             }
@@ -83,7 +89,13 @@ namespace Sandcastle.References
         public bool IsCommentOnly
         {
             get
-            {
+            {     
+                // Valid project/solution will yield at least an assembly...
+                if (_source != null && _source.IsValid)
+                {
+                    return false;
+                }
+
                 return (_comments != null && _assembly == null);
             }
         }
@@ -124,6 +136,36 @@ namespace Sandcastle.References
             }
         }
 
+        public BuildFilePath Source
+        {
+            get
+            {
+                return _source;
+            }
+            set
+            {
+                _source = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="ReferenceItem"/> class instance, this property is 
+        /// <see cref="ReferenceItem.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region IEquatable<T> Members
@@ -134,6 +176,12 @@ namespace Sandcastle.References
             {
                 return false;
             }
+
+            if (this._source != null && other._source != null)
+            {
+                return (this._source == other._source);
+            } 
+            
             if (this._comments != null && other._comments != null)
             {
                 if (this._comments != other._comments)
@@ -192,11 +240,11 @@ namespace Sandcastle.References
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -214,6 +262,9 @@ namespace Sandcastle.References
             if (!String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
                 return;
             }
 
@@ -230,50 +281,17 @@ namespace Sandcastle.References
                     if (String.Equals(reader.Name, "assembly",
                         StringComparison.OrdinalIgnoreCase) && !reader.IsEmptyElement)
                     {
-                        while (reader.Read())
-                        {
-                            if (reader.NodeType == XmlNodeType.Element)
-                            {
-                                if (String.Equals(reader.Name, BuildFilePath.TagName,
-                                    StringComparison.OrdinalIgnoreCase))
-                                {
-                                    _assembly = new BuildFilePath();
-                                    _assembly.ReadXml(reader);
-                                }
-                            }
-                            else if (reader.NodeType == XmlNodeType.EndElement)
-                            {
-                                if (String.Equals(reader.Name, "assembly",
-                                    StringComparison.OrdinalIgnoreCase))
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        _assembly = BuildFilePath.ReadLocation(reader);
                     }
                     else if (String.Equals(reader.Name, "comments",
                         StringComparison.OrdinalIgnoreCase) && !reader.IsEmptyElement)
                     {
-                        while (reader.Read())
-                        {
-                            if (reader.NodeType == XmlNodeType.Element)
-                            {
-                                if (String.Equals(reader.Name, BuildFilePath.TagName,
-                                    StringComparison.OrdinalIgnoreCase))
-                                {
-                                    _comments = new BuildFilePath();
-                                    _comments.ReadXml(reader);
-                                }
-                            }
-                            else if (reader.NodeType == XmlNodeType.EndElement)
-                            {
-                                if (String.Equals(reader.Name, "comments",
-                                    StringComparison.OrdinalIgnoreCase))
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        _comments = BuildFilePath.ReadLocation(reader);
+                    }
+                    else if (String.Equals(reader.Name, "source",
+                        StringComparison.OrdinalIgnoreCase) && !reader.IsEmptyElement)
+                    {
+                        _source = BuildFilePath.ReadLocation(reader);
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
@@ -289,10 +307,10 @@ namespace Sandcastle.References
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -324,6 +342,13 @@ namespace Sandcastle.References
             }
             writer.WriteEndElement();             // end - comments
 
+            writer.WriteStartElement("source"); // start - source
+            if (_source != null)
+            {
+                _source.WriteXml(writer);
+            }
+            writer.WriteEndElement();           // end - source
+
             writer.WriteEndElement();           // end - topic
         }
 
@@ -333,17 +358,21 @@ namespace Sandcastle.References
 
         public override ReferenceItem Clone()
         {
-            ReferenceItem resource = new ReferenceItem(this);
+            ReferenceItem reference = new ReferenceItem(this);
             if (_comments != null)
             {
-                resource._comments = _comments.Clone();
+                reference._comments = _comments.Clone();
             }
             if (_assembly != null)
             {
-                resource._assembly = _assembly.Clone();
+                reference._assembly = _assembly.Clone();
+            }
+            if (_source != null)
+            {
+                reference._source = _source.Clone();
             }
 
-            return resource;
+            return reference;
         }
 
         #endregion

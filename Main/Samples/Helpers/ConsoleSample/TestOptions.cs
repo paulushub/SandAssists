@@ -96,15 +96,11 @@ namespace ConsoleSample
 
         public void Create()
         {
-            string sampleDir     = this.SampleDir;
-            string workingDir    = this.WorkingDir;
-            string sandAssistDir = this.SandAssistDir;
-
             bool useCustomStyles = true;
 
             BuildStyleType styleType = BuildStyleType.ClassicWhite;
 
-            _settings.WorkingDirectory = new BuildDirectoryPath(workingDir);
+            _settings.WorkingDirectory = new BuildDirectoryPath(_workingDir);
             _settings.CleanIntermediate = false;
             _settings.ShowPreliminary = true;
             _settings.Style.StyleType = styleType;
@@ -114,37 +110,38 @@ namespace ConsoleSample
             _settings.FooterText = "Footer: This is the footer text.";
 
             BuildFeedback feedBack = _settings.Feedback;
-            feedBack.Company = "Sandcastle Assist";
-            feedBack.Product = "Sandcastle Helpers";
-            feedBack.EmailAddress = "paulselormey@gmail.com";
-            feedBack.FeedbackType = BuildFeedbackType.None;
-            feedBack.Copyright =
+            feedBack.CompanyName   = "Sandcastle Assist";
+            feedBack.ProductName   = "Sandcastle Helpers";
+            feedBack.EmailAddress  = "paulselormey@gmail.com";
+            feedBack.FeedbackType  = BuildFeedbackType.None;
+            feedBack.CopyrightText =
                 "Copyright &#169; 2007-2008 Sandcastle Assist. All Rights Reserved.";
             feedBack.CopyrightLink = "http://www.codeplex.com/SandAssist";
 
             // Configure the logo image information...
-            feedBack.LogoInHeader = true; // show it...
-            feedBack.LogoImage = Path.Combine(sandAssistDir, "AssistLogo.jpg");
-            feedBack.LogoWidth = 64;
-            feedBack.LogoHeight = 64;
-            feedBack.LogoPadding = 3;
-            feedBack.LogoText = "Sandcastle Assist";
-            feedBack.LogoLink = "http://www.codeplex.com/SandAssist";
+            feedBack.LogoEnabled   = true; // show it...
+            feedBack.LogoImage     = new BuildFilePath(Path.Combine(_sandAssistDir, "AssistLogo.jpg"));
+            feedBack.LogoWidth     = 64;
+            feedBack.LogoHeight    = 64;
+            feedBack.LogoPadding   = 3;
+            feedBack.LogoText      = "Sandcastle Assist";
+            feedBack.LogoLink      = "http://www.codeplex.com/SandAssist";
             feedBack.LogoAlignment = BuildLogoAlignment.Center;
             feedBack.LogoPlacement = BuildLogoPlacement.Right;
 
             // Configure the logging, we add some loggers by their names...
             BuildLogging logging = _settings.Logging;
-            //project.Logger.Verbosity = BuildLoggerVerbosity.Detailed;
-            logging.AddLogger(XmlLogger.LoggerName);
-            logging.AddLogger(HtmlLogger.LoggerName);
+            //logging.Verbosity = BuildLoggerVerbosity.Detailed;
+            //logging.AddLogger(XmlLogger.LoggerName);
+            //logging.AddLogger(HtmlLogger.LoggerName);
+            ///logging.AddLogger(XamlLogger.LoggerName);
             logging.AddLogger(ConsoleLogger.LoggerName);
 
             BuildStyle style = _settings.Style;
             // Add direct code snippet root folder...
             SnippetContent snippets = style.Snippets;
             snippets.Add(new SnippetItem(
-                Path.Combine(sampleDir, "SampleSnippets")));
+                Path.Combine(_sampleDir, "SampleSnippets")));
 
             // Add some custom math packages and commands...
             MathPackageContent mathPackages = style.MathPackages;
@@ -170,9 +167,9 @@ namespace ConsoleSample
                 _settings.Formats[BuildFormatType.HtmlHelp1] as FormatChm;
             if (chmFormat != null)
             {
-                chmFormat.Enabled = true;
+                chmFormat.Enabled      = true;
                 chmFormat.UseBinaryToc = false;
-                chmFormat.Indent = true;
+                chmFormat.Indent       = true;
             }
 
             //FormatHxs hxsFormat =
@@ -183,6 +180,7 @@ namespace ConsoleSample
             //    hxsFormat.Enabled = true;
             //    hxsFormat.Indent = true;
             //}
+
             //FormatMhv mhvFormat =
             //    _settings.Formats[BuildFormatType.HtmlHelp3] as FormatMhv;
             //if (mhvFormat != null)
@@ -190,6 +188,7 @@ namespace ConsoleSample
             //    mhvFormat.Enabled = true;
             //    mhvFormat.Indent = true;
             //}
+
             //FormatWeb webFormat = 
             //    _settings.Formats[BuildFormatType.WebHelp] as FormatWeb;
             //if (webFormat != null)
@@ -200,7 +199,7 @@ namespace ConsoleSample
 
             //_settings.HelpName = "HelpRegister";
             //_settings.HelpTitle = "Sandcastle HelpRegister";
-            _settings.HelpName = "SandcastleHelpers";
+            _settings.HelpName  = "SandcastleHelpers";
             _settings.HelpTitle = "Sandcastle Helpers Test Sample";
         }
 
@@ -210,12 +209,12 @@ namespace ConsoleSample
 
         public bool Run()
         {
-            Console.Title = "Sandcastle Test Builder - " + _settings.Style.StyleType;
-            Console.SetWindowSize(Console.LargestWindowWidth - 20,
-                Console.LargestWindowHeight - 20);
-            Console.BackgroundColor = ConsoleColor.DarkCyan;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Clear();
+            //Console.Title = "Sandcastle Test Builder - " + _settings.Style.StyleType;
+            //Console.SetWindowSize(Console.LargestWindowWidth - 20,
+            //    Console.LargestWindowHeight - 20);
+            //Console.BackgroundColor = ConsoleColor.DarkCyan;
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.Clear();
 
             Console.WriteLine(
                 "******** This is Sandcastle Test Sample *************");

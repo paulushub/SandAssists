@@ -4,6 +4,8 @@ using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sandcastle.Utilities;
+
 namespace Sandcastle
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace Sandcastle
     {
         #region Public Fields
 
-        public const string TagName = "feedbacOptions";
+        public const string TagName = "option";
 
         #endregion
 
@@ -30,10 +32,11 @@ namespace Sandcastle
         private int    _logoWidth;
         private int    _logoHeight;
         private int    _logoPadding;
-        private bool   _logoInHeader;
-        private string _logoImage;
+        private bool   _logoEnabled;
         private string _logoLink;
         private string _logoText;
+
+        private BuildFilePath      _logoImage;
         private BuildLogoAlignment _logoAlignment;
         private BuildLogoPlacement _logoPlacement;
 
@@ -56,7 +59,7 @@ namespace Sandcastle
         /// </summary>
         public BuildFeedback()
         {
-            _logoImage     = String.Empty;
+            _logoImage     = null;
             _logoLink      = String.Empty;
             _logoText      = String.Empty; 
             _logoAlignment = BuildLogoAlignment.Center;
@@ -74,8 +77,18 @@ namespace Sandcastle
         public BuildFeedback(BuildFeedback source)
             : base(source)
         {
+            _logoImage     = source._logoImage;
+            _logoLink      = source._logoLink;
+            _logoText      = source._logoText;
+            _logoAlignment = source._logoAlignment;
+            _logoPlacement = source._logoPlacement;
+
             _copyrightLink = source._copyrightLink;
             _copyrightText = source._copyrightText;
+            _productName   = source._productName;
+            _companyName   = source._companyName;
+            _emailAddress  = source._emailAddress;
+            _postalAddress = source._postalAddress;
             _feedbackType  = source._feedbackType;
         }
 
@@ -95,7 +108,7 @@ namespace Sandcastle
             }
         }
 
-        public string Product
+        public string ProductName
         {
             get
             {
@@ -111,7 +124,7 @@ namespace Sandcastle
             }
         }
 
-        public string Company
+        public string CompanyName
         {
             get
             {
@@ -159,7 +172,7 @@ namespace Sandcastle
             }
         }
 
-        public string Copyright
+        public string CopyrightText
         {
             get
             {
@@ -191,15 +204,15 @@ namespace Sandcastle
             }
         }
 
-        public bool LogoInHeader
+        public bool LogoEnabled
         {
             get
             {                   
-                return _logoInHeader;
+                return _logoEnabled;
             }
             set
             {
-                _logoInHeader = value;
+                _logoEnabled = value;
             }
         }
 
@@ -239,7 +252,7 @@ namespace Sandcastle
             }
         }
 
-        public string LogoImage
+        public BuildFilePath LogoImage
         {
             get 
             { 
@@ -320,7 +333,7 @@ namespace Sandcastle
 
             // If not showing the logo and/or eliminating header feedback, then
             // there is nothing to configure...
-            if (!_logoInHeader && _feedbackType != BuildFeedbackType.None)
+            if (!_logoEnabled && _feedbackType != BuildFeedbackType.None)
             {
                 return true;
             }
@@ -332,7 +345,7 @@ namespace Sandcastle
                 writer.WriteAttributeString("feedback", "False");
             }
 
-            if (_logoInHeader && !String.IsNullOrEmpty(_logoImage))
+            if (_logoEnabled && !String.IsNullOrEmpty(_logoImage))
             {
                 string imagePath = Path.GetFullPath(_logoImage);
                 if (File.Exists(imagePath))
@@ -376,14 +389,76 @@ namespace Sandcastle
 
         #endregion
 
+        #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) && String.Equals(
+                    reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "feedbacktype":
+                            string tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _feedbackType = (BuildFeedbackType)Enum.Parse(
+                                    typeof(BuildFeedbackType), tempText, true);
+                            }
+                            break;
+                        case "copyrighttext":
+                            _copyrightText = reader.ReadString();
+                            break;
+                        case "copyrightlink":
+                            _copyrightLink = reader.ReadString();
+                            break;
+                        case "productname":
+                            _productName = reader.ReadString();
+                            break;
+                        case "companyname":
+                            _companyName = reader.ReadString();
+                            break;
+                        case "emailaddress":
+                            _emailAddress = reader.ReadString();
+                            break;
+                        case "postaladdress":
+                            _postalAddress = reader.ReadString();
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -401,48 +476,92 @@ namespace Sandcastle
             if (!String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
                 return;
             }
 
-            string nodeText = reader.GetAttribute("verbosity");
-            //if (!String.IsNullOrEmpty(nodeText))
-            //{
-            //    _verbosity = (BuildLoggerVerbosity)Enum.Parse(
-            //        typeof(BuildLoggerVerbosity), nodeText, true);
-            //}
-            //nodeText = reader.GetAttribute("useFile");
-            //if (!String.IsNullOrEmpty(nodeText))
-            //{
-            //    _useFile = Convert.ToBoolean(nodeText);
-            //}
-            //nodeText = reader.GetAttribute("keepFile");
-            //if (!String.IsNullOrEmpty(nodeText))
-            //{
-            //    _keepFile = Convert.ToBoolean(nodeText);
-            //}
-            //nodeText = reader.GetAttribute("fileName");
-            //if (!String.IsNullOrEmpty(nodeText))
-            //{
-            //    _fileName = nodeText;
-            //}
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
 
-            //if (reader.IsEmptyElement)
-            //{
-            //    return;
-            //}
+            string nodeText = null;
 
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    if (String.Equals(reader.Name, "logger",
+                    if (String.Equals(reader.Name, "propertyGroup",
+                       StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadXmlGeneral(reader);
+                    }
+                    else if (String.Equals(reader.Name, "logo",
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        nodeText = reader.GetAttribute("name");
-
+                        nodeText = reader.GetAttribute("enabled");
                         if (!String.IsNullOrEmpty(nodeText))
                         {
-                            //_loggers.Add(nodeText);
+                            _logoEnabled = Convert.ToBoolean(nodeText);
+                        }
+                        nodeText = reader.GetAttribute("alignment");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _logoAlignment = (BuildLogoAlignment)Enum.Parse(
+                                typeof(BuildLogoAlignment), nodeText, true);
+                        }
+                        nodeText = reader.GetAttribute("placement");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _logoPlacement = (BuildLogoPlacement)Enum.Parse(
+                                typeof(BuildLogoPlacement), nodeText, true);
+                        }
+                        nodeText = reader.GetAttribute("width");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _logoWidth = Convert.ToInt32(nodeText);
+                        }
+                        nodeText = reader.GetAttribute("height");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _logoHeight = Convert.ToInt32(nodeText);
+                        }
+                        nodeText = reader.GetAttribute("padding");
+                        if (!String.IsNullOrEmpty(nodeText))
+                        {
+                            _logoPadding = Convert.ToInt32(nodeText);
+                        }
+
+                        if (!reader.IsEmptyElement)
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader.NodeType == XmlNodeType.Element)
+                                {
+                                    switch (reader.Name)
+                                    {
+                                        case "text":
+                                            _logoText = reader.ReadString();
+                                            break;
+                                        case "link":
+                                            _logoLink = reader.ReadString();
+                                            break;
+                                        case "image":
+                                            _logoImage = BuildFilePath.ReadLocation(reader);
+                                            break;
+                                    }
+                                }
+                                else if (reader.NodeType == XmlNodeType.EndElement)
+                                {
+                                    if (String.Equals(reader.Name, "logo",
+                                        StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -459,10 +578,10 @@ namespace Sandcastle
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -472,25 +591,39 @@ namespace Sandcastle
         {
             BuildExceptions.NotNull(writer, "writer");
 
-            writer.WriteStartElement(TagName);  // start - feedback
-            //writer.WriteAttributeString("verbosity", _verbosity.ToString());
-            //writer.WriteAttributeString("useFile", _useFile.ToString());
-            //writer.WriteAttributeString("keepFile", _keepFile.ToString());
-            //writer.WriteAttributeString("fileName", _fileName);
+            writer.WriteStartElement(TagName);  // start - feedbackOptions
+            writer.WriteAttributeString("type", "Feedback");
+            writer.WriteAttributeString("name", this.GetType().ToString());
 
-            //writer.WriteStartElement("loggers");  // start - loggers
-            //if (_loggers != null && _loggers.Count != 0)
-            //{
-            //    for (int i = 0; i < _loggers.Count; i++)
-            //    {
-            //        writer.WriteStartElement("logger");  // start - logger
-            //        writer.WriteAttributeString("name", _loggers[i]);
-            //        writer.WriteEndElement();           // end - logger
-            //    }
-            //}
-            //writer.WriteEndElement();           // end - loggers
+            // Write the general properties
+            writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("FeedbackType",  _feedbackType.ToString());
+            writer.WritePropertyElement("CopyrightText", _copyrightText);
+            writer.WritePropertyElement("CopyrightLink", _copyrightLink);
+            writer.WritePropertyElement("ProductName",   _productName);
+            writer.WritePropertyElement("CompanyName",   _companyName);
+            writer.WritePropertyElement("EmailAddress",  _emailAddress);
+            writer.WritePropertyElement("PostalAddress", _postalAddress);
+            writer.WriteEndElement();            // end - propertyGroup
 
-            writer.WriteEndElement();           // end - feedback
+            // Write the logo element
+            writer.WriteStartElement("logo"); // start - logo
+            writer.WriteAttributeString("enabled",   _logoEnabled.ToString());
+            writer.WriteAttributeString("alignment", _logoAlignment.ToString());
+            writer.WriteAttributeString("placement", _logoPlacement.ToString());
+            writer.WriteAttributeString("width",     _logoWidth.ToString());
+            writer.WriteAttributeString("height",    _logoHeight.ToString());
+            writer.WriteAttributeString("padding",   _logoPadding.ToString());
+
+            writer.WriteTextElement("text", _logoText);
+            writer.WriteTextElement("link", _logoLink);
+
+            BuildFilePath.WriteLocation(_logoImage, "image", writer);
+
+            writer.WriteEndElement();         // end - logo
+
+            writer.WriteEndElement();           // end - feedbackOptions
         }
 
         #endregion
@@ -500,6 +633,43 @@ namespace Sandcastle
         public override BuildFeedback Clone()
         {
             BuildFeedback feedback = new BuildFeedback(this);
+            if (_logoImage != null)
+            {
+                feedback._logoImage = _logoImage.Clone();
+            }
+            if (_logoLink != null)
+            {
+                feedback._logoLink = String.Copy(_logoLink);
+            }
+            if (_logoText != null)
+            {
+                feedback._logoText = String.Copy(_logoText);
+            }
+
+            if (_copyrightLink != null)
+            {
+                feedback._copyrightLink = String.Copy(_copyrightLink);
+            }
+            if (_copyrightText != null)
+            {
+                feedback._copyrightText = String.Copy(_copyrightText);
+            }
+            if (_productName != null)
+            {
+                feedback._productName = String.Copy(_productName);
+            }
+            if (_companyName != null)
+            {
+                feedback._companyName = String.Copy(_companyName);
+            }
+            if (_emailAddress != null)
+            {
+                feedback._emailAddress = String.Copy(_emailAddress);
+            }
+            if (_postalAddress != null)
+            {
+                feedback._postalAddress = String.Copy(_postalAddress);
+            }
 
             return feedback;
         }

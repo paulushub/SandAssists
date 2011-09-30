@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+
+    <UsingTask TaskName="ProjectBuilder" AssemblyFile="..\..\..\Output\Sandcastle.Builders.dll" />
+    <UsingTask TaskName="ProjectCleaner" AssemblyFile="..\..\..\Output\Sandcastle.Builders.dll" />
+
+    <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+
+    <!--
+    We refine the CoreBuild, defined in the Microsoft.Common.targets, 
+    to override the default core build targets.
+    -->
+    <Target Name="CoreBuild">
+        <Message Text="CoreBuild: Testing..."/>
+        <ProjectBuilder/>
+    </Target>
+    
+    <!--<Target Name="CoreRebuild">
+        <Message Text="CoreRebuild: Testing..."/>
+    </Target>-->
+    
+    <Target Name="CoreClean">
+        <Message Text="CoreClean: Testing..."/>
+        <ProjectCleaner/>
+    </Target>
+
+</Project>
+

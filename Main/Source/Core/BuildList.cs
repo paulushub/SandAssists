@@ -329,7 +329,7 @@ namespace Sandcastle
 
         #region ICloneable Members
 
-        public BuildList<T> Clone()
+        public virtual BuildList<T> Clone()
         {
             BuildList<T> clonedList = new BuildList<T>(this);
 

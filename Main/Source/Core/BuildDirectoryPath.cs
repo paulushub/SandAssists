@@ -57,7 +57,7 @@ namespace Sandcastle
                     return false;
                 }
 
-                return DirectoryUtils.IsDirectory(_path);
+                return true;
             }
         }
 
@@ -221,6 +221,22 @@ namespace Sandcastle
             return contentDir;
         }
 
+        public static void WriteLocation(BuildDirectoryPath path, 
+            string locationName, XmlWriter writer)
+        {
+            if (String.IsNullOrEmpty(locationName) || writer == null)
+            {
+                return;
+            }
+
+            writer.WriteStartElement(locationName);
+            if (path != null && path.IsValid)
+            {
+                path.WriteXml(writer);
+            }
+            writer.WriteEndElement();
+        }
+
         #endregion
 
         #region Private Methods
@@ -250,10 +266,7 @@ namespace Sandcastle
                 absolutePath = resolver.ResolveAbsolute(path);
             }
 
-            if (DirectoryUtils.IsDirectory(absolutePath))
-            {
-                _path = absolutePath;
-            }
+            _path = absolutePath;
         }
 
         #endregion
@@ -261,11 +274,11 @@ namespace Sandcastle
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -335,10 +348,10 @@ namespace Sandcastle
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Loggers;
+using Sandcastle.Utilities;
 
 namespace Sandcastle
 {
@@ -13,7 +14,7 @@ namespace Sandcastle
     {
         #region Public Fields
 
-        public const string TagName                = "loggingOptions";
+        public const string TagName                = "option";
         /// <summary>
         /// 
         /// </summary>
@@ -197,16 +198,79 @@ namespace Sandcastle
 
         #region Private Methods
 
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if ((reader.NodeType == XmlNodeType.Element) && String.Equals(
+                    reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                {
+                    string tempText = null;
+                    switch (reader.GetAttribute("name").ToLower())
+                    {
+                        case "verbosity":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _verbosity = (BuildLoggerVerbosity)Enum.Parse(
+                                    typeof(BuildLoggerVerbosity), tempText, true);
+                            }
+                            break;
+                        case "usefile":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {     
+                                _useFile = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "keepfile":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {     
+                                _keepFile = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "filename":
+                            _fileName = reader.ReadString();
+                            break;
+                        default:
+                            // Should normally not reach here...
+                            throw new NotImplementedException(reader.GetAttribute("name"));
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region IXmlSerializable Members
 
         /// <summary>
-        /// This reads and sets its state or attributes stored in a XML format
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
         /// with the given reader. 
         /// </summary>
         /// <param name="reader">
-        /// The reader with which the XML attributes of this object are accessed.
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
@@ -224,29 +288,10 @@ namespace Sandcastle
             if (!String.Equals(reader.Name, TagName,
                 StringComparison.OrdinalIgnoreCase))
             {
+                Debug.Assert(false, String.Format(
+                    "The element name '{0}' does not match the expected '{1}'.",
+                    reader.Name, TagName));
                 return;
-            }
-
-            string nodeText = reader.GetAttribute("verbosity");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _verbosity = (BuildLoggerVerbosity)Enum.Parse(
-                    typeof(BuildLoggerVerbosity), nodeText, true);
-            }
-            nodeText = reader.GetAttribute("useFile");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _useFile = Convert.ToBoolean(nodeText);
-            }
-            nodeText = reader.GetAttribute("keepFile");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _keepFile = Convert.ToBoolean(nodeText);
-            }
-            nodeText = reader.GetAttribute("fileName");
-            if (!String.IsNullOrEmpty(nodeText))
-            {
-                _fileName = nodeText;
             }
 
             if (reader.IsEmptyElement)
@@ -258,10 +303,15 @@ namespace Sandcastle
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    if (String.Equals(reader.Name, "logger",
+                    if (String.Equals(reader.Name, "propertyGroup",
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        nodeText = reader.GetAttribute("name");
+                        this.ReadXmlGeneral(reader);
+                    }
+                    else if (String.Equals(reader.Name, "logger",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string nodeText = reader.GetAttribute("name");
 
                         if (!String.IsNullOrEmpty(nodeText))
                         {
@@ -287,10 +337,10 @@ namespace Sandcastle
 
         /// <summary>
         /// This writes the current state or attributes of this object,
-        /// in the XML format, to the media or storage accessible by the given writer.
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
         /// </summary>
         /// <param name="writer">
-        /// The XML writer with which the XML format of this object's state 
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
         /// is written.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -300,18 +350,19 @@ namespace Sandcastle
         {
             BuildExceptions.NotNull(writer, "writer");
 
-            writer.WriteStartElement(TagName);  // start - logging
-            writer.WriteAttributeString("verbosity", _verbosity.ToString());
-            writer.WriteAttributeString("useFile",   _useFile.ToString());
-            writer.WriteAttributeString("keepFile",  _keepFile.ToString());
-            writer.WriteAttributeString("fileName",  _fileName);
+            writer.WriteStartElement(TagName);  // start - loggingOptions
+            writer.WriteAttributeString("type", "Logging");
+            writer.WriteAttributeString("name", this.GetType().ToString());
 
-            writer.WriteStartElement("location"); // location
-            if (_outputPath != null)
-            {
-                _outputPath.WriteXml(writer);
-            }
-            writer.WriteEndElement();             // location
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+            writer.WritePropertyElement("Verbosity", _verbosity.ToString());
+            writer.WritePropertyElement("UseFile",   _useFile);
+            writer.WritePropertyElement("KeepFile",  _keepFile);
+            writer.WritePropertyElement("FileName",  _fileName);
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            BuildDirectoryPath.WriteLocation(_outputPath, "location", writer);
 
             writer.WriteStartElement("loggers");  // start - loggers
             if (_loggers != null && _loggers.Count != 0)
@@ -325,7 +376,7 @@ namespace Sandcastle
             }
             writer.WriteEndElement();             // end - loggers
 
-            writer.WriteEndElement();           // end - logging
+            writer.WriteEndElement();           // end - loggingOptions
         }
 
         #endregion

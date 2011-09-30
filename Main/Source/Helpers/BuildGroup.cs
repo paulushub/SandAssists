@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle.Contents;
+using Sandcastle.Utilities;
 
 namespace Sandcastle
 {
@@ -13,27 +16,37 @@ namespace Sandcastle
     [Serializable]
     public abstract class BuildGroup : BuildObject<BuildGroup>, IBuildNamedItem
     {
+        #region Public Fields
+
+        public const string TagName = "documentGroup";
+
+        #endregion
+
         #region Private Fields
 
+        private bool   _isLoaded;  
         private bool   _isExcluded;
         private bool   _isTocExcluded;
-        private bool   _isInitialized;
-
+        private bool   _isInitialized;  
         private bool   _syntaxUsage;
 
-        private string  _groupId;
+        private Version _version;
 
+        private string _groupId;
         private string _groupName;
-        private string _groupTitle;
+        private string _groupDescription;
         private string _runningTitle;
 
         private BuildSyntaxType _syntaxType;
         private BuildProperties _properties;
 
-        private BuildList<TokenContent>       _listTokens;
-        private BuildList<MediaContent>       _listMedia;
-        private BuildList<SharedContent>      _listShared;
-        private BuildList<ResourceContent>    _listResources;
+        private BuildFilePath      _contentFile;
+        private BuildDirectoryPath _groupDir;
+
+        private BuildList<TokenContent> _listTokens;
+        private BuildList<MediaContent> _listMedia;
+        private BuildList<SharedContent> _listShared;
+        private BuildList<ResourceContent> _listResources;
         private BuildList<CodeSnippetContent> _listSnippets;
 
         #endregion
@@ -62,6 +75,7 @@ namespace Sandcastle
             BuildExceptions.NotNullNotEmpty(groupName, "groupName");
             BuildExceptions.NotNullNotEmpty(groupId,   "groupId");
 
+            _version       = new Version(1, 0, 0, 0);
             _groupName     = groupName;
             _groupId       = groupId;
             _listMedia     = new BuildList<MediaContent>();
@@ -73,6 +87,26 @@ namespace Sandcastle
             _properties    = new BuildProperties();
 
             _syntaxType    = BuildSyntaxType.Standard;
+        }
+
+        protected BuildGroup(string groupName, string groupId, string contentFile)
+            : this(groupName, groupId, contentFile, String.Empty)
+        {
+        }
+
+        protected BuildGroup(string groupName, string groupId,
+            string contentFile, string contentDir)
+            : this(groupName, groupId)
+        {
+            BuildExceptions.PathMustExist(contentFile, "contentFile");
+
+            if (String.IsNullOrEmpty(contentDir))
+            {
+                contentDir = Path.GetDirectoryName(contentFile);
+            }
+
+            _contentFile = new BuildFilePath(contentFile);
+            _groupDir  = new BuildDirectoryPath(contentDir);
         }
 
         /// <summary>
@@ -89,11 +123,21 @@ namespace Sandcastle
         protected BuildGroup(BuildGroup source)
             : base(source)
         {
+            _isLoaded      = source._isLoaded;
+            _isExcluded    = source._isExcluded;
+            _isTocExcluded = source._isTocExcluded;
+            _isInitialized = source._isInitialized;
+
             _syntaxUsage   = source._syntaxUsage;
             _syntaxType    = source._syntaxType;
 
+            _contentFile = source._contentFile;
+            _groupDir = source._groupDir;
+
             _groupId       = source._groupId;
             _groupName     = source._groupName;
+            _groupDescription = source._groupDescription;
+            _runningTitle  = source._runningTitle;
             _properties    = source._properties;
 
             _listMedia     = source._listMedia;
@@ -101,7 +145,6 @@ namespace Sandcastle
             _listShared    = source._listShared;
             _listSnippets  = source._listSnippets;
             _listResources = source._listResources;
-            _isInitialized = source._isInitialized;
         }
 
         #endregion
@@ -135,6 +178,14 @@ namespace Sandcastle
         public abstract BuildGroupType GroupType
         {
             get;
+        }
+
+        public bool IsLoaded
+        {
+            get
+            {
+                return _isLoaded;
+            }
         }
 
         /// <summary>
@@ -179,15 +230,15 @@ namespace Sandcastle
         /// A <see cref="System.String"/> containing the title of this group. The 
         /// default is <see langword="null"/> or empty string.
         /// </value>
-        public string Title
+        public string Description
         {
             get
             {
-                return _groupTitle;
+                return _groupDescription;
             }
             set
             {
-                _groupTitle = value;
+                _groupDescription = value;
             }
         }
 
@@ -266,6 +317,42 @@ namespace Sandcastle
             set
             {
                 _syntaxUsage = value;
+            }
+        }
+
+        public BuildFilePath ContentFile
+        {
+            get
+            {
+                return _contentFile;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _contentFile = value;
+
+                    if (_groupDir == null)
+                    {
+                        _groupDir = new BuildDirectoryPath(
+                            Path.GetDirectoryName(value.Path));
+                    }
+                }
+            }
+        }
+
+        public BuildDirectoryPath ContentDir
+        {
+            get
+            {
+                return _groupDir;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _groupDir = value;
+                }
             }
         }
 
@@ -435,9 +522,103 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets the name of the <c>XML</c> tag name, under which this object is stored.
+        /// </summary>
+        /// <value>
+        /// A string containing the <c>XML</c> tag name of this object. 
+        /// <para>
+        /// For the <see cref="BuildGroup"/> class instance, 
+        /// this property is <see cref="BuildGroup.TagName"/>.
+        /// </para>
+        /// </value>
+        public override string XmlTagName
+        {
+            get
+            {
+                return TagName;
+            }
+        }
+
         #endregion
 
         #region Public Methods
+
+        #region Load Method
+
+        public virtual void Load()
+        {
+            if (String.IsNullOrEmpty(_contentFile))
+            {
+                return;
+            }
+
+            if (_groupDir == null)
+            {
+                _groupDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            BuildPathResolver resolver = BuildPathResolver.Create(
+                Path.GetDirectoryName(_contentFile), _groupId);
+
+            this.OnLoad(resolver);
+        }
+
+        public virtual void Load(BuildFilePath contentFile)
+        {
+            BuildExceptions.NotNull(contentFile, "contentFile");
+            if (!contentFile.Exists)
+            {
+                throw new BuildException(
+                    "The specified group file does not exist.");
+            }
+
+            this.ContentFile = contentFile;
+
+            this.Load();
+        }
+
+        public virtual void Reload()
+        {
+            _isLoaded = false;
+
+            this.Load();
+        }
+
+        #endregion
+
+        #region Save Method
+
+        public virtual void Save()
+        {
+            if (String.IsNullOrEmpty(_contentFile))
+            {
+                return;
+            }
+
+            if (_groupDir == null)
+            {
+                _groupDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            BuildPathResolver resolver = BuildPathResolver.Create(
+                Path.GetDirectoryName(_contentFile), _groupId);
+
+            this.OnSave(resolver);
+        }
+
+        public virtual void Save(BuildFilePath contentFile)
+        {
+            BuildExceptions.NotNull(contentFile, "contentFile");
+
+            this.ContentFile = contentFile;
+
+            this.Save();
+        }
+
+        #endregion
 
         #region Initialization Methods
 
@@ -451,6 +632,15 @@ namespace Sandcastle
         public virtual void Uninitialize()
         {
             _isInitialized = false;
+        }
+
+        public virtual void BeginSources(BuildContext context)
+        {
+            BuildExceptions.NotNull(context, "context");
+        }
+
+        public virtual void EndSources()
+        {
         }
 
         #endregion
@@ -674,6 +864,681 @@ namespace Sandcastle
 
         #endregion
 
+        #region Protected Methods
+
+        protected abstract void OnReadPropertyGroupXml(XmlReader reader);
+
+        protected abstract void OnWritePropertyGroupXml(XmlWriter writer);
+
+        protected abstract void OnReadContentXml(XmlReader reader);
+
+        protected abstract void OnWriteContentXml(XmlWriter writer);
+
+        protected abstract void OnReadXml(XmlReader reader);
+
+        protected abstract void OnWriteXml(XmlWriter writer);
+
+        protected virtual void OnLoad(BuildPathResolver resolver)
+        {
+            BuildExceptions.NotNull(resolver, "resolver");
+
+            if (_isLoaded)
+            {
+                return;
+            }
+
+            if (String.IsNullOrEmpty(_contentFile) ||
+                File.Exists(_contentFile) == false)
+            {
+                return;
+            }
+
+            if (_groupDir == null)
+            {
+                _groupDir = new BuildDirectoryPath(
+                    Path.GetDirectoryName(_contentFile));
+            }
+
+            XmlReader reader = null;
+
+            try
+            {
+                XmlReaderSettings settings = new XmlReaderSettings();
+
+                settings.IgnoreComments               = true;
+                settings.IgnoreWhitespace             = true;
+                settings.IgnoreProcessingInstructions = true;
+
+                reader = XmlReader.Create(_contentFile, settings);
+
+                reader.MoveToContent();
+
+                string resolverId = BuildPathResolver.Push(resolver);
+                {
+                    this.ReadXml(reader);
+
+                    BuildPathResolver.Pop(resolverId);
+                }   
+
+                _isLoaded = true;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader = null;
+                }
+            }
+        }
+
+        protected virtual void OnSave(BuildPathResolver resolver)
+        {
+            BuildExceptions.NotNull(resolver, "resolver");
+
+            // If this is not yet located, and the contents is empty, we
+            // will simply not continue from here...
+            if (_contentFile != null && _contentFile.Exists)
+            {
+                if (!this._isLoaded && this.IsEmpty)
+                {
+                    return;
+                }
+            }
+
+            XmlWriterSettings settings  = new XmlWriterSettings();
+            settings.Indent             = true;
+            settings.IndentChars        = new string(' ', 4);
+            settings.Encoding           = Encoding.UTF8;
+            settings.OmitXmlDeclaration = false;
+
+            XmlWriter writer = null;
+            try
+            {
+                writer = XmlWriter.Create(_contentFile, settings);
+
+                string resolverId = BuildPathResolver.Push(resolver);
+                {
+                    writer.WriteStartDocument();
+
+                    this.WriteXml(writer);
+
+                    writer.WriteEndDocument();
+
+                    BuildPathResolver.Pop(resolverId);
+                }
+
+                // The file content is now same as the memory, so it can be
+                // considered loaded...
+                _isLoaded = true;
+            }
+            finally
+            {  
+            	if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        #region ReadXmlGeneral Method
+
+        private void ReadXmlGeneral(XmlReader reader)
+        {
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "propertyGroup"));
+            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "property", 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = null;
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "id":
+                                _groupId = reader.ReadString();
+                                break;
+                            case "name":
+                                _groupName = reader.ReadString();
+                                break;
+                            case "exclude":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _isExcluded = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "excludetoc":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _isTocExcluded = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "syntaxusage":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _syntaxUsage = Convert.ToBoolean(tempText);
+                                }
+                                break;
+                            case "description":
+                                _groupDescription = reader.ReadString();
+                                break;
+                            case "runningheadertext":
+                                _runningTitle = reader.ReadString();
+                                break;
+                            case "syntaxtype":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _syntaxType = (BuildSyntaxType)Enum.Parse(
+                                        typeof(BuildSyntaxType), tempText, true);
+                                }
+                                break;
+                           default:
+                                // Should normally not reach here...
+                                throw new NotImplementedException(reader.GetAttribute("name"));
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement, 
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ReadXmlContents Method
+
+        private void ReadXmlContents(XmlReader reader)
+        {
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            string startElement = reader.Name;
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "content",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        string tempText = reader.GetAttribute("type");
+                        if (String.Equals(tempText, "Resource",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (!reader.IsEmptyElement && 
+                                reader.ReadToDescendant(ResourceContent.TagName))
+                            {
+                                ResourceContent resource = new ResourceContent();
+                                resource.ReadXml(reader);
+
+                                _listResources.Add(resource);
+                            }
+                        }
+                        else if (String.Equals(tempText, "Tokens", 
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            TokenContent content = new TokenContent();
+
+                            if (reader.IsEmptyElement)
+                            {
+                                string sourceFile = reader.GetAttribute("source");
+                                if (!String.IsNullOrEmpty(sourceFile))
+                                {
+                                    content.ContentFile = new BuildFilePath(sourceFile);
+                                    content.Load();
+                                }
+                            }
+                            else
+                            {
+                                if (reader.ReadToDescendant(TokenContent.TagName))
+                                {
+                                    content.ReadXml(reader);
+                                }
+                            }
+
+                            _listTokens.Add(content);
+                        }
+                        else if (String.Equals(tempText, "Media",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            MediaContent content = new MediaContent();
+
+                            if (reader.IsEmptyElement)
+                            {
+                                string sourceFile = reader.GetAttribute("source");
+                                if (!String.IsNullOrEmpty(sourceFile))
+                                {
+                                    content.ContentFile = new BuildFilePath(sourceFile);
+                                    content.Load();
+                                }
+                            }
+                            else
+                            {
+                                if (reader.ReadToDescendant(MediaContent.TagName))
+                                {
+                                    content.ReadXml(reader);
+                                }
+                            }
+
+                            _listMedia.Add(content);
+                        }
+                        else if (String.Equals(tempText, "Shared",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            SharedContent content = new SharedContent();
+
+                            if (reader.IsEmptyElement)
+                            {
+                                string sourceFile = reader.GetAttribute("source");
+                                if (!String.IsNullOrEmpty(sourceFile))
+                                {
+                                    content.ContentFile = new BuildFilePath(sourceFile);
+                                    content.Load();
+                                }
+                            }
+                            else
+                            {
+                                if (reader.ReadToDescendant(SharedContent.TagName))
+                                {
+                                    content.ReadXml(reader);
+                                }
+                            }
+
+                            _listShared.Add(content);
+                        }
+                        else if (String.Equals(tempText, "CodeSnippets",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            CodeSnippetContent content = new CodeSnippetContent();
+
+                            if (reader.IsEmptyElement)
+                            {
+                                string sourceFile = reader.GetAttribute("source");
+                                if (!String.IsNullOrEmpty(sourceFile))
+                                {
+                                    content.ContentFile = new BuildFilePath(sourceFile);
+                                    content.Load();
+                                }
+                            }
+                            else
+                            {
+                                if (reader.ReadToDescendant(CodeSnippetContent.TagName))
+                                {
+                                    content.ReadXml(reader);
+                                }
+                            }
+
+                            _listSnippets.Add(content);
+                        }
+                        else
+                        {
+                            this.OnReadContentXml(reader);
+                        }
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, startElement,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        /// <summary>
+        /// This reads and sets its state or attributes stored in a <c>XML</c> format
+        /// with the given reader. 
+        /// </summary>
+        /// <param name="reader">
+        /// The reader with which the <c>XML</c> attributes of this object are accessed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void ReadXml(XmlReader reader)
+        {
+            BuildExceptions.NotNull(reader, "reader");
+
+            Debug.Assert(reader.NodeType == XmlNodeType.Element);
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                return;
+            }
+
+            if (!String.Equals(reader.Name, TagName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(false, "The processing of the group ReadXml failed.");
+                return;
+            }
+            string tempText = reader.GetAttribute("type");
+            if (String.IsNullOrEmpty(tempText))
+            {
+                throw new BuildException(
+                    "ReadXml: The group type is not specified and it is unknown.");
+            }
+
+            BuildGroupType groupType = (BuildGroupType)Enum.Parse(
+                typeof(BuildGroupType), tempText, true);
+            if (groupType != this.GroupType)
+            {
+                throw new BuildException(String.Format(
+                    "ReadXml: The group type '{0}' does not match the current type '{1}'.",
+                    groupType, this.GroupType));
+            }
+
+            // Read the group identifier...
+            tempText = reader.GetAttribute("id");
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _groupId = tempText;
+            }
+
+            // Read the version information of the file group...
+            tempText = reader.GetAttribute("version");
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                _version = new Version(tempText);
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            if (_listTokens == null)
+            {
+                _listTokens = new BuildList<TokenContent>();
+            }
+            if (_listMedia == null)
+            {
+                _listMedia = new BuildList<MediaContent>();
+            }
+            if (_listShared == null)
+            {
+                _listShared = new BuildList<SharedContent>();
+            }
+            if (_listResources == null)
+            {
+                _listResources = new BuildList<ResourceContent>();
+            }
+            if (_listSnippets == null)
+            {
+                _listSnippets = new BuildList<CodeSnippetContent>();
+            }                                                       
+
+            // Sample format:
+            //
+            //<documentGroup type="Reference" id="82840faa-0481-4399-91a5-33a011bb513e" version="1.0">
+            //    <location />
+            //    <propertyGroup name="General">
+            //        <property name="Exclude">False</property>
+            //        <property name="ExcludeToc">True</property>
+            //    </propertyGroup>
+            //    <propertyGroup name="Reference">
+            //        <property name="XmlnsForXaml">True</property>
+            //    </propertyGroup>
+            //    <propertyBag />
+            //    <contents>
+            //        <content type="Reference" source=".\Embedding.Reference.xml" />
+            //    </contents>
+            //</documentGroup>
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (String.Equals(reader.Name, "location",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!reader.IsEmptyElement)
+                        {
+                            _groupDir = BuildDirectoryPath.ReadLocation(reader);
+                        }
+                    }
+                    else if (String.Equals(reader.Name, "propertyGroup",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        switch (reader.GetAttribute("name").ToLower())
+                        {
+                            case "general":
+                                this.ReadXmlGeneral(reader);
+                                break;
+                            default:
+                                this.OnReadPropertyGroupXml(reader);
+                                break;
+                        }
+                    }
+                    else if (String.Equals(reader.Name, BuildProperties.TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (_properties == null)
+                        {
+                            _properties = new BuildProperties();
+                        }
+                        _properties.ReadXml(reader);
+                    }
+                    else if (String.Equals(reader.Name, "contents",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.ReadXmlContents(reader);
+                    }
+                    else
+                    {
+                        this.OnReadXml(reader);
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (String.Equals(reader.Name, TagName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This writes the current state or attributes of this object,
+        /// in the <c>XML</c> format, to the media or storage accessible by the given writer.
+        /// </summary>
+        /// <param name="writer">
+        /// The <c>XML</c> writer with which the <c>XML</c> format of this object's state 
+        /// is written.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// If the <paramref name="reader"/> is <see langword="null"/>.
+        /// </exception>
+        public override void WriteXml(XmlWriter writer)
+        {
+            BuildExceptions.NotNull(writer, "writer");
+
+            BuildPathResolver resolver = BuildPathResolver.Resolver;
+            Debug.Assert(resolver != null && resolver.Id == _groupId);
+
+            writer.WriteStartElement(TagName);  // start - TagName
+            writer.WriteAttributeString("type",    this.GroupType.ToString());
+            writer.WriteAttributeString("version", _version.ToString(2));
+
+            writer.WriteStartElement("location"); // location
+            if (_groupDir != null &&
+                !_groupDir.IsDirectoryOf(_contentFile))
+            {
+                _groupDir.WriteXml(writer);
+            }
+            writer.WriteEndElement();             // location
+
+            writer.WriteStartElement("propertyGroup");  // start - propertyGroup
+            writer.WriteAttributeString("name", "General");
+
+            writer.WritePropertyElement("Id",                _groupId);
+            writer.WritePropertyElement("Name",              _groupName);
+            writer.WritePropertyElement("Exclude",           _isExcluded);
+            writer.WritePropertyElement("ExcludeToc",        _isTocExcluded);
+            writer.WritePropertyElement("SyntaxUsage",       _syntaxUsage);
+            writer.WritePropertyElement("Description",       _groupDescription);
+            writer.WritePropertyElement("RunningHeaderText", _runningTitle);
+            writer.WritePropertyElement("SyntaxType",        _syntaxType.ToString());
+            
+            writer.WriteEndElement();                   // end - propertyGroup
+
+            // Write the group specific property groups...
+            this.OnWritePropertyGroupXml(writer);
+
+            if (_properties != null)
+            {
+                _properties.WriteXml(writer);
+            }
+
+            writer.WriteStartElement("contents");  // start - contents
+            if (_listTokens != null)
+            {
+                for (int i = 0; i < _listTokens.Count; i++)
+                {
+                    TokenContent content = _listTokens[i];
+
+                    BuildFilePath filePath = content.ContentFile;
+                    writer.WriteStartElement("content");
+                    writer.WriteAttributeString("type", "Tokens");
+                    if (filePath != null && filePath.IsValid)
+                    {
+                        writer.WriteAttributeString("source",
+                            resolver.ResolveRelative(filePath));
+                        content.Save();
+                    }
+                    else
+                    {
+                        content.WriteXml(writer);
+                    }
+                    writer.WriteEndElement();
+                }
+            }
+            if (_listMedia != null)
+            {
+                for (int i = 0; i < _listMedia.Count; i++)
+                {
+                    MediaContent content = _listMedia[i];
+
+                    BuildFilePath filePath = content.ContentFile;
+                    writer.WriteStartElement("content");
+                    writer.WriteAttributeString("type", "Media");
+                    if (filePath != null && filePath.IsValid)
+                    {
+                        writer.WriteAttributeString("source",
+                            resolver.ResolveRelative(filePath));
+                        content.Save();
+                    }
+                    else
+                    {
+                        content.WriteXml(writer);
+                    }
+                    writer.WriteEndElement();
+                }
+            }
+            if (_listShared != null)
+            {
+                for (int i = 0; i < _listShared.Count; i++)
+                {
+                    SharedContent content = _listShared[i];
+
+                    BuildFilePath filePath = content.ContentFile;
+                    writer.WriteStartElement("content");
+                    writer.WriteAttributeString("type", "Shared");
+                    if (filePath != null && filePath.IsValid)
+                    {
+                        writer.WriteAttributeString("source",
+                            resolver.ResolveRelative(filePath));
+                        content.Save();
+                    }
+                    else
+                    {
+                        content.WriteXml(writer);
+                    }
+                    writer.WriteEndElement();
+                }
+            }
+            if (_listSnippets != null)
+            {
+                for (int i = 0; i < _listSnippets.Count; i++)
+                {
+                    CodeSnippetContent content = _listSnippets[i];
+
+                    BuildFilePath filePath = content.ContentFile;
+                    writer.WriteStartElement("content");
+                    writer.WriteAttributeString("type", "CodeSnippets");
+                    if (filePath != null && filePath.IsValid)
+                    {
+                        writer.WriteAttributeString("source",
+                            resolver.ResolveRelative(filePath));
+                        content.Save();
+                    }
+                    else
+                    {
+                        content.WriteXml(writer);
+                    }
+                    writer.WriteEndElement();
+                }
+            }
+            if (_listResources != null)
+            {
+                for (int i = 0; i < _listResources.Count; i++)
+                {
+                    ResourceContent content = _listResources[i];
+
+                    writer.WriteStartElement("content");
+                    writer.WriteAttributeString("type", "Resource");
+                    content.WriteXml(writer);
+                    writer.WriteEndElement();
+                }
+            }
+
+            // Write the group specific contents, if any...
+            this.OnWriteContentXml(writer);
+            writer.WriteEndElement();              // end - contents
+
+            // Write other group specific options
+            this.OnWriteXml(writer);
+
+            writer.WriteEndElement();           // end - TagName
+        }
+
+        #endregion
+
         #region IBuildNamedItem Members
 
         string IBuildNamedItem.Name
@@ -682,6 +1547,72 @@ namespace Sandcastle
             { 
                 return _groupId; 
             }
+        }
+
+        #endregion
+
+        #region ICloneable Members
+
+        protected virtual BuildGroup Clone(BuildGroup clonedGroup)
+        {
+            if (clonedGroup == null)
+            {
+                clonedGroup = (BuildGroup)this.MemberwiseClone();
+            }
+
+            if (_groupId != null)
+            {
+                clonedGroup._groupId = String.Copy(_groupId);
+            }
+            if (_groupName != null)
+            {
+                clonedGroup._groupName = String.Copy(_groupName);
+            }
+            if (_groupDescription != null)
+            {
+                clonedGroup._groupDescription = String.Copy(_groupDescription);
+            }
+            if (_runningTitle != null)
+            {
+                clonedGroup._runningTitle = String.Copy(_runningTitle);
+            }
+
+            if (_properties != null)
+            {
+                clonedGroup._properties = _properties.Clone();
+            }
+
+            if (_contentFile != null)
+            {
+                clonedGroup._contentFile = _contentFile.Clone();
+            }
+            if (_groupDir != null)
+            {
+                clonedGroup._groupDir = _groupDir.Clone();
+            }  
+
+            if (_listTokens != null)
+            {
+                clonedGroup._listTokens = _listTokens.Clone();
+            }
+            if (_listMedia != null)
+            {
+                clonedGroup._listMedia = _listMedia.Clone();
+            }
+            if (_listShared != null)
+            {
+                clonedGroup._listShared = _listShared.Clone();
+            }
+            if (_listResources != null)
+            {
+                clonedGroup._listResources = _listResources.Clone();
+            }
+            if (_listSnippets != null)
+            {
+                clonedGroup._listSnippets = _listSnippets.Clone();
+            }
+
+            return clonedGroup;
         }
 
         #endregion
