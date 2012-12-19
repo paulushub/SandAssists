@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "Helpers\ConsoleSample\ConsoleSample.csproj", "{9275708E-047E-42AB-A5E4-545DC80539ED}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0009470D-BB30-4147-B373-356A4EE11441} = {0009470D-BB30-4147-B373-356A4EE11441}
@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibraryVersion", "Hel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibrarySilverlight", "Helpers\SampleLibrarySilverlight\SampleLibrarySilverlight.csproj", "{03812821-9AC7-4161-BC84-FC4077D36CD8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleLibraryCLR", "Helpers\SampleTestLibraryCLR\TestLibraryCLR.vcproj", "{41A48F1C-3E52-4995-B181-363EDBC02CA0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleLibraryCLR", "Helpers\SampleTestLibraryCLR\TestLibraryCLR.vcxproj", "{41A48F1C-3E52-4995-B181-363EDBC02CA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesTestSample", "Helpers\FilesTestSample\FilesTestSample.csproj", "{7A699023-A04D-40CB-97BB-BC8C039F1A63}"
 EndProject
@@ -34,7 +34,7 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 11
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS06
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = Helpers\\ConsoleSample\\ConsoleSample.csproj
 		SccProjectName1 = Helpers/ConsoleSample
@@ -57,15 +57,15 @@ Global
 		SccProjectUniqueName7 = Helpers\\SampleLibrarySilverlight\\SampleLibrarySilverlight.csproj
 		SccProjectName7 = Helpers/SampleLibrarySilverlight
 		SccLocalPath7 = Helpers\\SampleLibrarySilverlight
-		SccProjectUniqueName8 = Helpers\\SampleTestLibraryCLR\\TestLibraryCLR.vcproj
-		SccProjectName8 = Helpers/SampleTestLibraryCLR
-		SccLocalPath8 = Helpers\\SampleTestLibraryCLR
-		SccProjectUniqueName9 = Helpers\\FilesTestSample\\FilesTestSample.csproj
-		SccProjectName9 = Helpers/FilesTestSample
-		SccLocalPath9 = Helpers\\FilesTestSample
-		SccProjectUniqueName10 = Helpers\\SampleXsdDocs\\SampleXsdDocs.csproj
-		SccProjectName10 = Helpers/SampleXsdDocs
-		SccLocalPath10 = Helpers\\SampleXsdDocs
+		SccProjectUniqueName8 = Helpers\\FilesTestSample\\FilesTestSample.csproj
+		SccProjectName8 = Helpers/FilesTestSample
+		SccLocalPath8 = Helpers\\FilesTestSample
+		SccProjectUniqueName9 = Helpers\\SampleXsdDocs\\SampleXsdDocs.csproj
+		SccProjectName9 = Helpers/SampleXsdDocs
+		SccLocalPath9 = Helpers\\SampleXsdDocs
+		SccProjectUniqueName10 = Helpers\\SampleTestLibraryCLR\\TestLibraryCLR.vcxproj
+		SccProjectName10 = Helpers/SampleTestLibraryCLR
+		SccLocalPath10 = Helpers\\SampleTestLibraryCLR
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
