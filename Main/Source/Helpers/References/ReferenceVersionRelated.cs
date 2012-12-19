@@ -20,8 +20,8 @@ namespace Sandcastle.References
 
         #region Private Fields
 
-        private string _title;
-        private string _sourceId;
+        private string _platformId;
+        private string _platformTitle;
         private BuildKeyedList<ReferenceVersionSource> _listSources;
 
         #endregion
@@ -37,7 +37,7 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceVersionRelated()
         {
-            _sourceId    = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
+            _platformId  = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
             _listSources = new BuildKeyedList<ReferenceVersionSource>();
         }
 
@@ -55,8 +55,9 @@ namespace Sandcastle.References
         public ReferenceVersionRelated(ReferenceVersionRelated source)
             : base(source)
         {
-            _sourceId    = source._sourceId;
-            _listSources = source._listSources;
+            _platformId    = source._platformId;
+            _platformTitle = source._platformTitle;
+            _listSources   = source._listSources;
         }
 
         #endregion
@@ -67,7 +68,7 @@ namespace Sandcastle.References
         {
             get
             {
-                if (String.IsNullOrEmpty(_title) ||
+                if (String.IsNullOrEmpty(_platformTitle) ||
                     _listSources == null || _listSources.Count == 0)
                 {
                     return true;
@@ -89,29 +90,40 @@ namespace Sandcastle.References
             }
         }
 
-        public string Id
+        public string PlatformId
         {
             get
             {
-                return _sourceId;
-            }
-        }
-
-        public string Title
-        {
-            get
-            {
-                return _title;
+                return _platformId;
             }
             set
             {
                 if (value != null)
                 {
-                    _title = value.Trim();
+                    value = value.Trim();
+                }
+                if (!String.IsNullOrEmpty(value))
+                {
+                    _platformId = value;
+                }
+            }
+        }
+
+        public string PlatformTitle
+        {
+            get
+            {
+                return _platformTitle;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _platformTitle = value.Trim();
                 }
                 else
                 {
-                    _title = String.Empty;
+                    _platformTitle = String.Empty;
                 }
             }
         }
@@ -323,11 +335,11 @@ namespace Sandcastle.References
                                 {
                                     switch (reader.GetAttribute("name").ToLower())
                                     {
-                                        case "id":
-                                            _sourceId = reader.ReadString();
+                                        case "platformid":
+                                            _platformId = reader.ReadString();
                                             break;
-                                        case "title":
-                                            _title = reader.ReadString();
+                                        case "platformtitle":
+                                            _platformTitle = reader.ReadString();
                                             break;
                                         default:
                                             // Should normally not reach here...
@@ -394,9 +406,9 @@ namespace Sandcastle.References
             writer.WriteStartElement(TagName);  // start - TagName
 
             writer.WriteStartElement("propertyGroup");  // start - propertyGroup
-            writer.WriteAttributeString("name", "General");
-            writer.WritePropertyElement("Id",    _sourceId);
-            writer.WritePropertyElement("Title", _title);
+            writer.WriteAttributeString("name",          "General");
+            writer.WritePropertyElement("PlatformId",    _platformId);
+            writer.WritePropertyElement("PlatformTitle", _platformTitle);
             writer.WriteEndElement();                   // end - propertyGroup
 
             writer.WriteStartElement("contentSources");  // start - contentSources
@@ -420,7 +432,7 @@ namespace Sandcastle.References
         {
             get
             {
-                return _sourceId;
+                return _platformId;
             }
         }
 

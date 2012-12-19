@@ -15,11 +15,14 @@ namespace Sandcastle.References
     {
         #region Private Fields
 
-        private bool                  _rootContainer;
-        private bool                  _embedScriptSharp;
-
+        private bool _rootContainer;
+        private bool _embedScriptSharp;
+        private bool _includeAllMembersTopic;
+        private bool _includeInheritedOverloadTopics;
         private ReferenceNamer        _refNamer;
         private ReferenceNamingMethod _refNaming;
+        private BuildSpecialSdkType   _webMvcSdkType;
+        private BuildList<ReferenceLinkSource> _topicLinks;
 
         #endregion
 
@@ -31,9 +34,12 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceEngineSettings()
             : base("Sandcastle.References.ReferenceEngineSettings", BuildEngineType.Reference)
-        {  
+        {
+            _webMvcSdkType    = BuildSpecialSdkType.Null;
             _rootContainer    = false;
             _embedScriptSharp = true;
+            _includeAllMembersTopic         = true;
+            _includeInheritedOverloadTopics = true;
             _refNamer         = ReferenceNamer.Orcas;
             _refNaming        = ReferenceNamingMethod.Guid;
 
@@ -85,6 +91,9 @@ namespace Sandcastle.References
                 ReferenceIntelliSenseConfiguration intelliSense =
                     new ReferenceIntelliSenseConfiguration();
 
+                ReferencePlatformsConfiguration platforms =
+                    new ReferencePlatformsConfiguration();
+
                 ReferenceCloneConfiguration cloneDocument =
                     new ReferenceCloneConfiguration();
 
@@ -110,6 +119,7 @@ namespace Sandcastle.References
                 componentConfigurations.Add(autoDocument);
                 componentConfigurations.Add(missingTags);
                 componentConfigurations.Add(intelliSense);
+                componentConfigurations.Add(platforms);
                 componentConfigurations.Add(cloneDocument);
                 componentConfigurations.Add(postTrans);
                 componentConfigurations.Add(codeComponent);
@@ -135,10 +145,14 @@ namespace Sandcastle.References
         public ReferenceEngineSettings(ReferenceEngineSettings source)
             : base(source)
         {
-            _refNaming        = source._refNaming;
-            _refNamer         = source._refNamer;
-            _rootContainer    = source._rootContainer;
-            _embedScriptSharp = source._embedScriptSharp;
+            _topicLinks                     = source._topicLinks;
+            _refNaming                      = source._refNaming;
+            _webMvcSdkType                  = source._webMvcSdkType;
+            _refNamer                       = source._refNamer;
+            _rootContainer                  = source._rootContainer;
+            _embedScriptSharp               = source._embedScriptSharp;
+            _includeAllMembersTopic         = source._includeAllMembersTopic;
+            _includeInheritedOverloadTopics = source._includeInheritedOverloadTopics;
         }
 
         #endregion
@@ -181,6 +195,58 @@ namespace Sandcastle.References
             }
         }
 
+        public BuildSpecialSdkType WebMvcSdkType
+        {
+            get
+            {
+                return _webMvcSdkType;
+            }
+            set
+            {
+                _webMvcSdkType = value;
+            }
+        }
+
+        public IEnumerable<ReferenceLinkSource> LinkSources
+        {
+            get
+            {
+                return _topicLinks;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <c>Script$</c> framework 
+        /// documentation is embedded in the groups that are documenting
+        /// <c>Script#</c> libraries. 
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the <c>Script#</c> framework
+        /// documents are embedded in the supporting groups; otherwise, 
+        /// it is <see langword="false"/>. The default is <see langword="true"/>.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// The <c>Script#</c> is modeled after the <c>.NET Framework</c>,
+        /// making it easier to create <c>Javascript</c> code in <c>C#</c>.
+        /// </para>
+        /// <para>
+        /// The base class, <c>Object</c>, is similar to the <c>.NET</c> version
+        /// but has extensions to support the <c>Javascript</c>. Thus linking
+        /// to the <c>MSDN</c> documentation is not useful. Just turning off 
+        /// the links to the <c>MSDN</c> documentation is also not useful, so
+        /// we provide a means by which you can include the actual documentation
+        /// of the <c>Script# Framework</c> in your own document. The included
+        /// or embedded document is not listed in the table of contents, but
+        /// all links to the <c>Script# Framework</c> will work, displaying
+        /// the valid link target.
+        /// </para>
+        /// <para>
+        /// Embedding the <c>Script# Framework</c> documentation creates a
+        /// complete or all-inclusive document, but adds to the size of the document.
+        /// </para>
+        /// </remarks>
+        /// <seealso href="http://projects.nikhilk.net/ScriptSharp">Script#</seealso>
         public bool EmbedScriptSharpFramework
         {
             get
@@ -190,6 +256,52 @@ namespace Sandcastle.References
             set
             {
                 _embedScriptSharp = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether all <c>Members</c> topic
+        /// is included in the table of contents.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the all members topic is included;
+        /// otherwise, it is <see langword="false"/>. The default is <see langword="true"/>.
+        /// </value>
+        /// <remarks>
+        /// By the Sandcastle convention, this is set to <see langword="true"/>
+        /// for <c>VS2005</c> style and <see langword="false"/> for all others
+        /// like the <c>Prototype</c> style. However, this is really independent
+        /// of the style.
+        /// </remarks>
+        public bool IncludeAllMembersTopic
+        {
+            get
+            {
+                return _includeAllMembersTopic;
+            }
+            set
+            {
+                _includeAllMembersTopic = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether inherited overload topics
+        /// are included in the table of contents.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the inherited overload topics are included;
+        /// otherwise, it is <see langword="false"/>. The default is <see langword="true"/>.
+        /// </value>
+        public bool IncludeInheritedOverloadTopics
+        {
+            get
+            {
+                return _includeInheritedOverloadTopics;
+            }
+            set
+            {
+                _includeInheritedOverloadTopics = value;
             }
         }
 
@@ -216,6 +328,9 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ReferenceTocLayoutConfiguration TocLayout
         {
             get
@@ -231,6 +346,9 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ReferenceTocExcludeConfiguration TocExclude
         {
             get
@@ -393,6 +511,27 @@ namespace Sandcastle.References
         /// <value>
         /// 
         /// </value>
+        public ReferencePlatformsConfiguration Platforms
+        {
+            get
+            {
+                IBuildNamedList<BuildComponentConfiguration> configurations
+                    = this.ComponentConfigurations;
+                if (configurations == null || configurations.Count == 0)
+                {
+                    return null;
+                }
+                return (ReferencePlatformsConfiguration)configurations[
+                    ReferencePlatformsConfiguration.ConfigurationName];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
         public ReferenceCodeConfiguration CodeHighlight
         {
             get
@@ -506,74 +645,185 @@ namespace Sandcastle.References
             base.Uninitialize();
         }
 
+        #region LinkSource Methods
+
+        public void AddLinkSource(ReferenceLinkSource linkSource)
+        {
+            BuildExceptions.NotNull(linkSource, "linkSource");
+
+            if (_topicLinks == null)
+            {
+                _topicLinks = new BuildList<ReferenceLinkSource>();
+            }
+
+            _topicLinks.Add(linkSource);
+        }
+
+        public void AddLinkSource(IList<ReferenceLinkSource> linkSources)
+        {
+            BuildExceptions.NotNull(linkSources, "linkSources");
+
+            int itemCount = linkSources.Count;
+            for (int i = 0; i < itemCount; i++)
+            {
+                this.AddLinkSource(linkSources[i]);
+            }
+        }
+
+        public void InsertLinkSource(int index, ReferenceLinkSource linkSource)
+        {
+            BuildExceptions.NotNull(linkSource, "linkSource");
+            if (_topicLinks == null)
+            {
+                _topicLinks = new BuildList<ReferenceLinkSource>();
+            }
+
+            _topicLinks.Insert(index, linkSource);
+        }
+
+        public void RemoveLinkSource(int index)
+        {
+            if (_topicLinks == null || _topicLinks.Count == 0)
+            {
+                return;
+            }
+
+            _topicLinks.RemoveAt(index);
+        }
+
+        public bool RemoveLinkSource(ReferenceLinkSource linkSource)
+        {
+            BuildExceptions.NotNull(linkSource, "linkSource");
+
+            if (_topicLinks == null || _topicLinks.Count == 0)
+            {
+                return false;
+            }
+
+            return _topicLinks.Remove(linkSource);
+        }
+
+        public bool ContainsLinkSource(ReferenceLinkSource linkSource)
+        {
+            if (linkSource == null || _topicLinks == null ||
+                _topicLinks.Count == 0)
+            {
+                return false;
+            }
+
+            return _topicLinks.Contains(linkSource);
+        }
+
+        public void ClearLinkSources()
+        {
+            if (_topicLinks == null || _topicLinks.Count == 0)
+            {
+                return;
+            }
+
+            _topicLinks.Clear();
+        }
+
+        #endregion
+
         #endregion
 
         #region Protected Methods
 
         protected override void OnReadXml(XmlReader reader)
         {
-            string startElement = reader.Name;
-            Debug.Assert(String.Equals(startElement, "propertyGroup"));
-            Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
-
             if (reader.IsEmptyElement)
             {
                 return;
             }
 
-            while (reader.Read())
+            string startElement = reader.Name;
+            if (String.Equals(startElement, ReferenceSource.TagName,
+                StringComparison.OrdinalIgnoreCase))
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                string sourceName = reader.GetAttribute("name");
+
+                // For the link source...
+                if (String.Equals(sourceName, ReferenceLinkSource.SourceName,
+                    StringComparison.OrdinalIgnoreCase))
                 {
-                    if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
+                    if (_topicLinks == null)
                     {
-                        string tempText = null;
-                        switch (reader.GetAttribute("name").ToLower())
+                        _topicLinks = new BuildList<ReferenceLinkSource>();
+                    }
+                    ReferenceLinkSource linkSource = new ReferenceLinkSource();
+                    linkSource.ReadXml(reader);
+
+                    _topicLinks.Add(linkSource);
+                }
+            }
+            else if (String.Equals(startElement, "propertyGroup",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Assert(String.Equals(reader.GetAttribute("name"), "General"));
+
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        if (String.Equals(reader.Name, "property", StringComparison.OrdinalIgnoreCase))
                         {
-                            case "namer":
-                                tempText = reader.ReadString();
-                                if (!String.IsNullOrEmpty(tempText))
-                                {
-                                    _refNamer = (ReferenceNamer)Enum.Parse(
-                                        typeof(ReferenceNamer), tempText, true);
-                                }
-                                break;
-                            case "naming":
-                                tempText = reader.ReadString();
-                                if (!String.IsNullOrEmpty(tempText))
-                                {
-                                    _refNaming = (ReferenceNamingMethod)Enum.Parse(
-                                        typeof(ReferenceNamingMethod), tempText, true);
-                                }
-                                break;
-                            case "rootnamespacecontainer":
-                                tempText = reader.ReadString();
-                                if (!String.IsNullOrEmpty(tempText))
-                                {
-                                    _rootContainer = Convert.ToBoolean(tempText);
-                                }
-                                break;
-                            case "embedscriptsharpframework":
-                                tempText = reader.ReadString();
-                                if (!String.IsNullOrEmpty(tempText))
-                                {
-                                    _embedScriptSharp = Convert.ToBoolean(tempText);
-                                }
-                                break;
-                            default:
-                                // Should normally not reach here...
-                                throw new NotImplementedException(reader.GetAttribute("name"));
+                            string tempText = null;
+                            switch (reader.GetAttribute("name").ToLower())
+                            {
+                                case "namer":
+                                    tempText = reader.ReadString();
+                                    if (!String.IsNullOrEmpty(tempText))
+                                    {
+                                        _refNamer = (ReferenceNamer)Enum.Parse(
+                                            typeof(ReferenceNamer), tempText, true);
+                                    }
+                                    break;
+                                case "naming":
+                                    tempText = reader.ReadString();
+                                    if (!String.IsNullOrEmpty(tempText))
+                                    {
+                                        _refNaming = (ReferenceNamingMethod)Enum.Parse(
+                                            typeof(ReferenceNamingMethod), tempText, true);
+                                    }
+                                    break;
+                                case "rootnamespacecontainer":
+                                    tempText = reader.ReadString();
+                                    if (!String.IsNullOrEmpty(tempText))
+                                    {
+                                        _rootContainer = Convert.ToBoolean(tempText);
+                                    }
+                                    break;
+                                case "embedscriptsharpframework":
+                                    tempText = reader.ReadString();
+                                    if (!String.IsNullOrEmpty(tempText))
+                                    {
+                                        _embedScriptSharp = Convert.ToBoolean(tempText);
+                                    }
+                                    break;
+                                case "webmvcsdktype":
+                                    tempText = reader.ReadString();
+                                    if (!String.IsNullOrEmpty(tempText))
+                                    {
+                                        _webMvcSdkType = BuildSpecialSdkType.Parse(tempText);
+                                    }
+                                    break;
+                                default:
+                                    // Should normally not reach here...
+                                    throw new NotImplementedException(reader.GetAttribute("name"));
+                            }
+                        }
+                    }
+                    else if (reader.NodeType == XmlNodeType.EndElement)
+                    {
+                        if (String.Equals(reader.Name, startElement, 
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
                         }
                     }
                 }
-                else if (reader.NodeType == XmlNodeType.EndElement)
-                {
-                    if (String.Equals(reader.Name, startElement, StringComparison.OrdinalIgnoreCase))
-                    {
-                        break;
-                    }
-                }
-            }
+            }      
         }
 
         protected override void OnWriteXml(XmlWriter writer)
@@ -585,7 +835,19 @@ namespace Sandcastle.References
             writer.WritePropertyElement("Naming", _refNaming.ToString());
             writer.WritePropertyElement("RootNamespaceContainer",    _rootContainer);
             writer.WritePropertyElement("EmbedScriptSharpFramework", _embedScriptSharp);
-            writer.WriteEndElement();            // end - propertyGroup
+            writer.WritePropertyElement("WebMvcSdkType",             _webMvcSdkType.ToString());
+            writer.WriteEndElement();            // end - propertyGroup 
+
+            if (_topicLinks != null && _topicLinks.Count != 0)
+            {
+                writer.WriteComment(
+                    " The link sources for this reference group. ");
+                for (int i = 0; i < _topicLinks.Count; i++)
+                {
+                    ReferenceLinkSource linkSource = _topicLinks[i];
+                    linkSource.WriteXml(writer);
+                }
+            }
         }
 
         protected override BuildConfiguration
@@ -662,6 +924,10 @@ namespace Sandcastle.References
             ReferenceEngineSettings settings = new ReferenceEngineSettings(this);
 
             this.OnClone(settings);
+            if (_topicLinks != null && _topicLinks.Count != 0)
+            {
+                settings._topicLinks = _topicLinks.Clone();
+            }
 
             return settings;
         }

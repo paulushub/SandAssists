@@ -231,7 +231,10 @@ namespace Sandcastle.Contents
                         item.Content = this;
                         item.ReadXml(reader);
 
-                        this.Add(item);
+                        if (!item.IsEmpty)
+                        {
+                            this.Add(item);
+                        }
                     }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)

@@ -25,6 +25,7 @@ namespace Sandcastle.Configurators
         private string _sourceFile;
         private string _destFile;
         private string _sandcastleDir;
+        private string _sandcastleAssistDir;
 
         private BuildGroup _group;
 
@@ -44,20 +45,9 @@ namespace Sandcastle.Configurators
         {
             _reIsConfigValue = new Regex(@"^\$\(([^\$\(\)]*)\)$", 
                 RegexOptions.Compiled);
-            // 1. Create the dictionary for mapping the handlers...
+            // Create the dictionary for mapping the handlers...
             _dicConfigMap  = new BuildProperties();
             _configContent = new ConfiguratorContent();
-
-            // 2. Create the default component handlers...
-            //Keyword: "$(SandcastleComponent)";
-            string sandcastlePath = Environment.ExpandEnvironmentVariables("%DXROOT%");
-            if (String.IsNullOrEmpty(sandcastlePath) == false ||
-                Directory.Exists(sandcastlePath))
-            {
-                string sandcastleComponents =
-                    @"%DXROOT%\ProductionTools\BuildComponents.dll";
-                _dicConfigMap.Add("SandcastleComponent", sandcastleComponents);
-            }
         }
 
         #endregion
@@ -124,17 +114,35 @@ namespace Sandcastle.Configurators
 
             _context = context;
 
-            _sandcastleDir = context.SandcastleDirectory;
+            _sandcastleDir       = context.SandcastleDirectory;
+            _sandcastleAssistDir = settings.SandAssistDirectory;
 
             // Make sure the default component handlers are added...
             //Keyword: "$(SandcastleComponent)";
-            if (_dicConfigMap.ContainsKey("SandcastleComponent") == false)
+            if (!_dicConfigMap.ContainsKey("SandcastleComponent"))
             {
-                if (String.IsNullOrEmpty(_sandcastleDir) == false ||
-                    Directory.Exists(_sandcastleDir))
+                string sandcastleComponents = null;
+                if (context.IsDirectSandcastle)
                 {
-                    string sandcastleComponents = Path.Combine(_sandcastleDir,
-                        @"ProductionTools\BuildComponents.dll");
+                    if (!String.IsNullOrEmpty(_sandcastleAssistDir) ||
+                        Directory.Exists(_sandcastleAssistDir))
+                    {
+                        sandcastleComponents = Path.Combine(_sandcastleAssistDir,
+                            "Sandcastle.BuildAssembler.dll");
+                    }    
+                }
+                else
+                {
+                    if (!String.IsNullOrEmpty(_sandcastleDir) ||
+                        Directory.Exists(_sandcastleDir))
+                    {
+                        sandcastleComponents = Path.Combine(_sandcastleDir,
+                            @"ProductionTools\BuildComponents.dll");
+                    }
+                }
+                if (!String.IsNullOrEmpty(sandcastleComponents) &&
+                    File.Exists(sandcastleComponents))
+                {
                     _dicConfigMap.Add("SandcastleComponent", sandcastleComponents);
                 }
             }
@@ -142,13 +150,12 @@ namespace Sandcastle.Configurators
             //Keyword: "$(SandAssistComponent)";
             if (_dicConfigMap.ContainsKey("SandAssistComponent") == false)
             {
-                string sandcastleAssist = settings.SandAssistDirectory;
-                if (String.IsNullOrEmpty(sandcastleAssist) == false ||
-                    Directory.Exists(sandcastleAssist))
+                if (String.IsNullOrEmpty(_sandcastleAssistDir) == false ||
+                    Directory.Exists(_sandcastleAssistDir))
                 {
                     // If the Sandcastle Assist component assembly is in the same 
                     // directory as the Sandcastle Helpers...
-                    string assistComponents = Path.Combine(sandcastleAssist,
+                    string assistComponents = Path.Combine(_sandcastleAssistDir,
                         "Sandcastle.Components.dll");
                     if (File.Exists(assistComponents))
                     {
@@ -157,7 +164,7 @@ namespace Sandcastle.Configurators
                     else
                     {
                         // Otherwise, if in the "Components" sub-directory...
-                        assistComponents = Path.Combine(sandcastleAssist,
+                        assistComponents = Path.Combine(_sandcastleAssistDir,
                             @"Components\Sandcastle.Components.dll");
                         if (File.Exists(assistComponents))
                         {
@@ -500,8 +507,19 @@ namespace Sandcastle.Configurators
                 return;
             }
 
-            string syntaxComponents = Path.Combine(_sandcastleDir,
-                @"ProductionTools\SyntaxComponents.dll");
+            string syntaxComponents = null;
+            if (_context.IsDirectSandcastle &&
+                (!String.IsNullOrEmpty(_sandcastleAssistDir) &&
+                Directory.Exists(_sandcastleAssistDir)))
+            {
+                syntaxComponents = Path.Combine(_sandcastleAssistDir,
+                    "Sandcastle.BuildAssembler.dll");
+            }
+            else
+            {
+                syntaxComponents = Path.Combine(_sandcastleDir,
+                    @"ProductionTools\SyntaxComponents.dll");
+            }
 
             //<generator type="Microsoft.Ddue.Tools.VisualBasicDeclarationSyntaxGenerator" 
             //   assembly="%DXROOT%\ProductionTools\SyntaxComponents.dll" />

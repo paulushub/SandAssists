@@ -17,8 +17,9 @@ namespace Sandcastle.Components.Snippets
 
         #region Constructors and Destructor
 
-        public SnippetMemoryProvider(Type componentType, 
-            MessageHandler messageHandler) : base(componentType, messageHandler)
+        public SnippetMemoryProvider(Type componentType,
+            MessageWriter messageWriter)
+            : base(componentType, messageWriter)
         {
             _dicSnippets = new Dictionary<SnippetInfo, IList<SnippetItem>>();
         }

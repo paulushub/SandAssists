@@ -18,8 +18,9 @@ namespace Sandcastle.References
 
         #region Private Fields
 
-        private string           _label;
         private string           _sourceId;
+        private string           _versionId;
+        private string           _versionLabel;
         private ReferenceContent _content;
 
         #endregion
@@ -34,19 +35,21 @@ namespace Sandcastle.References
         /// with the default parameters.
         /// </summary>
         public ReferenceVersionSource()
-            : this(String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode()))
+            : this(String.Format("VerId{0:x}", Guid.NewGuid().ToString().GetHashCode()))
         {
         }
 
-        public ReferenceVersionSource(string sourceId)
+        public ReferenceVersionSource(string versionId)
         {
-            if (String.IsNullOrEmpty(sourceId))
+            if (String.IsNullOrEmpty(versionId))
             {
-                _sourceId = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
+                _versionId = String.Format("VerId{0:x}", Guid.NewGuid().ToString().GetHashCode());
+                _sourceId  = String.Copy(_versionId);
             }
             else
             {
-                _sourceId = sourceId;
+                _versionId = versionId;
+                _sourceId  = String.Format("VerId{0:x}", Guid.NewGuid().ToString().GetHashCode());
             }
         }
 
@@ -65,9 +68,10 @@ namespace Sandcastle.References
         public ReferenceVersionSource(ReferenceVersionSource source)
             : base(source)
         {
-            _label    = source._label;
-            _sourceId = source._sourceId;
-            _content  = source._content;
+            _content      = source._content;
+            _sourceId     = source._sourceId;
+            _versionId    = source._versionId;
+            _versionLabel = source._versionLabel;
         }
 
         #endregion
@@ -86,7 +90,7 @@ namespace Sandcastle.References
         {
             get
             {
-                if (String.IsNullOrEmpty(_label) || 
+                if (String.IsNullOrEmpty(_versionLabel) || 
                     _content == null || _content.IsEmpty)
                 {
                     return false;
@@ -96,7 +100,7 @@ namespace Sandcastle.References
             }
         }
 
-        public string Id
+        public string SourceId
         {
             get
             {
@@ -104,21 +108,40 @@ namespace Sandcastle.References
             }
         }
 
-        public string VersionLabel
+        public string VersionId
         {
             get
             {
-                return _label;
+                return _versionId;
             }
             set
             {
                 if (value != null)
                 {
-                    _label = value.Trim();
+                    value = value.Trim();
+                }
+                if (!String.IsNullOrEmpty(value))
+                {
+                    _versionId = value;
+                }
+            }
+        }
+
+        public string VersionLabel
+        {
+            get
+            {
+                return _versionLabel;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _versionLabel = value.Trim();
                 }
                 else
                 {
-                    _label = String.Empty;
+                    _versionLabel = String.Empty;
                 }
             }
         }
@@ -178,7 +201,7 @@ namespace Sandcastle.References
         {
             get
             {
-                return _sourceId;
+                return _versionId;
             }
         }
 
@@ -207,14 +230,17 @@ namespace Sandcastle.References
                     {
                         switch (reader.GetAttribute("name").ToLower())
                         {
-                            case "id":
+                            case "sourceid":
                                 _sourceId = reader.ReadString();
+                                break;
+                            case "versionid":
+                                _versionId = reader.ReadString();
+                                break;
+                            case "versionlabel":
+                                _versionLabel = reader.ReadString();
                                 break;
                             case "title":
                                 this.Title = reader.ReadString();
-                                break;
-                            case "versionlabel":
-                                _label = reader.ReadString();
                                 break;
                             default:
                                 // Should normally not reach here...
@@ -352,9 +378,10 @@ namespace Sandcastle.References
 
             writer.WriteStartElement("propertyGroup");  // start - propertyGroup
             writer.WriteAttributeString("name", "General");
-            writer.WritePropertyElement("Id",           _sourceId);
+            writer.WritePropertyElement("SourceId",     _sourceId);
+            writer.WritePropertyElement("VersionId",    _versionId);
+            writer.WritePropertyElement("VersionLabel", _versionLabel);
             writer.WritePropertyElement("Title",        this.Title);
-            writer.WritePropertyElement("VersionLabel", _label);
             writer.WriteEndElement();                   // end - propertyGroup
 
             if (_content != null)
@@ -365,7 +392,6 @@ namespace Sandcastle.References
                 if (filePath != null && filePath.IsValid)
                 {
                     BuildPathResolver resolver = BuildPathResolver.Resolver;
-                    Debug.Assert(resolver != null && resolver.Id == this.Id);
 
                     writer.WriteAttributeString("source",
                         resolver.ResolveRelative(filePath));
@@ -402,13 +428,17 @@ namespace Sandcastle.References
             {
                 source.Title = String.Copy(this.Title);
             }
-            if (_label != null)
-            {
-                source._label = String.Copy(_label);
-            }
             if (_sourceId != null)
             {
                 source._sourceId = String.Copy(_sourceId);
+            }
+            if (_versionLabel != null)
+            {
+                source._versionLabel = String.Copy(_versionLabel);
+            }
+            if (_versionId != null)
+            {
+                source._versionId = String.Copy(_versionId);
             }
             if (_content != null)
             {

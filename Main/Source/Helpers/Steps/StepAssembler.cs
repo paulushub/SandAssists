@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sandcastle.Tools;
 using Sandcastle.References;
 using Sandcastle.Conceptual;
 
@@ -14,6 +15,9 @@ namespace Sandcastle.Steps
         #region Private Fields
 
         private string               _lastMessage;
+        private string               _manifestFile;
+        private string               _configurationFile;
+
         private BuildGroup           _group;
         private BuildLoggerLevel     _lastLevel;
         private BuildLoggerVerbosity _verbosity;
@@ -97,30 +101,39 @@ namespace Sandcastle.Steps
                 }
             }
 
-            bool buildResult = base.OnExecute(context);
+            bool buildResult = false;
 
-            if (buildResult && !String.IsNullOrEmpty(_lastMessage) &&
-                _lastMessage.StartsWith("Processed", StringComparison.OrdinalIgnoreCase))
+            if (context.IsDirectSandcastle)
             {
-                if (_logger != null && _lastLevel == BuildLoggerLevel.Info 
-                    && _verbosity == BuildLoggerVerbosity.Normal 
-                    && _verbosity != BuildLoggerVerbosity.Quiet)
-                {
-                    _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
-                }
+                buildResult = this.RunDirectAssembler(context);
+            }
+            else
+            {
+                buildResult = base.OnExecute(context);
 
-                int startIndex = _lastMessage.IndexOf("topics");
-
-                if (startIndex > 0)
+                if (buildResult && !String.IsNullOrEmpty(_lastMessage) &&
+                    _lastMessage.StartsWith("Processed", StringComparison.OrdinalIgnoreCase))
                 {
-                    int processedTopics;
-                    if (Int32.TryParse(_lastMessage.Substring(9,
-                        startIndex - 9).Trim(), out processedTopics))
+                    if (_logger != null && _lastLevel == BuildLoggerLevel.Info
+                        && _verbosity == BuildLoggerVerbosity.Normal
+                        && _verbosity != BuildLoggerVerbosity.Quiet)
                     {
-                        context.AddProcessedTopics(processedTopics);
+                        _logger.WriteLine(_lastMessage, BuildLoggerLevel.Info);
+                    }
+
+                    int startIndex = _lastMessage.IndexOf("topics");
+
+                    if (startIndex > 0)
+                    {
+                        int processedTopics;
+                        if (Int32.TryParse(_lastMessage.Substring(9,
+                            startIndex - 9).Trim(), out processedTopics))
+                        {
+                            context.AddProcessedTopics(processedTopics);
+                        }
                     }
                 }
-            }
+            }  
 
             return buildResult;
         }
@@ -250,6 +263,10 @@ namespace Sandcastle.Steps
                 if (!String.IsNullOrEmpty(configFile))
                 {
                     assembler.Configure(group, configFile, finalConfigFile);
+
+                    _manifestFile = Path.Combine(workingDir,
+                        groupContext["$ManifestFile"]);
+                    _configurationFile = finalConfigFile;
                 }
             }
             finally
@@ -299,11 +316,12 @@ namespace Sandcastle.Steps
                 assembler.Initialize(context);
 
                 string configFile  = String.Empty;
-                string finalConfig = String.Empty;
+                string finalConfigFile = String.Empty;
                 if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
                 {
-                    configFile  = Path.Combine(configDir,  "Conceptual.config");
-                    finalConfig = Path.Combine(workingDir, groupContext["$ConfigurationFile"]);
+                    configFile = Path.Combine(configDir,  "Conceptual.config");
+                    finalConfigFile = Path.Combine(workingDir, 
+                        groupContext["$ConfigurationFile"]);
                 }
                 if (!File.Exists(configFile))
                 {
@@ -313,9 +331,12 @@ namespace Sandcastle.Steps
                 // 1. Configure the build assembler...
                 if (!String.IsNullOrEmpty(configFile))
                 {
-                    assembler.Configure(group, configFile, finalConfig);
-                }
+                    assembler.Configure(group, configFile, finalConfigFile);
 
+                    _manifestFile = Path.Combine(workingDir,
+                        groupContext["$ManifestFile"]);
+                    _configurationFile = finalConfigFile;
+                } 
             }
             finally
             {
@@ -326,6 +347,53 @@ namespace Sandcastle.Steps
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region RunDirectAssembler Method
+
+        private bool RunDirectAssembler(BuildContext context)
+        {
+            int processedTopics = 0;
+            bool isSuccessful = false;
+            BuildLogger logger = context.Logger;
+
+            AppDomain assemblerDomain = null;
+
+            try
+            {
+                assemblerDomain = AppDomain.CreateDomain(
+                    "Sandcastle.BuildAssemblerDomain");
+
+                SandcastleAssemblerTool assemblerProxy = 
+                    (SandcastleAssemblerTool)assemblerDomain.CreateInstanceAndUnwrap(
+                    typeof(SandcastleAssemblerTool).Assembly.FullName,
+                    typeof(SandcastleAssemblerTool).FullName);
+
+                assemblerProxy.ManifestFile      = _manifestFile;
+                assemblerProxy.ConfigurationFile = _configurationFile;
+
+                isSuccessful = assemblerProxy.Run(context);
+
+                processedTopics = assemblerProxy.TopicsProcessed;
+            }
+            catch (Exception ex)
+            {
+                logger.WriteLine(ex);       	
+            }
+            finally
+            {
+                if (assemblerDomain != null)
+                {
+                    AppDomain.Unload(assemblerDomain);
+                    assemblerDomain = null;
+                }
+            }
+
+            context.AddProcessedTopics(processedTopics);
+
+            return isSuccessful;
         }
 
         #endregion

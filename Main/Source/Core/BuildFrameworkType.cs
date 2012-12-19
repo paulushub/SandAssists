@@ -6,50 +6,6 @@ namespace Sandcastle
     /// 
     /// </summary>
     /// <remarks>
-    /// This is an extensible enumeration type structure with the following members and
-    /// values:
-    /// <list type="table">
-    /// <listheader>
-    /// <term>Enumeration</term>
-    /// <term>Value</term>
-    /// <term>Description</term>
-    /// </listheader>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Null"/></description>
-    /// <description>-1</description>
-    /// <description>Null</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.None"/></description>
-    /// <description>0</description>
-    /// <description>None</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Framework10"/></description>
-    /// <description>1</description>
-    /// <description>A</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Framework11"/></description>
-    /// <description>2</description>
-    /// <description>B</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Framework20"/></description>
-    /// <description>3</description>
-    /// <description>C</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Framework30"/></description>
-    /// <description>4</description>
-    /// <description>D</description>
-    /// </item>
-    /// <item>
-    /// <description><see cref="BuildFrameworkType.Custom"/></description>
-    /// <description>10</description>
-    /// <description>Custom</description>
-    /// </item>
-    /// </list>
     /// </remarks>
     [Serializable]
     public struct BuildFrameworkType : IEquatable<BuildFrameworkType>,
@@ -105,6 +61,12 @@ namespace Sandcastle
         /// </summary>
         public readonly static BuildFrameworkType Framework40 =
             new BuildFrameworkType(40, "Microsoft .NET Framework 4.0");
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>40</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Framework45 =
+            new BuildFrameworkType(45, "Microsoft .NET Framework 4.5");
 
         /// <summary>
         /// <para></para>
@@ -169,6 +131,26 @@ namespace Sandcastle
         public readonly static BuildFrameworkType ScriptSharp10 =
             new BuildFrameworkType(310, "Script# Framework 1.0");
 
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>410</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Compact10 =
+            new BuildFrameworkType(410, ".NET Compact Framework 1.0");
+
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>420</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Compact20 =
+            new BuildFrameworkType(420, ".NET Compact Framework 2.0");
+
+        /// <summary>
+        /// <para></para>
+        /// <para>The enumeration value is <c>435</c>.</para>
+        /// </summary>
+        public readonly static BuildFrameworkType Compact35 =
+            new BuildFrameworkType(435, ".NET Compact Framework 3.5");
 
         #endregion
 
@@ -179,7 +161,7 @@ namespace Sandcastle
         /// </summary>
         private int _typeValue;
         /// <summary>
-        /// 
+        /// A descriptive text for the enumeration.
         /// </summary>
         private string _typeLabel;
 
@@ -193,6 +175,9 @@ namespace Sandcastle
         /// </summary>
         /// <param name="value">
         /// The numerical value of this enumeration structure.
+        /// </param>
+        /// <param name="label">
+        /// A description of this enumeration structure.
         /// </param>
         public BuildFrameworkType(int value, string label)
         {
@@ -247,6 +232,10 @@ namespace Sandcastle
                 {
                     return BuildFrameworkKind.ScriptSharp;
                 }
+                if (_typeValue >= 410 && _typeValue <= 435)
+                {
+                    return BuildFrameworkKind.Compact;
+                }
 
                 return BuildFrameworkKind.None;
             }
@@ -266,6 +255,13 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets the descriptive text of this <see cref="BuildFrameworkType"/>
+        /// structure.
+        /// </summary>
+        /// <value>
+        /// A string representing a description of this structure.
+        /// </value>
         public string Label
         {
             get
@@ -321,6 +317,8 @@ namespace Sandcastle
                     return BuildFrameworkType.Framework35;
                 case 40:
                     return BuildFrameworkType.Framework40;
+                case 45:
+                    return BuildFrameworkType.Framework45;
 
                 case 110:
                     return BuildFrameworkType.Silverlight10;
@@ -344,6 +342,13 @@ namespace Sandcastle
 
                 case 310:
                     return BuildFrameworkType.ScriptSharp10;
+
+                case 410:
+                    return BuildFrameworkType.Compact10; 
+                case 420:
+                    return BuildFrameworkType.Compact20;
+                case 435:
+                    return BuildFrameworkType.Compact35;
             }
 
             return BuildFrameworkType.Null;
@@ -533,6 +538,9 @@ namespace Sandcastle
                 case "framework40":
                     value = BuildFrameworkType.Framework40;
                     return true;
+                case "framework45":
+                    value = BuildFrameworkType.Framework45;
+                    return true;
 
                 case "silverlight10":
                     value = BuildFrameworkType.Silverlight10;
@@ -566,6 +574,16 @@ namespace Sandcastle
                 case "scriptsharp10":
                     value = BuildFrameworkType.ScriptSharp10;
                     return true;
+
+                case "compact10":
+                    value = BuildFrameworkType.Compact10;
+                    return true;
+                case "compact20":
+                    value = BuildFrameworkType.Compact20;
+                    return true;
+                case "compact35":
+                    value = BuildFrameworkType.Compact35;
+                    return true;
             }
 
             return false;
@@ -581,10 +599,6 @@ namespace Sandcastle
         /// </para>
         /// <para>
         /// The <see cref="BuildFrameworkType.Null"/> instance will return <c>(Null)</c>.
-        /// </para>
-        /// <para>
-        /// The <see cref="BuildFrameworkType.Custom"/> instances will return a string
-        /// starting with <c>CustomFormat</c>.
         /// </para>
         /// </returns>
         public override string ToString()
@@ -610,6 +624,8 @@ namespace Sandcastle
                     return "Framework35";
                 case 40:
                     return "Framework40";
+                case 45:
+                    return "Framework45";
 
                 case 110:
                     return "Silverlight10";
@@ -633,6 +649,13 @@ namespace Sandcastle
 
                 case 310:
                     return "ScriptSharp10";
+
+                case 410:
+                    return "Compact10";
+                case 420:
+                    return "Compact20";
+                case 435:
+                    return "Compact35";
             }
 
             return base.ToString();

@@ -312,7 +312,31 @@ namespace Sandcastle.Conceptual
                         return;
                     }
 
-                    XmlWriter xmlWriter = navigator.InsertAfter();
+                    //XmlWriter xmlWriter = navigator.InsertAfter();
+
+                    //xmlWriter.WriteStartElement("component");  // start - component
+                    //xmlWriter.WriteAttributeString("type", keyword);
+                    //xmlWriter.WriteAttributeString("assembly", componentAssembly);
+
+                    //for (int i = 0; i < componentList.Count; i++)
+                    //{
+                    //    componentList[i].Configure(_group, xmlWriter);
+                    //}
+
+                    //xmlWriter.WriteEndElement();               // end - component
+
+                    //xmlWriter.Close();
+                    bool isConfigured = false;
+                    XmlWriterSettings writerSettings = new XmlWriterSettings();
+                    writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+                    // Final output indentation works better if the source text
+                    // is not indented...
+                    writerSettings.Indent = false;
+                    writerSettings.OmitXmlDeclaration = true;
+
+                    StringWriter textWriter = new StringWriter();
+                    XmlWriter xmlWriter = XmlWriter.Create(
+                        textWriter, writerSettings);
 
                     xmlWriter.WriteStartElement("component");  // start - component
                     xmlWriter.WriteAttributeString("type", keyword);
@@ -320,12 +344,29 @@ namespace Sandcastle.Conceptual
 
                     for (int i = 0; i < componentList.Count; i++)
                     {
-                        componentList[i].Configure(_group, xmlWriter);
+                        if (componentList[i].Configure(_group, xmlWriter))
+                        {
+                            isConfigured = true;
+                        }
                     }
 
                     xmlWriter.WriteEndElement();               // end - component
 
                     xmlWriter.Close();
+
+                    if (isConfigured)
+                    {
+                        XmlReader reader = XmlReader.Create(
+                            new StringReader(textWriter.ToString()));
+
+                        reader.MoveToContent();
+
+                        navigator.InsertAfter(reader);
+
+                        reader.Close();
+                    }
+
+                    textWriter.Close();
                 }
 
                 navigator.DeleteSelf();

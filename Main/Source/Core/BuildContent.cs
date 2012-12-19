@@ -342,6 +342,26 @@ namespace Sandcastle
             _listItems.Add(item);
         }
 
+        public virtual void Add(IEnumerable<T> items)
+        {
+            BuildExceptions.NotNull(items, "items");
+
+            foreach (T item in items)
+            {
+                this.Add(item);
+            }
+        }
+
+        public virtual void Add(ICollection<T> items)
+        {
+            BuildExceptions.NotNull(items, "items");
+
+            foreach (T item in items)
+            {
+                this.Add(item);
+            }
+        }
+
         public virtual void Add(IList<T> items)
         {
             BuildExceptions.NotNull(items, "items");

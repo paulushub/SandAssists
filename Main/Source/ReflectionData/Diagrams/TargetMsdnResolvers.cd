@@ -3,19 +3,20 @@
   <Class Name="Sandcastle.ReflectionData.TargetMsdnResolver" Collapsed="true">
     <Position X="2.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAABAAAMAEAAACAAAAAA=</HashCode>
+      <HashCode>IAAAAAAAACAAIAAACAAAAAAAAABAAAMAEAAACAAAAAA=</HashCode>
       <FileName>TargetMsdnResolver.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Sandcastle.ReflectionData.DatabaseMsdnResolver" Collapsed="true">
     <Position X="0.5" Y="1.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQAACCAAAQAAAAAAEAEAgACAAEEAQQA=</HashCode>
+      <HashCode>AAAAAAAAACAAAQAACCAAAQAAAAAAEAEAAACAAAMAAQA=</HashCode>
       <FileName>DatabaseMsdnResolver.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.ReflectionData.MemoryMsdnResolver" Collapsed="true">
-    <Position X="4.75" Y="1.75" Width="2" />
+    <Position X="5" Y="1.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAgAAAMAAAAAAAAAAAA=</HashCode>
       <FileName>MemoryMsdnResolver.cs</FileName>
@@ -25,28 +26,22 @@
     <Position X="2.75" Y="1.75" Width="1.75" />
     <AssociationLine Name="MemoryResolver" Type="Sandcastle.ReflectionData.MemoryMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4" Y="2.38" />
-        <Point X="4" Y="2.755" />
-        <Point X="5.312" Y="2.755" />
-        <Point X="5.312" Y="2.38" />
+        <Point X="4" Y="2.441" />
+        <Point X="4" Y="2.741" />
+        <Point X="5.75" Y="2.741" />
+        <Point X="5.75" Y="2.441" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.002" Y="0.485" />
-      </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="DatabaseResolver" Type="Sandcastle.ReflectionData.DatabaseMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="2.38" />
-        <Point X="3.25" Y="2.755" />
-        <Point X="2" Y="2.755" />
-        <Point X="2" Y="2.38" />
+        <Point X="3.375" Y="2.441" />
+        <Point X="3.375" Y="2.741" />
+        <Point X="2.125" Y="2.741" />
+        <Point X="2.125" Y="2.441" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-1.359" Y="0.477" />
-      </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAOEAAAQAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAAACAAAAAAAAAAAAAOEAAAQAAAAAAA=</HashCode>
       <FileName>TargetMsdnResolvers.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -55,29 +50,19 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.ReflectionData.TargetMsdnController" Collapsed="true">
-    <Position X="2.75" Y="3.25" Width="1.75" />
-    <AssociationLine Name="MemoryResolver" Type="Sandcastle.ReflectionData.MemoryMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.5" Y="3.505" />
-        <Point X="5.75" Y="3.505" />
-        <Point X="5.75" Y="2.38" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.327" Y="1.244" Height="0.182" Width="1.391" />
+    <Position X="2.75" Y="3" Width="1.75" />
+    <AssociationLine Name="MemoryResolver" Type="Sandcastle.ReflectionData.MemoryMsdnResolver">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.537" Y="0.966" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="DatabaseResolver" Type="Sandcastle.ReflectionData.DatabaseMsdnResolver" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.75" Y="3.505" />
-        <Point X="1.5" Y="3.505" />
-        <Point X="1.5" Y="2.38" />
-      </Path>
+    <AssociationLine Name="DatabaseResolver" Type="Sandcastle.ReflectionData.DatabaseMsdnResolver">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-1.178" Y="1.254" Height="0.182" Width="1.316" />
+        <Position X="-1.438" Y="0.952" Height="0.182" Width="1.316" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAQAAAQAAAAAACAAAAAAAAABAAAGEEAAQAEAAAAA=</HashCode>
+      <HashCode>IAAAAQAAAQAAIAAACAAAAAAAAAJAAAGEEAAQAEAAAAA=</HashCode>
       <FileName>TargetMsdnController.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>

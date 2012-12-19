@@ -50,7 +50,7 @@ namespace Sandcastle
 
         public BuildProject()
             : this(null, BuildSystem.Console, BuildType.Development)
-        {
+        {                
         }
 
         public BuildProject(BuildSystem system, BuildType type)
@@ -157,23 +157,22 @@ namespace Sandcastle
 
         #region Initialize Method
 
-        public virtual void Initialize(BuildDocumenter documenter)
+        public virtual void Initialize()
         {
-            if (documenter != null)
-            {
-                _documenter = documenter;
-            }
-
-            this.Initialize();
+            this.Initialize(null);
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(BuildLogger logger)
         {
             DateTime startTime = DateTime.Now;
 
             _startTime = startTime;
 
             _logger    = new BuildLoggers();
+            if (logger != null)
+            {
+                _logger.Add(logger);
+            }
             _context   = new BuildContext(_buildSystem, _buildType,
                 _targetPlatform, _targetConfiguration);
             _listSteps = new List<BuildStep>(16);
@@ -199,11 +198,25 @@ namespace Sandcastle
                     return;
                 }
 
+                // 3. Signal the build initialization...
                 this.OnInitialize();
 
-                if (!_isInitialized)
+                if (!_isInitialized || _logger.TotalErrors > 0)
                 {
-                    _logger.WriteLine("Error in reference build initialization.",
+                    _isInitialized = false;
+
+                    _logger.WriteLine("An error occurred in the initialization of the documentation.",
+                        BuildLoggerLevel.Error);
+                }
+
+                // 4. Create the build steps for the documentations...
+                this.OnCreateSteps();
+
+                if (!_isInitialized || _logger.TotalErrors > 0)
+                {
+                    _isInitialized = false;
+
+                    _logger.WriteLine("An error occurred in the creation of the build steps.",
                         BuildLoggerLevel.Error);
                 }
             }
@@ -244,7 +257,38 @@ namespace Sandcastle
                 return false;
             }
 
-            return this.OnBuild();
+            _isBuildSuccess = false;
+
+            if (_context != null)
+            {
+                _context.BuildResult = _isBuildSuccess;
+            }
+
+            if (_isInitialized == false)
+            {
+                if (_logger != null)
+                {
+                    _logger.WriteLine(
+                        "The project must be initialized before building.",
+                        BuildLoggerLevel.Error);
+                }
+
+                return false;
+            }
+
+            if (!_logger.IsInitialized)
+            {
+                _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
+            }
+
+            _isBuildSuccess = this.OnBuild();
+
+            if (_context != null)
+            {
+                _context.BuildResult = _isBuildSuccess;
+            }
+
+            return _isBuildSuccess;
         }
 
         #endregion
@@ -329,6 +373,9 @@ namespace Sandcastle
 
         #region OnBegin/EndDocumentation Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void OnBeginDocumentation()
         {
             _conceptuals = 0;
@@ -390,55 +437,6 @@ namespace Sandcastle
 
         #endregion
 
-        #region OnBuild Method
-
-        protected virtual bool OnBuild()
-        {
-            _isBuildSuccess = false;
-
-            if (_context != null)
-            {
-                _context.BuildResult = _isBuildSuccess;
-            }
-
-            if (_isInitialized == false)
-            {
-                if (_logger != null)
-                {
-                    _logger.WriteLine(
-                        "The project must be initialized before building.",
-                        BuildLoggerLevel.Error);
-                }
-
-                return false;
-            }
-
-            if (!_logger.IsInitialized)
-            {
-                _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
-            }
-
-            try
-            {
-                _isBuildSuccess = this.OnRunSteps();
-            }
-            catch (Exception ex)
-            {
-                _isBuildSuccess = false;
-
-                _logger.WriteLine(ex, BuildLoggerLevel.Error);
-            }
-
-            if (_context != null)
-            {
-                _context.BuildResult = _isBuildSuccess;
-            }
-
-            return _isBuildSuccess;
-        }
-
-        #endregion
-
         #region OnBegin/EndLogging Method
 
         protected virtual void OnBeginLogging()
@@ -495,8 +493,7 @@ namespace Sandcastle
                 {
                     _logger.Add(defLogger);
                 }
-            }
-
+            }     
 
             // 3. Update the logger settings...
             bool keepLogFile = logging.KeepFile;
@@ -524,7 +521,7 @@ namespace Sandcastle
                 else
                 {
                     logWorkingDir = Path.Combine(_context.BaseDirectory, 
-                        BuildLogging.DefaultOutputDirectory);
+                        BuildLogging.OutputFolder);
                 }
 
                 if (!Directory.Exists(logWorkingDir))
@@ -624,12 +621,8 @@ namespace Sandcastle
                 return;
             }
 
-            _isInitialized = false;
-
-            if (_listGroups == null || _listGroups.Count == 0)
-            {
-                return;
-            }
+            // Lets assumed the initialization is successful...
+            _isInitialized = true;
 
             _isBuildSuccess = false;
 
@@ -647,9 +640,24 @@ namespace Sandcastle
                 _logger.Initialize(_context.BaseDirectory, _settings.HelpTitle);
             }
 
+            if (_listGroups == null || _listGroups.Count == 0)
+            {
+                _logger.WriteLine("There is no valid build group for the documentation.", 
+                    BuildLoggerLevel.Error);
+
+                _isInitialized = false;
+
+                return;
+            }
+
             BuildFormatList listFormats = _settings.Formats;
             if (listFormats == null || listFormats.Count == 0)
             {
+                _logger.WriteLine("There is no valid output format for the documentation.",
+                    BuildLoggerLevel.Error);
+
+                _isInitialized = false;
+
                 return;
             }
             int itemCount = listFormats.Count;
@@ -664,6 +672,11 @@ namespace Sandcastle
             }
             if (_listFormats == null || _listFormats.Count == 0)
             {
+                _logger.WriteLine("There is no valid output format for the documentation.",
+                    BuildLoggerLevel.Error);
+
+                _isInitialized = false;
+
                 return;
             }
 
@@ -708,13 +721,23 @@ namespace Sandcastle
                     _referenceEngine.Initialize(_context);
                     if (!_referenceEngine.IsInitialized)
                     {
+                        _logger.WriteLine("Initialization of the reference build engine failed.",
+                            BuildLoggerLevel.Error);
+
                         _isInitialized = false;
+
+                        return;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _logger.WriteLine("Initialization of the reference build engine failed.",
+                        BuildLoggerLevel.Error);
+
                     _isInitialized = false;
                     _logger.WriteLine(ex, BuildLoggerLevel.Error);
+
+                    return;
                 }
             }
 
@@ -725,13 +748,23 @@ namespace Sandcastle
                     _conceptualEngine.Initialize(_context);
                     if (!_conceptualEngine.IsInitialized)
                     {
+                        _logger.WriteLine("Initialization of the conceptual build engine failed.",
+                            BuildLoggerLevel.Error);
+
                         _isInitialized = false;
+
+                        return;
                     }
                 }
                 catch (Exception ex)
                 {
+                    _logger.WriteLine("Initialization of the conceptual build engine failed.",
+                        BuildLoggerLevel.Error);
+
                     _isInitialized = false;
                     _logger.WriteLine(ex, BuildLoggerLevel.Error);
+
+                    return;
                 }
             }
 
@@ -739,8 +772,6 @@ namespace Sandcastle
             _context["$HelpTocFile"]         = _settings.Toc.TocFile;
             _context["$HelpTocMarkers"]      = Boolean.FalseString;
             _context["$HelpHierarchicalToc"] = Boolean.FalseString;
-
-            _isInitialized = this.OnCreateSteps();
         }
 
         #endregion
@@ -806,478 +837,50 @@ namespace Sandcastle
 
         #region OnCreateSteps Method
 
-        protected virtual bool OnCreateSteps()
+        protected virtual void OnCreateSteps()
         {
-            try
+            // 1. Create the steps required before the build process...
+            this.OnCreatePreBuildSteps();
+            if (_logger.TotalErrors > 0)
             {
-                if (!this.OnCreatePreBuildSteps())
-                {
-                    return false;
-                }
-
-                // 1. Create the initial build steps...
-                if (!this.OnCreateInitialSteps())
-                {
-                    return false;
-                }
-
-                // 2. Create the table of contents and other steps...
-                if (!this.OnCreateMergingSteps())
-                {
-                    return false;
-                }
-
-                // 3. Create the final build steps...
-                if (!this.OnCreateFinalSteps())
-                {
-                    return false;
-                }
-
-                if (!this.OnCreatePostBuildSteps())
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                return false;
-            }
-        }
-
-        #endregion
-
-        #region OnCreateInitialSteps Method
-
-        protected virtual bool OnCreateInitialSteps()
-        {
-            if (_settings.BuildReferences &&
-                (_referenceEngine != null && _referenceEngine.IsInitialized))
-            {
-                try
-                {
-                    IList<ReferenceGroup> groups = _referenceEngine.Groups;
-                    if (groups != null && groups.Count != 0)
-                    {
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        listSteps.LogTitle = "Preparing references topics contents.";
-
-                        int itemCount = groups.Count;
-
-                        for (int i = 0; i < itemCount; i++)
-                        {
-                            ReferenceGroup group = groups[i];
-                            if (group != null && group.IsEmpty == false)
-                            {
-                                BuildStep apiSteps = _referenceEngine.CreateInitialSteps(group);
-                                if (apiSteps != null)
-                                {
-                                    listSteps.Add(apiSteps);
-                                }
-                            }
-                        }
-
-                        if (listSteps.Count != 0)
-                        {
-                            _listSteps.Add(listSteps);
-
-                            listSteps.LogTimeSpan = (listSteps.Count > 1);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                    return false;
-                }
+                return;
             }
 
-            if (_settings.BuildConceptual &&
-                (_conceptualEngine != null && _conceptualEngine.IsInitialized))
+            // 2. Create the initial build steps...
+            this.OnCreateInitialSteps();
+            if (_logger.TotalErrors > 0)
             {
-                try
-                {
-                    IList<ConceptualGroup> groups = _conceptualEngine.Groups;
-                    if (groups != null && groups.Count != 0)
-                    {
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        listSteps.LogTitle = "Preparing conceptual topics contents.";
-
-                        int itemCount = groups.Count;
-
-                        for (int i = 0; i < itemCount; i++)
-                        {
-                            ConceptualGroup group = groups[i];
-                            if (group != null && group.IsEmpty == false)
-                            {
-                                BuildStep topicSteps = _conceptualEngine.CreateInitialSteps(group);
-                                if (topicSteps != null)
-                                {
-                                    listSteps.Add(topicSteps);
-                                }
-                            }
-                        }
-
-                        if (listSteps.Count != 0)
-                        {
-                            _listSteps.Add(listSteps);
-
-                            listSteps.LogTimeSpan = (listSteps.Count > 1);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                    return false;
-                }
+                return;
             }
 
-            return true;
-        }
-
-        #endregion
-
-        #region OnCreateMergingSteps Method
-
-        protected virtual bool OnCreateMergingSteps()
-        {
-            BuildEngineSettingsList listSettings = _settings.EngineSettings;
-            Debug.Assert(listSettings != null,
-                "The settings does not include the engine settings.");
-            if (listSettings == null || listSettings.Count == 0)
+            // 3. Create the link steps...
+            this.OnCreateLinkSteps();
+            if (_logger.TotalErrors > 0)
             {
-                return false;
-            }
-            ReferenceEngineSettings engineSettings =
-                listSettings[BuildEngineType.Reference] as ReferenceEngineSettings;
-
-            Debug.Assert(engineSettings != null,
-                "The settings does not include the reference engine settings.");
-            if (engineSettings == null)
-            {
-                return false;
+                return;
             }
 
-            bool isHierarchical = false;
-            // If there is no hierarchical TOC, do not proceed further...
-            ReferenceTocLayoutConfiguration tocConfig = engineSettings.TocLayout;
-            if (tocConfig != null && tocConfig.Enabled && tocConfig.IsActive)
+            // 4. Create the table of contents and other steps...
+            this.OnCreateMergingSteps();
+            if (_logger.TotalErrors > 0)
             {
-                ReferenceTocLayoutType layoutType = tocConfig.LayoutType;
-                if (layoutType == ReferenceTocLayoutType.Hierarchical ||
-                    layoutType == ReferenceTocLayoutType.Custom)
-                {
-                    isHierarchical = true;
-                }
+                return;
             }
 
-            _context["$HelpHierarchicalToc"] = isHierarchical.ToString();
-
-            string workingDir     = _context.WorkingDirectory;
-
-            // Merge the table of contents...
-            StepTocMerge tocMerge = new StepTocMerge(workingDir, isHierarchical);
-            bool createResult     = false;
-
-            // Create the merging for the flat TOC for formats requiring it...
-            try
+            // 5. Create the final build steps...
+            this.OnCreateFinalSteps();
+            if (_logger.TotalErrors > 0)
             {
-                BuildTocContext tocContext = _context.TocContext;
-
-                IList<ConceptualGroup> topicsGroups = _conceptualEngine.Groups;
-
-                if (topicsGroups != null && topicsGroups.Count != 0)
-                {
-                    int itemCount = topicsGroups.Count;
-
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        ConceptualGroup group = topicsGroups[i];
-                        //if (group.ExcludeToc)
-                        //{
-                        //    continue;
-                        //}
-
-                        BuildGroupContext groupContext = _groupContexts[group.Id];
-                        if (groupContext == null)
-                        {
-                            throw new BuildException(
-                                "The group context is not provided, and it is required by the build system.");
-                        }
-
-                        string topicsToc = groupContext["$TocFile"];
-                        if (!String.IsNullOrEmpty(topicsToc))
-                        {
-                            tocMerge.Add(topicsToc, BuildGroupType.Conceptual,
-                                group.Id, false, group.ExcludeToc);
-
-                            if (!Path.IsPathRooted(topicsToc))
-                            {
-                                topicsToc = Path.Combine(workingDir, topicsToc);
-                            }
-
-                            ConceptualGroupTocInfo groupTocInfo = new ConceptualGroupTocInfo(
-                                group.Id, topicsToc);
-                            groupTocInfo.Exclude = group.ExcludeToc;
-
-                            tocContext.Add(groupTocInfo);
-
-                            ConceptualContent topicContent = group.Content;
-                            IList<ConceptualRelatedTopic> relatedTopics =
-                                topicContent.RelatedTopics;
-                            if (relatedTopics != null && relatedTopics.Count != 0)
-                            {
-                                for (int j = 0; j < relatedTopics.Count; j++)
-                                {
-                                    ConceptualRelatedTopic relatedTopic =
-                                        relatedTopics[j];
-                                    BuildTopicTocInfo tocInfo = new BuildTopicTocInfo(
-                                        relatedTopic.TopicId, relatedTopic.TopicId, null);
-
-                                    tocContext.Add(tocInfo);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                IList<ReferenceGroup> apiGroups = _referenceEngine.Groups;
-
-                if (apiGroups != null && apiGroups.Count != 0)
-                {
-                    int itemCount = apiGroups.Count;
-
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        ReferenceGroup group = apiGroups[i];
-                        //if (group.ExcludeToc)
-                        //{
-                        //    continue;
-                        //}
-
-                        BuildGroupContext groupContext = _groupContexts[group.Id];
-                        if (groupContext == null)
-                        {
-                            throw new BuildException(
-                                "The group context is not provided, and it is required by the build system.");
-                        }
-
-                        string topicsToc = String.Empty;
-                        if (isHierarchical)
-                        {
-                            topicsToc = groupContext["$HierarchicalTocFile"];
-                        }
-                        else
-                        {
-                            topicsToc = groupContext["$TocFile"];
-                        }
-                        if (!String.IsNullOrEmpty(topicsToc))
-                        {
-                            tocMerge.Add(topicsToc, BuildGroupType.Reference,
-                                group.Id, Convert.ToBoolean(groupContext["$IsRooted"]),
-                                group.ExcludeToc);
-
-                            if (!Path.IsPathRooted(topicsToc))
-                            {
-                                topicsToc = Path.Combine(workingDir, topicsToc);
-                            }
-
-                            ReferenceGroupTocInfo groupTocInfo = new ReferenceGroupTocInfo(
-                                group.Id, topicsToc);
-                            groupTocInfo.Exclude = group.ExcludeToc;
-
-                            tocContext.Add(groupTocInfo);
-                        }
-                    }
-                }
-
-                if (tocMerge != null)
-                {
-                    _listSteps.Add(tocMerge);
-                }
-
-                createResult = true;
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                createResult = false;
+                return;
             }
 
-            return createResult;
-        }
-
-        #endregion
-
-        #region OnCreateFinalSteps Method
-
-        protected virtual bool OnCreateFinalSteps()
-        {
-            HashSet<string> outputFolders = new HashSet<string>();
-
-            if (_settings.BuildReferences &&
-                (_referenceEngine != null && _referenceEngine.IsInitialized))
+            // 6. Create the steps required after build...
+            // These are used for compilation, deployment, etc
+            this.OnCreatePostBuildSteps();
+            if (_logger.TotalErrors > 0)
             {
-                try
-                {
-                    IList<ReferenceGroup> groups = _referenceEngine.Groups;
-                    if (groups != null && groups.Count != 0)
-                    {
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        listSteps.LogTitle = "Assembling References Topics";
-
-                        int itemCount = groups.Count;
-
-                        for (int i = 0; i < itemCount; i++)
-                        {
-                            ReferenceGroup group = groups[i];
-                            if (group != null && !group.IsEmpty)
-                            {
-                                BuildStep apiSteps = _referenceEngine.CreateFinalSteps(group);
-                                if (apiSteps != null)
-                                {
-                                    listSteps.Add(apiSteps);
-                                }
-                                IList<string> listFolders = _referenceEngine.Folders;
-                                if (listFolders != null && listFolders.Count != 0)
-                                {
-                                    outputFolders.UnionWith(listFolders);
-                                }
-                            }
-                        }
-
-                        if (listSteps.Count != 0)
-                        {
-                            _listSteps.Add(listSteps);
-
-                            listSteps.LogTimeSpan = (listSteps.Count > 1);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                    return false;
-                }
+                return;
             }
-
-            List<string> ddueHtmlDirs = new List<string>();
-
-            if (_settings.BuildConceptual &&
-                (_conceptualEngine != null && _conceptualEngine.IsInitialized))
-            {
-                try
-                {
-                    IList<ConceptualGroup> groups = _conceptualEngine.Groups;
-                    if (groups != null && groups.Count != 0)
-                    {
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        listSteps.LogTitle = "Assembling Conceptual Topics";
-
-                        int itemCount = groups.Count;
-
-                        for (int i = 0; i < itemCount; i++)
-                        {
-                            ConceptualGroup group = groups[i];
-
-                            BuildGroupContext groupContext = _groupContexts[group.Id];
-                            if (groupContext == null)
-                            {
-                                throw new BuildException(
-                                    "The group context is not provided, and it is required by the build system.");
-                            }
-
-                            BuildStep topicSteps = _conceptualEngine.CreateFinalSteps(group);
-                            if (topicSteps != null)
-                            {
-                                listSteps.Add(topicSteps);
-                            }
-                            IList<string> listFolders = _conceptualEngine.Folders;
-                            if (listFolders != null && listFolders.Count != 0)
-                            {
-                                outputFolders.UnionWith(listFolders);
-                            }
-
-                            ddueHtmlDirs.Add(groupContext["$DdueHtmlDir"]);
-                        }
-
-                        if (listSteps.Count != 0)
-                        {
-                            _listSteps.Add(listSteps);
-
-                            listSteps.LogTimeSpan = (listSteps.Count > 1);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                    return false;
-                }
-            }
-
-            int formatCount = _listFormats.Count;
-            BuildMultiStep copySteps = new BuildMultiStep();
-            copySteps.LogTitle = "Copying the outputs to the format directories.";
-            copySteps.LogTimeSpan = true;
-
-            for (int i = 0; i < formatCount; i++)
-            {
-                BuildFormat format   = _listFormats[i];
-                string helpOutputDir = format.OutputFolder;
-
-                // Copy outputs to the "Help" sub-directories
-                StepDirectoryCopy copyDirs = new StepDirectoryCopy(
-                    _context.WorkingDirectory);
-                copyDirs.LogTitle = String.Empty;
-
-                // A message displayed before each step, for multiple formats...
-                string messageText = null;
-
-                if (formatCount != 0)
-                {
-                    messageText = "For the help format: " + format.Name;
-                }
-
-                string tempText = null;
-                foreach (string folder in outputFolders)
-                {
-                    tempText = String.Format(@"{0}\{1}", helpOutputDir, folder);
-                    copyDirs.Add(String.Format(@"Output\{0}\", folder), tempText);
-                }
-
-                // Copy any direct HTML topic contents...
-                tempText = String.Format(@"Output\{0}", format.FormatFolder);
-                for (int j = 0; j < ddueHtmlDirs.Count; j++)
-                {
-                    copyDirs.Add(String.Format(@"{0}\", ddueHtmlDirs[j]), tempText);
-                }
-
-                if (String.IsNullOrEmpty(messageText))
-                {
-                    copySteps.Add(copyDirs);
-                }
-                else
-                {
-                    copySteps.Add(copyDirs, messageText);
-                }
-            }
-
-            if (copySteps != null && copySteps.Count != 0)
-            {
-                _listSteps.Add(copySteps);
-            }
-
-            return true;
         }
 
         #endregion
@@ -1288,7 +891,7 @@ namespace Sandcastle
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual bool OnCreatePreBuildSteps()
+        protected virtual void OnCreatePreBuildSteps()
         {
             BuildStyle buildStyle = _settings.Style;
             string sandcastleDir  = _context.StylesDirectory;
@@ -1297,7 +900,15 @@ namespace Sandcastle
             if (String.IsNullOrEmpty(sandcastleDir) ||
                 String.IsNullOrEmpty(sandassistDir))
             {
-                return false;
+                _isInitialized = false;
+
+                if (_logger != null)
+                {
+                    _logger.WriteLine("The Sandcastle Assist/Styles directory is not specified but required.", 
+                        BuildLoggerLevel.Error);
+                }
+
+                return;
             }
 
             BuildStyleType styleType = buildStyle.StyleType;
@@ -1403,8 +1014,425 @@ namespace Sandcastle
             copyOutput.Add(tempText, @"Output\styles\");
 
             _listSteps.Add(copyOutput);
+        }
 
-            return true;
+        #endregion
+
+        #region OnCreateInitialSteps Method
+
+        protected virtual void OnCreateInitialSteps()
+        {
+            if (_settings.BuildReferences &&
+                (_referenceEngine != null && _referenceEngine.IsInitialized))
+            {
+                IList<ReferenceGroup> groups = _referenceEngine.Groups;
+                if (groups != null && groups.Count != 0)
+                {
+                    BuildMultiStep listSteps = new BuildMultiStep();
+                    listSteps.LogTitle = "Preparing references topics contents.";
+
+                    int itemCount = groups.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ReferenceGroup group = groups[i];
+                        if (group != null && group.IsEmpty == false)
+                        {
+                            BuildStep apiSteps = _referenceEngine.CreateInitialSteps(group);
+                            if (apiSteps != null)
+                            {
+                                listSteps.Add(apiSteps);
+                            }
+                        }
+                    }
+
+                    if (listSteps.Count != 0)
+                    {
+                        _listSteps.Add(listSteps);
+
+                        listSteps.LogTimeSpan = (listSteps.Count > 1);
+                    }
+                }
+            }
+
+            if (_settings.BuildConceptual &&
+                (_conceptualEngine != null && _conceptualEngine.IsInitialized))
+            {
+                IList<ConceptualGroup> groups = _conceptualEngine.Groups;
+                if (groups != null && groups.Count != 0)
+                {
+                    BuildMultiStep listSteps = new BuildMultiStep();
+                    listSteps.LogTitle = "Preparing conceptual topics contents.";
+
+                    int itemCount = groups.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ConceptualGroup group = groups[i];
+                        if (group != null && group.IsEmpty == false)
+                        {
+                            BuildStep topicSteps = _conceptualEngine.CreateInitialSteps(group);
+                            if (topicSteps != null)
+                            {
+                                listSteps.Add(topicSteps);
+                            }
+                        }
+                    }
+
+                    if (listSteps.Count != 0)
+                    {
+                        _listSteps.Add(listSteps);
+
+                        listSteps.LogTimeSpan = (listSteps.Count > 1);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region CreateLinkSteps Method
+
+        protected virtual void OnCreateLinkSteps()
+        {
+            if (_referenceEngine != null && _referenceEngine.IsInitialized)
+            {
+                BuildStep linkStep = _referenceEngine.CreateLinkSteps();
+                if (linkStep != null)
+                {
+                    _listSteps.Add(linkStep);
+                }
+            }
+
+            if (_conceptualEngine != null && _conceptualEngine.IsInitialized)
+            {
+                BuildStep linkStep = _conceptualEngine.CreateLinkSteps();
+                if (linkStep != null)
+                {
+                    _listSteps.Add(linkStep);
+                }
+            }
+        }
+
+        #endregion
+
+        #region OnCreateMergingSteps Method
+
+        protected virtual void OnCreateMergingSteps()
+        {
+            BuildEngineSettingsList listSettings = _settings.EngineSettings;
+            Debug.Assert(listSettings != null,
+                "The settings does not include the engine settings.");
+            if (listSettings == null || listSettings.Count == 0)
+            {
+                _isInitialized = false;
+
+                if (_logger != null)
+                {
+                    _logger.WriteLine("The settings does not include the engine settings.", 
+                        BuildLoggerLevel.Error);
+                }
+
+                return;
+            }
+            ReferenceEngineSettings engineSettings =
+                listSettings[BuildEngineType.Reference] as ReferenceEngineSettings;
+
+            Debug.Assert(engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (engineSettings == null)
+            {
+                _isInitialized = false;
+
+                if (_logger != null)
+                {
+                    _logger.WriteLine("The settings does not include the reference engine settings.",
+                        BuildLoggerLevel.Error);
+                }
+
+                return;
+            }
+
+            bool isHierarchical = false;
+            // If there is no hierarchical TOC, do not proceed further...
+            ReferenceTocLayoutConfiguration tocConfig = engineSettings.TocLayout;
+            if (tocConfig != null && tocConfig.Enabled && tocConfig.IsActive)
+            {
+                ReferenceTocLayoutType layoutType = tocConfig.LayoutType;
+                if (layoutType == ReferenceTocLayoutType.Hierarchical ||
+                    layoutType == ReferenceTocLayoutType.Custom)
+                {
+                    isHierarchical = true;
+                }
+            }
+
+            _context["$HelpHierarchicalToc"] = isHierarchical.ToString();
+
+            string workingDir     = _context.WorkingDirectory;
+
+            // Merge the table of contents...
+            StepTocMerge tocMerge = new StepTocMerge(workingDir, isHierarchical);
+
+            // Create the merging for the flat TOC for formats requiring it...
+            BuildTocContext tocContext = _context.TocContext;
+
+            IList<ConceptualGroup> topicsGroups = _conceptualEngine.Groups;
+
+            if (topicsGroups != null && topicsGroups.Count != 0)
+            {
+                int itemCount = topicsGroups.Count;
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    ConceptualGroup group = topicsGroups[i];
+                    //if (group.ExcludeToc)
+                    //{
+                    //    continue;
+                    //}
+
+                    BuildGroupContext groupContext = _groupContexts[group.Id];
+                    if (groupContext == null)
+                    {
+                        throw new BuildException(
+                            "The group context is not provided, and it is required by the build system.");
+                    }
+
+                    string topicsToc = groupContext["$TocFile"];
+                    if (!String.IsNullOrEmpty(topicsToc))
+                    {
+                        tocMerge.Add(topicsToc, BuildGroupType.Conceptual,
+                            group.Id, false, group.ExcludeToc);
+
+                        if (!Path.IsPathRooted(topicsToc))
+                        {
+                            topicsToc = Path.Combine(workingDir, topicsToc);
+                        }
+
+                        ConceptualGroupTocInfo groupTocInfo = new ConceptualGroupTocInfo(
+                            group.Id, topicsToc);
+                        groupTocInfo.Exclude = group.ExcludeToc;
+
+                        tocContext.Add(groupTocInfo);
+
+                        ConceptualContent topicContent = group.Content;
+                        IList<ConceptualRelatedTopic> relatedTopics =
+                            topicContent.RelatedTopics;
+                        if (relatedTopics != null && relatedTopics.Count != 0)
+                        {
+                            for (int j = 0; j < relatedTopics.Count; j++)
+                            {
+                                ConceptualRelatedTopic relatedTopic =
+                                    relatedTopics[j];
+                                BuildTopicTocInfo tocInfo = new BuildTopicTocInfo(
+                                    relatedTopic.TopicId, relatedTopic.TopicId, null);
+
+                                tocContext.Add(tocInfo);
+                            }
+                        }
+                    }
+                }
+            }
+
+            IList<ReferenceGroup> apiGroups = _referenceEngine.Groups;
+
+            if (apiGroups != null && apiGroups.Count != 0)
+            {
+                int itemCount = apiGroups.Count;
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    ReferenceGroup group = apiGroups[i];
+                    //if (group.ExcludeToc)
+                    //{
+                    //    continue;
+                    //}
+
+                    BuildGroupContext groupContext = _groupContexts[group.Id];
+                    if (groupContext == null)
+                    {
+                        throw new BuildException(
+                            "The group context is not provided, and it is required by the build system.");
+                    }
+
+                    string topicsToc = String.Empty;
+                    if (isHierarchical)
+                    {
+                        topicsToc = groupContext["$HierarchicalTocFile"];
+                    }
+                    else
+                    {
+                        topicsToc = groupContext["$TocFile"];
+                    }
+                    if (!String.IsNullOrEmpty(topicsToc))
+                    {
+                        tocMerge.Add(topicsToc, BuildGroupType.Reference,
+                            group.Id, Convert.ToBoolean(groupContext["$IsRooted"]),
+                            group.ExcludeToc);
+
+                        if (!Path.IsPathRooted(topicsToc))
+                        {
+                            topicsToc = Path.Combine(workingDir, topicsToc);
+                        }
+
+                        ReferenceGroupTocInfo groupTocInfo = new ReferenceGroupTocInfo(
+                            group.Id, topicsToc);
+                        groupTocInfo.Exclude = group.ExcludeToc;
+
+                        tocContext.Add(groupTocInfo);
+                    }
+                }
+            }
+
+            if (tocMerge != null)
+            {
+                _listSteps.Add(tocMerge);
+            }
+        }
+
+        #endregion
+
+        #region OnCreateFinalSteps Method
+
+        protected virtual void OnCreateFinalSteps()
+        {
+            HashSet<string> outputFolders = new HashSet<string>();
+
+            if (_settings.BuildReferences &&
+                (_referenceEngine != null && _referenceEngine.IsInitialized))
+            {
+                IList<ReferenceGroup> groups = _referenceEngine.Groups;
+                if (groups != null && groups.Count != 0)
+                {
+                    BuildMultiStep listSteps = new BuildMultiStep();
+                    listSteps.LogTitle = "Assembling References Topics";
+
+                    int itemCount = groups.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ReferenceGroup group = groups[i];
+                        if (group != null && !group.IsEmpty)
+                        {
+                            BuildStep apiSteps = _referenceEngine.CreateFinalSteps(group);
+                            if (apiSteps != null)
+                            {
+                                listSteps.Add(apiSteps);
+                            }
+                            IList<string> listFolders = _referenceEngine.Folders;
+                            if (listFolders != null && listFolders.Count != 0)
+                            {
+                                outputFolders.UnionWith(listFolders);
+                            }
+                        }
+                    }
+
+                    if (listSteps.Count != 0)
+                    {
+                        _listSteps.Add(listSteps);
+
+                        listSteps.LogTimeSpan = (listSteps.Count > 1);
+                    }
+                }
+            }
+
+            List<string> ddueHtmlDirs = new List<string>();
+
+            if (_settings.BuildConceptual &&
+                (_conceptualEngine != null && _conceptualEngine.IsInitialized))
+            {
+                IList<ConceptualGroup> groups = _conceptualEngine.Groups;
+                if (groups != null && groups.Count != 0)
+                {
+                    BuildMultiStep listSteps = new BuildMultiStep();
+                    listSteps.LogTitle = "Assembling Conceptual Topics";
+
+                    int itemCount = groups.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        ConceptualGroup group = groups[i];
+
+                        BuildGroupContext groupContext = _groupContexts[group.Id];
+                        if (groupContext == null)
+                        {
+                            throw new BuildException(
+                                "The group context is not provided, and it is required by the build system.");
+                        }
+
+                        BuildStep topicSteps = _conceptualEngine.CreateFinalSteps(group);
+                        if (topicSteps != null)
+                        {
+                            listSteps.Add(topicSteps);
+                        }
+                        IList<string> listFolders = _conceptualEngine.Folders;
+                        if (listFolders != null && listFolders.Count != 0)
+                        {
+                            outputFolders.UnionWith(listFolders);
+                        }
+
+                        ddueHtmlDirs.Add(groupContext["$DdueHtmlDir"]);
+                    }
+
+                    if (listSteps.Count != 0)
+                    {
+                        _listSteps.Add(listSteps);
+
+                        listSteps.LogTimeSpan = (listSteps.Count > 1);
+                    }
+                }
+            }
+
+            int formatCount = _listFormats.Count;
+            BuildMultiStep copySteps = new BuildMultiStep();
+            copySteps.LogTitle = "Copying the outputs to the format directories.";
+            copySteps.LogTimeSpan = true;
+
+            for (int i = 0; i < formatCount; i++)
+            {
+                BuildFormat format   = _listFormats[i];
+                string helpOutputDir = format.OutputFolder;
+
+                // Copy outputs to the "Help" sub-directories
+                StepDirectoryCopy copyDirs = new StepDirectoryCopy(
+                    _context.WorkingDirectory);
+                copyDirs.LogTitle = String.Empty;
+
+                // A message displayed before each step, for multiple formats...
+                string messageText = null;
+
+                if (formatCount != 0)
+                {
+                    messageText = "For the help format: " + format.Name;
+                }
+
+                string tempText = null;
+                foreach (string folder in outputFolders)
+                {
+                    tempText = String.Format(@"{0}\{1}", helpOutputDir, folder);
+                    copyDirs.Add(String.Format(@"Output\{0}\", folder), tempText);
+                }
+
+                // Copy any direct HTML topic contents...
+                tempText = String.Format(@"Output\{0}", format.FormatFolder);
+                for (int j = 0; j < ddueHtmlDirs.Count; j++)
+                {
+                    copyDirs.Add(String.Format(@"{0}\", ddueHtmlDirs[j]), tempText);
+                }
+
+                if (String.IsNullOrEmpty(messageText))
+                {
+                    copySteps.Add(copyDirs);
+                }
+                else
+                {
+                    copySteps.Add(copyDirs, messageText);
+                }
+            }
+
+            if (copySteps != null && copySteps.Count != 0)
+            {
+                _listSteps.Add(copySteps);
+            }
         }
 
         #endregion
@@ -1415,7 +1443,7 @@ namespace Sandcastle
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual bool OnCreatePostBuildSteps()
+        protected virtual void OnCreatePostBuildSteps()
         {
             string workingDir = _context.WorkingDirectory;
 
@@ -1470,23 +1498,20 @@ namespace Sandcastle
             {
                 _listSteps.Add(startViewerSteps);
             }
-
-            return true;
         }
 
         #endregion
 
-        #region OnRunSteps Method
+        #region OnBuild Method
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="listSteps"></param>
         /// <returns></returns>
-        protected virtual bool OnRunSteps()
+        protected virtual bool OnBuild()
         {
-            if (_settings == null || _context == null ||
-                _isInitialized == false)
+            if (_settings == null || _context == null || !_isInitialized)
             {
                 return false;
             }
@@ -1527,7 +1552,7 @@ namespace Sandcastle
                 }
 
                 // If the initialization fails, we need not continue...
-                if (buildResult == false)
+                if (!buildResult)
                 {
                     return buildResult;
                 }
@@ -1537,17 +1562,17 @@ namespace Sandcastle
                 {
                     BuildStep buildStep = _listSteps[i];
 
-                    if (buildStep == null || buildStep.Enabled == false)
+                    if (buildStep == null || !buildStep.Enabled)
                     {
                         continue;
                     }
                     bool executeIt = _context.StepStarts(buildStep);
-                    if (executeIt == false)
+                    if (!executeIt)
                     {
                         continue;
                     }
 
-                    if (buildStep.Execute() == false)
+                    if (!buildStep.Execute())
                     {
                         //_logger.WriteLine(
                         //    "An error occurred in the step = " + i.ToString(),

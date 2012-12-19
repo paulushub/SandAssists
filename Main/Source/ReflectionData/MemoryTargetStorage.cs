@@ -24,6 +24,14 @@ namespace Sandcastle.ReflectionData
 
         #region Public Properties
 
+        public override bool Exists
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override int Count
         {
             get

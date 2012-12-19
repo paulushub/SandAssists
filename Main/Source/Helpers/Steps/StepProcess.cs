@@ -44,9 +44,12 @@ namespace Sandcastle.Steps
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                _arguments    = "/C " + arguments;
-                _application  = "cmd";
-                _shellExecute = true;
+                if (!String.IsNullOrEmpty(arguments))
+                {
+                    _arguments    = "/C " + arguments;
+                    _application  = "cmd";
+                    _shellExecute = true;
+                }
             }
             else
             {

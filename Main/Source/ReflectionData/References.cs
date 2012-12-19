@@ -617,7 +617,7 @@ namespace Sandcastle.ReflectionData
                 return;
             }
 
-            writer.WriteStartElement("NamespaceReference");
+            writer.WriteStartElement("SimpleTypeReference");
             writer.WriteAttributeString("id", typeId);
             writer.WriteEndElement();
         }
@@ -821,6 +821,7 @@ namespace Sandcastle.ReflectionData
                 return;
             }
 
+            bool readContent = false;
             if (String.Equals(reader.Name, "ArrayTypeReference",
                 StringComparison.OrdinalIgnoreCase))
             {
@@ -829,6 +830,8 @@ namespace Sandcastle.ReflectionData
                 {
                     rank = Int32.Parse(tempText);
                 }
+
+                readContent = true;
             }
 
             XmlNodeType nodeType = XmlNodeType.None;
@@ -841,10 +844,19 @@ namespace Sandcastle.ReflectionData
                     if (String.Equals(reader.Name, "ArrayTypeReference",
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        string tempText = reader.GetAttribute("rank");
-                        if (!String.IsNullOrEmpty(tempText))
+                        if (readContent)
                         {
-                            rank = Int32.Parse(tempText);
+                            // It must be a nested ArrayTypeReference type...
+                            elementType = ReferencesReader.ReadTypeReference(reader);
+                        }
+                        else
+                        {
+                            string tempText = reader.GetAttribute("rank");
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                rank = Int32.Parse(tempText);
+                            }
+                            readContent = true;
                         }
                     }
                     else if (reader.Name.EndsWith("TypeReference",

@@ -33,7 +33,7 @@ namespace Sandcastle.Components
 
                         if (File.Exists(contentFile))
                         {
-                            localizedContents.Initialize(contentFile, assembler.MessageHandler);
+                            localizedContents.Initialize(contentFile, assembler.MessageWriter);
                         }
                     }
                 }

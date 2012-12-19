@@ -6,9 +6,12 @@ using System.Collections.Generic;
 
 using Sandcastle.Contents;
 using Sandcastle.Utilities;
+using Sandcastle.ReflectionData;
 
 namespace Sandcastle.Conceptual
 {
+    using ReferenceEngine = Sandcastle.References.ReferenceEngine;
+
     [Serializable]
     public sealed class ConceptualReferenceLinkConfiguration : ConceptualComponentConfiguration
     {
@@ -304,14 +307,146 @@ namespace Sandcastle.Conceptual
                 "_" + _format.ExternalLinkTarget.ToString().ToLower());
             writer.WriteEndElement();              // end - options
 
+            List<DataSource> dataSources = new List<DataSource>();
+
             // For now, lets simply write the default...
-            writer.WriteStartElement("targets");    // start - targets
-            writer.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
+            //writer.WriteStartElement("targets");    // start - targets
+            //writer.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
+            //writer.WriteAttributeString("recurse", "true");
+            //writer.WriteAttributeString("files", "*.xml");
+            //writer.WriteAttributeString("type",
+            //    _format.ExternalLinkType.ToString().ToLower());
+            //writer.WriteEndElement();               // end - targets
+            string dotNetDataDir = Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(ReferenceEngine.ReflectionDirectory));
+
+            writer.WriteStartElement("targets");  // start - targets
+            writer.WriteAttributeString("base", dotNetDataDir);
             writer.WriteAttributeString("recurse", "true");
+            writer.WriteAttributeString("system", "true");
             writer.WriteAttributeString("files", "*.xml");
             writer.WriteAttributeString("type",
                 _format.ExternalLinkType.ToString().ToLower());
-            writer.WriteEndElement();               // end - targets
+
+            // Write the data source...
+            this.WriteDataSource(writer, DataSourceType.Framework,
+                dotNetDataDir, ReferenceEngine.ReflectionVersion, true,
+                false, dataSources);
+
+            writer.WriteEndElement();             // end - targets
+
+            // Write Silverlight framework too...
+            Version latestVersion = BuildFrameworks.LatestSilverlightVersion;
+            string reflectionDir  = _context.ReflectionDataDirectory;
+            if (latestVersion != null && (!String.IsNullOrEmpty(reflectionDir) &&
+                Directory.Exists(reflectionDir)))
+            {
+                string silverlightDir = Path.Combine(reflectionDir,
+                    @"Silverlight\v" + latestVersion.ToString(2));
+
+                // If it exits and not empty, we assume the reflection data
+                // is already created..
+                if (Directory.Exists(silverlightDir) &&
+                    !DirectoryUtils.IsDirectoryEmpty(silverlightDir))
+                {
+                    writer.WriteStartElement("targets");
+                    writer.WriteAttributeString("base", silverlightDir);
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("files",   "*.xml");
+                    writer.WriteAttributeString("type",
+                        _format.ExternalLinkType.ToString().ToLower());
+
+                    // Write the data source...
+                    this.WriteDataSource(writer, DataSourceType.Silverlight,
+                        silverlightDir, latestVersion, true, true, dataSources);
+
+                    writer.WriteEndElement();
+                }
+            }
+            latestVersion = null;
+            bool isSilverlight = false;
+
+            // Write Blend SDK...
+            BuildSpecialSdk latestBlendSdk = null;
+            BuildSpecialSdk silverlightBlendSdk = BuildSpecialSdks.LatestBlendSilverlightSdk;
+            BuildSpecialSdk wpfBlendSdk = BuildSpecialSdks.LatestBlendWpfSdk;
+            if (silverlightBlendSdk != null && wpfBlendSdk != null)
+            {
+                // In this case we use the latest version, most likely to
+                // have improved API...
+                latestBlendSdk = wpfBlendSdk;     
+                if (silverlightBlendSdk.Version > wpfBlendSdk.Version)
+                {
+                    isSilverlight  = true;
+                    latestBlendSdk = silverlightBlendSdk;
+                }
+            }
+            else if (silverlightBlendSdk != null)
+            {
+                isSilverlight  = true;
+                latestBlendSdk = silverlightBlendSdk;
+            }
+            else if (wpfBlendSdk != null)
+            {
+                latestBlendSdk = wpfBlendSdk;
+            }
+
+            latestVersion = (latestBlendSdk == null) ?
+                null : latestBlendSdk.Version;
+            
+            if (latestVersion != null && (!String.IsNullOrEmpty(reflectionDir) &&
+                Directory.Exists(reflectionDir)))
+            {
+                string blendDir = null;
+                if (isSilverlight)
+                {
+                    blendDir = Path.Combine(reflectionDir,
+                        @"Blend\Silverlight\v" + latestVersion.ToString(2));
+                }
+                else
+                {
+                    blendDir = Path.Combine(reflectionDir,
+                        @"Blend\Wpf\v" + latestVersion.ToString(2));
+                }
+
+                // If it exits and not empty, we assume the reflection data
+                // is already created..
+                if (Directory.Exists(blendDir) &&
+                    !DirectoryUtils.IsDirectoryEmpty(blendDir))
+                {
+                    writer.WriteStartElement("targets");
+                    writer.WriteAttributeString("base", blendDir);
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("files",   "*.xml");
+                    writer.WriteAttributeString("type",
+                        _format.ExternalLinkType.ToString().ToLower());
+
+                    // Write the data source...
+                    this.WriteDataSource(writer, DataSourceType.Blend,
+                        blendDir, latestVersion, true, isSilverlight, dataSources);
+
+                    writer.WriteEndElement();
+                }
+            }
+
+            // Provide the information for the MSDN link resolvers... 
+            writer.WriteStartElement("linkResolver"); // start - linkResolver
+            writer.WriteAttributeString("storage", "database");
+            writer.WriteAttributeString("cache",   "false");
+            if (dataSources != null && dataSources.Count != 0)
+            {
+                for (int i = 0; i < dataSources.Count; i++)
+                {
+                    DataSource dataSource = dataSources[i];
+
+                    this.WriteDataSource(writer, dataSource.SourceType,
+                        dataSource.InputDir, dataSource.Version,
+                        dataSource.IsDatabase, dataSource.IsSilverlight, true);
+                }
+            }
+            writer.WriteEndElement();                 // end - linkResolver
 
             BuildLinkType linkType = _format.LinkType;
             string linkTypeText = linkType.ToString().ToLower();
@@ -345,6 +480,58 @@ namespace Sandcastle.Conceptual
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void WriteDataSource(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase,
+            bool isSilverlight, IList<DataSource> dataSources)
+        {
+            this.WriteDataSource(writer, sourceType, baseInput, version,
+                useDatabase, isSilverlight, false);
+
+            if (dataSources != null)
+            {
+                DataSource dataSource = new DataSource(false, true,
+                    useDatabase, isSilverlight, sourceType);
+
+                dataSource.Version = version;
+                dataSource.InputDir = baseInput;
+                dataSources.Add(dataSource);
+            }
+        }
+
+        private void WriteDataSource(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase,
+            bool isSilverlight, bool isLinks)
+        {
+            if (baseInput == null)
+            {
+                baseInput = String.Empty;
+            }
+
+            writer.WriteStartElement("source");    // start: source
+            writer.WriteAttributeString("system", "true");
+            writer.WriteAttributeString("name", sourceType.ToString());
+            writer.WriteAttributeString("platform", isSilverlight ?
+                "Silverlight" : "Framework");
+            writer.WriteAttributeString("version", version != null ?
+                version.ToString(2) : "");
+            writer.WriteAttributeString("lang", "");
+            writer.WriteAttributeString("storage",
+                useDatabase ? "database" : "memory");
+
+            writer.WriteStartElement("paths"); // start: paths
+            writer.WriteAttributeString("baseInput", Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(baseInput)));
+            writer.WriteAttributeString("baseOutput", isLinks ?
+                _context.LinksDataDirectory : _context.TargetDataDirectory);
+            writer.WriteEndElement();          // end: paths 
+
+            writer.WriteEndElement();              // end: source
         }
 
         #endregion

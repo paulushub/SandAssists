@@ -166,16 +166,16 @@ namespace Sandcastle.Components
             }
 
             Type compType = this.GetType();
-            MessageHandler msgHandler = this.BuildAssembler.MessageHandler;
+            MessageWriter msgWriter = this.BuildAssembler.MessageWriter;
             if (_codeRefStorage == SnippetStorage.Memory)
             {
                 _codeRefProvider = new SnippetMemoryProvider(compType,
-                    msgHandler);
+                    msgWriter);
             }
             else if (_codeRefStorage == SnippetStorage.Database)
             {
                 _codeRefProvider = new SnippetDatabaseProvider(compType,
-                    msgHandler);
+                    msgWriter);
             }
 
             if (_codeRefProvider == null)
@@ -192,7 +192,7 @@ namespace Sandcastle.Components
             if (codeSnippetIterator != null && codeSnippetIterator.Count != 0)
             {
                 SnippetXmlReader snippetReader = new SnippetXmlReader(
-                    this.TabSize, compType, msgHandler);
+                    this.TabSize, compType, msgWriter);
                 foreach (XPathNavigator codeSnippet in codeSnippetIterator)
                 {
                     string snippetSource = Environment.ExpandEnvironmentVariables(
@@ -218,7 +218,7 @@ namespace Sandcastle.Components
             if (codeSourceIterator != null && codeSourceIterator.Count != 0)
             {
                 SnippetTextReader snippetReader = new SnippetTextReader(
-                    this.TabSize, compType, msgHandler);
+                    this.TabSize, compType, msgWriter);
 
                 snippetReader.Initialize(codeSources);
 

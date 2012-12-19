@@ -53,6 +53,8 @@ namespace Sandcastle.References
 
         private List<ReferenceItem> _listReference;
 
+        private HashSet<string> _searchDirectories;
+
         private Dictionary<string, bool> _dictionary;
         private Dictionary<string, bool> _dictDependency;
         private Dictionary<string, bool> _dictReference;
@@ -180,13 +182,53 @@ namespace Sandcastle.References
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            _linkCommentFiles = new List<string>();
-            _bindingRedirects = new List<DependencyItem>();
+            _linkCommentFiles  = new List<string>();
+            _bindingRedirects  = new List<DependencyItem>();
+            _searchDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             sourceContext.LinkCommentFiles = _linkCommentFiles;
             sourceContext.BindingRedirects = _bindingRedirects;
 
+            // We add the comment files from the link sources so that the
+            // document can contain comments from these sources if needed...
+            IList<ReferenceLinkSource> linkSources = context.GetValue("$ReferenceLinkSources")
+                as IList<ReferenceLinkSource>;
+            if (linkSources != null && linkSources.Count != 0)
+            {
+                for (int i = 0; i < linkSources.Count; i++)
+                {
+                    ReferenceLinkSource linkSource = linkSources[i];
+                    IEnumerable<ReferenceItem> linkItems = linkSource.Items;
+                    foreach (ReferenceItem linkItem in linkItems)
+                    {
+                        // Set if the comment file exists and link it...
+                        BuildFilePath linkCommentPath = linkItem.Comments;
+                        if (linkCommentPath != null && linkCommentPath.Exists)
+                        {
+                            _linkCommentFiles.Add(linkCommentPath.Path);
+                        }
+                        else
+                        {
+                            string linkCommentFile = Path.ChangeExtension(
+                                linkItem.Assembly, ".xml");
+                            if (File.Exists(linkCommentFile))
+                            {
+                                _linkCommentFiles.Add(linkCommentFile);
+                            }
+                        }                        
+                    }
+                }
+            }  
+
             string dependencyDir = sourceContext.DependencyDir;
+
+            string searchDir = String.Copy(dependencyDir);
+            if (!searchDir.EndsWith("\\"))
+            {
+                searchDir += "\\";
+            }
+
+            _searchDirectories.Add(searchDir);
 
             ReferenceContent content = _content;
             if (content == null)
@@ -208,6 +250,17 @@ namespace Sandcastle.References
             {
                 this.CreateDependency(_resolveContent, dependencyDir);
             }
+
+            //IList<string> bindingSources = sourceContext.BindingSources;
+            //if (bindingSources == null)
+            //{
+            //    bindingSources = new BuildList<string>();
+            //    sourceContext.BindingSources = bindingSources;
+            //}
+            //foreach (string dir in _searchDirectories)
+            //{
+            //    bindingSources.Add(dir);
+            //}
 
             if (logger != null)
             {
@@ -380,9 +433,32 @@ namespace Sandcastle.References
                 {
                     resolver.AddSearchDirectory(searchDir);
                 }
+                else
+                {
+                    if (version.Major == 5 && version.Minor > 0)
+                    {
+                        // For Silverlight 5.1, the assemblies are in different places...
+                        searchDir = Path.Combine(programFiles,
+                           @"Reference Assemblies\Microsoft\Framework\Silverlight\v5.0");
+                        if (Directory.Exists(searchDir))
+                        {
+                            resolver.AddSearchDirectory(searchDir);
+                        }
+                    }
+                }
 
                 searchDir = Path.Combine(programFiles,
                     @"Microsoft SDKs\Silverlight\v" + version.ToString(2));
+                if (!Directory.Exists(searchDir))
+                {
+                    if (version.Major == 5 && version.Minor > 0)
+                    {
+                        // For Silverlight 5.1, the assemblies are in different places...
+                        searchDir = Path.Combine(programFiles,
+                           @"Microsoft SDKs\Silverlight\v5.0");
+                    }
+                }
+
                 if (Directory.Exists(searchDir))
                 {
                     resolver.AddSearchDirectory(searchDir);
@@ -467,6 +543,57 @@ namespace Sandcastle.References
                         resolver.AddSearchDirectory(otherDir);
                     }
                 }
+                else if (version.Major == 5)
+                {
+                    // Consider the extension libraries...
+                    // 1. The RIA Services...
+                    string otherDir = Path.Combine(programFiles,
+                       @"Microsoft SDKs\RIA Services\v1.0\Libraries\Silverlight");
+                    if (Directory.Exists(otherDir))
+                    {
+                        resolver.AddSearchDirectory(otherDir);
+                    }
+                    // 2. For the Silverlight Toolkit...
+                    otherDir = Path.Combine(programFiles,
+                       @"Microsoft SDKs\Silverlight\v5.0\Toolkit");
+                    if (Directory.Exists(otherDir))
+                    {
+                        // Get the latest installed version...
+                        string[] dirs = Directory.GetDirectories(otherDir);
+                        if (dirs != null && dirs.Length != 0)
+                        {
+                            string dir = String.Empty;
+                            DateTime latestDt = DateTime.MinValue;
+                            for (int j = 0; j < dirs.Length; j++)
+                            {
+                                string latestDir = Path.GetFileName(dirs[j]);
+                                DateTime dt;
+                                if (DateTime.TryParse(latestDir, out dt))
+                                {
+                                    if (dt > latestDt)
+                                    {
+                                        latestDt = dt;
+                                        dir = latestDir;
+                                    }
+                                }
+                            }
+
+                            otherDir = Path.Combine(otherDir, dir + @"\Bin");
+                            if (Directory.Exists(otherDir))
+                            {
+                                resolver.AddSearchDirectory(otherDir);
+                            }
+                        }
+                    }
+
+                    // 3. The Expression 5.0 Blend SDK...
+                    otherDir = Path.Combine(programFiles,
+                       @"Microsoft SDKs\Expression\Blend\Silverlight\v5.0\Libraries");
+                    if (Directory.Exists(otherDir))
+                    {
+                        resolver.AddSearchDirectory(otherDir);
+                    }
+                }
             }
             else if (frameworkKind == BuildFrameworkKind.Portable)
             {
@@ -474,6 +601,11 @@ namespace Sandcastle.References
                 resolver.AddSearchDirectory(framework.AssemblyDir);
             }
             else if (frameworkKind == BuildFrameworkKind.ScriptSharp)
+            {
+                resolver.UseGac = false;
+                resolver.AddSearchDirectory(framework.AssemblyDir);
+            }
+            else if (frameworkKind == BuildFrameworkKind.Compact)
             {
                 resolver.UseGac = false;
                 resolver.AddSearchDirectory(framework.AssemblyDir);
@@ -508,6 +640,24 @@ namespace Sandcastle.References
                     "The framework kind '{0}' is not supported.", frameworkKind.ToString()));
             }
 
+            // Finally, we look inside the binding sources if we are dealing
+            // with link sources...
+            if (sourceContext.IsLinkGroup || sourceContext.IsEmbeddedGroup)
+            {
+                IList<string> bindingSources = sourceContext.BindingSources;
+                if (bindingSources != null && bindingSources.Count != 0)
+                {
+                    foreach (string bindingSource in bindingSources)
+                    {
+                        if (!String.IsNullOrEmpty(bindingSource) &&
+                            Directory.Exists(bindingSource))
+                        {
+                            resolver.AddSearchDirectory(bindingSource);
+                        }
+                    }
+                }
+            }
+
             for (int i = 0; i < _listReference.Count; i++)
             {
                 ReferenceItem refItem = _listReference[i];
@@ -535,6 +685,26 @@ namespace Sandcastle.References
                 if (asmDef.HasCustomAttributes && refItem.XamlSyntax)
                 {
                     this.ResolveXmlnsDefinitions(sourceContext, asmDef, modDef.Name);
+                }
+            }
+
+            string[] searchDirs = resolver.GetSearchDirectories();
+            if (searchDirs != null && searchDirs.Length != 0)
+            {
+                if (_searchDirectories == null)
+                {
+                    _searchDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                }
+
+                for (int i = 0; i < searchDirs.Length; i++)
+                {
+                    string searchDir = Path.GetFullPath(String.Copy(searchDirs[i]));
+                    if (!searchDir.EndsWith("\\"))
+                    {
+                        searchDir += "\\";
+                    }
+
+                    _searchDirectories.Add(searchDir);
                 }
             }
         }

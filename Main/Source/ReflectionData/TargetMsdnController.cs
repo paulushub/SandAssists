@@ -1,11 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
-    public sealed class TargetMsdnController
+    public sealed class TargetMsdnController : IDisposable
     {
         #region Private Fields
 
@@ -14,10 +15,10 @@ namespace Sandcastle.ReflectionData
 
         private static TargetMsdnController _controller;
 
-        private string               _locale;
-        private string               _version;
-        private MemoryMsdnResolver   _memoryResolver;
-        private DatabaseMsdnResolver _databaseResolver;
+        private string             _locale;
+        private string             _version;
+        private string             _mvcVersion;
+        private TargetMsdnResolver _linkResolver;
 
         #endregion
 
@@ -25,8 +26,83 @@ namespace Sandcastle.ReflectionData
 
         private TargetMsdnController()
         {
-            _memoryResolver   = new MemoryMsdnResolver();
-            _databaseResolver = new DatabaseMsdnResolver(true, false);
+            _linkResolver = new MemoryMsdnResolver();
+        }
+
+        private TargetMsdnController(XPathNavigator configuration)
+        {
+            if (configuration == null)
+            {
+                _linkResolver = new MemoryMsdnResolver();
+            }
+            else
+            {
+                string tempText = configuration.GetAttribute("storage", String.Empty);
+                if (String.IsNullOrEmpty(tempText) || !String.Equals(
+                    tempText, "database", StringComparison.OrdinalIgnoreCase))
+                {
+                    _linkResolver = new MemoryMsdnResolver();
+                }
+                else
+                {
+                    bool isCached = true;
+                    tempText = configuration.GetAttribute("cache", String.Empty);
+                    if (!String.IsNullOrEmpty(tempText))
+                    {
+                        isCached = Convert.ToBoolean(tempText);
+                    }
+                    XPathNodeIterator iterator = configuration.Select("source");
+
+                    if (iterator == null || iterator.Count == 0)
+                    {
+                        _linkResolver = new MemoryMsdnResolver();
+                    }
+                    else
+                    {
+                        DatabaseMsdnResolver databaseResolver =
+                            new DatabaseMsdnResolver(true, isCached, isCached);
+
+                        List<DataSource> dataSources = new List<DataSource>();
+
+                        foreach (XPathNavigator navigator in iterator)
+                        {
+                            DataSource dataSource = new DataSource(false, 
+                                navigator);
+
+                            string workingDir = dataSource.OutputDir;
+                            if (dataSource.IsValid || (!String.IsNullOrEmpty(workingDir)
+                                && Directory.Exists(workingDir)))
+                            {    
+                                if (databaseResolver.IsInitialized)
+                                {   
+                                    if (dataSource.Exists)
+                                    {
+                                        databaseResolver.AddDatabaseSource(workingDir);
+                                    }
+                                }
+                                else
+                                {
+                                    databaseResolver.Initialize(workingDir,
+                                        isCached);
+                                }
+                            }
+                        }
+
+                        // Finally, set the database resolver to the link resolver...
+                        _linkResolver = databaseResolver;
+                    }
+                }
+            }
+
+            if (_linkResolver ==  null)
+            {
+                _linkResolver = new MemoryMsdnResolver();
+            }
+        }
+
+        ~TargetMsdnController()
+        {
+            this.Dispose(false);
         }
 
         #endregion 
@@ -37,9 +113,9 @@ namespace Sandcastle.ReflectionData
         {
             get
             {
-                if (_memoryResolver != null)
+                if (_linkResolver != null)
                 {
-                    return _memoryResolver.IsDisabled;
+                    return _linkResolver.IsDisabled;
                 }
 
                 return true;
@@ -58,13 +134,9 @@ namespace Sandcastle.ReflectionData
                 {
                     _locale = value;
 
-                    if (_memoryResolver != null)
+                    if (_linkResolver != null)
                     {
-                        _memoryResolver.Locale = value;
-                    }
-                    if (_databaseResolver != null)
-                    {
-                        _databaseResolver.Locale = value;
+                        _linkResolver.Locale = value;
                     }
                 }
             }
@@ -80,13 +152,26 @@ namespace Sandcastle.ReflectionData
             {
                 _version = value;
 
-                if (_memoryResolver != null)
+                if (_linkResolver != null)
                 {
-                    _memoryResolver.Version = value;
+                    _linkResolver.Version = value;
                 }
-                if (_databaseResolver != null)
+            }
+        }
+
+        public string MvcVersion
+        {
+            get
+            {
+                return _mvcVersion;
+            }
+            set
+            {
+                _mvcVersion = value;
+
+                if (_linkResolver != null)
                 {
-                    _databaseResolver.Version = value;
+                    _linkResolver.MvcVersion = value;
                 }
             }
         }
@@ -97,15 +182,11 @@ namespace Sandcastle.ReflectionData
             {
                 string endpoint = String.Empty;
 
-                if (_databaseResolver != null && _databaseResolver.Exists)
+                if (_linkResolver != null)
                 {
-                    endpoint = _databaseResolver[id];
-                 }
-                if (_memoryResolver != null)
-                {
-                    // We use the GetUrl so that the result is cached...
-                    endpoint = _memoryResolver.GetUrl(id);
+                    endpoint = _linkResolver[id];
                 }
+
                 if (!String.IsNullOrEmpty(endpoint))
                 {
                     // For the Expression SDK...
@@ -116,6 +197,16 @@ namespace Sandcastle.ReflectionData
                     {
                         return String.Format(UrlFormatVersion, _locale,
                             endpoint, "expression.40");
+                    }
+
+                    if (id.IndexOf("System.Web.Mvc",
+                        StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        if (!String.IsNullOrEmpty(_mvcVersion))
+                        {
+                            return String.Format(UrlFormatVersion, _locale,
+                                endpoint, _mvcVersion); 
+                        }
                     }
 
                     if (String.IsNullOrEmpty(_version))
@@ -133,32 +224,55 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public MemoryMsdnResolver MemoryResolver
+        public TargetMsdnResolver Resolver
         {
             get
             {
-                return _memoryResolver;
+                return _linkResolver;
             }
         }
 
-        public DatabaseMsdnResolver DatabaseResolver
+        #endregion
+
+        #region Public Methods
+
+        public static TargetMsdnController GetController()
         {
-            get
+            if (_controller == null)
             {
-                return _databaseResolver;
+                _controller = new TargetMsdnController();
             }
+
+            return _controller;
         }
 
-        public static TargetMsdnController Controller
+        public static TargetMsdnController GetController(
+            XPathNavigator configuration)
         {
-            get
+            if (_controller == null)
             {
-                if (_controller == null)
-                {
-                    _controller = new TargetMsdnController();
-                }
+                _controller = new TargetMsdnController(configuration);
+            }
 
-                return _controller;
+            return _controller;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_linkResolver != null)
+            {
+                _linkResolver.Dispose();
+                _linkResolver = null;
             }
         }
 

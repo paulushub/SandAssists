@@ -137,6 +137,7 @@ namespace Sandcastle.Contents
                 this.ReadXml(reader);
 
                 _isLoaded = true;
+                this.Modified = false;
             }
             finally
             {
@@ -174,6 +175,12 @@ namespace Sandcastle.Contents
                 {
                     return;
                 }
+
+                // If loaded but not modified, there is no need to save it...
+                if (this.IsLoaded && !this.Modified)
+                {
+                    return;
+                }
             }
 
             XmlWriterSettings settings  = new XmlWriterSettings();
@@ -196,6 +203,7 @@ namespace Sandcastle.Contents
                 // The file content is now same as the memory, so it can be
                 // considered loaded...
                 _isLoaded = true;
+                this.Modified = false;
             }
             finally
             {

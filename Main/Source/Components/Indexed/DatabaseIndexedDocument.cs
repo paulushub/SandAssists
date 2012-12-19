@@ -22,29 +22,28 @@ namespace Sandcastle.Components.Indexed
 
         private bool      _isSystem;
         private bool      _isExisted;
+        private bool      _isInitialized;
 
-        private string    _dataDir;
-
-        private PersistentDictionary<string, string> _plusTree;
+        private string    _indexedDataDir;
 
         private XmlReaderSettings _settings;
 
-        private TargetDictionary  _targetIds;
+        private PersistentDictionary<string, string> _indexedDocument;
 
         #endregion
 
         #region Constructors and Destructor
 
-        public DatabaseIndexedDocument(bool isSystem, bool createNotFound)
+        public DatabaseIndexedDocument(bool isSystem)
         {
             _isSystem = isSystem;
 
-            string assemblyPath = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+            //string assemblyPath = Path.GetDirectoryName(
+            //    Assembly.GetExecutingAssembly().Location);
 
-            string workingDir = Path.Combine(assemblyPath, "Data");
+            //string workingDir = Path.Combine(assemblyPath, "Data");
 
-            this.Initialize(workingDir, createNotFound);
+            //this.Initialize(workingDir, createNotFound);
         }
 
         public DatabaseIndexedDocument(bool isSystem, bool createNotFound,
@@ -75,18 +74,11 @@ namespace Sandcastle.Components.Indexed
             }
         }
 
-        public static bool DataExists
+        public bool IsInitialized
         {
             get
             {
-                string assemblyPath = Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly().Location);
-
-                string workingDir = Path.Combine(assemblyPath, "Data");
-
-                string dataDir = Path.Combine(workingDir, "RefT26106211");
-
-                return PersistentDictionaryFile.Exists(dataDir);
+                return _isInitialized;
             }
         }
 
@@ -94,25 +86,74 @@ namespace Sandcastle.Components.Indexed
 
         #region Public Methods
 
+        public void Initialize(string workingDir, bool createNotFound)
+        {
+            if (String.IsNullOrEmpty(workingDir) || _indexedDocument != null)
+            {
+                return;
+            }
+
+            if (Directory.Exists(workingDir))
+            {
+                _isExisted = PersistentDictionaryFile.Exists(workingDir);
+                if (_isExisted)
+                {
+                    _indexedDataDir  = workingDir;
+                    _indexedDocument = new PersistentDictionary<string, string>(_indexedDataDir);
+
+                    _isInitialized   = true;
+                }
+                else
+                {
+                    if (createNotFound)
+                    {
+                        _indexedDataDir = workingDir;
+                       _indexedDocument = new PersistentDictionary<string, string>(_indexedDataDir);
+                        
+                        _isInitialized  = true;
+                    }
+                }
+            }
+            else
+            {
+                if (createNotFound)
+                {
+                    Directory.CreateDirectory(workingDir);
+
+                    _indexedDataDir  = workingDir;
+                    _indexedDocument = new PersistentDictionary<string, string>(_indexedDataDir);
+                    
+                    _isInitialized   = true;
+                }
+            }
+        }
+
+        public void Uninitialize()
+        {
+            _isInitialized = false;
+        }
+
         public override XPathNavigator GetContent(string key)
         {
             XPathNavigator navigator = null;
 
-            if (_plusTree != null)
+            if (_indexedDocument != null)
             {
                 string innerXml = null;
-                if (_targetIds != null && _targetIds.Contains(key))
+                if (_indexedDocument.ContainsKey(key))
                 {
-                    innerXml = _plusTree[key];
-                }
-                else if (_plusTree.ContainsKey(key))
-                {
-                    innerXml = _plusTree[key];
+                    innerXml = _indexedDocument[key];
                 }
 
                 if (String.IsNullOrEmpty(innerXml))
                 {
                     return null;
+                }
+
+                if (_settings == null)
+                {
+                    _settings = new XmlReaderSettings();
+                    _settings.ConformanceLevel = ConformanceLevel.Fragment;
                 }
 
                 StringReader textReader = new StringReader(innerXml);
@@ -150,7 +191,7 @@ namespace Sandcastle.Components.Indexed
 
                 // The outer container interferes with the processing, so
                 // we use the inner XML of the node...
-                _plusTree[keyNode.Value] = valueNode.InnerXml;
+                _indexedDocument[keyNode.Value] = valueNode.InnerXml;
             }
         }
 
@@ -180,7 +221,7 @@ namespace Sandcastle.Components.Indexed
 
                     // The outer container interferes with the processing, so
                     // we use the inner XML of the node...
-                    _plusTree[keyNode.Value] = valueNode.InnerXml;
+                    _indexedDocument[keyNode.Value] = valueNode.InnerXml;
                 }
             }
             catch (IOException e)
@@ -197,74 +238,25 @@ namespace Sandcastle.Components.Indexed
 
         #endregion
 
-        #region Private Methods
-
-        private void Initialize(string workingDir, bool createNotFound)
-        {
-            _settings = new XmlReaderSettings();
-            _settings.ConformanceLevel = ConformanceLevel.Fragment;
-
-            if (!Directory.Exists(workingDir))
-            {
-                Directory.CreateDirectory(workingDir);
-            }
-            string dataDir = null;
-            if (_isSystem)
-            {
-                dataDir = Path.Combine(workingDir, "RefT26106211");
-            }
-            else
-            {
-                string tempFile = Path.GetFileNameWithoutExtension(
-                    Path.GetTempFileName());
-                dataDir = Path.Combine(workingDir, tempFile);
-            }
-
-            _dataDir = dataDir;
-
-            _isExisted = PersistentDictionaryFile.Exists(dataDir);
-            if (_isExisted)
-            {
-                _plusTree = new PersistentDictionary<string, string>(dataDir);
-            }
-            else
-            {
-                if (createNotFound)
-                {
-                    _plusTree = new PersistentDictionary<string, string>(dataDir);
-                }
-            }
-
-            _targetIds = TargetDictionary.Dictionary;
-            if (_targetIds != null)
-            {
-                if (!_targetIds.Exists || _targetIds.Count == 0)
-                {
-                    _targetIds = null;
-                }
-            }
-        }
-
-        #endregion
-
         #region IDisposable Members
 
         protected override void Dispose(bool disposing)
         {
-            if (_plusTree != null)
+            if (_indexedDocument != null)
             {
                 try
                 {
                     // Save the system reflection database, if newly created...
-                    _plusTree.Dispose();
-                    _plusTree = null;
+                    _indexedDocument.Dispose();
+                    _indexedDocument = null;
 
                     // For the non-system reflection database, delete after use...
                     if (!_isSystem)
                     {
-                        if (!String.IsNullOrEmpty(_dataDir) && Directory.Exists(_dataDir))
+                        if (!String.IsNullOrEmpty(_indexedDataDir) && 
+                            Directory.Exists(_indexedDataDir))
                         {
-                            PersistentDictionaryFile.DeleteFiles(_dataDir);
+                            PersistentDictionaryFile.DeleteFiles(_indexedDataDir);
                         }
                     }
                 }

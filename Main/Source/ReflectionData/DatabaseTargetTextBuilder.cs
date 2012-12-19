@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ namespace Sandcastle.ReflectionData
     {
         #region Private Fields
 
+        private string _workingDir;
+
+        private DataSource                _source;
         private DatabaseTargetTextStorage _storage;
 
         #endregion
@@ -22,16 +26,43 @@ namespace Sandcastle.ReflectionData
         {
         }
 
+        public DatabaseTargetTextBuilder(DataSource source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (!source.IsBuilding || !source.IsValid)
+            {
+                throw new ArgumentException("source");
+            }
+
+            string workingDir = source.OutputDir;
+
+            _source = source;
+
+            _storage = new DatabaseTargetTextStorage(true, false, true,
+                workingDir);
+            _workingDir = workingDir;
+        }
+
         public DatabaseTargetTextBuilder(string workingDir)
         {
-            if (String.IsNullOrEmpty(workingDir))
+            if (workingDir == null)
             {
-                _storage = new DatabaseTargetTextStorage(true, true);
+                throw new ArgumentNullException("workingDir",
+                    "The working directory is required and cannot be null (or Nothing).");
             }
-            else
+            if (workingDir.Length == 0 || !Directory.Exists(workingDir))
             {
-                _storage = new DatabaseTargetTextStorage(true, true, workingDir);
+                throw new ArgumentException(
+                    "The working directory is required and cannot be null (or Nothing).",
+                    "workingDir");
             }
+
+            _storage = new DatabaseTargetTextStorage(true, false, true,
+                workingDir);
+            _workingDir = workingDir;
         }
 
         ~DatabaseTargetTextBuilder()
@@ -70,14 +101,68 @@ namespace Sandcastle.ReflectionData
 
         public bool Build()
         {
-            string dataDir = Environment.ExpandEnvironmentVariables(@"%DXROOT%\Data\Reflection");
-            dataDir        = Path.GetFullPath(dataDir);
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return false;
+            }     
+
+            string dataDir = null;
+            if (_source != null && Directory.Exists(_source.InputDir))
+            {
+                dataDir = _source.InputDir;
+            }
+            else
+            {
+                dataDir = Environment.ExpandEnvironmentVariables(
+                    @"%DXROOT%\Data\Reflection");
+                dataDir = Path.GetFullPath(dataDir);
+            }
             if (!Directory.Exists(dataDir))
             {
                 return false;
             }
 
             this.AddTargets(dataDir, "*.xml", true, ReferenceLinkType.None);
+
+            if (_storage != null)
+            {
+                _storage.Dispose();
+                _storage = null;
+            }
+
+            // Perform a defragmentation of the PersistentDictionary.edb database
+            Process process = new Process();
+
+            ProcessStartInfo startInfo = process.StartInfo;
+
+            startInfo.FileName               = "esentutl.exe";
+            startInfo.Arguments              = "-d " + DataSource.DatabaseFileName + " -o";
+            startInfo.UseShellExecute        = false;
+            startInfo.CreateNoWindow         = true;
+            startInfo.WorkingDirectory       = _workingDir;
+            startInfo.RedirectStandardOutput = false;
+
+            // Now, start the process - there will still not be output till...
+            process.Start();
+            // We must wait for the process to complete...
+            process.WaitForExit();
+            int exitCode = process.ExitCode;
+            process.Close();
+            if (exitCode != 0)
+            {
+                return false;
+            }
+
+            string[] logFiles = Directory.GetFiles(_workingDir, "*.log", 
+                SearchOption.TopDirectoryOnly);
+            if (logFiles != null)
+            {
+                for (int i = 0; i < logFiles.Length; i++)
+                {
+                    File.Delete(logFiles[i]);
+                }
+            }
 
             return true;
         }
@@ -86,7 +171,8 @@ namespace Sandcastle.ReflectionData
 
         #region Private Methods
 
-        private void AddTargets(string directory, string filePattern, bool recurse, ReferenceLinkType type)
+        private void AddTargets(string directory, string filePattern, 
+            bool recurse, ReferenceLinkType type)
         {
             string[] files = Directory.GetFiles(directory, filePattern);
             foreach (string file in files)
@@ -107,7 +193,8 @@ namespace Sandcastle.ReflectionData
         {
             XPathDocument document = new XPathDocument(file);
             // This will only load into the memory...
-            TargetCollectionXmlUtilities.AddTargets(_storage, document.CreateNavigator(), type);
+            TargetCollectionXmlUtilities.AddTargets(_storage, 
+                document.CreateNavigator(), type);
         }
 
         #endregion

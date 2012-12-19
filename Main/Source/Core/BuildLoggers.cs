@@ -5,14 +5,13 @@ using System.Collections.Generic;
 namespace Sandcastle
 {
     /// <summary>
-    /// This logger records all the relevant build events, information, warnings, 
-    /// and errors to its contained members.
+    /// This logger records all the relevant build events, information, 
+    /// warnings, and errors to its contained members.
     /// </summary>
     /// <remarks>
-    /// This is the logger used by the build engines, <see cref="BuildEngine"/>, and
-    /// it is simply a container for other loggers.
+    /// This is the logger used by the build engines, and it is simply a 
+    /// container for other loggers.
     /// </remarks>
-    /// <seealso cref="BuildEngine.Logger"/>
     public sealed class BuildLoggers : BuildLogger
     {
         #region Public Fields

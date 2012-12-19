@@ -60,8 +60,8 @@ namespace Sandcastle.Components.Snippets
         #region Constructors and Destructor
 
         public SnippetDatabaseProvider(Type componentType,
-            MessageHandler messageHandler)
-            : base(componentType, messageHandler)
+            MessageWriter messageWriter)
+            : base(componentType, messageWriter)
         {
         }
 

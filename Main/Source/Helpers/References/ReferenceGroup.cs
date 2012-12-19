@@ -31,7 +31,6 @@ namespace Sandcastle.References
 
         private ReferenceSource      _topicSource;
         private ReferenceContent     _topicContent;
-        private ReferenceLinkSource  _topicLinks;
 
         private ReferenceVersionInfo _versionInfo;
         private ReferenceVersionType _versionType;
@@ -113,7 +112,6 @@ namespace Sandcastle.References
             _rootTopicId      = source._rootTopicId;
             _topicSource      = source._topicSource;
             _topicContent     = source._topicContent;
-            _topicLinks       = source._topicLinks;
             _rootTopicId      = source._rootTopicId;
         }
 
@@ -202,18 +200,6 @@ namespace Sandcastle.References
             set
             {
                 _topicSource = value;
-            }
-        }
-
-        public ReferenceLinkSource Links
-        {
-            get
-            {
-                return _topicLinks;
-            }
-            set
-            {
-                _topicLinks = value;
             }
         }
 
@@ -350,6 +336,13 @@ namespace Sandcastle.References
 
             if (!Directory.Exists(workingDir))
             {
+                // If the base directory does not exists for some reason, we
+                // create that first...
+                string baseDir = context.BaseDirectory;
+                if (!Directory.Exists(baseDir))
+                {
+                    Directory.CreateDirectory(baseDir);
+                }
                 Directory.CreateDirectory(workingDir);
             }
 
@@ -415,7 +408,7 @@ namespace Sandcastle.References
             }
 
             return listShared;
-        }     
+        }
 
         #endregion
 
@@ -551,34 +544,19 @@ namespace Sandcastle.References
             {
                 string sourceName = reader.GetAttribute("name");
 
-                // For the link source...
-                if (String.Equals(sourceName, ReferenceLinkSource.SourceName,
-                    StringComparison.OrdinalIgnoreCase))
-                {   
-                    if (_topicLinks == null)
-                    {
-                        _topicLinks = new ReferenceLinkSource();
-                    }
-
-                    _topicLinks.ReadXml(reader);
-                }
-                else // For all other sources...
+                if (_topicSource == null)
                 {
-                    if (_topicSource == null)
-                    {
-                        _topicSource = ReferenceSource.CreateSource(sourceName);
-                    }
-
-                    if (_topicSource == null)
-                    {
-                        throw new BuildException(String.Format(
-                            "The creation of the reference content source '{0}' failed.",
-                            reader.GetAttribute("name")));
-                    }
-
-                    _topicSource.ReadXml(reader);
+                    _topicSource = ReferenceSource.CreateSource(sourceName);
                 }
 
+                if (_topicSource == null)
+                {
+                    throw new BuildException(String.Format(
+                        "The creation of the reference content source '{0}' failed.",
+                        reader.GetAttribute("name")));
+                }
+
+                _topicSource.ReadXml(reader);
             }
             else if (String.Equals(reader.Name, "versionInfo",
                 StringComparison.OrdinalIgnoreCase))
@@ -599,13 +577,6 @@ namespace Sandcastle.References
                 writer.WriteComment(
                     " The content source defining this reference group. ");
                 _topicSource.WriteXml(writer);
-            }
-
-            if (_topicLinks != null)
-            {
-                writer.WriteComment(
-                    " The links source for this reference group. ");
-                _topicLinks.WriteXml(writer);
             }
 
             if (_versionInfo != null)
@@ -658,10 +629,6 @@ namespace Sandcastle.References
             if (_topicContent != null)
             {
                 group._topicContent = _topicContent.Clone();
-            }
-            if (_topicLinks != null)
-            {
-                group._topicLinks = (ReferenceLinkSource)_topicLinks.Clone();
             }
             if (_versionInfo != null)
             {

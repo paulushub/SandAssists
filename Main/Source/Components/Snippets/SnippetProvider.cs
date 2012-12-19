@@ -10,28 +10,28 @@ namespace Sandcastle.Components.Snippets
     {
         #region Private Fields
 
-        private Type           _componentType;
-        private MessageHandler _messageHandler;
+        private Type          _componentType;
+        private MessageWriter _messageWriter;
 
         #endregion
 
         #region Constructors and Destructor
 
-        protected SnippetProvider(Type componentType, MessageHandler messageHandler)
+        protected SnippetProvider(Type componentType, MessageWriter messageWriter)
         {
             if (componentType == null)
             {
                 throw new ArgumentNullException("componentType",
                     "The component type cannot be null (or Nothing).");
             }
-            if (messageHandler == null)
+            if (messageWriter == null)
             {
-                throw new ArgumentNullException("messageHandler",
-                    "The message handler cannot be null (or Nothing).");
+                throw new ArgumentNullException("messageWriter",
+                    "The message writer cannot be null (or Nothing).");
             }
 
-            _componentType  = componentType;
-            _messageHandler = messageHandler;
+            _componentType = componentType;
+            _messageWriter = messageWriter;
         }
 
         ~SnippetProvider()
@@ -109,9 +109,9 @@ namespace Sandcastle.Components.Snippets
                 return;
             }
 
-            if (level != MessageLevel.Ignore && _messageHandler != null)
+            if (level != MessageLevel.Ignore && _messageWriter != null)
             {
-                _messageHandler(_componentType, level, message);
+                _messageWriter.Write(_componentType, level, message);
             }
         }
 

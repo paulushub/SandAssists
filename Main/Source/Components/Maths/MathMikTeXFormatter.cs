@@ -38,14 +38,15 @@ namespace Sandcastle.Components.Maths
             Initialize();
         }
 
-        public MathMikTeXFormatter(Type componentType, MessageHandler messageHandler)
-            : base(componentType, messageHandler)
+        public MathMikTeXFormatter(Type componentType, MessageWriter messageWriter)
+            : base(componentType, messageWriter)
         {
             Initialize();
         }
 
-        public MathMikTeXFormatter(Type componentType, MessageHandler messageHandler,
-            XPathNavigator formatter) : base(componentType, messageHandler, formatter)
+        public MathMikTeXFormatter(Type componentType, MessageWriter messageWriter,
+            XPathNavigator formatter) 
+            : base(componentType, messageWriter, formatter)
         {
             Initialize();
         }

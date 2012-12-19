@@ -1,0 +1,137 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{399E78F8-4954-409E-991A-37DA9D0579CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Ddue.Tools</RootNamespace>
+    <AssemblyName>Sandcastle.BuildAssembler</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\..\Output\Sandcastle.BuildAssembler.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuildAssembler.cs" />
+    <Compile Include="BuildComponent.cs" />
+    <Compile Include="BuildComponents\CloneComponent.cs" />
+    <Compile Include="BuildComponents\CodeReference.cs" />
+    <Compile Include="BuildComponents\CopyFromFileComponent.cs" />
+    <Compile Include="BuildComponents\CopyFromFiles.cs" />
+    <Compile Include="BuildComponents\CopyFromIndexComponent.cs" />
+    <Compile Include="BuildComponents\DisplayComponent.cs" />
+    <Compile Include="BuildComponents\ExampleComponent.cs" />
+    <Compile Include="BuildComponents\ForEachComponent.cs" />
+    <Compile Include="BuildComponents\GlobalSuppressions.cs" />
+    <Compile Include="BuildComponents\HxfGeneratorComponent.cs" />
+    <Compile Include="BuildComponents\IfThenComponent.cs" />
+    <Compile Include="BuildComponents\IndexedFileCache.cs" />
+    <Compile Include="BuildComponents\IntellisenseComponent.cs" />
+    <Compile Include="BuildComponents\IntellisenseComponent2.cs" />
+    <Compile Include="BuildComponents\LiveExampleComponent.cs" />
+    <Compile Include="BuildComponents\MsdnResolver.cs" />
+    <Compile Include="BuildComponents\MsdnService.cs" />
+    <Compile Include="BuildComponents\MSHCComponent.cs" />
+    <Compile Include="BuildComponents\PlatformsComponent.cs" />
+    <Compile Include="BuildComponents\References.cs" />
+    <Compile Include="BuildComponents\ResolveArtLinksComponent.cs" />
+    <Compile Include="BuildComponents\ResolveConceptualLinksComponent.cs" />
+    <Compile Include="BuildComponents\ResolveReferenceLinksComponent2.cs" />
+    <Compile Include="BuildComponents\SaveComponent.cs" />
+    <Compile Include="BuildComponents\SharedContentComponent.cs" />
+    <Compile Include="BuildComponents\SnippetComponent.cs" />
+    <Compile Include="BuildComponents\SwitchComponent.cs" />
+    <Compile Include="BuildComponents\SyntaxComponent.cs" />
+    <Compile Include="BuildComponents\TargetCollection.cs" />
+    <Compile Include="BuildComponents\Targets.cs" />
+    <Compile Include="BuildComponents\TaskGrabberComponent.cs" />
+    <Compile Include="BuildComponents\TransformComponent.cs" />
+    <Compile Include="BuildComponents\ValidateComponent.cs" />
+    <Compile Include="BuildComponents\WdxResolveConceptualLinksComponent.cs" />
+    <Compile Include="BuildComponentUtilities.cs" />
+    <Compile Include="BuildContext.cs" />
+    <Compile Include="CopyComponent.cs" />
+    <Compile Include="CopyComponents\InheritDocumentationComponent.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MessageWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyntaxComponents\AspNetSyntax.cs" />
+    <Compile Include="SyntaxComponents\CPlusPlusDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\CSharpDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\FSharpDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\GlobalSuppressions.cs" />
+    <Compile Include="SyntaxComponents\JScriptDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\JSharpDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\ScriptSharpDeclarationSyntax.cs" />
+    <Compile Include="SyntaxGeneratorTemplates.cs" />
+    <Compile Include="SyntaxComponents\VisualBasicDeclarationSyntax.cs" />
+    <Compile Include="SyntaxComponents\VisualBasicUsageSyntax.cs" />
+    <Compile Include="SyntaxComponents\XamlUsageSyntax.cs" />
+    <Compile Include="SyntaxGenerator.cs" />
+    <Compile Include="SyntaxWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- Copy the output assemblies to a common binaries directory (ProductionTools). -->
+  <Target Name="AfterBuild">
+    <CreateItem Include="$(OutputPath)\$(AssemblyName).*">
+      <Output TaskParameter="Include" ItemName="ProductionFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ProductionFiles)" DestinationFolder="..\..\..\ProductionTools" />
+  </Target>
+</Project>

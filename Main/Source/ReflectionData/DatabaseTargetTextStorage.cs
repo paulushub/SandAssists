@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Collections.Generic;
 
 using Microsoft.Isam.Esent;
-using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
@@ -17,17 +16,19 @@ namespace Sandcastle.ReflectionData
 
         private int       _count;
 
+        private bool      _useQuickTargets;
+
         private bool      _isSystem;
         private bool      _isExisted;
+        private bool      _isInitialized;
 
-        private string    _dataDir;
+        private string    _targetDataDir;
 
-        private PersistentDictionary<string, string> _plusTree;
-
-        private MemoryTargetStorage _quickStorage;  
+        private MemoryTargetStorage _quickStorage;
         private DatabaseTargetCache _targetCache;
 
-        private TargetDictionary _targetIds;
+        private List<DatabaseTargetStorage>          _otherStorages;
+        private PersistentDictionary<string, string> _targetStorage;
 
         #endregion
 
@@ -38,12 +39,12 @@ namespace Sandcastle.ReflectionData
         {
             _isSystem = isSystem;
 
-            string assemblyPath = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+            //string assemblyPath = Path.GetDirectoryName(
+            //    Assembly.GetExecutingAssembly().Location);
 
-            string workingDir = Path.Combine(assemblyPath, "Data");
+            //string workingDir = Path.Combine(assemblyPath, "Data");
 
-            this.Initialize(workingDir, createNotFound);
+            //this.Initialize(workingDir, createNotFound);
         }
 
         public DatabaseTargetTextStorage(bool isSystem, bool createNotFound, 
@@ -51,6 +52,31 @@ namespace Sandcastle.ReflectionData
             : base(isSystem, createNotFound, workingDir)
         {
             _isSystem = isSystem;
+
+            this.Initialize(workingDir, createNotFound);
+        }
+
+        public DatabaseTargetTextStorage(bool isSystem, bool useQuickTargets,
+            bool createNotFound)
+            : base(isSystem, createNotFound)
+        {
+            _isSystem        = isSystem;
+            _useQuickTargets = useQuickTargets;
+
+            //string assemblyPath = Path.GetDirectoryName(
+            //    Assembly.GetExecutingAssembly().Location);
+
+            //string workingDir = Path.Combine(assemblyPath, "Data");
+
+            //this.Initialize(workingDir, createNotFound);
+        }
+
+        public DatabaseTargetTextStorage(bool isSystem, bool useQuickTargets,
+            bool createNotFound, string workingDir)
+            : base(isSystem, createNotFound, workingDir)
+        {
+            _isSystem        = isSystem;
+            _useQuickTargets = useQuickTargets;
 
             this.Initialize(workingDir, createNotFound);
         }
@@ -71,7 +97,7 @@ namespace Sandcastle.ReflectionData
         {
             get
             {
-                if (_plusTree == null)
+                if (_targetStorage == null)
                 {
                     if (_quickStorage != null)
                     {
@@ -88,7 +114,7 @@ namespace Sandcastle.ReflectionData
             get
             {
                 Target target = null;
-                if (_quickStorage != null)
+                if (_quickStorage != null && _quickStorage.Count != 0)
                 {
                     target = _quickStorage[id];
                     if (target != null)
@@ -105,30 +131,42 @@ namespace Sandcastle.ReflectionData
                     }
                 }
 
-                if (_plusTree == null)
+                if (_targetStorage != null && _targetStorage.ContainsKey(id))
                 {
-                    return target;
-                }
-                if (_targetIds != null && _targetIds.Contains(id))
-                {
-                    target = TargetsReader.ReadXml(_plusTree[id]);
+                    target = TargetsReader.ReadXml(_targetStorage[id]);
                     if (target != null && _targetCache != null)
                     {
                         _targetCache.Add(target);
                     }
+
+                    return target;
                 }
-                else if (_plusTree.ContainsKey(id))
+                if (_otherStorages != null && _otherStorages.Count != 0)
                 {
-                    target = TargetsReader.ReadXml(_plusTree[id]);
-                    if (target != null && _targetCache != null)
+                    // We will not cache any target from the other sources, since
+                    // each has internal cache...
+                    for (int i = 0; i < _otherStorages.Count; i++)
                     {
-                        _targetCache.Add(target);
+                        target = _otherStorages[i][id];
+                        if (target != null)
+                        {
+                            break;
+                        }
                     }
                 }
 
                 return target;
             }
-        }  
+        }
+
+
+        public override bool IsInitialize
+        {
+            get
+            {
+                return _isInitialized;
+            }
+        }
 
         public override DatabaseTargetCache Cache
         {
@@ -152,16 +190,39 @@ namespace Sandcastle.ReflectionData
 
         public override bool Contains(string id)
         {
-            if (String.IsNullOrEmpty(id) || _plusTree == null)
+            if (String.IsNullOrEmpty(id))
             {
                 return false;
             }
-            if (_targetIds != null)
+
+            if (_quickStorage != null && _quickStorage.Count != 0)
             {
-                return _targetIds.Contains(id);
+                if (_quickStorage.Contains(id))
+                    return true;
+            }
+            if (_targetCache != null && _targetCache.Count != 0)
+            {
+                if (_targetCache.Contains(id))
+                    return true;
+            }   
+            if (_targetStorage != null && _targetStorage.Count != 0)
+            {
+                if (_targetStorage.ContainsKey(id))
+                    return true;
+            }
+            if (_otherStorages != null && _otherStorages.Count != 0)
+            {
+                // We will not cache any target from the other sources, since
+                // each has internal cache...
+                for (int i = 0; i < _otherStorages.Count; i++)
+                {
+                    DatabaseTargetStorage targetStorage = _otherStorages[i];
+                    if (targetStorage.Contains(id))
+                        return true;
+                }
             }
 
-            return _plusTree.ContainsKey(id);
+            return false;
         }
 
         public override void Add(Target target)
@@ -170,7 +231,7 @@ namespace Sandcastle.ReflectionData
             {
                 return;
             }
-            if (_plusTree == null)
+            if (_targetStorage == null)
             {   
                 if (_quickStorage != null)
                 {
@@ -179,12 +240,12 @@ namespace Sandcastle.ReflectionData
             }
             else
             {
-                if (!_plusTree.ContainsKey(target.id))
+                if (!_targetStorage.ContainsKey(target.id))
                 {
                     _count++;
                 }
 
-                _plusTree[target.id] = TargetsWriter.WriteXml(target);
+                _targetStorage[target.id] = TargetsWriter.WriteXml(target);
             }
         }
 
@@ -192,25 +253,7 @@ namespace Sandcastle.ReflectionData
         {   
         }
 
-        public static bool DataExists
-        {   
-            get
-            {
-                string assemblyPath = Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly().Location);
-
-                string workingDir = Path.Combine(assemblyPath, "Data");
-                string dataDir = Path.Combine(workingDir, "LinkT26106211");
-
-                return PersistentDictionaryFile.Exists(dataDir);
-            }
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void Initialize(string workingDir, bool createNotFound)
+        public override void Initialize(string workingDir, bool createNotFound)
         {
             if (String.IsNullOrEmpty(workingDir))
             {
@@ -223,55 +266,74 @@ namespace Sandcastle.ReflectionData
             {
                 Directory.CreateDirectory(workingDir);
             }
-            if (_isSystem)
-            {
-                _dataDir = Path.Combine(workingDir, "LinkT26106211");
-            }
-            else
-            {
-                string tempFile = Path.GetFileNameWithoutExtension(
-                    Path.GetTempFileName());
 
-                _dataDir = Path.Combine(workingDir, tempFile);
-            }
+            // For non-system, we will delete the directory after use...
+            _targetDataDir = workingDir;
 
-            _isExisted = PersistentDictionaryFile.Exists(_dataDir);
+            _isExisted = PersistentDictionaryFile.Exists(_targetDataDir);
             if (_isExisted)
             {
-                _plusTree  = new PersistentDictionary<string, string>(_dataDir);
-                if (_plusTree.ContainsKey("$DataCount$"))
+                this.CheckDataIndex(_targetDataDir);
+
+                _targetStorage = new PersistentDictionary<string, string>(_targetDataDir);
+
+                if (_targetStorage.ContainsKey("$DataCount$"))
                 {
-                    _count = Convert.ToInt32(_plusTree["$DataCount$"]);
+                    _count = Convert.ToInt32(_targetStorage["$DataCount$"]);
+                    if (_count <= 0)
+                    {
+                        _count = _targetStorage.Count;
+                    }
+                }
+                else
+                {
+                    _count = _targetStorage.Count;
                 }
 
-                this.AddQuickTargets();
-                //if (_count > 0)
-                //{
-                //}
+                if (_useQuickTargets)
+                {
+                    this.AddQuickTargets();
+                }
             }
             else
             {
-                _count    = 0;
+                _count = 0;
                 if (createNotFound)
                 {
-                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
+                    _targetStorage = new PersistentDictionary<string, string>(_targetDataDir);
                 }
             }
 
-            if (_plusTree != null)
+            if (_targetStorage != null)
             {
                 _targetCache = new DatabaseTargetCache(100);
             }
 
-            _targetIds = TargetDictionary.Dictionary;
-            if (_targetIds != null)
-            {
-                if (!_targetIds.Exists || _targetIds.Count == 0)
-                {
-                    _targetIds = null;
-                }
-            }
+            _isInitialized = true;
         }
+
+        public override void Uninitialize()
+        {
+            _isInitialized = false;
+        }
+
+        public void AddStorage(DatabaseTargetStorage storage)
+        {
+            if (storage == null)
+            {
+                return;
+            }
+
+            if (_otherStorages == null)
+            {
+                _otherStorages = new List<DatabaseTargetStorage>();
+            }
+            _otherStorages.Add(storage);
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private void AddQuickTargets()
         {
@@ -283,19 +345,19 @@ namespace Sandcastle.ReflectionData
                 return;
             }
 
-            string[] quickList
-                = {
-                      "System.xml",
-                      "System.Xml.xml",
-                      "System.Drawing.xml",
-                      "System.Collections.xml",
-                      "System.Collections.Generic.xml",
-                      "System.Collections.ObjectModel.xml",
-                      "System.Collections.Specialized.xml",
-                      "System.Text.xml",
-                      "System.Windows.xml",
-                      "System.Windows.Media.xml",
-                  };
+            string[] quickList = 
+            {
+                  "System.xml",
+                  "System.Xml.xml",
+                  "System.Drawing.xml",
+                  "System.Collections.xml",
+                  "System.Collections.Generic.xml",
+                  "System.Collections.ObjectModel.xml",
+                  "System.Collections.Specialized.xml",
+                  "System.Text.xml",
+                  "System.Windows.xml",
+                  "System.Windows.Media.xml",
+            };
             foreach (string fileName in quickList)
             {
                 string filePath = Path.Combine(dataDir, fileName);
@@ -326,31 +388,20 @@ namespace Sandcastle.ReflectionData
 
         protected override void Dispose(bool disposing)
         {
-            if (_plusTree != null)
+            if (_targetStorage != null)
             {
                 try
                 {
-                    // Save the system reflection database, if newly created...
-                    if (_isSystem)
-                    {
-                        if (!_isExisted)
-                        {
-                            // Add some metadata...
-                            _plusTree["$DataCount$"]   = _count.ToString();
-                            _plusTree["$DataVersion$"] = "2.6.10621.1";
-                        }
-                    }
-
-                    _plusTree.Dispose();
-                    _plusTree = null;
+                    _targetStorage.Dispose();
+                    _targetStorage = null;
 
                     // For the non-system reflection database, delete after use...
                     if (!_isSystem)
                     {
-                        if (!String.IsNullOrEmpty(_dataDir) && 
-                            Directory.Exists(_dataDir))
+                        if (!String.IsNullOrEmpty(_targetDataDir) && 
+                            Directory.Exists(_targetDataDir))
                         {
-                            PersistentDictionaryFile.DeleteFiles(_dataDir);
+                            PersistentDictionaryFile.DeleteFiles(_targetDataDir);
                         }
                     }
                 }

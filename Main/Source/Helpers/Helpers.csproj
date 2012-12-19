@@ -97,6 +97,8 @@
     <Compile Include="BuildGroupTocInfo.cs" />
     <Compile Include="BuildGroupVisitor.cs" />
     <Compile Include="BuildLogging.cs" />
+    <Compile Include="BuildManager.cs" />
+    <Compile Include="BuildTool.cs" />
     <Compile Include="Conceptual\ConceptualChangeHistory.cs" />
     <Compile Include="Conceptual\ConceptualDocProjReader.cs" />
     <Compile Include="Conceptual\ConceptualGroupContext.cs" />
@@ -221,6 +223,7 @@
     <Compile Include="References\ReferenceComponentConfiguration.cs" />
     <Compile Include="References\ReferenceConfiguration.cs" />
     <Compile Include="References\ReferenceLinkSource.cs" />
+    <Compile Include="References\ReferencePlatformsConfiguration.cs" />
     <Compile Include="References\ReferenceProjectVisitor.cs" />
     <Compile Include="References\ReferenceDocumentType.cs" />
     <Compile Include="References\ReferenceEngineSettings.cs" />
@@ -277,6 +280,7 @@
     <Compile Include="Steps\StepConceptualInit.cs" />
     <Compile Include="Steps\StepMhvViewerClose.cs" />
     <Compile Include="Steps\StepReferenceInit.cs" />
+    <Compile Include="Steps\StepReferenceLinks.cs" />
     <Compile Include="Steps\StepReferenceManifest.cs" />
     <Compile Include="Steps\StepReferenceModel.cs" />
     <Compile Include="Steps\StepReferenceRefine.cs" />
@@ -322,6 +326,11 @@
     <Compile Include="Steps\StepProcess.cs" />
     <Compile Include="References\ReferenceEngine.cs" />
     <Compile Include="Steps\StepTocMerge.cs" />
+    <Compile Include="Tools\SandcastleAssemblerTool.cs" />
+    <Compile Include="Tools\SandcastleReflectionTool.cs" />
+    <Compile Include="Tools\SandcastleTool.cs" />
+    <Compile Include="Tools\SandcastleTransformTool.cs" />
+    <Compile Include="Tools\SandcastleVersionBuilderTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
@@ -346,6 +355,7 @@
     <None Include="Diagrams\BuildSteps.cd" />
     <None Include="Diagrams\BuildFormats.cd" />
     <None Include="Diagrams\BuildTocInfo.cd" />
+    <None Include="Diagrams\BuildTools.cd" />
     <None Include="Diagrams\BuildVisitors.cd" />
   </ItemGroup>
   <ItemGroup>
@@ -356,6 +366,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BuildAssembler\BuildAssembler.csproj">
+      <Project>{399E78F8-4954-409E-991A-37DA9D0579CC}</Project>
+      <Name>BuildAssembler</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Composition\Composition.csproj">
       <Project>{1BBA5101-D4F0-48B8-A5D6-7B23A099DCE3}</Project>
       <Name>Composition</Name>
@@ -369,6 +384,16 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{CD2DA1CC-FAFC-4AEF-8520-BE469C5CEC27}</Project>
       <Name>Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ReflectionData\ReflectionData.csproj">
+      <Project>{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}</Project>
+      <Name>ReflectionData</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Reflection\Reflection.csproj">
+      <Project>{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}</Project>
+      <Name>Reflection</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -184,6 +184,9 @@ namespace Sandcastle.Construction.ProjectSections
                             case "TargetFrameworkIdentifier":
                                 this.TargetFrameworkIdentifier = property.Value;
                                 break;
+                            case "PlatformFamilyName":
+                                this.PlatformFamilyName = property.Value;
+                                break;
                             case "ReferencePath":
                                 string pathValue = property.Value;
                                 if (!String.IsNullOrEmpty(pathValue))
@@ -216,6 +219,21 @@ namespace Sandcastle.Construction.ProjectSections
                     propertyGroup.Condition))
                 {
                     conditionedGroups.Add(propertyGroup);
+                }
+            }
+
+            // For the Compact Framework...
+            string platformFamily = this.PlatformFamilyName;
+            if (!String.IsNullOrEmpty(platformFamily))
+            {
+                if (platformFamily.Equals("PocketPC",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    platformFamily.Equals("Smartphone",
+                    StringComparison.OrdinalIgnoreCase) ||
+                    platformFamily.Equals("WindowsCE",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    this.TargetFrameworkIdentifier = "Compact";
                 }
             }
 

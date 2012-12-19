@@ -26,9 +26,10 @@ namespace Sandcastle.Components.Indexed
 
         #region Constructors and Destructor
 
-        public DatabaseIndexedBuilder()
+        public DatabaseIndexedBuilder(string workingDir)
         {
-            _document             = new DatabaseIndexedDocument(true, true);
+            _document             = new DatabaseIndexedDocument(true, true,
+                workingDir);
 
             // The following are the usual key/value in the configuration file...
             string keyXPath       = "@id";

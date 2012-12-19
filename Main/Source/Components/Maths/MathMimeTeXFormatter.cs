@@ -39,15 +39,16 @@ namespace Sandcastle.Components.Maths
             _textBuilder = new StringBuilder();
         }
 
-        public MathMimeTeXFormatter(Type componentType, MessageHandler messageHandler)
-            : base(componentType, messageHandler)
+        public MathMimeTeXFormatter(Type componentType, MessageWriter messageWriter)
+            : base(componentType, messageWriter)
         {
             _imageExt    = ".gif";
             _textBuilder = new StringBuilder();
         }
 
-        public MathMimeTeXFormatter(Type componentType, MessageHandler messageHandler,
-            XPathNavigator formatter) : base(componentType, messageHandler, formatter)
+        public MathMimeTeXFormatter(Type componentType, MessageWriter messageWriter,
+            XPathNavigator formatter) 
+            : base(componentType, messageWriter, formatter)
         {
             _imageExt    = ".gif";
             _textBuilder = new StringBuilder();

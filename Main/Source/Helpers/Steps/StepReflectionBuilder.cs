@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using Sandcastle.Utilities;
+using Sandcastle.Tools;
 using Sandcastle.References;
 
 namespace Sandcastle.Steps
@@ -14,10 +14,24 @@ namespace Sandcastle.Steps
     {
         #region Private Fields
 
+        private bool _ripOldApis;
+        private bool _documentInternals;
+        private bool _ignoreXsltWhitespace;
+
+        private AppDomain                _reflectorDomain;
+        private SandcastleTransformTool  _transformProxy;
+        private SandcastleReflectionTool _reflectorProxy;
+
+        private string _configurationFile;
+        private string _reflectionFile;
+        private IList<string> _dependencyFiles;
+        private IList<string> _assemblyFiles;
+
         private ReferenceGroup       _group;
 
         private BuildLoggerLevel     _lastLevel;
         private BuildLoggerVerbosity _verbosity;
+        private ReferenceEngineSettings _engineSettings;
 
         #endregion
 
@@ -25,25 +39,32 @@ namespace Sandcastle.Steps
 
         public StepReflectionBuilder()
         {
-            this.LogTitle = "Reflection Builder Tool";
-            _lastLevel    = BuildLoggerLevel.None;
-            _verbosity    = BuildLoggerVerbosity.None;
+            this.Construction();
         }
 
         public StepReflectionBuilder(string workingDir, string arguments)
             : base(workingDir, arguments)
         {
-            this.LogTitle = "Reflection Builder Tool";
-            _lastLevel    = BuildLoggerLevel.None;
-            _verbosity    = BuildLoggerVerbosity.None;
+            this.Construction();
         }
 
         public StepReflectionBuilder(string workingDir, string fileName, string arguments)
             : base(workingDir, fileName, arguments)
         {
+            this.Construction();
+        }
+
+        private void Construction()
+        {
+            _ignoreXsltWhitespace = true;
+
             this.LogTitle = "Reflection Builder Tool";
             _lastLevel    = BuildLoggerLevel.None;
             _verbosity    = BuildLoggerVerbosity.None;
+
+            _ripOldApis      = true;
+            _assemblyFiles   = new List<string>();
+            _dependencyFiles = new List<string>();
         }
 
         #endregion
@@ -62,6 +83,82 @@ namespace Sandcastle.Steps
             }
         }
 
+        public bool DocumentInternals
+        {
+            get
+            {
+                return _documentInternals;
+            }
+            set
+            {
+                _documentInternals = value;
+            }
+        }
+
+        public bool RipOldApis
+        {
+            get
+            {
+                return _ripOldApis;
+            }
+            set
+            {
+                _ripOldApis = value;
+            }
+        }
+
+        public bool IgnoreXsltWhitespace
+        {
+            get
+            {
+                return _ignoreXsltWhitespace;
+            }
+            set
+            {
+                _ignoreXsltWhitespace = value;
+            }
+        }
+
+        public string ConfigurationFile
+        {
+            get
+            {
+                return _configurationFile;
+            }
+            set
+            {
+                _configurationFile = value;
+            }
+        }
+
+        public string ReflectionFile
+        {
+            get
+            {
+                return _reflectionFile;
+            }
+            set
+            {
+                _reflectionFile = value;
+            }
+        }
+
+        public IList<string> DependencyFiles
+        {
+            get
+            {
+                return _dependencyFiles;
+            }
+        }
+
+        public IList<string> AssemblyFiles
+        {
+            get
+            {
+                return _assemblyFiles;
+            }
+        }
+
         #endregion
 
         #region Protected Methods
@@ -76,198 +173,76 @@ namespace Sandcastle.Steps
                     "The build group for this step is required.");
             }
 
-            BuildLogger logger = context.Logger;
-            if (logger != null)
-            {
-                _verbosity = logger.Verbosity;
-            }
-
-            bool buildResult = this.OnBeginReflection(context);
-            if (!buildResult)
-            {
-                return false;
-            }
-
             ReferenceGroupContext groupContext =
                 context.GroupContexts[_group.Id] as ReferenceGroupContext;
 
-            ReferenceEngineSettings engineSettings = context.Settings.EngineSettings[
+            _engineSettings = context.Settings.EngineSettings[
                 BuildEngineType.Reference] as ReferenceEngineSettings;
-            Debug.Assert(engineSettings != null,
+            Debug.Assert(_engineSettings != null,
                 "The settings does not include the reference engine settings.");
-            if (engineSettings == null)
+            if (_engineSettings == null)
             {
                 return false;
             }
 
-            string sandcastleDir = Context.StylesDirectory;
-
-            // Make sure Silverlight and Expression SDK 4.0 reflections are
-            // created, if installed...
-            buildResult = this.OnCreateFrameworkReflection(context, groupContext,
-                sandcastleDir);
-            if (!buildResult)
+            bool buildResult   = false;
+            BuildLogger logger = context.Logger;
+            try
             {
+                if (logger != null)
+                {
+                    _verbosity = logger.Verbosity;
+                }
+
+                buildResult = this.OnBeginReflection(context);
+                if (!buildResult)
+                {
+                    return false;
+                }
+
+                if (context.IsDirectSandcastle)
+                {
+                    _reflectorDomain = AppDomain.CreateDomain(
+                        "Sandcastle.BuildLinksDomain");
+
+                    _reflectorProxy =
+                        (SandcastleReflectionTool)_reflectorDomain.CreateInstanceAndUnwrap(
+                        typeof(SandcastleReflectionTool).Assembly.FullName,
+                        typeof(SandcastleReflectionTool).FullName);
+
+                    _transformProxy =
+                        (SandcastleTransformTool)_reflectorDomain.CreateInstanceAndUnwrap(
+                        typeof(SandcastleTransformTool).Assembly.FullName,
+                        typeof(SandcastleTransformTool).FullName);     
+                }
+
+                buildResult = this.OnReflection(context, logger, groupContext);
+                if (!buildResult)
+                {
+                    return false;
+                }             
+
+                buildResult = this.OnEndReflection(context);
+
+                return buildResult;
+            }
+            catch (Exception ex)
+            {
+                logger.WriteLine(ex);
+
                 return false;
             }
-
-            if (_group.IsSingleVersion)
-            {   
-                buildResult = base.OnExecute(context);
-
-                if (buildResult)
+            finally
+            {
+                if (context.IsDirectSandcastle)
                 {
-                    // For the unexpected case of no argument options to the
-                    // MRefBuilder tool, the exit code is still 0...
-                    if (_lastLevel == BuildLoggerLevel.Error)
+                    if (_reflectorDomain != null)
                     {
-                        return false;
+                        AppDomain.Unload(_reflectorDomain);
+                        _reflectorDomain = null;
                     }
-                }
-                else
-                {
-                    return false;
-                }
-
-                string sourceFile = Path.ChangeExtension(
-                    groupContext["$ReflectionFile"], ".ver");
-
-                // For Script#, we fix the reflection...
-                ReferenceContent content = _group.Content;
-                BuildFrameworkKind frameworkKind = content.FrameworkType.Kind;
-                if (frameworkKind == BuildFrameworkKind.ScriptSharp)
-                {
-                    buildResult = this.OnFixSharpScript(context,
-                        sourceFile, this.WorkingDirectory, sandcastleDir);
-
-                    if (!buildResult)
-                    {
-                        return false;
-                    }
-
-                    sourceFile = Path.ChangeExtension(sourceFile, ".scs");
-                }
-
-                buildResult = this.OnMergeDuplicates(context,
-                    sourceFile, this.WorkingDirectory, sandcastleDir);
-
-                if (!buildResult)
-                {
-                    return false;
                 }
             }
-            else
-            { 
-                string apiVersionsDir = Path.Combine(context.WorkingDirectory,
-                    groupContext["$ApiVersionsFolder"]);
-
-                IBuildNamedList<ReferenceVersions> _listVersions = groupContext.Versions;
-                for (int i = 0; i < _listVersions.Count; i++)
-                {
-                    ReferenceVersions versions = _listVersions[i];
-
-                    string versionsDir = versions.VersionsDir;
-
-                    for (int j = 0; j < versions.Count; j++)
-                    {
-                        ReferenceVersionSource source = versions[j];
-
-                        ReferenceGroupContext versionsContext =
-                            groupContext.Contexts[source.Id];
-                        string workingDir     = versionsContext["$WorkingDir"];
-
-                        string assemblyDir    = versionsContext.AssemblyFolder;
-                        string dependencyDir  = versionsContext.DependencyFolder;
-
-                        string reflectionFile = versionsContext["$ReflectionFile"];
-                        string refBuilderFile = versionsContext["$ReflectionBuilderFile"];
-                        string refInfoFile    = Path.ChangeExtension(reflectionFile, ".ver");
-
-                        // Create the reflection and the manifest
-                        StringBuilder textBuilder = new StringBuilder();
-                        // 1. Call MRefBuilder to generate the reflection...
-                        // MRefBuilder Assembly.dll 
-                        // /out:reflection.org /config:MRefBuilder.config 
-                        //   /internal-
-                        string application = Path.Combine(context.SandcastleToolsDirectory,
-                            "MRefBuilder.exe");
-                        textBuilder.AppendFormat("\"{0}\\*.*\"", assemblyDir);
-                        textBuilder.AppendFormat(" /dep:\"{0}\\*.*\"", dependencyDir);
-
-                        textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
-                            refInfoFile, refBuilderFile);
-                        ReferenceVisibilityConfiguration visibility =
-                            engineSettings.Visibility;
-                        Debug.Assert(visibility != null);
-                        if (visibility != null && visibility.IncludeInternalsMembers)
-                        {
-                            textBuilder.Append(" /internal+");
-                        }
-                        else
-                        {
-                            textBuilder.Append(" /internal-");
-                        }
-
-                        string arguments = textBuilder.ToString();
-
-                        buildResult = base.Run(logger, workingDir, 
-                            application, arguments);
-
-                        if (buildResult)
-                        {
-                            // For the unexpected case of no argument options to the
-                            // MRefBuilder tool, the exit code is still 0...
-                            if (_lastLevel == BuildLoggerLevel.Error)
-                            {
-                                return false;
-                            }
-                        }
-
-                        // For Script#, we fix the reflection...
-                        ReferenceContent content = source.Content;
-                        BuildFrameworkKind frameworkKind = content.FrameworkType.Kind;
-                        if (frameworkKind == BuildFrameworkKind.ScriptSharp)
-                        {
-                            buildResult = this.OnFixSharpScript(context,
-                                refInfoFile, this.WorkingDirectory, sandcastleDir);
-
-                            if (!buildResult)
-                            {
-                                return false;
-                            }
-
-                            refInfoFile = Path.ChangeExtension(refInfoFile, ".scs");
-                        }
-
-                        buildResult = this.OnMergeDuplicates(context,
-                            refInfoFile, workingDir, sandcastleDir);
-                        if (!buildResult)
-                        {
-                            return false;
-                        }
-
-                        string sourceFile = Path.Combine(workingDir,
-                            Path.ChangeExtension(refInfoFile, ".org"));
-
-                        string destinationFile = Path.Combine(apiVersionsDir,
-                            source.Id + ".org");
-
-                        File.Move(sourceFile, destinationFile);
-                    }
-                }   
-
-                // Finally, run the version builder tool...
-                buildResult = this.OnVersionBuilder(context, groupContext, 
-                    sandcastleDir);
-                if (!buildResult)
-                {
-                    return false;
-                }
-            }
-
-            buildResult = this.OnEndReflection(context);
-
-            return buildResult;
         }
 
         #endregion
@@ -424,17 +399,17 @@ namespace Sandcastle.Steps
         {
             if (_group.IsSingleVersion)
             {
-                return this.OnSingleReflection(context);
+                return this.OnBeginSingleReflection(context);
             }
 
-            return this.OnMultipleReflection(context);
+            return this.OnBeginMultipleReflection(context);
         }
 
         #endregion
 
-        #region OnSingleReflection Method
+        #region OnBeginSingleReflection Method
 
-        private bool OnSingleReflection(BuildContext context)
+        private bool OnBeginSingleReflection(BuildContext context)
         {   
             ReferenceGroupContext groupContext =
                 context.GroupContexts[_group.Id] as ReferenceGroupContext;
@@ -499,9 +474,9 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region OnMultipleReflection Method
+        #region OnBeginMultipleReflection Method
 
-        private bool OnMultipleReflection(BuildContext context)
+        private bool OnBeginMultipleReflection(BuildContext context)
         {
             ReferenceGroupContext groupContext =
                 context.GroupContexts[_group.Id] as ReferenceGroupContext;
@@ -525,7 +500,7 @@ namespace Sandcastle.Steps
                     ReferenceVersionSource source = versions[j];
 
                     ReferenceGroupContext versionsContext =
-                        groupContext.Contexts[source.Id];
+                        groupContext.Contexts[source.SourceId];
                     string workingDir = versionsContext["$WorkingDir"];
 
                     if (String.IsNullOrEmpty(workingDir))
@@ -539,9 +514,9 @@ namespace Sandcastle.Steps
                         return false;
                     }
 
-                    string refBuilder = String.Empty;
+                    string refBuilder         = String.Empty;
                     string refBuilderDefAttrs = String.Empty;
-                    string finalRefBuilder = String.Empty;
+                    string finalRefBuilder    = String.Empty;
                     if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
                     {
                         refBuilder = Path.Combine(configDir, "MRefBuilder.config");
@@ -555,7 +530,7 @@ namespace Sandcastle.Steps
                     }
 
                     ReferenceFilterConfigurator filterer =
-                        new ReferenceFilterConfigurator(source.Id);
+                        new ReferenceFilterConfigurator(source.SourceId);
 
                     try
                     {
@@ -577,6 +552,295 @@ namespace Sandcastle.Steps
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region OnReflection Method
+
+        private bool OnReflection(BuildContext context, BuildLogger logger,
+            ReferenceGroupContext groupContext)
+        {
+            bool buildResult     = false;
+            string sandcastleDir = context.StylesDirectory;
+
+            if (_group.IsSingleVersion)
+            {   
+                if (context.IsDirectSandcastle)
+                {
+                    _reflectorProxy.ReflectionFile    = _reflectionFile;
+                    _reflectorProxy.ConfigurationFile = _configurationFile;
+                    _reflectorProxy.DocumentInternals = _documentInternals;
+                    _reflectorProxy.AssemblyFiles     = _assemblyFiles;
+                    _reflectorProxy.DependencyFiles   = _dependencyFiles;
+
+                    buildResult = _reflectorProxy.Run(context);
+                }
+                else
+                {
+                    buildResult = base.OnExecute(context);
+                    if (buildResult)
+                    {
+                        // For the unexpected case of no argument options to the
+                        // MRefBuilder tool, the exit code is still 0...
+                        if (_lastLevel == BuildLoggerLevel.Error)
+                        {
+                            return false;
+                        }
+                    }
+                }    
+
+                if (!buildResult)
+                {
+                    return false;
+                }
+
+                string sourceFile = Path.ChangeExtension(
+                    groupContext["$ReflectionFile"], ".ver");
+
+                // For Script#, we fix the reflection...
+                ReferenceContent content = _group.Content;
+                BuildFrameworkKind frameworkKind = content.FrameworkType.Kind;
+                if (frameworkKind == BuildFrameworkKind.ScriptSharp)
+                {
+                    buildResult = this.OnFixSharpScript(context,
+                        sourceFile, this.WorkingDirectory, sandcastleDir);
+
+                    if (!buildResult)
+                    {
+                        return false;
+                    }
+
+                    sourceFile = Path.ChangeExtension(sourceFile, ".scs");
+                }
+
+                buildResult = this.OnMergeDuplicates(context,
+                    sourceFile, this.WorkingDirectory, sandcastleDir);
+
+                if (!buildResult)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                ReferenceVersionInfo versionInfo = _group.VersionInfo;
+
+                int groupIndex  = -1;
+                string tempText = groupContext["$GroupIndex"];
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    groupIndex = Convert.ToInt32(tempText);
+                }
+                string apiVersionsDir = Path.Combine(context.WorkingDirectory,
+                    groupContext.VersionsFolder);
+
+                bool platformFilters = versionInfo.PlatformFilters;
+                string prodPath      = Path.Combine(sandcastleDir, 
+                    "ProductionTransforms");
+                string sandtoolsDir  = context.SandcastleToolsDirectory;
+
+                IBuildNamedList<ReferenceVersions> listVersions = groupContext.Versions;
+                for (int i = 0; i < listVersions.Count; i++)
+                {
+                    ReferenceVersions versions = listVersions[i];
+
+                    versions.GroupIndex  = groupIndex;
+                    versions.SourceIndex = i;
+
+                    string versionsDir = versions.PlatformDir;
+
+                    for (int j = 0; j < versions.Count; j++)
+                    {
+                        ReferenceVersionSource source = versions[j];
+
+                        ReferenceGroupContext versionsContext =
+                            groupContext.Contexts[source.SourceId];
+                        string workingDir     = versionsContext["$WorkingDir"];
+
+                        string assemblyDir    = versionsContext.AssemblyFolder;
+                        string dependencyDir  = versionsContext.DependencyFolder;
+
+                        string reflectionFile = versionsContext["$ReflectionFile"];
+                        string refBuilderFile = versionsContext["$ReflectionBuilderFile"];
+                        string refInfoFile    = Path.ChangeExtension(reflectionFile, ".ver");
+
+                        string assemblyFiles     = String.Format("\"{0}\\*.*\"", assemblyDir);
+                        string dependencyFiles   = String.Format("\"{0}\\*.*\"", dependencyDir);
+                        string outputFile        = Path.Combine(workingDir, refInfoFile);
+                        string configurationFile = Path.Combine(workingDir, refBuilderFile);
+
+                        StringBuilder textBuilder = new StringBuilder();
+                        if (context.IsDirectSandcastle)
+                        {
+                            // Remove the quotes, we do not need them here...
+                            assemblyFiles   = assemblyFiles.Replace("\"", String.Empty);
+                            dependencyFiles = dependencyFiles.Replace("\"", String.Empty);
+
+                            _reflectorProxy.ReflectionFile    = outputFile;
+                            _reflectorProxy.ConfigurationFile = configurationFile;
+                            _reflectorProxy.DocumentInternals = _documentInternals;
+                            _reflectorProxy.AssemblyFiles     = new string[] { assemblyFiles };
+                            _reflectorProxy.DependencyFiles   = new string[] { dependencyFiles };
+
+                            buildResult = _reflectorProxy.Run(context);
+                        }
+                        else
+                        {   
+                            // Create the reflection and the manifest
+                            // 1. Call MRefBuilder to generate the reflection...
+                            // MRefBuilder Assembly.dll 
+                            // /out:reflection.org /config:MRefBuilder.config 
+                            //   /internal-
+                            string application = Path.Combine(context.SandcastleToolsDirectory,
+                                "MRefBuilder.exe");
+                            textBuilder.Append(assemblyFiles);
+                            textBuilder.Append(" /dep:" + dependencyFiles);
+
+                            textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
+                                refInfoFile, refBuilderFile);
+                            if (_documentInternals)
+                            {
+                                textBuilder.Append(" /internal+");
+                            }
+                            else
+                            {
+                                textBuilder.Append(" /internal-");
+                            }
+
+                            string arguments = textBuilder.ToString();
+
+                            buildResult = base.Run(logger, workingDir, 
+                                application, arguments);
+
+                            if (buildResult)
+                            {
+                                // For the unexpected case of no argument options to the
+                                // MRefBuilder tool, the exit code is still 0...
+                                if (_lastLevel == BuildLoggerLevel.Error)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+
+                        // For Script#, we fix the reflection...
+                        ReferenceContent content = source.Content;
+                        BuildFrameworkKind frameworkKind = content.FrameworkType.Kind;
+                        if (frameworkKind == BuildFrameworkKind.ScriptSharp)
+                        {
+                            buildResult = this.OnFixSharpScript(context,
+                                refInfoFile, this.WorkingDirectory, sandcastleDir);
+
+                            if (!buildResult)
+                            {
+                                return false;
+                            }
+
+                            refInfoFile = Path.ChangeExtension(refInfoFile, ".scs");
+                        }
+
+                        buildResult = this.OnMergeDuplicates(context,
+                            refInfoFile, workingDir, sandcastleDir);
+                        if (!buildResult)
+                        {
+                            return false;
+                        }
+
+                        string sourceFile = Path.Combine(workingDir,
+                            Path.ChangeExtension(refInfoFile, ".org"));
+
+                        string destinationFile = Path.Combine(apiVersionsDir,
+                            source.SourceId + ".org");
+
+                        File.Move(sourceFile, destinationFile);
+
+                        // If the application of platform filter is required,
+                        // then we will generated the reflection file with the
+                        // documentation model, which is easier for creating the
+                        // platform filter files...
+                        if (platformFilters)
+                        {
+                            textBuilder.Length = 0;
+
+                            sourceFile      = destinationFile;
+                            destinationFile = Path.ChangeExtension(
+                                destinationFile, ".xml");
+
+                            // XslTransform.exe       
+                            // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
+                            //    reflection.org 
+                            //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
+                            //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
+                            //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
+                            string application = Path.Combine(sandtoolsDir, "XslTransform.exe");
+                            string textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
+                            textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+
+                            //textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
+                            ReferenceNamingMethod namingMethod = _engineSettings.Naming;
+                            if (namingMethod == ReferenceNamingMethod.Guid)
+                            {
+                                textTemp = Path.Combine(prodPath, "AddGuidFilenames.xsl");
+                            }
+                            else if (namingMethod == ReferenceNamingMethod.MemberName)
+                            {
+                                textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
+                            }
+                            else
+                            {
+                                textTemp = Path.Combine(prodPath, "AddGuidFilenames.xsl");
+                            }
+                            
+                            textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
+                            textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
+                            textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
+                            textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
+
+                            StepXslTransform modelTransform = new StepXslTransform(
+                                apiVersionsDir, application, textBuilder.ToString());
+                            modelTransform.LogTitle = String.Empty;
+                            modelTransform.Message = "Xsl Transformation - Applying model and adding filenames.";
+                            modelTransform.CopyrightNotice = 2;
+
+                            modelTransform.Initialize(context);
+                            if (!modelTransform.IsInitialized)
+                            {
+                                return false;
+                            }
+
+                            buildResult = modelTransform.Execute();
+
+                            modelTransform.Uninitialize();
+                            if (!buildResult)
+                            {
+                                return false;
+                            }     
+                        } 
+                    }
+
+                    // Write the platform filter file...
+                    if (platformFilters)
+                    {
+                        buildResult = versions.WritePlatformFile(
+                            context, apiVersionsDir);
+                        if (!buildResult)
+                        {
+                            return false;
+                        }
+                    }
+                }   
+
+                // Finally, run the version builder tool...
+                buildResult = this.OnVersionBuilder(context, groupContext, 
+                    sandcastleDir);
+                if (!buildResult)
+                {
+                    return false;
+                }
+            }
+
+            return buildResult;
         }
 
         #endregion
@@ -692,7 +956,7 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region OnMergeDuplicates
+        #region OnMergeDuplicates Method
 
         private bool OnMergeDuplicates(BuildContext context, string sourceFile,
             string workingDir, string sandcastleDir)
@@ -700,38 +964,67 @@ namespace Sandcastle.Steps
             string prodPath = Path.Combine(sandcastleDir, "ProductionTransforms");
 
             string destinationFile = Path.ChangeExtension(sourceFile, ".org");
+            string transformFile = Path.Combine(prodPath, "MergeDuplicates.xsl");
 
-            StringBuilder textBuilder = new StringBuilder();
-            // XslTransform.exe       
-            // /xsl:"%DXROOT%\ProductionTransforms\MergeDuplicates.xsl"  
-            //   reflection.ver /out:reflection.org
-            string application = Path.Combine(context.SandcastleToolsDirectory,
-                "XslTransform.exe");
-            string textTemp = Path.Combine(prodPath, "MergeDuplicates.xsl");
-            textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-            textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-            StepXslTransform mergeDuplicates = new StepXslTransform(
-                workingDir, application, textBuilder.ToString());
-            mergeDuplicates.LogTitle = String.Empty;
-            mergeDuplicates.Message = "Xsl Transformation - Merging duplicates.";
-            mergeDuplicates.CopyrightNotice = 2;
-
-            mergeDuplicates.Initialize(context);
-            if (!mergeDuplicates.IsInitialized)
+            if (context.IsDirectSandcastle && _transformProxy != null)
             {
-                return false;
+                BuildLogger logger = context.Logger;
+                if (logger != null)
+                {
+                    logger.WriteLine("Started Xsl Transformation - Merging duplicates.",
+                        BuildLoggerLevel.Info);
+                }
+
+                _transformProxy.IgnoreWhitespace = _ignoreXsltWhitespace;
+                _transformProxy.InputFile        = Path.Combine(workingDir, sourceFile);
+                _transformProxy.OutputFile       = Path.Combine(workingDir, destinationFile);
+                _transformProxy.Arguments        = null;
+                _transformProxy.TransformFiles   = new string[] { transformFile };
+
+                bool buildResult = _transformProxy.Run(context);
+
+                if (logger != null)
+                {
+                    logger.WriteLine("Completed Xsl Transformation - Merging duplicates.",
+                        BuildLoggerLevel.Info);
+                }
+
+                return buildResult;
             }
+            else
+            {   
+                StringBuilder textBuilder = new StringBuilder();
+                // XslTransform.exe       
+                // /xsl:"%DXROOT%\ProductionTransforms\MergeDuplicates.xsl"  
+                //   reflection.ver /out:reflection.org
+                string application = Path.Combine(context.SandcastleToolsDirectory,
+                    "XslTransform.exe");
+                textBuilder.AppendFormat(" /xsl:\"{0}\"", transformFile);
+                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
+                StepXslTransform mergeDuplicates = new StepXslTransform(
+                    workingDir, application, textBuilder.ToString());
+                mergeDuplicates.LogTitle = String.Empty;
+                mergeDuplicates.Message = "Xsl Transformation - Merging duplicates.";
+                mergeDuplicates.CopyrightNotice = 2;
+                mergeDuplicates.LogTimeSpan = false;
 
-            bool buildResult = mergeDuplicates.Execute();
+                mergeDuplicates.Initialize(context);
+                if (!mergeDuplicates.IsInitialized)
+                {
+                    return false;
+                }
 
-            mergeDuplicates.Uninitialize();
+                bool buildResult = mergeDuplicates.Execute();
 
-            return buildResult;
+                mergeDuplicates.Uninitialize();
+
+                return buildResult;
+            }
         }
 
         #endregion
 
-        #region OnFixSharpScript
+        #region OnFixSharpScript Method
 
         private bool OnFixSharpScript(BuildContext context, string sourceFile,
             string workingDir, string sandcastleDir)
@@ -740,38 +1033,68 @@ namespace Sandcastle.Steps
 
             // The incoming is .ver and the final is .scs  
             string destinationFile = Path.ChangeExtension(sourceFile, ".scs");
+            // The only transformation to be applied...
+            string transformFile   = Path.Combine(prodPath, "FixScriptSharp.xsl");
 
-            StringBuilder textBuilder = new StringBuilder();
-            // XslTransform.exe       
-            // /xsl:"%DXROOT%\ProductionTransforms\MergeDuplicates.xsl"  
-            //   reflection.ver /out:reflection.org
-            string application = Path.Combine(context.SandcastleToolsDirectory,
-                "XslTransform.exe");
-            string textTemp = Path.Combine(prodPath, "FixScriptSharp.xsl");
-            textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-            textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-            StepXslTransform mergeDuplicates = new StepXslTransform(
-                workingDir, application, textBuilder.ToString());
-            mergeDuplicates.LogTitle = String.Empty;
-            mergeDuplicates.Message = "Xsl Transformation - Fixing Script# for Javascript.";
-            mergeDuplicates.CopyrightNotice = 2;
-
-            mergeDuplicates.Initialize(context);
-            if (!mergeDuplicates.IsInitialized)
+            if (context.IsDirectSandcastle && _transformProxy != null)
             {
-                return false;
+                BuildLogger logger = context.Logger;
+                if (logger != null)
+                {
+                    logger.WriteLine("Started Xsl Transformation - Merging duplicates.",
+                        BuildLoggerLevel.Info);
+                }
+
+                _transformProxy.IgnoreWhitespace = _ignoreXsltWhitespace;
+                _transformProxy.InputFile        = Path.Combine(workingDir, sourceFile);
+                _transformProxy.OutputFile       = Path.Combine(workingDir, destinationFile);
+                _transformProxy.Arguments        = null;
+                _transformProxy.TransformFiles   = new string[] { transformFile };
+
+                bool buildResult = _transformProxy.Run(context);
+
+                if (logger != null)
+                {
+                    logger.WriteLine("Completed Xsl Transformation - Merging duplicates.",
+                        BuildLoggerLevel.Info);
+                }
+
+                return buildResult;
             }
+            else
+            {   
+                StringBuilder textBuilder = new StringBuilder();
+                // XslTransform.exe       
+                // /xsl:"%DXROOT%\ProductionTransforms\MergeDuplicates.xsl"  
+                //   reflection.ver /out:reflection.org
+                string application = Path.Combine(context.SandcastleToolsDirectory,
+                    "XslTransform.exe");
+                textBuilder.AppendFormat(" /xsl:\"{0}\"", transformFile);
+                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
+                StepXslTransform mergeDuplicates = new StepXslTransform(
+                    workingDir, application, textBuilder.ToString());
+                mergeDuplicates.LogTitle        = String.Empty;
+                mergeDuplicates.Message         = "Xsl Transformation - Fixing Script# for Javascript.";
+                mergeDuplicates.CopyrightNotice = 2;
+                mergeDuplicates.LogTimeSpan     = false;
 
-            bool buildResult = mergeDuplicates.Execute();
+                mergeDuplicates.Initialize(context);
+                if (!mergeDuplicates.IsInitialized)
+                {
+                    return false;
+                }
 
-            mergeDuplicates.Uninitialize();
+                bool buildResult = mergeDuplicates.Execute();
 
-            return buildResult;
+                mergeDuplicates.Uninitialize();
+
+                return buildResult;
+            }
         }
 
         #endregion
 
-        #region OnVersionBuilder
+        #region OnVersionBuilder Method
 
         private bool OnVersionBuilder(BuildContext context, 
             ReferenceGroupContext groupContext, string sandcastleDir)
@@ -786,7 +1109,7 @@ namespace Sandcastle.Steps
             string workingDir = this.WorkingDirectory;
 
             string apiVersionsDir = Path.Combine(context.WorkingDirectory,
-                groupContext["$ApiVersionsFolder"]);
+                groupContext.VersionsFolder);
             string builderFile = Path.Combine(context.WorkingDirectory,
                 groupContext["$ApiVersionsBuilderFile"]);
             string sharedContentFile = Path.Combine(context.WorkingDirectory,
@@ -827,30 +1150,33 @@ namespace Sandcastle.Steps
                     {
                         ReferenceVersions versions = _listVersions[i];
 
-                        // Add the header shared entry...
-                        sharedWriter.WriteStartElement("item");
-                        sharedWriter.WriteAttributeString("id", versions.VersionsId);
-                        sharedWriter.WriteString(versions.VersionsTitle);
-                        sharedWriter.WriteEndElement(); 
-                        // NOTE: The ff. shared are needed for the framework filter to work 
-                        // correctly, otherwise, grouped members are not displayed... 
-                        // 1. Format: <item id="Include{$VersionName}Members">Include .NET Framework Members</item>
-                        sharedWriter.WriteStartElement("item");
-                        sharedWriter.WriteAttributeString("id", String.Format(
-                            "Include{0}Members", versions.VersionsId));
-                        sharedWriter.WriteString(String.Format(
-                            "Include {0} Members", versions.VersionsTitle));
-                        sharedWriter.WriteEndElement();
-                        // 2. Format: <item id="memberFrameworks{#VersionName}">Frameworks: ... Only</item>
-                        sharedWriter.WriteStartElement("item");
-                        sharedWriter.WriteAttributeString("id", String.Format(
-                            "memberFrameworks{0}", versions.VersionsId));
-                        sharedWriter.WriteString(String.Format(
-                            "Frameworks: {0} Only", versions.VersionsTitle));
-                        sharedWriter.WriteEndElement();   
+                        // Add the header shared entry, if not standard...
+                        if (!versions.IsStandard)
+                        {   
+                            sharedWriter.WriteStartElement("item");
+                            sharedWriter.WriteAttributeString("id", versions.PlatformId);
+                            sharedWriter.WriteString(versions.PlatformTitle);
+                            sharedWriter.WriteEndElement(); 
+                            // NOTE: The ff. shared are needed for the framework filter to work 
+                            // correctly, otherwise, grouped members are not displayed... 
+                            // 1. Format: <item id="Include{$VersionName}Members">Include .NET Framework Members</item>
+                            sharedWriter.WriteStartElement("item");
+                            sharedWriter.WriteAttributeString("id", String.Format(
+                                "Include{0}Members", versions.PlatformId));
+                            sharedWriter.WriteString(String.Format(
+                                "Include {0} Members", versions.PlatformTitle));
+                            sharedWriter.WriteEndElement();
+                            // 2. Format: <item id="memberFrameworks{#VersionName}">Frameworks: ... Only</item>
+                            sharedWriter.WriteStartElement("item");
+                            sharedWriter.WriteAttributeString("id", String.Format(
+                                "memberFrameworks{0}", versions.PlatformId));
+                            sharedWriter.WriteString(String.Format(
+                                "Frameworks: {0} Only", versions.PlatformTitle));
+                            sharedWriter.WriteEndElement();   
+                        }
 
                         configWriter.WriteStartElement("versions");
-                        configWriter.WriteAttributeString("name", versions.VersionsId);
+                        configWriter.WriteAttributeString("name", versions.PlatformId);
 
                         for (int j = 0; j < versions.Count; j++)
                         {
@@ -858,15 +1184,15 @@ namespace Sandcastle.Steps
 
                             // Add the version label shared entry...
                             sharedWriter.WriteStartElement("item");
-                            sharedWriter.WriteAttributeString("id", source.Id);
+                            sharedWriter.WriteAttributeString("id", source.VersionId);
                             sharedWriter.WriteString(source.VersionLabel);
                             sharedWriter.WriteEndElement(); 
 
                             string reflectionFile = Path.Combine(apiVersionsDir,
-                                source.Id + ".org");
+                                source.SourceId + ".org");
 
                             configWriter.WriteStartElement("version");
-                            configWriter.WriteAttributeString("name", source.Id);
+                            configWriter.WriteAttributeString("name", source.VersionId);
                             configWriter.WriteAttributeString("file", reflectionFile);
                             configWriter.WriteEndElement();
                         }
@@ -881,7 +1207,28 @@ namespace Sandcastle.Steps
                 sharedWriter.WriteEndElement();
             }
 
-            bool buidlResult = base.OnExecute(context);
+            bool buidlResult = false;
+            if (context.IsDirectSandcastle)
+            {
+                string reflectionFile = Path.Combine(context.WorkingDirectory,
+                    Path.ChangeExtension(groupContext["$ReflectionFile"], ".org"));
+
+                SandcastleVersionBuilderTool versionProxy =
+                    (SandcastleVersionBuilderTool)_reflectorDomain.CreateInstanceAndUnwrap(
+                    typeof(SandcastleVersionBuilderTool).Assembly.FullName,
+                    typeof(SandcastleVersionBuilderTool).FullName);
+
+                versionProxy.RipOldApis = _ripOldApis;
+                versionProxy.OutputFile = reflectionFile;
+                versionProxy.ConfigurationFile = builderFile;
+
+                buidlResult = versionProxy.Run(context);
+            }
+            else
+            {
+                buidlResult = base.OnExecute(context);
+            }
+
             if (logger != null)
             {
                 logger.WriteLine("Completed: Version Builder", BuildLoggerLevel.Info);
@@ -892,843 +1239,18 @@ namespace Sandcastle.Steps
 
         #endregion
 
-        #region OnCreateFrameworkReflection Method
-
-        private bool OnCreateFrameworkReflection(BuildContext context,
-            ReferenceGroupContext groupContext, string sandcastleDir)
-        {
-            bool buildResult = true;
-
-            BuildFramework framework = groupContext.Framework;
-            BuildFrameworkKind kind  = framework.FrameworkType.Kind;
-
-            if (kind == BuildFrameworkKind.Silverlight)
-            {
-                Version version = BuildFrameworks.LatestSilverlightVersion;
-                if (version != null)
-                {
-                    BuildFramework silverFramework = BuildFrameworks.GetFramework(
-                        version.Major, BuildFrameworkKind.Silverlight);
-
-                    buildResult = this.OnCreateSilverlightReflection(context,
-                        silverFramework, sandcastleDir);
-                } 
-            }
-            else if (kind == BuildFrameworkKind.Portable)
-            {
-                Version version = BuildFrameworks.LatestPortableVersion;
-                if (version != null)
-                {
-                    BuildFramework portableFramework = BuildFrameworks.GetFramework(
-                        version.Major, BuildFrameworkKind.Portable);
-
-                    buildResult = this.OnCreatePortableReflection(context,
-                        portableFramework, sandcastleDir);
-                }
-            }
-            else if (kind == BuildFrameworkKind.ScriptSharp)
-            {
-                Version version = BuildFrameworks.LatestScriptSharpVersion;
-                if (version != null)
-                {
-                    BuildFramework scriptSharpFramework = BuildFrameworks.GetFramework(
-                        version.Major, BuildFrameworkKind.ScriptSharp);
-
-                    buildResult = this.OnCreateScriptSharpReflection(context,
-                        scriptSharpFramework, sandcastleDir);
-                }
-            }
-
-            // Clearly, the Portable Class Libraries projects will not
-            // support the Blend SDK...
-            if (kind != BuildFrameworkKind.Portable &&
-                kind != BuildFrameworkKind.ScriptSharp)
-            {
-                string blendDir      = null;
-                Version blendVersion = null;
-                string programFiles  = Environment.GetFolderPath(
-                    Environment.SpecialFolder.ProgramFiles);
-                if (framework.Version.Major >= 2 && framework.Version.Major < 4)
-                {
-                    blendDir = Path.Combine(programFiles,
-                       @"Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries");
-                    if (Directory.Exists(blendDir))
-                    {
-                        blendVersion = new Version(3, 0, 0, 0);
-                    }
-                }
-                else if (framework.Version.Major == 4)
-                {
-                    blendDir = Path.Combine(programFiles,
-                       @"Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries");
-                    if (Directory.Exists(blendDir))
-                    {
-                        blendVersion = new Version(4, 0, 0, 0);
-                    }
-                }
-
-                if (blendVersion == null || String.IsNullOrEmpty(blendDir))
-                {
-                    return buildResult;
-                }
-                buildResult = this.OnCreateBlendReflection(context,
-                    framework, blendVersion, blendDir, sandcastleDir);
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
-        #region OnCreateBlendReflection Method
-
-        private bool OnCreateBlendReflection(BuildContext context,
-            BuildFramework framework, Version blendVersion, 
-            string blendDir, string sandcastleDir)
-        {
-            string reflectionDir = context.ReflectionDirectory;
-            if (String.IsNullOrEmpty(reflectionDir))
-            {
-                return true;
-            }
-            if (!Directory.Exists(reflectionDir))
-            {
-                Directory.CreateDirectory(reflectionDir);
-            }
-
-            Version version = framework.Version;
-
-            string blendDataDir = Path.Combine(reflectionDir,
-                @"Blend\v" + blendVersion.ToString(2));
-            // If it exits and not empty, we assume the reflection data
-            // is already created..
-            if (Directory.Exists(blendDataDir) && 
-                !DirectoryUtils.IsDirectoryEmpty(blendDataDir))
-            {
-                context.GroupContexts[_group.Id]["$BlendDataDir"] = blendDataDir;
-
-                return true;
-            }
-
-            string[] assemblies = Directory.GetFiles(blendDir,
-                "*.dll", SearchOption.TopDirectoryOnly);
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return false;
-            }
-            List<string> assemblyFiles = new List<string>(assemblies);
-
-            StringBuilder textBuilder = new StringBuilder();
-            BuildLogger logger = context.Logger;
-
-            Directory.CreateDirectory(blendDataDir);
-
-            BuildSettings settings = context.Settings;
-            string configDir = settings.ConfigurationDirectory;
-
-            string refBuilder         = String.Empty;
-            string refBuilderDefAttrs = String.Empty;
-            string finalRefBuilder    = String.Empty;
-            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
-            {
-                refBuilder = Path.Combine(configDir, "MRefBuilder.config");
-                refBuilderDefAttrs = Path.Combine(configDir, "MRefBuilder.xml");
-                finalRefBuilder = Path.Combine(this.WorkingDirectory, "ExpressionBlend.config");
-            }
-            if (!File.Exists(refBuilder))
-            {
-                refBuilder = String.Empty;
-            }
-
-            ReferenceFilterConfigurator filterer = new ReferenceFilterConfigurator();
-
-            try
-            {
-                filterer.Initialize(context, refBuilderDefAttrs);
-
-                if (!String.IsNullOrEmpty(refBuilder))
-                {
-                    filterer.Configure(_group, refBuilder, finalRefBuilder);
-                }
-            }
-            finally
-            {
-                if (filterer != null)
-                {
-                    filterer.Uninitialize();
-                }
-            }
-
-            string prodPath     = Path.Combine(sandcastleDir, "ProductionTransforms");
-            string sandtoolsDir = context.SandcastleToolsDirectory;
-            string refInfoFile  = String.Empty;
-            bool buildResult    = false;
-            for (int i = 0; i < assemblyFiles.Count; i++)
-            {
-                string assemblyFile = assemblyFiles[i];
-
-                string fileName = Path.GetFileNameWithoutExtension(assemblyFile);
-
-                textBuilder.Length = 0;
-                // Create the reflection and the manifest
-                // 1. Call MRefBuilder to generate the reflection...
-                // MRefBuilder Assembly.dll 
-                // /out:reflection.org /config:MRefBuilder.config 
-                //   /internal-
-                string application = Path.Combine(sandtoolsDir, "MRefBuilder.exe");
-                textBuilder.AppendFormat("\"{0}\"", assemblyFile);
-
-                refInfoFile = Path.Combine(blendDataDir, fileName + ".org");
-                textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
-                    refInfoFile, finalRefBuilder);
-
-                string arguments = textBuilder.ToString();
-
-                buildResult = base.Run(logger, blendDataDir,
-                    application, arguments);
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                textBuilder.Length = 0;
-
-                string sourceFile = refInfoFile;
-                string destinationFile = Path.Combine(blendDataDir, 
-                    fileName + ".xml");
-
-                // XslTransform.exe       
-                // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
-                //    reflection.org 
-                //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
-                //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
-                //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
-                application = Path.Combine(sandtoolsDir, "XslTransform.exe");
-                string textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-                textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
-                textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
-               
-                StepXslTransform modelTransform = new StepXslTransform(
-                    blendDataDir, application, textBuilder.ToString());
-                modelTransform.LogTitle = String.Empty;
-                modelTransform.Message = "Xsl Transformation - Applying model and adding filenames.";
-                modelTransform.CopyrightNotice = 2;
-
-                modelTransform.Initialize(context);
-                if (!modelTransform.IsInitialized)
-                {
-                    return false;
-                }
-
-                buildResult = modelTransform.Execute();
-
-                modelTransform.Uninitialize();
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                File.Delete(sourceFile);
-            }
-
-            if (buildResult)
-            {
-                context.GroupContexts[_group.Id]["$BlendDataDir"] = blendDataDir;
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
-        #region OnCreateSilverlightReflection Method
-
-        private bool OnCreateSilverlightReflection(BuildContext context,
-            BuildFramework framework, string sandcastleDir)
-        {
-            if (framework.FrameworkType.Kind != BuildFrameworkKind.Silverlight)
-            {
-                return true;
-            }
-            string reflectionDir = context.ReflectionDirectory;
-            if (String.IsNullOrEmpty(reflectionDir))
-            {
-                return true;
-            }
-            if (!Directory.Exists(reflectionDir))
-            {
-                Directory.CreateDirectory(reflectionDir);
-            }
-
-            Version version = framework.Version;
-
-            string silverlightDir = Path.Combine(reflectionDir,
-                @"Silverlight\v" + version.ToString(2));
-            // If it exits and not empty, we assume the reflection data
-            // is already created..
-            if (Directory.Exists(silverlightDir) && 
-                !DirectoryUtils.IsDirectoryEmpty(silverlightDir))
-            {
-                context.GroupContexts[_group.Id]["$SilverlightDataDir"] = silverlightDir;
-
-                return true;
-            }
-
-            string dependencyDir = framework.AssemblyDir;
-            string[] assemblies = Directory.GetFiles(dependencyDir,
-                "*.dll", SearchOption.TopDirectoryOnly);
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return false;
-            }
-
-            string programFiles = PathUtils.ProgramFiles32;
-            List<string> assemblyFiles = new List<string>(assemblies);
-            if (version.Major == 4)
-            {
-                // Add the Expression Blend SDK 4.0, if installed...  
-                string blendDir = Path.Combine(programFiles,
-                   @"Microsoft SDKs\Expression\Blend\Silverlight\v4.0\Libraries");
-                if (Directory.Exists(blendDir))
-                {
-                    assemblies = Directory.GetFiles(blendDir,
-                        "*.dll", SearchOption.TopDirectoryOnly);
-                    if (assemblies != null && assemblies.Length != 0)
-                    {
-                        assemblyFiles.AddRange(assemblies);
-                    }
-                }
-            }
-            string otherDir = Path.Combine(programFiles,
-               @"Microsoft SDKs\Silverlight\v" + version.ToString(2));
-            if (Directory.Exists(otherDir))
-            {
-                otherDir = Path.Combine(otherDir, @"Libraries\Client");
-            }
-            if (Directory.Exists(otherDir))
-            {
-                assemblies = Directory.GetFiles(otherDir,
-                    "*.dll", SearchOption.TopDirectoryOnly);
-                if (assemblies != null && assemblies.Length != 0)
-                {
-                    assemblyFiles.AddRange(assemblies);
-                }
-            }
-            else
-            {
-                otherDir = null;
-            }
-
-            StringBuilder textBuilder = new StringBuilder();
-            BuildLogger logger        = context.Logger;
-
-            Directory.CreateDirectory(silverlightDir);
-
-            BuildSettings settings = context.Settings;
-            string configDir = settings.ConfigurationDirectory;
-
-            string refBuilder         = String.Empty;
-            string refBuilderDefAttrs = String.Empty;
-            string finalRefBuilder    = String.Empty;
-            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
-            {
-                refBuilder         = Path.Combine(configDir, "MRefBuilder.config");
-                refBuilderDefAttrs = Path.Combine(configDir, "MRefBuilder.xml");
-                finalRefBuilder    = Path.Combine(this.WorkingDirectory, "Silverlight.config");
-            }
-            if (!File.Exists(refBuilder))
-            {
-                refBuilder = String.Empty;
-            }
-
-            ReferenceFilterConfigurator filterer = new ReferenceFilterConfigurator();
-
-            try
-            {
-                filterer.Initialize(context, refBuilderDefAttrs);
-
-                if (!String.IsNullOrEmpty(refBuilder))
-                {
-                    filterer.Configure(_group, refBuilder, finalRefBuilder);
-                }
-            }
-            finally
-            {
-                if (filterer != null)
-                {
-                    filterer.Uninitialize();
-                }
-            }
-
-            HashSet<string> excludeSet = new HashSet<string>(
-                StringComparer.OrdinalIgnoreCase);
-            excludeSet.Add("agcore");
-            excludeSet.Add("coreclr");
-            excludeSet.Add("dbgshim");
-            excludeSet.Add("mscordaccore");
-            excludeSet.Add("mscordbi");
-            excludeSet.Add("mscorrc");
-            excludeSet.Add("npctrl");
-            excludeSet.Add("npctrlui");
-            excludeSet.Add("Silverlight.ConfigurationUI");
-            excludeSet.Add("SLMSPRBootstrap");
-            excludeSet.Add("sos");
-
-            string prodPath       = Path.Combine(sandcastleDir, "ProductionTransforms");
-            string sandtoolsDir   = context.SandcastleToolsDirectory;
-            string refInfoFile    = String.Empty;
-            bool buildResult = false;
-            for (int i = 0; i < assemblyFiles.Count; i++)
-            {
-                string assemblyFile = assemblyFiles[i];
-
-                string fileName = Path.GetFileNameWithoutExtension(assemblyFile);
-
-                if (fileName.EndsWith(".ni", StringComparison.OrdinalIgnoreCase) || 
-                    fileName.IndexOf("debug", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    excludeSet.Contains(fileName))
-                {
-                    continue;
-                }
-
-                textBuilder.Length = 0;
-                // Create the reflection and the manifest
-                // 1. Call MRefBuilder to generate the reflection...
-                // MRefBuilder Assembly.dll 
-                // /out:reflection.org /config:MRefBuilder.config 
-                //   /internal-
-                string application = Path.Combine(sandtoolsDir, "MRefBuilder.exe");
-                textBuilder.AppendFormat("\"{0}\"", assemblyFile);
-                textBuilder.AppendFormat(" /dep:\"{0}\\*.dll\"", dependencyDir);
-                if (!String.IsNullOrEmpty(otherDir))
-                {
-                    textBuilder.AppendFormat(" /dep:\"{0}\\*.dll\"", otherDir);
-                }
-
-                refInfoFile = Path.Combine(silverlightDir, fileName + ".org");
-                textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
-                    refInfoFile, finalRefBuilder);
-
-                string arguments = textBuilder.ToString();
-
-                buildResult = base.Run(logger, silverlightDir,
-                    application, arguments);
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                textBuilder.Length = 0;
-
-                string sourceFile = refInfoFile;
-                string destinationFile = Path.Combine(silverlightDir, 
-                    fileName + ".xml");
-
-                // XslTransform.exe       
-                // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
-                //    reflection.org 
-                //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
-                //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
-                //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
-                application = Path.Combine(sandtoolsDir, "XslTransform.exe");
-                string textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-                textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
-                textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
-               
-                StepXslTransform modelTransform = new StepXslTransform(
-                    silverlightDir, application, textBuilder.ToString());
-                modelTransform.LogTitle = String.Empty;
-                modelTransform.Message = "Xsl Transformation - Applying model and adding filenames.";
-                modelTransform.CopyrightNotice = 2;
-
-                modelTransform.Initialize(context);
-                if (!modelTransform.IsInitialized)
-                {
-                    return false;
-                }
-
-                buildResult = modelTransform.Execute();
-
-                modelTransform.Uninitialize();
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                File.Delete(sourceFile);
-            }
-
-            if (buildResult)
-            {
-                context.GroupContexts[_group.Id]["$SilverlightDataDir"] = silverlightDir;
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
-        #region OnCreatePortableReflection Method
-
-        private bool OnCreatePortableReflection(BuildContext context,
-            BuildFramework framework, string sandcastleDir)
-        {
-            string reflectionDir = context.ReflectionDirectory;
-            if (String.IsNullOrEmpty(reflectionDir))
-            {
-                return true;
-            }
-            if (!Directory.Exists(reflectionDir))
-            {
-                Directory.CreateDirectory(reflectionDir);
-            }
-
-            Version version    = framework.Version;
-            string portableDir = framework.AssemblyDir;
-
-            string portableDataDir = Path.Combine(reflectionDir,
-                @"Portable\v" + version.ToString(2));
-            // If it exits and not empty, we assume the reflection data
-            // is already created..
-            if (Directory.Exists(portableDataDir) && 
-                !DirectoryUtils.IsDirectoryEmpty(portableDataDir))
-            {
-                context.GroupContexts[_group.Id]["$PortableDataDir"] = portableDataDir;
-
-                return true;
-            }
-
-            string[] assemblies = Directory.GetFiles(portableDir,
-                "*.dll", SearchOption.TopDirectoryOnly);
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return false;
-            }
-            List<string> assemblyFiles = new List<string>(assemblies);
-
-            // We may have assemblies in a different directory. Portable Class
-            // Libraries are based on profiles, and there is no single profile
-            // that applies to all cases...
-            IEnumerable<string> commentFiles = framework.CommentFiles;
-            if (commentFiles != null)
-            {
-                foreach (string commentFile in commentFiles)
-                {
-                    string assemblyFile = Path.ChangeExtension(commentFile,
-                        ".dll");
-                    if (File.Exists(assemblyFile))
-                    {
-                        assemblyFiles.Add(assemblyFile);
-                    }
-                }
-            }
-
-            StringBuilder textBuilder = new StringBuilder();
-            BuildLogger logger = context.Logger;
-
-            Directory.CreateDirectory(portableDataDir);
-
-            BuildSettings settings = context.Settings;
-            string configDir = settings.ConfigurationDirectory;
-
-            string refBuilder         = String.Empty;
-            string refBuilderDefAttrs = String.Empty;
-            string finalRefBuilder    = String.Empty;
-            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
-            {
-                refBuilder         = Path.Combine(configDir, "MRefBuilder.config");
-                refBuilderDefAttrs = Path.Combine(configDir, "MRefBuilder.xml");
-                finalRefBuilder    = Path.Combine(this.WorkingDirectory, "PortableClassLibrary.config");
-            }
-            if (!File.Exists(refBuilder))
-            {
-                refBuilder = String.Empty;
-            }
-
-            ReferenceFilterConfigurator filterer = new ReferenceFilterConfigurator();
-
-            try
-            {
-                filterer.Initialize(context, refBuilderDefAttrs);
-
-                if (!String.IsNullOrEmpty(refBuilder))
-                {
-                    filterer.Configure(_group, refBuilder, finalRefBuilder);
-                }
-            }
-            finally
-            {
-                if (filterer != null)
-                {
-                    filterer.Uninitialize();
-                }
-            }
-
-            string prodPath     = Path.Combine(sandcastleDir, "ProductionTransforms");
-            string sandtoolsDir = context.SandcastleToolsDirectory;
-            string refInfoFile  = String.Empty;
-            bool buildResult    = false;
-            for (int i = 0; i < assemblyFiles.Count; i++)
-            {
-                string assemblyFile = assemblyFiles[i];
-
-                string fileName = Path.GetFileNameWithoutExtension(assemblyFile);
-
-                textBuilder.Length = 0;
-                // Create the reflection and the manifest
-                // 1. Call MRefBuilder to generate the reflection...
-                // MRefBuilder Assembly.dll 
-                // /out:reflection.org /config:MRefBuilder.config 
-                //   /internal-
-                string application = Path.Combine(sandtoolsDir, "MRefBuilder.exe");
-                textBuilder.AppendFormat("\"{0}\"", assemblyFile);
-
-                refInfoFile = Path.Combine(portableDataDir, fileName + ".org");
-                textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
-                    refInfoFile, finalRefBuilder);
-
-                string arguments = textBuilder.ToString();
-
-                buildResult = base.Run(logger, portableDataDir,
-                    application, arguments);
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                textBuilder.Length = 0;
-
-                string sourceFile = refInfoFile;
-                string destinationFile = Path.Combine(portableDataDir, 
-                    fileName + ".xml");
-
-                // XslTransform.exe       
-                // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
-                //    reflection.org 
-                //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
-                //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
-                //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
-                application = Path.Combine(sandtoolsDir, "XslTransform.exe");
-                string textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-                textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
-                textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
-               
-                StepXslTransform modelTransform = new StepXslTransform(
-                    portableDataDir, application, textBuilder.ToString());
-                modelTransform.LogTitle = String.Empty;
-                modelTransform.Message = "Xsl Transformation - Applying model and adding filenames.";
-                modelTransform.CopyrightNotice = 2;
-
-                modelTransform.Initialize(context);
-                if (!modelTransform.IsInitialized)
-                {
-                    return false;
-                }
-
-                buildResult = modelTransform.Execute();
-
-                modelTransform.Uninitialize();
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                File.Delete(sourceFile);
-            }
-
-            if (buildResult)
-            {
-                context.GroupContexts[_group.Id]["$PortableDataDir"] = portableDataDir;
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
-        #region OnCreateScriptSharpReflection Method
-
-        private bool OnCreateScriptSharpReflection(BuildContext context,
-            BuildFramework framework, string sandcastleDir)
-        {
-            string reflectionDir = context.ReflectionDirectory;
-            if (String.IsNullOrEmpty(reflectionDir))
-            {
-                return true;
-            }
-            if (!Directory.Exists(reflectionDir))
-            {
-                Directory.CreateDirectory(reflectionDir);
-            }
-
-            Version version       = framework.Version;
-            string scriptSharpDir = framework.AssemblyDir;
-
-            string scriptSharpDataDir = Path.Combine(reflectionDir,
-                @"ScriptSharp\v" + version.ToString(2));
-            // If it exits and not empty, we assume the reflection data
-            // is already created..
-            if (Directory.Exists(scriptSharpDataDir) && 
-                !DirectoryUtils.IsDirectoryEmpty(scriptSharpDataDir))
-            {
-                context.GroupContexts[_group.Id]["$ScriptSharpDataDir"] = scriptSharpDataDir;
-
-                return true;
-            }
-
-            string[] assemblies = Directory.GetFiles(scriptSharpDir,
-                "*.dll", SearchOption.TopDirectoryOnly);
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return false;
-            }
-            List<string> assemblyFiles = new List<string>(assemblies);
-
-            StringBuilder textBuilder = new StringBuilder();
-            BuildLogger logger = context.Logger;
-
-            Directory.CreateDirectory(scriptSharpDataDir);
-
-            BuildSettings settings = context.Settings;
-            string configDir = settings.ConfigurationDirectory;
-
-            string refBuilder         = String.Empty;
-            string refBuilderDefAttrs = String.Empty;
-            string finalRefBuilder    = String.Empty;
-            if (!String.IsNullOrEmpty(configDir) && Directory.Exists(configDir))
-            {
-                refBuilder         = Path.Combine(configDir, "MRefBuilder.config");
-                refBuilderDefAttrs = Path.Combine(configDir, "MRefBuilder.xml");
-                finalRefBuilder    = Path.Combine(this.WorkingDirectory, "ScriptSharp.config");
-            }
-            if (!File.Exists(refBuilder))
-            {
-                refBuilder = String.Empty;
-            }
-
-            ReferenceFilterConfigurator filterer = new ReferenceFilterConfigurator();
-
-            try
-            {
-                filterer.Initialize(context, refBuilderDefAttrs);
-
-                if (!String.IsNullOrEmpty(refBuilder))
-                {
-                    filterer.Configure(_group, refBuilder, finalRefBuilder);
-                }
-            }
-            finally
-            {
-                if (filterer != null)
-                {
-                    filterer.Uninitialize();
-                }
-            }
-
-            string prodPath     = Path.Combine(sandcastleDir, "ProductionTransforms");
-            string sandtoolsDir = context.SandcastleToolsDirectory;
-            string refInfoFile  = String.Empty;
-            bool buildResult    = false;
-            for (int i = 0; i < assemblyFiles.Count; i++)
-            {
-                string assemblyFile = assemblyFiles[i];
-
-                string fileName = Path.GetFileNameWithoutExtension(assemblyFile);
-
-                textBuilder.Length = 0;
-                // Create the reflection and the manifest
-                // 1. Call MRefBuilder to generate the reflection...
-                // MRefBuilder Assembly.dll 
-                // /out:reflection.org /config:MRefBuilder.config 
-                //   /internal-
-                string application = Path.Combine(sandtoolsDir, "MRefBuilder.exe");
-                textBuilder.AppendFormat("\"{0}\"", assemblyFile);
-
-                refInfoFile = Path.Combine(scriptSharpDataDir, fileName + ".org");
-                textBuilder.AppendFormat(" /out:\"{0}\" /config:\"{1}\"",
-                    refInfoFile, finalRefBuilder);
-
-                string arguments = textBuilder.ToString();
-
-                buildResult = base.Run(logger, scriptSharpDataDir,
-                    application, arguments);
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                textBuilder.Length = 0;
-
-                string sourceFile = refInfoFile;
-                string destinationFile = Path.Combine(scriptSharpDataDir, 
-                    fileName + ".xml");
-
-                // XslTransform.exe       
-                // /xsl:"%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl" 
-                //    reflection.org 
-                //    /xsl:"%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl" 
-                //    /out:reflection.xml /arg:IncludeAllMembersTopic=true 
-                //    /arg:IncludeInheritedOverloadTopics=true /arg:project=Project
-                application = Path.Combine(sandtoolsDir, "XslTransform.exe");
-                string textTemp = Path.Combine(prodPath, "ApplyVSDocModel.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textTemp = Path.Combine(prodPath, "AddFriendlyFilenames.xsl");
-                textBuilder.AppendFormat(" /xsl:\"{0}\"", textTemp);
-                textBuilder.AppendFormat(" {0} /out:{1}", sourceFile, destinationFile);
-                textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
-                textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
-               
-                StepXslTransform modelTransform = new StepXslTransform(
-                    scriptSharpDataDir, application, textBuilder.ToString());
-                modelTransform.LogTitle = String.Empty;
-                modelTransform.Message  = "Xsl Transformation - Applying model and adding filenames.";
-                modelTransform.CopyrightNotice = 2;
-
-                modelTransform.Initialize(context);
-                if (!modelTransform.IsInitialized)
-                {
-                    return false;
-                }
-
-                buildResult = modelTransform.Execute();
-
-                modelTransform.Uninitialize();
-                if (!buildResult)
-                {
-                    break;
-                }
-
-                File.Delete(sourceFile);
-            }
-
-            if (buildResult)
-            {
-                context.GroupContexts[_group.Id]["$ScriptSharpDataDir"] = scriptSharpDataDir;
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
         #endregion
 
         #region IDisposable Members
 
         protected override void Dispose(bool disposing)
         {
+            if (_reflectorDomain != null)
+            {
+                AppDomain.Unload(_reflectorDomain);
+                _reflectorDomain = null;
+            }
+ 
             base.Dispose(disposing);
         }
 

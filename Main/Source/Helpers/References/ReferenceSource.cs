@@ -260,7 +260,7 @@ namespace Sandcastle.References
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        protected void ReadContents(XmlReader reader)
+        protected virtual void ReadContents(XmlReader reader)
         {
             if (reader.IsEmptyElement)
             {
@@ -311,6 +311,9 @@ namespace Sandcastle.References
                                     _tocContent.ReadXml(reader);
                                 }
                                 break;
+                            default:
+                                this.OnReadContents(reader);
+                                break;
                         }
                     }
                 }
@@ -325,6 +328,10 @@ namespace Sandcastle.References
             }
         }
 
+        protected virtual void OnReadContents(XmlReader reader)
+        {   
+        }
+
         #endregion
 
         #region ReadFilters Method
@@ -333,7 +340,7 @@ namespace Sandcastle.References
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        protected void ReadFilters(XmlReader reader)
+        protected virtual void ReadFilters(XmlReader reader)
         {
             if (reader.IsEmptyElement)
             {
@@ -398,7 +405,7 @@ namespace Sandcastle.References
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
         /// </exception>
-        protected void WriteContents(XmlWriter writer)
+        protected virtual void WriteContents(XmlWriter writer)
         {
             BuildExceptions.NotNull(writer, "writer");
 
@@ -432,7 +439,14 @@ namespace Sandcastle.References
                 _tocContent.WriteXml(writer);
                 writer.WriteEndElement();
             }
+
+            this.OnWriteContents(writer);
+
             writer.WriteEndElement();              // end - contents
+        }
+
+        protected virtual void OnWriteContents(XmlWriter writer)
+        {   
         }
 
         #endregion
@@ -450,7 +464,7 @@ namespace Sandcastle.References
         /// <exception cref="ArgumentNullException">
         /// If the <paramref name="reader"/> is <see langword="null"/>.
         /// </exception>
-        protected void WriteFilters(XmlWriter writer)
+        protected virtual void WriteFilters(XmlWriter writer)
         {
             BuildExceptions.NotNull(writer, "writer");
 

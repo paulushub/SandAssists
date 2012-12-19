@@ -12,15 +12,13 @@ using Sandcastle.Configurators;
 
 namespace Sandcastle.Conceptual
 {
-    [Serializable]
     public class ConceptualEngine : BuildEngine
     {
         #region Private Fields
 
-        private ConceptualGroup       _curGroup;
-        private IList<string>         _listFolders;
-        private List<BuildFormat>     _listFormats;
-        private List<ConceptualGroup> _listGroups;
+        private IList<string> _listFolders;
+        private BuildFormatList _listFormats;
+        private BuildList<ConceptualGroup> _listGroups;
 
         #endregion
 
@@ -48,10 +46,10 @@ namespace Sandcastle.Conceptual
             {
                 if (_listGroups == null)
                 {
-                    _listGroups = new List<ConceptualGroup>();
+                    _listGroups = new BuildList<ConceptualGroup>();
                 }
 
-                return _listGroups.AsReadOnly();
+                return _listGroups;
             }
         }
 
@@ -84,7 +82,7 @@ namespace Sandcastle.Conceptual
 
             if (_listGroups == null)
             {
-                _listGroups = new List<ConceptualGroup>();
+                _listGroups = new BuildList<ConceptualGroup>();
             }
 
             _listGroups.Add(group);
@@ -137,16 +135,15 @@ namespace Sandcastle.Conceptual
                 group.BeginSources(context);
             }
 
-            _listFormats = new List<BuildFormat>();
-
+            _listFormats = new BuildFormatList();
             BuildFormatList listFormats = this.Settings.Formats;
             if (listFormats == null || listFormats.Count == 0)
             {
                 this.IsInitialized = false;
                 return;
             }
-            itemCount = listFormats.Count;
-            _listFormats  = new List<BuildFormat>(itemCount);
+
+            itemCount    = listFormats.Count;
             for (int i = 0; i < itemCount; i++)
             {
                 BuildFormat format = listFormats[i];
@@ -293,6 +290,15 @@ namespace Sandcastle.Conceptual
 
         #endregion
 
+        #region CreateLinkSteps Method
+
+        public override BuildStep CreateLinkSteps()
+        {
+            return null;
+        }
+
+        #endregion
+
         #region CreateFinalSteps Method
 
         public override BuildStep CreateFinalSteps(BuildGroup group)
@@ -335,94 +341,6 @@ namespace Sandcastle.Conceptual
             buildAssProcess.CopyrightNotice = 2;
 
             return buildAssProcess;
-        }
-
-        #endregion
-
-        #region Build Method
-
-        public override bool Build()
-        {
-            bool buildResult = false;
-
-            if (_listGroups == null || _listGroups.Count == 0)
-            {
-                return false;
-            }
-
-            BuildLogger logger     = this.Logger;
-            BuildSettings settings = this.Settings;
-            BuildContext context   = this.Context;
-
-            try
-            {
-                int itemCount = _listGroups.Count;
-                int initCount = 0;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    ConceptualGroup group = _listGroups[i];
-                    if (group == null || group.IsEmpty)
-                    {
-                        continue;
-                    }
-                    
-                    group.Initialize(context);
-                    if (group.IsInitialized)
-                    {
-                        _curGroup = group;
-
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        BuildStep initialSteps = this.CreateInitialSteps(group);
-                        if (initialSteps != null)
-                        {
-                            listSteps.Add(initialSteps);
-                        }
-                        BuildStep finalSteps = this.CreateFinalSteps(group);
-                        if (finalSteps != null)
-                        {
-                            listSteps.Add(finalSteps);
-                        }
-
-                        buildResult = this.RunSteps(listSteps.Steps);
-
-                        if (buildResult)
-                        {
-                            initCount++;
-                        }
-
-                        _curGroup = null;
-
-                        group.Uninitialize();
-                    }
-                    else
-                    {
-                        if (logger != null)
-                        {
-                            logger.WriteLine(
-                                "An error occurred in the initialization of group = " + i.ToString(),
-                                BuildLoggerLevel.Error);
-                        }
-                    }
-
-                    if (!buildResult)
-                    {
-                        break;
-                    }
-                }
-
-                buildResult = (initCount == itemCount);
-            }
-            catch (Exception ex)
-            {
-                if (logger != null)
-                {
-                    logger.WriteLine(ex, BuildLoggerLevel.Error);
-                }
-
-                buildResult = false;
-            }
-
-            return buildResult;
         }
 
         #endregion

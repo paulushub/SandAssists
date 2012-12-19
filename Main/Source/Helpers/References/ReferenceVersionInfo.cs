@@ -20,9 +20,11 @@ namespace Sandcastle.References
         #region Private Fields
 
         private bool   _ripOldApis;
-        private string _sourceId;
-        private string _label;
-        private string _title;
+        private bool   _platformFilters;
+        private string _versionId;
+        private string _versionLabel;
+        private string _platformId;
+        private string _platformTitle;
         private BuildKeyedList<ReferenceVersionSource>  _listSources;
         private BuildKeyedList<ReferenceVersionRelated> _listRelated;
 
@@ -40,7 +42,9 @@ namespace Sandcastle.References
         public ReferenceVersionInfo()
         {
             _ripOldApis  = true;
-            _sourceId    = String.Format("Ver{0:x}", Guid.NewGuid().ToString().GetHashCode());
+            _platformFilters = true;
+            _versionId   = String.Format("VerId{0:x}", Guid.NewGuid().ToString().GetHashCode());
+            _platformId  = String.Format("Plat{0:x}", Guid.NewGuid().ToString().GetHashCode());
             _listSources = new BuildKeyedList<ReferenceVersionSource>();
             _listRelated = new BuildKeyedList<ReferenceVersionRelated>();
         }
@@ -59,12 +63,14 @@ namespace Sandcastle.References
         public ReferenceVersionInfo(ReferenceVersionInfo source)
             : base(source)
         {
-            _label       = source._label;
-            _title       = source._title;
-            _sourceId    = source._sourceId;
-            _ripOldApis  = source._ripOldApis;
-            _listSources = source._listSources;
-            _listRelated = source._listRelated;
+            _versionId       = source._versionId;
+            _versionLabel    = source._versionLabel;
+            _platformTitle   = source._platformTitle;
+            _platformId      = source._platformId;
+            _platformFilters = source._platformFilters;
+            _ripOldApis      = source._ripOldApis;
+            _listSources     = source._listSources;
+            _listRelated     = source._listRelated;
         }
 
         #endregion
@@ -75,7 +81,7 @@ namespace Sandcastle.References
         {
             get
             {
-                if (String.IsNullOrEmpty(_label) || String.IsNullOrEmpty(_title))
+                if (String.IsNullOrEmpty(_versionLabel) || String.IsNullOrEmpty(_platformTitle))
                 {
                     return true;
                 }
@@ -101,29 +107,71 @@ namespace Sandcastle.References
             }
         }
 
-        public string Id
+        public string PlatformId
         {
             get
             {
-                return _sourceId;
-            }
-        }
-
-        public string Title
-        {
-            get
-            {
-                return _title;
+                return _platformId;
             }
             set
             {
                 if (value != null)
                 {
-                    _title = value.Trim();
+                    value = value.Trim();
+                }
+                if (!String.IsNullOrEmpty(value))
+                {
+                    _platformId = value;
+                }
+            }
+        }
+
+        public string PlatformTitle
+        {
+            get
+            {
+                return _platformTitle;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _platformTitle = value.Trim();
                 }
                 else
                 {
-                    _title = String.Empty;
+                    _platformTitle = String.Empty;
+                }
+            }
+        }
+
+        public bool PlatformFilters
+        {
+            get
+            {
+                return _platformFilters;
+            }
+            set
+            {
+                _platformFilters = value;
+            }
+        }
+
+        public string VersionId
+        {
+            get
+            {
+                return _versionId;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    value = value.Trim();
+                }
+                if (!String.IsNullOrEmpty(value))
+                {
+                    _versionId = value;
                 }
             }
         }
@@ -132,17 +180,17 @@ namespace Sandcastle.References
         {
             get
             {
-                return _label;
+                return _versionLabel;
             }
             set
             {
                 if (value != null)
                 {
-                    _label = value.Trim();
+                    _versionLabel = value.Trim();
                 }
                 else
                 {
-                    _label = String.Empty;
+                    _versionLabel = String.Empty;
                 }
             }
         }
@@ -450,23 +498,34 @@ namespace Sandcastle.References
                                 if (String.Equals(reader.Name, "property",
                                     StringComparison.OrdinalIgnoreCase))
                                 {
+                                    string tempText = null;
                                     switch (reader.GetAttribute("name").ToLower())
                                     {
-                                        case "id":
-                                            _sourceId = reader.ReadString();
+                                        case "platformid":
+                                            _platformId = reader.ReadString();
                                             break;
-                                        case "title":
-                                            _title = reader.ReadString();
+                                        case "platformtitle":
+                                            _platformTitle = reader.ReadString();
+                                            break;
+                                        case "platformfilters":
+                                            tempText = reader.ReadString();
+                                            if (!String.IsNullOrEmpty(tempText))
+                                            {
+                                                _platformFilters = Convert.ToBoolean(tempText);
+                                            }
+                                            break;
+                                        case "versionid":
+                                            _versionId = reader.ReadString();
+                                            break;
+                                        case "versionlabel":
+                                            _versionLabel = reader.ReadString();
                                             break;
                                         case "ripoldapis":
-                                            string tempText = reader.ReadString();
+                                            tempText = reader.ReadString();
                                             if (!String.IsNullOrEmpty(tempText))
                                             {
                                                 _ripOldApis = Convert.ToBoolean(tempText);
                                             }
-                                            break;
-                                        case "versionlabel":
-                                            _label = reader.ReadString();
                                             break;
                                         default:
                                             // Should normally not reach here...
@@ -539,11 +598,13 @@ namespace Sandcastle.References
             writer.WriteStartElement(TagName);  // start - TagName
 
             writer.WriteStartElement("propertyGroup");  // start - propertyGroup
-            writer.WriteAttributeString("name", "Reference");
-            writer.WritePropertyElement("Id",           _sourceId);
-            writer.WritePropertyElement("Title",        _title);
-            writer.WritePropertyElement("RipOldApis",   _ripOldApis);
-            writer.WritePropertyElement("VersionLabel", _label);
+            writer.WriteAttributeString("name",            "Reference");
+            writer.WritePropertyElement("PlatformId",      _platformId);
+            writer.WritePropertyElement("PlatformTitle",   _platformTitle);
+            writer.WritePropertyElement("PlatformFilters", _platformFilters);
+            writer.WritePropertyElement("VersionId",       _versionId);
+            writer.WritePropertyElement("VersionLabel",    _versionLabel);
+            writer.WritePropertyElement("RipOldApis",      _ripOldApis);
             writer.WriteEndElement();                   // end - propertyGroup
 
             writer.WriteStartElement("contentSources");  // start - contentSources
@@ -587,14 +648,35 @@ namespace Sandcastle.References
         /// </remarks>
         public override ReferenceVersionInfo Clone()
         {
-            ReferenceVersionInfo documenter = new ReferenceVersionInfo(this);
+            ReferenceVersionInfo versionInfo = new ReferenceVersionInfo(this);
 
             if (_listSources != null)
             {
-                documenter._listSources = _listSources.Clone();
+                versionInfo._listSources = _listSources.Clone();
+            }
+            if (_listRelated != null)
+            {
+                versionInfo._listRelated = _listRelated.Clone();
             }
 
-            return documenter;
+            if (_versionId != null)
+            {
+                versionInfo._versionId = String.Copy(_versionId);
+            }
+            if (_versionLabel != null)
+            {
+                versionInfo._versionLabel = String.Copy(_versionLabel);
+            }
+            if (_platformId != null)
+            {
+                versionInfo._platformId = String.Copy(_platformId);
+            }
+            if (_platformTitle != null)
+            {
+                versionInfo._platformTitle = String.Copy(_platformTitle);
+            }
+
+            return versionInfo;
         }
 
         #endregion

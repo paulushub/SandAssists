@@ -13,14 +13,20 @@ namespace Sandcastle.References
 {
     public class ReferenceEngine : BuildEngine
     {
+        #region Public Fields
+
+        public static readonly Version ReflectionVersion  = new Version(4, 0, 0, 0);
+        public static readonly string ReflectionDirectory = @"%DXROOT%\Data\Reflection\";
+
+        #endregion
+
         #region Private Fields
 
-        private ReferenceGroup        _curGroup;
         private IList<string>         _listFolders;
         private BuildFormatList       _listFormats;
-        private List<ReferenceGroup>  _listGroups;
-        [NonSerialized]
-        private ReferenceEngineSettings _engineSettings;
+        private ReferenceEngineSettings   _engineSettings;
+        private BuildList<ReferenceGroup> _listGroups;
+        private BuildList<ReferenceGroup> _linkGroups;
 
         #endregion
 
@@ -48,10 +54,23 @@ namespace Sandcastle.References
             {
                 if (_listGroups == null)
                 {
-                    _listGroups = new List<ReferenceGroup>();
+                    _listGroups = new BuildList<ReferenceGroup>();
                 }
 
-                return _listGroups.AsReadOnly();
+                return _listGroups;
+            }
+        }
+
+        public IList<ReferenceGroup> LinkGroups
+        {
+            get
+            {
+                if (_linkGroups == null)
+                {
+                    _linkGroups = new BuildList<ReferenceGroup>();
+                }
+
+                return _linkGroups;
             }
         }
 
@@ -84,7 +103,7 @@ namespace Sandcastle.References
 
             if (_listGroups == null)
             {
-                _listGroups = new List<ReferenceGroup>();
+                _listGroups = new BuildList<ReferenceGroup>();
             }
 
             _listGroups.Add(group);
@@ -208,6 +227,30 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region CreateLinkSteps Method
+
+        public override BuildStep CreateLinkSteps()
+        {
+            Debug.Assert(_engineSettings != null);
+            if (_engineSettings == null)
+            {
+                return null;
+            }
+
+            BuildSettings settings = this.Settings;
+            string workingDir      = this.Context.WorkingDirectory;
+            //string sandcastleDir   = context.StylesDirectory;
+
+            StepReferenceLinks referenceLinks = new StepReferenceLinks(
+                workingDir, null);
+            referenceLinks.BuildGroups = _listGroups;
+            referenceLinks.LinkGroups = _linkGroups;
+
+            return referenceLinks;
+        }
+
+        #endregion
+
         #region CreateFinalSteps Method
 
         public override BuildStep CreateFinalSteps(BuildGroup group)
@@ -276,6 +319,18 @@ namespace Sandcastle.References
                 return;
             }
 
+            BuildSettings settings = this.Settings;
+
+            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
+                BuildEngineType.Reference];
+            Debug.Assert(_engineSettings != null,
+                "The settings does not include the reference engine settings.");
+            if (_engineSettings == null)
+            {
+                this.IsInitialized = false;
+                return;
+            }
+
             int itemCount = _listGroups.Count;
             for (int i = 0; i < itemCount; i++)
             {
@@ -302,18 +357,6 @@ namespace Sandcastle.References
 
             // Turn the link sources to dynamic groups...
             this.CreateLinkGroups(context);
-
-            BuildSettings settings = this.Settings;
-
-            _engineSettings = (ReferenceEngineSettings)settings.EngineSettings[
-                BuildEngineType.Reference];
-            Debug.Assert(_engineSettings != null,
-                "The settings does not include the reference engine settings.");
-            if (_engineSettings == null)
-            {
-                this.IsInitialized = false;
-                return;
-            }
 
             // Cache the list of applicable formats...
             _listFormats = new BuildFormatList();
@@ -356,89 +399,6 @@ namespace Sandcastle.References
 
         #endregion
 
-        #region Build Method
-
-        public override bool Build()
-        {
-            bool buildResult = false;
-
-            if (_listGroups == null || _listGroups.Count == 0)
-            {
-                return buildResult;
-            }
-
-            BuildLogger logger     = this.Logger;
-            BuildContext context   = this.Context;
-            BuildSettings settings = this.Settings;
-
-            try
-            {
-                int itemCount = _listGroups.Count;
-                int initCount = 0;
-                for (int i = 0; i < itemCount; i++)
-                {
-                    ReferenceGroup group = _listGroups[i];
-                    if (group == null || group.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    group.Initialize(context);
-                    if (group.IsInitialized)
-                    {
-                        _curGroup = group;
-
-                        // Create the build steps...
-                        BuildMultiStep listSteps = new BuildMultiStep();
-                        //this.CreateInitialSteps(listSteps, group);
-
-                        if (listSteps.Count != 0)
-                        {
-                            buildResult = this.RunSteps(listSteps.Steps);
-                        }
-
-                        if (buildResult)
-                        {
-                            initCount++;
-                        }
-
-                        _curGroup = null;
-
-                        group.Uninitialize();
-                    }
-                    else
-                    {
-                        if (logger != null)
-                        {
-                            logger.WriteLine(
-                                "An error occurred in the initialization of group = " + i.ToString(),
-                                BuildLoggerLevel.Error);
-                        }
-                    }
-
-                    if (!buildResult)
-                    {
-                        break;
-                    }
-                }
-
-                buildResult = (initCount == itemCount);
-            }
-            catch (Exception ex)
-            {
-                if (logger != null)
-                {
-                    logger.WriteLine(ex, BuildLoggerLevel.Error);
-                }
-
-                buildResult = false;
-            }
-
-            return buildResult;
-        }
-
-        #endregion
-
         #region Uninitialize Method
 
         public override void Uninitialize()
@@ -461,6 +421,10 @@ namespace Sandcastle.References
         }
 
         #endregion
+
+        #endregion
+
+        #region Protected Methods
 
         #endregion
 
@@ -497,7 +461,6 @@ namespace Sandcastle.References
             string reflectionFile = groupContext["$ReflectionFile"];
             string manifestFile   = groupContext["$ManifestFile"];
             string refBuilderFile = groupContext["$ReflectionBuilderFile"];
-            string configFile     = groupContext["$ConfigurationFile"];
             string tocFile        = groupContext["$TocFile"];
 
             BuildStyleType outputStyle = settings.Style.StyleType;
@@ -508,6 +471,16 @@ namespace Sandcastle.References
             string arguments   = null;
             string application = null;
 
+            bool ripOldApis    = true;
+
+            string assemblyFiles   = null;
+            string dependencyFiles = null;
+            string outputFile  = null;
+            string configurationFile = null;
+
+            ReferenceVisibilityConfiguration visibility =
+                _engineSettings.Visibility;
+            Debug.Assert(visibility != null);
             // 1. Create the reflection and the manifest
             StringBuilder textBuilder = new StringBuilder();
             if (group.IsSingleVersion)
@@ -518,14 +491,17 @@ namespace Sandcastle.References
                 //   /internal-
                 application = Path.Combine(context.SandcastleToolsDirectory,
                     "MRefBuilder.exe");
-                textBuilder.AppendFormat(@"{0}\*.*", assemblyDir);
-                textBuilder.AppendFormat(@" /dep:{0}\*.*", dependencyDir);
+
+                assemblyFiles = String.Format(@"{0}\*.*", assemblyDir);
+                dependencyFiles = String.Format(@"{0}\*.*", dependencyDir);
+                outputFile = Path.ChangeExtension(reflectionFile, ".ver");
+                configurationFile = Path.Combine(workingDir, refBuilderFile);
+
+                textBuilder.Append(assemblyFiles);
+                textBuilder.Append(" /dep:" + dependencyFiles);
 
                 textBuilder.AppendFormat(" /out:{0} /config:{1}",
-                    Path.ChangeExtension(reflectionFile, ".ver"), refBuilderFile);
-                ReferenceVisibilityConfiguration visibility =
-                    _engineSettings.Visibility;
-                Debug.Assert(visibility != null);
+                    outputFile, refBuilderFile);
                 if (visibility != null && visibility.IncludeInternalsMembers)
                 {
                     textBuilder.Append(" /internal+");
@@ -536,6 +512,8 @@ namespace Sandcastle.References
                 }
 
                 arguments = textBuilder.ToString();
+
+                outputFile = Path.Combine(workingDir, outputFile);
             }
             else
             {
@@ -547,8 +525,12 @@ namespace Sandcastle.References
                     groupContext["$ApiVersionsBuilderFile"], 
                     Path.ChangeExtension(reflectionFile, ".org"));
 
+                configurationFile = Path.Combine(workingDir,
+                    groupContext["$ApiVersionsBuilderFile"]);
+
                 ReferenceVersionInfo versionInfo = group.VersionInfo;
-                if (versionInfo.RipOldApis)
+                ripOldApis = versionInfo.RipOldApis;
+                if (ripOldApis)
                 {
                     textBuilder.Append(" /rip+");
                 }
@@ -559,14 +541,24 @@ namespace Sandcastle.References
 
                 arguments = textBuilder.ToString();
             }
-            StepReflectionBuilder mRefProcess = new StepReflectionBuilder(workingDir,
+            StepReflectionBuilder refBuilder = new StepReflectionBuilder(workingDir,
                 application, arguments);
-            mRefProcess.Group    = group;
-            mRefProcess.LogTitle = String.Empty;
-            mRefProcess.Message  = "Creating XML-formatted reflection information.";
-            mRefProcess.CopyrightNotice = 2;
+            refBuilder.Group    = group;
+            refBuilder.LogTitle = String.Empty;
+            refBuilder.Message  = "Creating XML-formatted reflection information.";
+            refBuilder.CopyrightNotice = 2;            
 
-            listSteps.Add(mRefProcess);
+            // For the direct use of the Sandcastle library, we need the
+            // following parameters...
+            refBuilder.RipOldApis = ripOldApis;
+            refBuilder.DocumentInternals = 
+                (visibility != null && visibility.IncludeInternalsMembers);
+            refBuilder.ConfigurationFile = configurationFile;
+            refBuilder.ReflectionFile = outputFile;
+            refBuilder.AssemblyFiles.Add(assemblyFiles);
+            refBuilder.DependencyFiles.Add(dependencyFiles);
+
+            listSteps.Add(refBuilder);
 
             textBuilder.Length = 0;
 
@@ -640,8 +632,10 @@ namespace Sandcastle.References
 
             textBuilder.Append(" " + Path.ChangeExtension(reflectionFile, ".org")); 
             textBuilder.AppendFormat(" /out:{0}", reflectionFile);
-            textBuilder.Append(" /arg:IncludeAllMembersTopic=true");
-            textBuilder.Append(" /arg:IncludeInheritedOverloadTopics=true");
+            textBuilder.AppendFormat(" /arg:IncludeAllMembersTopic={0}", 
+                _engineSettings.IncludeAllMembersTopic ? "true" : "false");
+            textBuilder.AppendFormat(" /arg:IncludeInheritedOverloadTopics={0}", 
+                _engineSettings.IncludeInheritedOverloadTopics ? "true" : "false");
 
             bool rootContainer = _engineSettings.RootNamespaceContainer;
             string rootTitle   = group.RootNamespaceTitle;
@@ -725,7 +719,9 @@ namespace Sandcastle.References
                 return;
             }
 
-            List<ReferenceGroup> linkGroups = new List<ReferenceGroup>();
+            BuildLogger logger = context.Logger;
+
+            List<ReferenceGroup> buildGroups = new List<ReferenceGroup>();
             IList<BuildGroupContext> groupContexts = context.GroupContexts;
 
             bool hasScriptSharp = false;
@@ -751,35 +747,7 @@ namespace Sandcastle.References
                             latestScriptSharp = frameworkType;
                         }
                     }
-                }
-
-                ReferenceLinkSource linkSource = group.Links;
-                if (linkSource != null && linkSource.IsValid)
-                {
-                    ReferenceGroup linkGroup = new ReferenceGroup(
-                        "Embedded - " + ReferenceGroup.NextGroupName(), Guid.NewGuid().ToString(), linkSource);
-
-                    linkGroup.ExcludeToc = true;
-
-                    linkGroups.Add(linkGroup);
-
-                    // Create the group context...
-                    BuildGroupContext groupContext = 
-                        new ReferenceGroupContext(linkGroup);
-                    groupContext["$IsEmbeddedGroup"] = Boolean.TrueString;
-                    groupContexts.Add(groupContext);
-
-                    string indexText = (itemCount + index + 1).ToString();
-
-                    // Create the build dynamic properties...
-                    groupContext.CreateProperties(indexText);
-
-                    // This has no effect, since the newly created group will
-                    // not have any content source.
-                    linkGroup.BeginSources(context);
-
-                    index++;
-                }   
+                }    
             }
 
             // Include contents from the Script# framework for correct 
@@ -795,11 +763,11 @@ namespace Sandcastle.References
 
                 if (framework != null)
                 {   
-                    ReferenceGroup linkGroup = new ReferenceGroup(
+                    ReferenceGroup buildGroup = new ReferenceGroup(
                         "Embedded ScriptSharp - " + ReferenceGroup.NextGroupName(), 
                         Guid.NewGuid().ToString());
 
-                    ReferenceContent content = linkGroup.Content;
+                    ReferenceContent content = buildGroup.Content;
 
                     string[] assemblies = Directory.GetFiles(framework.AssemblyDir,
                         "*.dll", SearchOption.AllDirectories);
@@ -815,33 +783,158 @@ namespace Sandcastle.References
                         }
                     }
 
-                    linkGroup.ExcludeToc = true;
-                    linkGroup.SyntaxType = BuildSyntaxType.CSharp | BuildSyntaxType.JavaScript;
+                    buildGroup.ExcludeToc = true;
+                    buildGroup.SyntaxType = BuildSyntaxType.CSharp | BuildSyntaxType.JavaScript;
 
-                    linkGroups.Add(linkGroup);
+                    buildGroups.Add(buildGroup);
 
                     // Create the group context...
-                    BuildGroupContext groupContext =
-                        new ReferenceGroupContext(linkGroup);
-                    groupContext["$IsEmbeddedGroup"] = Boolean.TrueString;
-                    groupContexts.Add(groupContext);
+                    ReferenceGroupContext buildGroupContext =
+                        new ReferenceGroupContext(buildGroup);
+                    buildGroupContext.IsEmbeddedGroup = true;
+                    groupContexts.Add(buildGroupContext);
 
                     string indexText = (itemCount + index + 1).ToString();
 
                     // Create the build dynamic properties...
-                    groupContext.CreateProperties(indexText);
+                    buildGroupContext.CreateProperties(indexText);
 
                     // This has no effect, since the newly created group will
                     // not have any content source.
-                    linkGroup.BeginSources(context);
+                    buildGroup.BeginSources(context);
 
                     context["$EmbeddedScriptSharp"] = Boolean.TrueString;
                 }
             }
 
-            if (linkGroups.Count != 0)
+            if (buildGroups.Count != 0)
             {
-                _listGroups.AddRange(linkGroups);
+                _listGroups.Add(buildGroups);
+            }
+
+            // Process the user-provided link sources...
+            List<ReferenceLinkSource> linkSources  = null;
+            IList<ReferenceLinkSource> listSources = _engineSettings.LinkSources as IList<ReferenceLinkSource>;
+            if (listSources != null && listSources.Count != 0)
+            {
+                for (int i = 0; i < listSources.Count; i++)
+                {
+                    ReferenceLinkSource linkSource = listSources[i];
+
+                    if (linkSource == null || !linkSource.IsValid)
+                    {
+                        if (logger != null)
+                        {
+                            string title = linkSource.Title;
+                            if (title == null)
+                            {
+                                title = String.Empty;
+                            }
+                            logger.WriteLine(String.Format(
+                                "A provided reference link source titled = '{0}', at index = '{1}' is invalid.", 
+                                title, i), BuildLoggerLevel.Warn);
+                        }
+
+                        continue;
+                    }
+
+                    if (linkSources == null)
+                    {
+                        linkSources = new List<ReferenceLinkSource>();
+                    }
+
+                    linkSources.Add(linkSource); 
+                }
+            }
+
+            // Process the automatic link sources...
+            BuildSpecialSdkType webMvcSdkType = _engineSettings.WebMvcSdkType;
+            if (webMvcSdkType != BuildSpecialSdkType.None &&
+                webMvcSdkType != BuildSpecialSdkType.Null)
+            {
+                BuildSpecialSdk webSdk = BuildSpecialSdks.GetSdk(webMvcSdkType,
+                    BuildFrameworkKind.DotNet);
+
+                if (webSdk != null)
+                {     
+                    ReferenceLinkSource linkSource = new ReferenceLinkSource();
+                    linkSource.LinkType = BuildLinkType.Msdn;
+                    linkSource.Title    = webMvcSdkType.Label;
+                    linkSource.FrameworkType =
+                        BuildFrameworks.LatestFramework.FrameworkType;
+
+                    string aspMVCDir = webSdk.AssemblyDir;
+
+                    string[] assemblyFiles = Directory.GetFiles(
+                        webSdk.AssemblyDir, "*.dll", SearchOption.TopDirectoryOnly);
+
+                    for (int i = 0; i < assemblyFiles.Length; i++)
+                    {
+                        string assemblyFile = assemblyFiles[i];
+                        string commentFile = Path.ChangeExtension(assemblyFile,
+                            ".xml");
+                        if (File.Exists(commentFile))
+                        {
+                            ReferenceItem refItem = new ReferenceItem(
+                                commentFile, assemblyFile);
+                            refItem.XamlSyntax = false;
+                            linkSource.Add(refItem);
+                        }      
+                    }
+
+                    if (linkSource.IsValid)
+                    {
+                        if (linkSources == null)
+                        {
+                            linkSources = new List<ReferenceLinkSource>();
+                        }
+
+                        linkSources.Add(linkSource);
+                    }
+                }
+            }
+
+            if (linkSources != null && linkSources.Count != 0)
+            {
+                context.SetValue("$ReferenceLinkSources", linkSources);
+
+                itemCount = linkSources.Count;
+                if (_linkGroups == null)
+                {
+                    _linkGroups = new BuildList<ReferenceGroup>();
+                }
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    ReferenceLinkSource linkSource = linkSources[i];
+
+                    ReferenceGroup linkGroup = new ReferenceGroup(
+                        "Reference Links - " + ReferenceGroup.NextGroupName(),
+                        linkSource.SourceId, linkSource);
+
+                    linkGroup.ExcludeToc = true;
+
+                    _linkGroups.Add(linkGroup);
+
+                    // Create the group context...
+                    ReferenceGroupContext linkGroupContext =
+                        new ReferenceGroupContext(linkGroup);
+                    linkGroupContext.IsLinkGroup = true;
+                    groupContexts.Add(linkGroupContext);
+
+                    string indexText = String.Empty;
+                    if (itemCount > 1)
+                    {
+                        indexText = (i + 1).ToString();
+                    }
+
+                    // Create the build dynamic properties...
+                    linkGroupContext.CreateProperties(indexText);
+
+                    // This has no effect, since the newly created group will
+                    // not have any content source.
+                    linkGroup.BeginSources(context);
+                }
             }
         }
 

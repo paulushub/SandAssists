@@ -275,21 +275,5 @@ namespace Sandcastle.Components
         }
 
         #endregion
-
-        #region IDisposable Members
-
-        public override void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-
-            base.Dispose();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {   
-        }
-
-        #endregion
     }
 }

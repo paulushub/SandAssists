@@ -27,14 +27,15 @@ namespace Sandcastle.Components.Maths
             _imageExt = ".gif";
         }
 
-        public MathMLFormatter(Type componentType, MessageHandler messageHandler)
-            : base(componentType, messageHandler)
+        public MathMLFormatter(Type componentType, MessageWriter messageWriter)
+            : base(componentType, messageWriter)
         {
             _imageExt = ".gif";
         }
 
-        public MathMLFormatter(Type componentType, MessageHandler messageHandler,
-            XPathNavigator formatter) : base(componentType, messageHandler, formatter)
+        public MathMLFormatter(Type componentType, MessageWriter messageWriter,
+            XPathNavigator formatter) 
+            : base(componentType, messageWriter, formatter)
         {
             _imageExt    = ".gif";
         }

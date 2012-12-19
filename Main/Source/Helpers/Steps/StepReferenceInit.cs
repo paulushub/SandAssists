@@ -318,9 +318,10 @@ namespace Sandcastle.Steps
             ReferenceVersionInfo versionInfo = _group.VersionInfo;
 
             // For the main version information...
-            ReferenceVersions versions = new ReferenceVersions(versionInfo.Id,
-                versionInfo.Title);
-            ReferenceVersionSource mainSource = new ReferenceVersionSource();
+            ReferenceVersions versions = new ReferenceVersions(versionInfo.PlatformId,
+                versionInfo.PlatformTitle);
+            ReferenceVersionSource mainSource = new ReferenceVersionSource(
+                versionInfo.VersionId);
             mainSource.Content      = _group.Content;
             mainSource.VersionLabel = versionInfo.VersionLabel;
 
@@ -349,7 +350,7 @@ namespace Sandcastle.Steps
                         continue;
                     }
 
-                    versions = new ReferenceVersions(related.Id, related.Title);
+                    versions = new ReferenceVersions(related.PlatformId, related.PlatformTitle);
                     for (int i = 0; i < related.Count; i++)
                     {
                         ReferenceVersionSource source = related[i];
@@ -363,7 +364,7 @@ namespace Sandcastle.Steps
                 }
             }
 
-            // Now, we prepare the various versions and contexts...
+            // Now, we prepare the various platforms and contexts...
             for (int i = 0; i < _listVersions.Count; i++)
             {
                 versions = _listVersions[i];
@@ -374,14 +375,14 @@ namespace Sandcastle.Steps
                 }
 
                 string versionsDir = Path.Combine(apiVersionsDir,
-                    "Versions" + indexText);
+                    "Platform" + indexText);
 
                 if (!Directory.Exists(versionsDir))
                 {
                     Directory.CreateDirectory(versionsDir);
                 }
 
-                versions.VersionsDir = versionsDir;
+                versions.PlatformDir = versionsDir;
 
                 int itemCount = versions.Count;
                 for (int j = 0; j < itemCount; j++)
@@ -389,7 +390,7 @@ namespace Sandcastle.Steps
                     ReferenceVersionSource source = versions[j]; 
 
                     ReferenceGroupContext versionsContext =
-                        new ReferenceGroupContext(_group, source.Id);
+                        new ReferenceGroupContext(_group, source.SourceId);
 
                     indexText = String.Empty;
                     if (itemCount > 1)
@@ -402,7 +403,7 @@ namespace Sandcastle.Steps
                     {
                         Directory.CreateDirectory(workingDir);
                     }
-                    versions.WorkingDirs.Add(workingDir);
+                    versions.VersionDirs.Add(workingDir);
 
                     versionsContext["$GroupIndex"]    = groupContext["$GroupIndex"];
                     versionsContext["$VersionsIndex"] = indexText;
@@ -444,8 +445,8 @@ namespace Sandcastle.Steps
                 {
                     ReferenceVersionSource source = versions[j];
 
-                    ReferenceGroupContext versionsContext = 
-                        groupContext.Contexts[source.Id];
+                    ReferenceGroupContext versionsContext =
+                        groupContext.Contexts[source.SourceId];
 
                     string workingDir = versionsContext["$WorkingDir"];
 
@@ -584,7 +585,7 @@ namespace Sandcastle.Steps
 
                     // 1. Copy the dependencies to the expected directory...
                     ReferenceProjectVisitor dependencyResolver =
-                        new ReferenceProjectVisitor(source.Id, content);
+                        new ReferenceProjectVisitor(source.SourceId, content);
                     dependencyResolver.Initialize(context);
                     dependencyResolver.Visit(_group);
                     dependencyResolver.Uninitialize();

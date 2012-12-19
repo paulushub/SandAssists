@@ -631,6 +631,7 @@ namespace Sandcastle.References
         public override void Uninitialize()
         {
             _outputDir = null;
+            _context   = null;
 
             base.Uninitialize();
         }
@@ -703,9 +704,24 @@ namespace Sandcastle.References
             //    <MissingExceptionText message=""/>
             //</missingTags>
 
+            bool notApplicable = false;
+            string embeddedText = groupContext["$IsEmbeddedGroup"];
+            if (!String.IsNullOrEmpty(embeddedText) &&
+                embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                notApplicable = true;
+            }
+
             writer.WriteComment(" Start: Missing tags options ");
             writer.WriteStartElement("missingTags");   //start: missingTags
-            writer.WriteAttributeString("enabled", this.Enabled.ToString());
+            if (notApplicable)
+            {
+                writer.WriteAttributeString("enabled", "false");
+            }
+            else
+            {
+                writer.WriteAttributeString("enabled", this.Enabled.ToString());
+            }
             writer.WriteAttributeString("warn", _warn.ToString());
             writer.WriteAttributeString("indicate", _indicate.ToString());
             writer.WriteAttributeString("log", _log.ToString());

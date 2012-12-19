@@ -133,6 +133,13 @@ namespace Sandcastle.References
             {
                 return _dependencies;
             }
+            set
+            {
+                if (value != null)
+                {
+                    _dependencies = value;
+                }
+            }
         }
 
         public CommentContent Comments
@@ -329,6 +336,7 @@ namespace Sandcastle.References
                 }   
 
                 _isLoaded = true;
+                this.Modified = false;
             }
             finally
             {
@@ -382,6 +390,12 @@ namespace Sandcastle.References
                 {
                     return;
                 }
+
+                // If loaded but not modified, there is no need to save it...
+                if (this.IsLoaded && !this.Modified)
+                {
+                    return;
+                }
             }
 
             XmlWriterSettings settings  = new XmlWriterSettings();
@@ -409,6 +423,7 @@ namespace Sandcastle.References
                 // The file content is now same as the memory, so it can be
                 // considered loaded...
                 _isLoaded = true;
+                this.Modified = false;
             }
             finally
             {  

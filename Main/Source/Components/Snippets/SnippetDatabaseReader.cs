@@ -13,7 +13,8 @@ namespace Sandcastle.Components.Snippets
         #region Constructors and Destructor
 
         public SnippetDatabaseReader(int tabSize, Type componentType,
-            MessageHandler msgHandler) : base(tabSize, componentType, msgHandler)
+            MessageWriter msgWriter)
+            : base(tabSize, componentType, msgWriter)
         {
         }
 

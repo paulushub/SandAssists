@@ -1,66 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Sandcastle.BuildGroup" Collapsed="true">
-    <Position X="3.25" Y="5" Width="1.5" />
+    <Position X="3.75" Y="8.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="GroupType" Type="Sandcastle.BuildGroupType" FixedFromPoint="true">
+    <AssociationLine Name="GroupType" Type="Sandcastle.BuildGroupType" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.75" Y="5.312" />
-        <Point X="7.25" Y="5.312" />
+        <Point X="3.75" Y="9.25" />
+        <Point X="3.5" Y="9.25" />
+        <Point X="3.5" Y="12.062" />
+        <Point X="4.25" Y="12.062" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="SyntaxType" Type="Sandcastle.BuildSyntaxType" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="9.125" />
+        <Point X="6.75" Y="9.125" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="SharedContents" Type="Sandcastle.Contents.SharedContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="5.438" />
-        <Point X="2.125" Y="5.438" />
-        <Point X="2.125" Y="6" />
+        <Point X="4.094" Y="8.75" />
+        <Point X="4.094" Y="7.125" />
+        <Point X="3.25" Y="7.125" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="TokenContents" Type="Sandcastle.Contents.TokenContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.75" Y="5.438" />
-        <Point X="5.875" Y="5.438" />
-        <Point X="5.875" Y="6" />
+        <Point X="5.25" Y="9.25" />
+        <Point X="6.375" Y="9.25" />
+        <Point X="6.375" Y="9.75" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-1.192" Y="0.081" />
+        <Position X="0.152" Y="0.091" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="MediaContents" Type="Sandcastle.Contents.MediaContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="MediaContents" Type="Sandcastle.Contents.MediaContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.75" Y="5" />
-        <Point X="3.75" Y="3.763" />
-        <Point X="2.062" Y="3.763" />
-        <Point X="2.062" Y="3.38" />
+        <Point X="4.906" Y="8.75" />
+        <Point X="4.906" Y="8.062" />
+        <Point X="6" Y="8.062" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="SnippetContents" Type="Sandcastle.Contents.CodeSnippetContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="5.188" />
-        <Point X="2.15" Y="5.188" />
-        <Point X="2.15" Y="4.63" />
+        <Point X="3.891" Y="8.75" />
+        <Point X="3.891" Y="8.062" />
+        <Point X="3.5" Y="8.062" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="ResourceContents" Type="Sandcastle.Contents.ResourceContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="ResourceContents" Type="Sandcastle.Contents.ResourceContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.25" Y="5" />
-        <Point X="4.25" Y="3.737" />
-        <Point X="6.439" Y="3.737" />
-        <Point X="6.439" Y="3.38" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="SyntaxType" Type="Sandcastle.BuildSyntaxType" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.75" Y="5.125" />
-        <Point X="6.25" Y="5.125" />
-        <Point X="6.25" Y="4.509" />
+        <Point X="3.75" Y="9.125" />
+        <Point X="1.75" Y="9.125" />
+        <Point X="1.75" Y="9.75" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AARCmbARQFABEdAACMAAAAaAAACAQAAYCBAEp4YCYCo=</HashCode>
+      <HashCode>EARDmbARQFBlMbAIaMEAAAaSAACAQgAYCBBkp4YDaDo=</HashCode>
       <FileName>BuildGroup.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -74,29 +73,31 @@
       <Property Name="SnippetContents" />
       <Property Name="ResourceContents" />
     </ShowAsCollectionAssociation>
-    <Lollipop Position="1.117" />
+    <Lollipop Position="0.94" />
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualGroup" Collapsed="true">
-    <Position X="3.25" Y="6.75" Width="1.5" />
+    <Position X="3.75" Y="10.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <AssociationLine Name="Source" Type="Sandcastle.Conceptual.ConceptualSource" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.75" Y="7.062" />
-        <Point X="5.875" Y="7.062" />
-        <Point X="5.875" Y="7.75" />
+        <Point X="5.25" Y="10.812" />
+        <Point X="6.833" Y="10.812" />
+        <Point X="6.833" Y="11.5" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Content" Type="Sandcastle.Conceptual.ConceptualContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="7.062" />
-        <Point X="2.125" Y="7.062" />
-        <Point X="2.125" Y="7.75" />
+        <Point X="3.75" Y="10.812" />
+        <Point X="3.583" Y="10.812" Type="JumpStart" />
+        <Point X="3.417" Y="10.812" Type="JumpEnd" />
+        <Point X="1.875" Y="10.812" />
+        <Point X="1.875" Y="11.5" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AADAgAAAAkAIIQAADAAAAIgABEACkAAAAAgQwACYBBg=</HashCode>
+      <HashCode>AABAgAgBAgABIQAATIEgAIiQJAQAkwBAAAiwxACZhBg=</HashCode>
       <FileName>Conceptual\ConceptualGroup.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -105,130 +106,201 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.References.ReferenceGroup" Collapsed="true">
-    <Position X="3.25" Y="2.75" Width="1.5" />
+    <Position X="3.75" Y="5.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="HierarchicalToc" Type="Sandcastle.Contents.HierarchicalTocContent" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.375" Y="2.75" />
-        <Point X="4.375" Y="2.43" />
-        <Point X="6.125" Y="2.43" />
-        <Point X="6.125" Y="2.13" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="Content" Type="Sandcastle.References.ReferenceContent" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.625" Y="2.75" />
-        <Point X="3.625" Y="2.43" />
-        <Point X="2.125" Y="2.43" />
-        <Point X="2.125" Y="2.13" />
+        <Point X="5.25" Y="6.062" />
+        <Point X="6.625" Y="6.062" />
+        <Point X="6.625" Y="3.63" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Source" Type="Sandcastle.References.ReferenceSource" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Source" Type="Sandcastle.References.ReferenceSource" FixedFromPoint="true">
       <Path>
-        <Point X="3.812" Y="2.75" />
-        <Point X="3.812" Y="0.812" />
-        <Point X="2.75" Y="0.812" />
+        <Point X="4.5" Y="5.75" />
+        <Point X="4.5" Y="1.13" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="TypeFilters" Type="Sandcastle.References.ReferenceRootFilter" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="VersionType" Type="Sandcastle.References.ReferenceVersionType" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4" Y="2.75" />
-        <Point X="4" Y="0.661" />
-        <Point X="5.25" Y="0.661" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="AttributeFilters" Type="Sandcastle.References.ReferenceRootFilter" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.188" Y="2.75" />
-        <Point X="4.188" Y="1" />
-        <Point X="5.25" Y="1" />
+        <Point X="3.75" Y="6" />
+        <Point X="3.062" Y="6" />
+        <Point X="3.062" Y="4.259" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AABAACABIgCAAQgBAAAAQAqAAAAgAAQAABAAggARIBg=</HashCode>
+      <HashCode>AABCAAARIgDAIQAJQIEAAAiQAAAgAggAABQgggARABg=</HashCode>
       <FileName>References\ReferenceGroup.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="HierarchicalToc" />
       <Property Name="Content" />
       <Property Name="Source" />
-      <Property Name="TypeFilters" />
-      <Property Name="AttributeFilters" />
+      <Property Name="VersionType" />
+      <Property Name="VersionInfo" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.Contents.CodeSnippetContent" Collapsed="true">
-    <Position X="0.5" Y="4" Width="3" />
+    <Position X="0.5" Y="7.75" Width="3" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.Contents.ResourceContent" Collapsed="true">
-    <Position X="5" Y="2.75" Width="2.75" />
+    <Position X="0.5" Y="9.75" Width="2.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.Contents.MediaContent" Collapsed="true">
-    <Position X="0.75" Y="2.75" Width="2.25" />
+    <Position X="6" Y="7.75" Width="2.25" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.Contents.SharedContent" Collapsed="true">
-    <Position X="0.75" Y="6" Width="2.5" />
+    <Position X="0.75" Y="6.75" Width="2.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.Contents.TokenContent" Collapsed="true">
-    <Position X="4.75" Y="6" Width="2.25" />
+    <Position X="5.25" Y="9.75" Width="2.25" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualSource" Collapsed="true">
-    <Position X="5.25" Y="7.75" Width="1.5" />
+    <Position X="6" Y="11.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAEAAAAAAAAAIAAA=</HashCode>
+      <HashCode>AAACAAAAAIAAAEAAAAAAAAAAAAAAAEAAAABAAAAICAA=</HashCode>
       <FileName>Conceptual\ConceptualSource.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Conceptual.ConceptualContent" Collapsed="true">
-    <Position X="0.75" Y="7.75" Width="2.75" />
+    <Position X="0.5" Y="11.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>EEJDgYAABDRCQCCIKAgVBgASFFUEEhAgCAAhgABQCJA=</HashCode>
+      <HashCode>AEJDgYAABDRCRCCIKIgVBgACFFUEEhAgCABhgABQCJA=</HashCode>
       <FileName>Conceptual\ConceptualContent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.References.ReferenceContent" Collapsed="true">
-    <Position X="0.75" Y="1.5" Width="2.75" />
+    <Position X="5.5" Y="3" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="AttributeFilters" Type="Sandcastle.References.ReferenceRootFilter">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.075" Y="0.131" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAAIACAAgAAAAACgAAAAAAAgAAAgAAACBA=</HashCode>
+      <HashCode>AAADgKAASDBAJCiIIAAAQAIChABEAgQAiABAgAABKBA=</HashCode>
       <FileName>References\ReferenceContent.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="FrameworkType" />
+      <Property Name="HierarchicalToc" />
+      <Property Name="TypeFilters" />
+      <Property Name="AttributeFilters" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="Sandcastle.References.ReferenceRootFilter" Collapsed="true">
-    <Position X="5.25" Y="0.5" Width="1.75" />
+    <Position X="7" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AIIAAAAAAAAEBAAACAAABAQCAAAAAAAAAAAAgABQABA=</HashCode>
+      <HashCode>AIJAgIAAAAAEBAAACAAARAQCAAAAAAABAAAAgABQCBA=</HashCode>
       <FileName>References\ReferenceRootFilter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Contents.HierarchicalTocContent" Collapsed="true">
-    <Position X="4.5" Y="1.5" Width="3.25" />
+    <Position X="5" Y="6.75" Width="3.25" />
     <TypeIdentifier />
   </Class>
   <Class Name="Sandcastle.References.ReferenceSource" Collapsed="true">
-    <Position X="1.25" Y="0.5" Width="1.5" />
+    <Position X="3.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAEAAAAAAAAAIAAA=</HashCode>
+      <HashCode>AAAiAGAAAIAAAEgAAAAAQAIABAAEAEQCAABAQAAJKBA=</HashCode>
       <FileName>References\ReferenceSource.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Sandcastle.References.ReferenceVersionInfo" Collapsed="true">
+    <Position X="0.5" Y="5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AABBBNAIAAAAABAASACBBIYCBAAUAAEpAEBAwAAgSBA=</HashCode>
+      <FileName>References\ReferenceVersionInfo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="RelatedVersions" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceVersionRelated" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAJBAIAAAAAAAAAASAAABIYCAAAQAAAAAABAgABwCBA=</HashCode>
+      <FileName>References\ReferenceVersionRelated.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Sources" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="1.223" />
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceVersionSource" Collapsed="true">
+    <Position X="0.5" Y="1.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="Sandcastle.References.ReferenceSource" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="0.812" />
+        <Point X="1.188" Y="0.812" />
+        <Point X="1.188" Y="1.25" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="Content" Type="Sandcastle.References.ReferenceContent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.5" Y="1.625" />
+        <Point X="4.029" Y="1.625" />
+        <Point X="4.029" Y="3.438" />
+        <Point X="4.417" Y="3.438" Type="JumpStart" />
+        <Point X="4.583" Y="3.438" Type="JumpEnd" />
+        <Point X="5.5" Y="3.438" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAgAAIAAAgAABhABAAiABARCAAAAAEAAAEAAgAAAABA=</HashCode>
+      <FileName>References\ReferenceVersionSource.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Content" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.815" />
+  </Class>
+  <Struct Name="Sandcastle.BuildFrameworkType" Collapsed="true">
+    <Position X="5" Y="2" Width="1.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.1" />
+  </Struct>
   <Enum Name="Sandcastle.BuildGroupType">
-    <Position X="7.25" Y="4.75" Width="1.5" />
+    <Position X="4.25" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAA=</HashCode>
       <FileName>BuildGroupType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Sandcastle.BuildSyntaxType" Collapsed="true">
-    <Position X="5.5" Y="4" Width="1.5" />
+    <Position X="6.75" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>BAAACAAAAAAgAAAAAAAAAAABAMAAAAAABIAAEAEAAAA=</HashCode>
       <FileName>BuildSyntaxType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Sandcastle.References.ReferenceVersionType" Collapsed="true">
+    <Position X="2" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAIAAAAAAAAECAAA=</HashCode>
+      <FileName>References\ReferenceVersionType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Tahoma" Size="8.25" />

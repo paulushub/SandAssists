@@ -98,8 +98,8 @@ namespace Sandcastle.Components.Snippets
         #region Constructors and Destructor
 
         public SnippetTextReader(int tabSize, Type componentType,
-            MessageHandler msgHandler)
-            : base(tabSize, componentType, msgHandler)
+            MessageWriter msgWriter)
+            : base(tabSize, componentType, msgWriter)
         {
             _exampleIndex = new Dictionary<string, string>(
                 StringComparer.OrdinalIgnoreCase);

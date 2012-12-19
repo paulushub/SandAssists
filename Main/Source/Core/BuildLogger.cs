@@ -70,7 +70,7 @@ namespace Sandcastle
     /// <seealso cref="BuildLoggers"/>
     /// <seealso cref="BuildLoggerLevel"/>
     /// <seealso cref="BuildLoggerVerbosity"/>
-    public abstract class BuildLogger : BuildObject, IDisposable
+    public abstract class BuildLogger : MarshalByRefObject, IDisposable
     {
         #region Private Fields
 
@@ -665,6 +665,11 @@ namespace Sandcastle
         public virtual void Close()
         {
             this.Dispose(true);
+        }
+
+        public override object InitializeLifetimeService()
+        {
+            return null;
         }
 
         #endregion

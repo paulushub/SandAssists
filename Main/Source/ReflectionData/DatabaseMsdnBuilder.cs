@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using System.Xml;
 using System.Xml.XPath;
-using System.Reflection;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Web.Services.Protocols;
 
@@ -18,7 +18,12 @@ namespace Sandcastle.ReflectionData
     {
         #region Private Fields
 
+        private string             _workingDir;
+
+        private DataSource         _source;
         private BuilderMsdnStorage _storage;
+
+        private IList<Exception>   _exceptions;
 
         #endregion
 
@@ -29,21 +34,38 @@ namespace Sandcastle.ReflectionData
         {
         }
 
-        public DatabaseMsdnBuilder(string locale)
-            : this(String.Empty, locale)
+        public DatabaseMsdnBuilder(string locale, DataSource source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (!source.IsBuilding || !source.IsValid)
+            {
+                throw new ArgumentException("source");
+            }
+
+            string workingDir = source.OutputDir;
+            if (String.IsNullOrEmpty(workingDir))
+            {
+                throw new ArgumentException("workingDir");
+            }
+
+            _source = source;
+
+            _storage    = new BuilderMsdnStorage(true, workingDir, locale);
+            _workingDir = workingDir;
         }
 
         public DatabaseMsdnBuilder(string workingDir, string locale)
         {
             if (String.IsNullOrEmpty(workingDir))
             {
-                _storage = new BuilderMsdnStorage(true, locale);
+                throw new ArgumentException("workingDir");
             }
-            else
-            {
-                _storage = new BuilderMsdnStorage(true, workingDir, locale);
-            }
+
+            _storage    = new BuilderMsdnStorage(true, workingDir, locale);
+            _workingDir = workingDir;
         }
 
         ~DatabaseMsdnBuilder()
@@ -81,20 +103,171 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public IList<Exception> Exceptions
+        {
+            get
+            {
+                return _exceptions;
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
         public bool Build()
-        {    
-            string dataDir = Environment.ExpandEnvironmentVariables(@"%DXROOT%\Data\Reflection");
-            dataDir        = Path.GetFullPath(dataDir);
+        {
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return false;
+            }
+
+            string dataDir = null;
+            if (_source != null && Directory.Exists(_source.InputDir))
+            {
+                dataDir = _source.InputDir;
+            }
+            else
+            {
+                dataDir = Environment.ExpandEnvironmentVariables(
+                    @"%DXROOT%\Data\Reflection");
+                dataDir = Path.GetFullPath(dataDir);
+            }    
             if (!Directory.Exists(dataDir))
             {
                 return false;
             }
 
-            this.AddTargets(dataDir, "*.xml", true, ReferenceLinkType.None);
+            this.AddLinks(dataDir, "*.xml", true, ReferenceLinkType.None);            
+
+            if (_storage != null)
+            {
+                // Retrieve any exceptions
+                _exceptions = _storage.Exceptions;
+
+                _storage.Dispose();
+                _storage = null;
+            }
+
+            if (_exceptions != null && _exceptions.Count != 0)
+            {
+                return false;
+            }
+
+            // Perform a defragmentation of the PersistentDictionary.edb database
+            return this.Defragmentation();
+        }
+
+        public bool ExportToXml(string xmlFile)
+        {
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return false;
+            }
+
+            PersistentDictionary<string, string> linkDatabase = null;
+            if (PersistentDictionaryFile.Exists(_workingDir))
+            {
+                linkDatabase = new PersistentDictionary<string, string>(_workingDir);
+            }
+            if (linkDatabase == null || linkDatabase.Count == 0)
+            {
+                return false;
+            }
+
+            string outputDir = Path.GetDirectoryName(xmlFile);
+            if (String.IsNullOrEmpty(outputDir))
+            {
+                return false;
+            }
+            if (!Directory.Exists(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.Encoding = Encoding.UTF8;
+            settings.OmitXmlDeclaration = false;
+
+            XmlWriter writer = null;
+            try
+            {
+                writer = XmlWriter.Create(xmlFile, settings);
+
+                writer.WriteStartDocument();
+                writer.WriteStartElement("externalLinks"); // start: externalLinks
+
+                if (_source != null)
+                {
+                    writer.WriteStartElement("source");    // start: source
+                    writer.WriteAttributeString("system", "true");
+                    writer.WriteAttributeString("name", _source.SourceType.ToString());
+                    writer.WriteAttributeString("platform", _source.IsSilverlight ?
+                        "Silverlight" : "Framework");
+                    Version version = _source.Version;
+                    writer.WriteAttributeString("version", version != null ?
+                        version.ToString(2) : "");
+                    writer.WriteAttributeString("lang", "");
+                    writer.WriteAttributeString("storage",
+                        _source.IsDatabase ? "database" : "memory");
+                    writer.WriteEndElement();              // end: source
+                }
+
+                writer.WriteStartElement("links");    // start: links
+                foreach (KeyValuePair<string, string> pair in linkDatabase)
+                {
+                    string id  = pair.Key;
+                    string url = pair.Value;
+
+                    if (String.IsNullOrEmpty(id) || String.IsNullOrEmpty(url))
+                    {
+                        continue;
+                    }    
+
+                    writer.WriteStartElement("link");  // start: link
+                    writer.WriteAttributeString("id", id);
+                    writer.WriteAttributeString("url", url);
+                    writer.WriteEndElement();          // end: link
+                }
+                writer.WriteEndElement();              // end: links
+
+                writer.WriteEndElement();                  // end: externalLinks
+                writer.WriteEndDocument();
+            }
+            finally
+            {
+                if (writer != null)
+                {
+                    writer.Close();
+                    writer = null;
+                }
+            }
+
+            return true;
+        }
+
+        public bool ImportFromXml(string xmlFile, bool deleteExiting)
+        {
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return false;
+            }
+            if (!Directory.Exists(_workingDir))
+            {
+                Directory.CreateDirectory(_workingDir);
+            }
+
+            if (deleteExiting && PersistentDictionaryFile.Exists(_workingDir))
+            {
+                PersistentDictionaryFile.DeleteFiles(_workingDir);
+            }
+
+            PersistentDictionary<string, string> linkDatabase = 
+                new PersistentDictionary<string, string>(_workingDir);
 
             return true;
         }
@@ -103,12 +276,12 @@ namespace Sandcastle.ReflectionData
 
         #region Private Methods
 
-        private void AddTargets(string directory, string filePattern, bool recurse, ReferenceLinkType type)
+        private void AddLinks(string directory, string filePattern, bool recurse, ReferenceLinkType type)
         {
             string[] files = Directory.GetFiles(directory, filePattern);
             foreach (string file in files)
             {
-                this.AddTargets(file, type);
+                this.AddLinks(file, type);
             }
 
             if (recurse)
@@ -116,16 +289,54 @@ namespace Sandcastle.ReflectionData
                 string[] subdirectories = Directory.GetDirectories(directory);
                 foreach (string subdirectory in subdirectories)
                 {
-                    this.AddTargets(subdirectory, filePattern, recurse, type);
+                    this.AddLinks(subdirectory, filePattern, recurse, type);
                 }
             }
         }
 
-        private void AddTargets(string file, ReferenceLinkType type)
+        private void AddLinks(string file, ReferenceLinkType type)
         {
             XPathDocument document = new XPathDocument(file);
             // This will only load into the memory...
-            TargetCollectionXmlUtilities.AddTargets(_storage, document.CreateNavigator(), type);
+            TargetCollectionXmlUtilities.AddTargets(_storage, 
+                document.CreateNavigator(), type);
+        }
+
+        private bool Defragmentation()
+        {
+            Process process = new Process();
+
+            ProcessStartInfo startInfo = process.StartInfo;
+
+            startInfo.FileName = "esentutl.exe";
+            startInfo.Arguments = "-d " + DataSource.DatabaseFileName + " -o";
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            startInfo.WorkingDirectory = _workingDir;
+            startInfo.RedirectStandardOutput = false;
+
+            // Now, start the process - there will still not be output till...
+            process.Start();
+            // We must wait for the process to complete...
+            process.WaitForExit();
+            int exitCode = process.ExitCode;
+            process.Close();
+            if (exitCode != 0)
+            {
+                return false;
+            }
+
+            string[] logFiles = Directory.GetFiles(_workingDir, "*.log",
+                SearchOption.TopDirectoryOnly);
+            if (logFiles != null)
+            {
+                for (int i = 0; i < logFiles.Length; i++)
+                {
+                    File.Delete(logFiles[i]);
+                }
+            }
+
+            return true;
         }
 
         #endregion
@@ -155,7 +366,8 @@ namespace Sandcastle.ReflectionData
         {
             #region Private Fields
 
-            private int _count;
+            private int _retryCount;
+            private int _retryMax;
 
             private bool      _isSystem;
             private bool      _isExisted;
@@ -164,31 +376,15 @@ namespace Sandcastle.ReflectionData
 
             private string    _dataDir;
 
-            private PersistentDictionary<string, string> _plusTree;
+            private PersistentDictionary<string, string> _linksDatabase;
 
             private BuilderMsdnResolver _msdnResolver;
+
+            private List<Exception> _exceptions;
 
             #endregion
 
             #region Constructors and Destructor
-
-            public BuilderMsdnStorage(bool isSystem, string locale)
-            {
-                _locale = "en-us";
-                if (!String.IsNullOrEmpty(locale))
-                {
-                    _locale = locale;
-                }
-
-                _isSystem = isSystem;
-
-                string assemblyPath = Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly().Location);
-
-                string workingDir = Path.Combine(assemblyPath, "Data");
-
-                this.Initialize(workingDir);
-            }
 
             public BuilderMsdnStorage(bool isSystem, string workingDir, string locale)
             {
@@ -219,7 +415,12 @@ namespace Sandcastle.ReflectionData
             {
                 get
                 {
-                    return _count;
+                    if (_linksDatabase != null)
+                    {
+                        return _linksDatabase.Count;
+                    }
+
+                    return 0;
                 }
             }
 
@@ -228,6 +429,14 @@ namespace Sandcastle.ReflectionData
                 get
                 {
                     return null;
+                }
+            }
+
+            public IList<Exception> Exceptions
+            {
+                get
+                {
+                    return _exceptions;
                 }
             }
 
@@ -242,7 +451,7 @@ namespace Sandcastle.ReflectionData
                     return false;
                 }
 
-                return _plusTree.ContainsKey(id);
+                return _linksDatabase.ContainsKey(id);
             }
 
             public override void Add(Target target)
@@ -251,17 +460,33 @@ namespace Sandcastle.ReflectionData
                 {
                     return;
                 }
-                if (!_plusTree.ContainsKey(target.id))
-                {
-                    _count++;
-                }
 
-                string msdnUrl = _msdnResolver.GetUrl(target.id);
-                if (msdnUrl == null)
+                try
                 {
-                    msdnUrl = String.Empty;
+                    string msdnUrl = _msdnResolver[target.id];
+                    if (!String.IsNullOrEmpty(msdnUrl))
+                    {
+                        _linksDatabase[target.id] = msdnUrl;
+                    }
                 }
-                _plusTree[target.id] = msdnUrl;
+                catch (Exception ex)
+                {
+                    // Reset exceptions cached...
+                    _exceptions = new List<Exception>();
+                    _exceptions.Add(ex);
+
+                    _retryCount = 0;
+                    _retryMax   =  3;
+
+                    if (!this.Retry(target))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        _exceptions = null;
+                    }
+                }              
             }
 
             public override void Clear()
@@ -283,36 +508,58 @@ namespace Sandcastle.ReflectionData
                 {
                     Directory.CreateDirectory(workingDir);
                 }
-                //string localPart = _locale.ToUpper();
 
-                if (_isSystem)
-                {
-                    _dataDir = Path.Combine(workingDir, "MsdnT26106211");
-                }
-                else
-                {
-                    string tempFile = Path.GetFileNameWithoutExtension(
-                        Path.GetTempFileName());
-
-                    _dataDir = Path.Combine(workingDir, tempFile);
-                }
+                _dataDir = workingDir;
 
                 _isExisted = PersistentDictionaryFile.Exists(_dataDir);
                 if (_isExisted)
                 {
-                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
-                    if (_plusTree.ContainsKey("$DataCount$"))
-                    {
-                        _count = Convert.ToInt32(_plusTree["$DataCount$"]);
-                    }
+                    _linksDatabase = new PersistentDictionary<string, string>(_dataDir);
                 }
                 else
                 {
-                    _count    = 0;
-                    _plusTree = new PersistentDictionary<string, string>(_dataDir);
+                    _linksDatabase       = new PersistentDictionary<string, string>(_dataDir);
+                }
 
-                    _msdnResolver        = new BuilderMsdnResolver();
+                _msdnResolver = new BuilderMsdnResolver();
+                _msdnResolver.Locale = _locale;
+            }
+
+            private bool Retry(Target target)
+            {
+                _retryCount++;
+                if (_retryCount > _retryMax)
+                {
+                    return false;
+                }
+
+                if (_msdnResolver == null || _msdnResolver.IsDisabled)
+                {
+                    _msdnResolver = new BuilderMsdnResolver();
                     _msdnResolver.Locale = _locale;
+                }
+
+                try
+                {
+                    System.Threading.Thread.Sleep(500);
+
+                    string msdnUrl = _msdnResolver[target.id];
+                    if (!String.IsNullOrEmpty(msdnUrl))
+                    {
+                        _linksDatabase[target.id] = msdnUrl;
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    if (_exceptions == null)
+                    {
+                        _exceptions = new List<Exception>();
+                    }
+                    _exceptions.Add(ex);
+
+                    return this.Retry(target);
                 }
             }
 
@@ -322,23 +569,12 @@ namespace Sandcastle.ReflectionData
 
             protected override void Dispose(bool disposing)
             {
-                if (_plusTree != null)
+                if (_linksDatabase != null)
                 {
                     try
                     {
-                        // Save the system reflection database, if newly created...
-                        if (_isSystem)
-                        {
-                            if (!_isExisted)
-                            {
-                                // Add some metadata...
-                                _plusTree["$DataCount$"]   = _count.ToString();
-                                _plusTree["$DataVersion$"] = "2.6.10621.1";
-                            }
-                        }
-
-                        _plusTree.Dispose();
-                        _plusTree = null;
+                        _linksDatabase.Dispose();
+                        _linksDatabase = null;
 
                         // For the non-system reflection database, delete after use...
                         if (!_isSystem)

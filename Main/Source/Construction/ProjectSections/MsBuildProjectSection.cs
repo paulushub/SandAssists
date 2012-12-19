@@ -74,6 +74,105 @@ namespace Sandcastle.Construction.ProjectSections
             return (_project != null);
         }
 
+        #region IsConditionMatched Method
+
+        /// <summary>
+        /// This is a simple condition matching designed for only the configuration
+        /// and platform conditions.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="platform"></param>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public static bool IsConditionMatched(string configuration,
+            string platform, string condition)
+        {
+            // Format: '$(Configuration)|$(Platform)' == 'Debug|x86'
+            //         '$(Configuration)|$(Platform)' == 'Release|AnyCPU'
+            bool isMatched = false;
+
+            if (String.IsNullOrEmpty(condition) && String.IsNullOrEmpty(configuration))
+            {
+                return isMatched;
+            }
+
+            StreamTokenizer tokenizer = new StreamTokenizer(condition);
+            List<Token> tokens = new List<Token>();
+            if (!tokenizer.Tokenize(tokens))
+            {
+                return isMatched;
+            }
+
+            String symbols = String.Empty;
+            List<string> quotedValues = new List<string>();
+            foreach (Token token in tokens)
+            {
+                switch (token.Type)
+                {
+                    case TokenType.Char:
+                        if (Char.IsSymbol(token.StringValue, 0))
+                        {
+                            symbols += token.StringValue;
+                        }
+                        break;
+                    case TokenType.Quote:
+                        // Format: '$(Configuration)', we remove the single quotes...
+                        quotedValues.Add(token.StringValue.Trim('\''));
+                        break;
+                }
+            }
+
+            symbols = symbols.Trim();
+            if (!symbols.Equals("==", StringComparison.Ordinal) ||
+                quotedValues.Count != 2)
+            {
+                return isMatched;
+            }
+
+            IDictionary<string, string> expressionMap = ExtractConditionMap(
+                quotedValues[0], quotedValues[1]);
+
+            if (expressionMap == null || expressionMap.Count == 0)
+            {
+                return isMatched;
+            }
+            string configurationValue;
+            if (!expressionMap.TryGetValue("Configuration", out configurationValue) ||
+                String.IsNullOrEmpty(configurationValue))
+            {
+                return isMatched;
+            }
+            if (!configuration.Equals(configurationValue,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return isMatched;
+            }
+            if (!String.IsNullOrEmpty(platform) && expressionMap.Count > 1)
+            {
+                string platformValue;
+                if (!expressionMap.TryGetValue("Platform", out platformValue) ||
+                    String.IsNullOrEmpty(platformValue))
+                {
+                    isMatched = false;
+                }
+                else if (platform.Equals("AnyCPU", StringComparison.OrdinalIgnoreCase) ||
+                    platform.Equals("Any CPU", StringComparison.OrdinalIgnoreCase))
+                {
+                    platform = platform.Replace(" ", "");
+                    isMatched = platform.Equals(platformValue.Replace(" ", ""),
+                        StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    isMatched = platform.Equals(platformValue, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            return isMatched;
+        }
+
+        #endregion
+
         #endregion
 
         #region Protected Methods
@@ -366,105 +465,6 @@ namespace Sandcastle.Construction.ProjectSections
             }
 
             return true;
-        }
-
-        #endregion
-
-        #region IsConditionMatched Method
-
-        /// <summary>
-        /// This is a simple condition matching designed for only the configuration
-        /// and platform conditions.
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="platform"></param>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        protected static bool IsConditionMatched(string configuration,
-            string platform, string condition)
-        {
-            // Format: '$(Configuration)|$(Platform)' == 'Debug|x86'
-            //         '$(Configuration)|$(Platform)' == 'Release|AnyCPU'
-            bool isMatched = false;
-
-            if (String.IsNullOrEmpty(condition) && String.IsNullOrEmpty(configuration))
-            {
-                return isMatched;
-            }
-
-            StreamTokenizer tokenizer = new StreamTokenizer(condition);
-            List<Token> tokens = new List<Token>();
-            if (!tokenizer.Tokenize(tokens))
-            {
-                return isMatched;
-            }
-
-            String symbols = String.Empty;
-            List<string> quotedValues = new List<string>();
-            foreach (Token token in tokens)
-            {
-                switch (token.Type)
-                {
-                    case TokenType.Char:
-                        if (Char.IsSymbol(token.StringValue, 0))
-                        {
-                            symbols += token.StringValue;
-                        }
-                        break;
-                    case TokenType.Quote:
-                        // Format: '$(Configuration)', we remove the single quotes...
-                        quotedValues.Add(token.StringValue.Trim('\''));
-                        break;
-                }
-            }
-
-            symbols = symbols.Trim();
-            if (!symbols.Equals("==", StringComparison.Ordinal) ||
-                quotedValues.Count != 2)
-            {
-                return isMatched;
-            }
-
-            IDictionary<string, string> expressionMap = ExtractConditionMap(
-                quotedValues[0], quotedValues[1]);
-
-            if (expressionMap == null || expressionMap.Count == 0)
-            {
-                return isMatched;
-            }
-            string configurationValue;
-            if (!expressionMap.TryGetValue("Configuration", out configurationValue) ||
-                String.IsNullOrEmpty(configurationValue))
-            {
-                return isMatched;
-            }
-            if (!configuration.Equals(configurationValue,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return isMatched;
-            }
-            if (!String.IsNullOrEmpty(platform) && expressionMap.Count > 1)
-            {
-                string platformValue;
-                if (!expressionMap.TryGetValue("Platform", out platformValue) ||
-                    String.IsNullOrEmpty(platformValue))
-                {
-                    isMatched = false;
-                }
-                else if (platform.Equals("AnyCPU", StringComparison.OrdinalIgnoreCase) ||
-                    platform.Equals("Any CPU", StringComparison.OrdinalIgnoreCase))
-                {
-                    platform = platform.Replace(" ", "");
-                    isMatched = platform.Equals(platformValue.Replace(" ", ""),
-                        StringComparison.OrdinalIgnoreCase);
-                }
-                else
-                {
-                    isMatched = platform.Equals(platformValue, StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            return isMatched;
         }
 
         #endregion

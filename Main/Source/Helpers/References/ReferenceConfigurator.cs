@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 
 using Sandcastle.Contents;
 using Sandcastle.Configurators;
+using Sandcastle.ReflectionData;
 
 namespace Sandcastle.References
 {
@@ -306,9 +307,20 @@ namespace Sandcastle.References
                         navigator.DeleteSelf();
 
                         return;
-                    }
+                    } 
 
-                    XmlWriter xmlWriter = navigator.InsertAfter();
+                    //XmlWriter xmlWriter = navigator.InsertAfter();
+                    bool isConfigured = false;
+                    XmlWriterSettings writerSettings = new XmlWriterSettings();
+                    writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+                    // Final output indentation works better if the source text
+                    // is not indented...
+                    writerSettings.Indent = false;  
+                    writerSettings.OmitXmlDeclaration = true;
+
+                    StringWriter textWriter = new StringWriter();
+                    XmlWriter xmlWriter = XmlWriter.Create(
+                        textWriter, writerSettings);
 
                     xmlWriter.WriteStartElement("component");  // start - component
                     xmlWriter.WriteAttributeString("type", keyword);
@@ -316,12 +328,29 @@ namespace Sandcastle.References
 
                     for (int i = 0; i < componentList.Count; i++)
                     {
-                        componentList[i].Configure(_group, xmlWriter);
+                        if (componentList[i].Configure(_group, xmlWriter))
+                        {
+                            isConfigured = true;
+                        }
                     }
 
                     xmlWriter.WriteEndElement();               // end - component
 
                     xmlWriter.Close();
+
+                    if (isConfigured)
+                    {
+                        XmlReader reader = XmlReader.Create(
+                            new StringReader(textWriter.ToString()));
+
+                        reader.MoveToContent();
+
+                        navigator.InsertAfter(reader);
+
+                        reader.Close();
+                    }
+
+                    textWriter.Close();
                 }
 
                 navigator.DeleteSelf();
@@ -428,32 +457,209 @@ namespace Sandcastle.References
         {
             BuildContext context = this.Context;
 
-            BuildGroupContext groupContext = context.GroupContexts[_group.Id];
+            IBuildNamedList<BuildGroupContext> groupContexts = context.GroupContexts;
+            if (groupContexts == null || groupContexts.Count == 0)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
+            ReferenceGroupContext groupContext = groupContexts[_group.Id]
+                as ReferenceGroupContext;
             if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
             }
 
+            BuildFramework framework = groupContext.Framework;
+            BuildFrameworkKind kind  = framework.FrameworkType.Kind;
+
             string sandcastleDir = context.SandcastleDirectory;
 
             //<data base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" />
             //<data files=".\reflection.xml" />
-            XmlWriter xmlWriter = navigator.InsertAfter();
+            XmlWriter writer = navigator.InsertAfter();
+
             // For now, lets simply write the default...
-            xmlWriter.WriteStartElement("data");   // start - data
-            xmlWriter.WriteAttributeString("base", Path.Combine(sandcastleDir,
-                @"Data\Reflection"));
-            xmlWriter.WriteAttributeString("recurse", "true");
-            xmlWriter.WriteAttributeString("files", "*.xml");
-            xmlWriter.WriteEndElement();           // end - data
+            bool dataAvailable   = false;
+            if (kind == BuildFrameworkKind.Silverlight)
+            {
+                string silverlightDir = groupContext["$SilverlightDataDir"];
 
-            xmlWriter.WriteStartElement("data");   // start - data
-            xmlWriter.WriteAttributeString("files", 
+                if (!String.IsNullOrEmpty(silverlightDir) &&
+                    Directory.Exists(silverlightDir))
+                {
+                    dataAvailable = true;
+
+                    writer.WriteStartElement("data");   // start - data
+                    writer.WriteAttributeString("base", silverlightDir);
+                    writer.WriteAttributeString("recurse", "true");
+                    // Prevent warning, when the same namespace occurs in different
+                    // assemblies...
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteAttributeString("files", "*.xml");
+
+                    // Write the data source...
+                    Version latestVersion = BuildFrameworks.LatestSilverlightVersion;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Silverlight,
+                        silverlightDir, latestVersion, true, true);
+
+                    writer.WriteEndElement();           // end - data
+                }
+            }
+            else if (kind == BuildFrameworkKind.Portable)
+            {
+                string portableDir = groupContext["$PortableDataDir"];
+
+                if (!String.IsNullOrEmpty(portableDir) &&
+                    Directory.Exists(portableDir))
+                {
+                    dataAvailable = true;
+
+                    writer.WriteStartElement("data");   // start - data
+                    writer.WriteAttributeString("base", portableDir);
+                    writer.WriteAttributeString("recurse", "true");
+                    // Prevent warning, when the same namespace occurs in different
+                    // assemblies...
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteAttributeString("files", "*.xml");
+
+                    // Write the data source...
+                    Version latestVersion = BuildFrameworks.LatestPortableVersion;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Portable,
+                        portableDir, latestVersion, true, false);
+
+                    writer.WriteEndElement();           // end - data
+                }
+            }
+            else if (kind == BuildFrameworkKind.ScriptSharp)
+            {
+                string scriptSharpDir = groupContext["$ScriptSharpDataDir"];
+
+                if (!String.IsNullOrEmpty(scriptSharpDir) &&
+                    Directory.Exists(scriptSharpDir))
+                {
+                    dataAvailable = true;
+
+                    if (!groupContext.IsEmbeddedGroup)
+                    {   
+                        writer.WriteStartElement("data");   // start - data
+                        writer.WriteAttributeString("base", scriptSharpDir);
+                        writer.WriteAttributeString("recurse", "true");
+                        // Prevent warning, when the same namespace occurs in different
+                        // assemblies...
+                        writer.WriteAttributeString("warnOverride", "false");
+                        writer.WriteAttributeString("files", "*.xml");
+
+                        // Write the data source...
+                        Version latestVersion = BuildFrameworks.LatestScriptSharpVersion;
+                        if (latestVersion == null)
+                        {
+                            latestVersion = framework.Version;
+                        }
+                        this.WriteDataSource(writer, DataSourceType.ScriptSharp,
+                            scriptSharpDir, latestVersion, true, false);
+
+                        writer.WriteEndElement();           // end - data
+                    }
+                }
+            }
+
+            if (!dataAvailable || kind == BuildFrameworkKind.None ||
+                kind == BuildFrameworkKind.DotNet || kind == BuildFrameworkKind.Compact)
+            {
+                string dotNetDataDir = Path.GetFullPath(
+                    Environment.ExpandEnvironmentVariables(ReferenceEngine.ReflectionDirectory));
+
+                writer.WriteStartElement("data");   // start - data
+                writer.WriteAttributeString("base", dotNetDataDir); 
+                writer.WriteAttributeString("recurse", "true");
+                // Prevent warning, when the same namespace occurs in different
+                // assemblies...
+                writer.WriteAttributeString("warnOverride", "false");
+                writer.WriteAttributeString("files", "*.xml");
+
+                // Write the data source...
+                this.WriteDataSource(writer, DataSourceType.Framework,
+                    dotNetDataDir, ReferenceEngine.ReflectionVersion, true, false);
+
+                writer.WriteEndElement();           // end - data
+            }
+
+            // The Portable and ScriptSharp do not support Blend...
+            if (kind != BuildFrameworkKind.Portable &&
+                kind != BuildFrameworkKind.Compact  &&
+                kind != BuildFrameworkKind.ScriptSharp)
+            {
+                string blendDir = groupContext["$BlendDataDir"];
+
+                if (!String.IsNullOrEmpty(blendDir) && Directory.Exists(blendDir))
+                {
+                    dataAvailable = true;
+
+                    writer.WriteStartElement("data");   // start - data
+                    writer.WriteAttributeString("base",    blendDir);
+                    writer.WriteAttributeString("recurse", "true");
+                    // Prevent warning, when the same namespace occurs in different
+                    // assemblies...
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteAttributeString("files", "*.xml");
+
+                    // Write the data source...
+                    BuildSpecialSdk latestBlendSdk = null;
+                    if (kind == BuildFrameworkKind.Silverlight)
+                    {
+                        latestBlendSdk = BuildSpecialSdks.LatestBlendSilverlightSdk;
+                    }
+                    else
+                    {
+                        latestBlendSdk = BuildSpecialSdks.LatestBlendWpfSdk;
+                    }
+                    Version latestVersion = (latestBlendSdk == null) ?
+                        null : latestBlendSdk.Version;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Blend, blendDir,
+                        latestVersion, true, kind == BuildFrameworkKind.Silverlight);
+
+                    writer.WriteEndElement();           // end - data
+                }
+            }
+
+            //IList<string> linkDirs = groupContext.LinkDirectories;
+            //if (linkDirs != null && linkDirs.Count != 0)
+            //{
+            //    for (int i = 0; i < linkDirs.Count; i++)
+            //    {
+            //        writer.WriteStartElement("data");   // start - data
+            //        writer.WriteAttributeString("base", linkDirs[i]);
+            //        writer.WriteAttributeString("recurse", "true");
+            //        // Prevent warning, when the same namespace occurs in different
+            //        // assemblies...
+            //        writer.WriteAttributeString("warnOverride", "false");
+            //        writer.WriteAttributeString("files", "*.xml");
+
+            //        writer.WriteEndElement();           // end - data
+            //    }
+            //}  
+
+            writer.WriteStartElement("data");   // start - data
+            writer.WriteAttributeString("files", 
                 String.Format(@".\{0}", groupContext["$ReflectionFile"]));
-            xmlWriter.WriteEndElement();           // end - data
+            writer.WriteEndElement();           // end - data
 
-            xmlWriter.Close();
+            writer.Close();
             navigator.DeleteSelf();
         }
 
@@ -492,14 +698,15 @@ namespace Sandcastle.References
             {
                 throw new BuildException("No valid framework is specified.");
             }
+            BuildFrameworkKind kind = framework.FrameworkType.Kind;
 
             //<data base="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\en\" 
             //   recurse="false"  files="*.xml" />
             //<data files=".\Comments\Project.xml" />
             //<data files=".\Comments\TestLibrary.xml" />
-            XmlWriter xmlWriter = navigator.InsertAfter();
+            XmlWriter writer = navigator.InsertAfter();
 
-            bool warnOverride   = false;
+            string warnOverride = "false";
 
             BuildLoggerVerbosity loggerVerbosity = _settings.Logging.Verbosity;
 
@@ -507,79 +714,310 @@ namespace Sandcastle.References
                 loggerVerbosity == BuildLoggerVerbosity.Diagnostic ||
                 loggerVerbosity == BuildLoggerVerbosity.Normal)
             {
-                warnOverride = true;
+                warnOverride = "true";
             }
 
             CultureInfo culture = _settings.CultureInfo;
             string langName     = culture.TwoLetterISOLanguageName;
             IEnumerable<string> commentDirs = framework.CommentDirs;
+
+            // Store all the framework directories here, we will use this to
+            // eliminate adding comment files directly from these directories...
+            HashSet<string> commentDirSet = new HashSet<string>(
+                StringComparer.OrdinalIgnoreCase);
+
             if (commentDirs != null)
             {
-                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment file directories. ");
-                //for (int i = 0; i < commentDirs.Count; i++)
+                writer.WriteComment(" The following are the framework (.NET, Silverlight etc) comment file directories. ");
+                if (kind == BuildFrameworkKind.Silverlight)
+                {
+                    this.WriteDataSources(writer, DataSourceType.Silverlight,
+                        String.Empty, framework.Version, true, true,
+                        langName, commentDirs);
+                }
+                else if (kind == BuildFrameworkKind.Portable)
+                {
+                    this.WriteDataSources(writer, DataSourceType.Portable,
+                        String.Empty, framework.Version, true, false,
+                        langName, commentDirs);
+                }
+                else if (kind == BuildFrameworkKind.ScriptSharp)
+                {
+                    this.WriteDataSources(writer, DataSourceType.ScriptSharp,
+                        String.Empty, framework.Version, true, false,
+                        langName, commentDirs);
+                }
+                else if (kind == BuildFrameworkKind.Compact)
+                {
+                    // For the compact framework, the comments files are all
+                    // redirected to the system comment files...
+                    BuildFramework latestFramework = BuildFrameworks.LatestFramework;
+                    commentDirs = latestFramework.CommentDirs;
+
+                    this.WriteDataSources(writer, DataSourceType.Framework,
+                        String.Empty, latestFramework.Version, true, false,
+                        langName, commentDirs);
+                }
+                else
+                {
+                    // Write the data source...
+                    this.WriteDataSources(writer, DataSourceType.Framework,
+                        String.Empty, framework.Version, true, false,
+                        langName, commentDirs);
+                }
+
                 foreach (string commentDir in commentDirs)
                 {                                                              
                     if (!Directory.Exists(commentDir))
                     {
                         continue;
                     }
+                    string finalDir = null;
                     string langDir = Path.Combine(commentDir, langName);
-                    xmlWriter.WriteStartElement("data");  // start - data                  
+                    writer.WriteStartElement("data");  // start - data                  
                     if (Directory.Exists(langDir))
                     {
-                        xmlWriter.WriteAttributeString("base", langDir);
+                        writer.WriteAttributeString("base", langDir);
+
+                        finalDir = langDir;
                     }
                     else
                     {
-                        xmlWriter.WriteAttributeString("base", commentDir);
+                        writer.WriteAttributeString("base", commentDir);
+
+                        finalDir = commentDir;
                     }
-                    xmlWriter.WriteAttributeString("recurse", "false");
-                    xmlWriter.WriteAttributeString("warnOverride", warnOverride ? "true" : "false");
-                    xmlWriter.WriteAttributeString("files", "*.xml");
-                    xmlWriter.WriteEndElement();          // end - data                }
+                    writer.WriteAttributeString("recurse", "false");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("warnOverride", warnOverride);
+                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteEndElement();          // end - data
+
+                    if (!finalDir.EndsWith("\\"))
+                    {
+                        finalDir += "\\";
+                    }
+
+                    commentDirSet.Add(finalDir);
                 }
             }
 
             IEnumerable<string> commentFiles = framework.CommentFiles;
             if (commentFiles != null)
             {                         
-                xmlWriter.WriteComment(" The following are the framework (.NET, Silverlight etc) comment files. ");
+                writer.WriteComment(" The following are the framework (.NET, Silverlight etc) comment files. ");
                 foreach (string commentFile in commentFiles)
                 {
-                    xmlWriter.WriteStartElement("data");
-                    xmlWriter.WriteAttributeString("files", commentFile);
-                    xmlWriter.WriteAttributeString("warnOverride", "false");
-                    xmlWriter.WriteEndElement();
-                }
-            }
+                    // Try to avoid adding comment files from known framework
+                    // directories...
+                    string commentDir = Path.GetDirectoryName(commentFile);
+                    if (!commentDir.EndsWith("\\"))
+                    {
+                        commentDir += "\\";
+                    }
+                    if (commentDirSet.Contains(commentDir))
+                    {
+                        continue;
+                    }
 
-            IList<string> targetCommentFiles = groupContext.CommentFiles;
-            if (targetCommentFiles != null && targetCommentFiles.Count != 0)
-            {
-                xmlWriter.WriteComment(" The following are the target comment files. ");
-                for (int i = 0; i < targetCommentFiles.Count; i++)
-                {
-                    xmlWriter.WriteStartElement("data");
-                    xmlWriter.WriteAttributeString("files", targetCommentFiles[i]);
-                    xmlWriter.WriteEndElement();
+                    writer.WriteStartElement("data");
+                    writer.WriteAttributeString("files", commentFile);
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteEndElement();
                 }
             }
 
             IList<string> linkCommentFiles = groupContext.LinkCommentFiles;
             if (linkCommentFiles != null && linkCommentFiles.Count != 0)
             {
-                xmlWriter.WriteComment(" The following are the dependent assembly comment files. ");
+                writer.WriteComment(" The following are the dependent assembly comment files. ");
                 for (int i = 0; i < linkCommentFiles.Count; i++)
                 {
-                    xmlWriter.WriteStartElement("data");
-                    xmlWriter.WriteAttributeString("files", linkCommentFiles[i]);
-                    xmlWriter.WriteAttributeString("warnOverride", "false");
-                    xmlWriter.WriteEndElement();
+                    string linkCommentFile = linkCommentFiles[i];
+                    // Try to avoid adding comment files from known framework
+                    // directories...
+                    string commentDir = Path.GetDirectoryName(linkCommentFile);
+                    if (!commentDir.EndsWith("\\"))
+                    {
+                        commentDir += "\\";
+                    }
+                    if (commentDirSet.Contains(commentDir))
+                    {
+                        continue;
+                    }
+
+                    writer.WriteStartElement("data");
+                    writer.WriteAttributeString("files", linkCommentFile);
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteEndElement();
                 }
             }
 
-            xmlWriter.Close();
+            IList<string> targetCommentFiles = groupContext.CommentFiles;
+            if (targetCommentFiles != null && targetCommentFiles.Count != 0)
+            {
+                writer.WriteComment(" The following are the target comment files. ");
+                for (int i = 0; i < targetCommentFiles.Count; i++)
+                {
+                    writer.WriteStartElement("data");
+                    writer.WriteAttributeString("files", targetCommentFiles[i]);
+                    writer.WriteAttributeString("warnOverride", "false");
+                    writer.WriteEndElement();
+                }
+            }
+
+            writer.Close();
             navigator.DeleteSelf(); 
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region WriteDataSource Method
+
+        private void WriteDataSource(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase, bool isSilverlight)
+        {
+            if (baseInput == null)
+            {
+                baseInput = String.Empty;
+            }
+
+            BuildContext context = this.Context;
+
+            writer.WriteStartElement("source");    // start: source
+            writer.WriteAttributeString("system", "true");
+            writer.WriteAttributeString("name", sourceType.ToString());
+            writer.WriteAttributeString("platform", isSilverlight ?
+                "Silverlight" : "Framework");
+            writer.WriteAttributeString("version", version != null ?
+                version.ToString(2) : "");
+            writer.WriteAttributeString("lang", "");
+            writer.WriteAttributeString("storage",
+                useDatabase ? "database" : "memory");
+
+            writer.WriteStartElement("paths"); // start: paths
+            if (String.IsNullOrEmpty(baseInput))
+            {
+                writer.WriteAttributeString("baseInput", "");
+            }
+            else
+            {
+                writer.WriteAttributeString("baseInput", Path.GetFullPath(
+                    Environment.ExpandEnvironmentVariables(baseInput)));
+            }
+            writer.WriteAttributeString("baseOutput", context.IndexedDataDirectory);
+            writer.WriteEndElement();          // end: paths 
+
+            writer.WriteEndElement();              // end: source
+        }
+
+        #endregion
+
+        #region WriteDataSources Method
+
+        private void WriteDataSources(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase, 
+            bool isSilverlight, string lang, IEnumerable<string> commentDirs)
+        {
+            if (baseInput == null)
+            {
+                baseInput = String.Empty;
+            }
+            if (lang == null)
+            {
+                lang = String.Empty;
+            }
+
+            BuildContext context = this.Context;
+            BuildLogger logger = context.Logger;
+
+            // We create the following format:
+            // (BaseOutput)\(Source)\vVersion\Language
+            // Eg: A:\Data\Comments\Framework\v4.0\en
+            string outputDir = Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(context.CommentDataDirectory));
+
+            if (sourceType != DataSourceType.None)
+            {
+                outputDir = Path.Combine(outputDir, sourceType.ToString());
+
+                // Blend SDK is separately available for Silverlight and WPF...
+                if (sourceType == DataSourceType.Blend)
+                {
+                    if (isSilverlight)
+                    {
+                        outputDir = Path.Combine(outputDir, "Silverlight");
+                    }
+                    else
+                    {
+                        outputDir = Path.Combine(outputDir, "Wpf");
+                    }
+                }
+            }    
+            if (version != null)
+            {
+                outputDir = Path.Combine(outputDir, "v" + version.ToString(2));
+            }       
+            if (!String.IsNullOrEmpty(lang))
+            {
+                outputDir = Path.Combine(outputDir, lang);
+            }
+            if (!Directory.Exists(outputDir))
+            {
+                return;
+            }
+
+            string persistFile = Path.Combine(outputDir, DataSources.XmlFileName);
+            if (!File.Exists(persistFile))
+            {
+                return;
+            }
+            DataSources dataSources = new DataSources(false);
+            using (XmlReader reader = XmlReader.Create(persistFile))
+            {
+                reader.MoveToContent();
+                dataSources.ReadXml(reader);
+            } 
+            // Check for validity, there must be at least a source...
+            if (!dataSources.IsValid || dataSources.SourceCount == 0)
+            {
+                return;
+            }
+            // Check for data source changes...
+            int matchedCount = 0;
+            foreach (string commentDir in commentDirs)
+            {
+                string finalDir = commentDir;
+                if (!String.IsNullOrEmpty(lang))
+                {
+                    finalDir = Path.Combine(commentDir, lang);
+                    if (!Directory.Exists(finalDir))
+                    {
+                        finalDir = commentDir;
+                    }
+                }
+
+                if (dataSources.ContainsSource(finalDir))
+                {
+                    matchedCount++;
+                }
+            }
+
+            if (matchedCount != dataSources.SourceCount)
+            {
+                if (logger != null)
+                {
+                    logger.WriteLine(String.Format(
+                        "WriteDataSources: There is a change in the data sources for {0}, version {1}. Update the persistent database.",
+                        sourceType, version), BuildLoggerLevel.Warn);
+                }
+            }
+
+            dataSources.WriteXml(writer);
         }
 
         #endregion

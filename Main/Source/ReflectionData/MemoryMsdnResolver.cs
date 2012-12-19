@@ -61,25 +61,5 @@ namespace Sandcastle.ReflectionData
         }
 
         #endregion
-
-        #region Public Methods
-
-        public override string GetUrl(string id)
-        {
-            if (cachedMsdnUrls.ContainsKey(id))
-            {
-                return cachedMsdnUrls[id];
-            }
-
-            string url = base.GetUrl(id);
-            if (!String.IsNullOrEmpty(url))
-            {
-                cachedMsdnUrls[id] = url;
-            }
-
-            return url;
-        }
-
-        #endregion
     }
 }

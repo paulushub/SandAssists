@@ -663,6 +663,14 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public IList<MemberTarget> Elements
+        {
+            get
+            {
+                return elements;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -1568,6 +1576,14 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public TypeReference ReturnType
+        {
+            get
+            {
+                return returnType;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -1777,6 +1793,14 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public TypeReference ReturnType
+        {
+            get
+            {
+                return returnType;
+            }
+        }
+
         public IList<string> Templates
         {
             get
@@ -1814,7 +1838,6 @@ namespace Sandcastle.ReflectionData
             }
 
             parameters   = new List<Parameter>();
-            templateArgs = new List<TypeReference>();
             templates    = new List<string>();
 
             XmlNodeType nodeType = XmlNodeType.None;
@@ -1877,6 +1900,10 @@ namespace Sandcastle.ReflectionData
                                     TypeReference typeRef = ReferencesReader.ReadTypeReference(reader);
                                     if (typeRef != null)
                                     {
+                                        if (templateArgs == null)
+                                        {
+                                            templateArgs = new List<TypeReference>();
+                                        }
                                         templateArgs.Add(typeRef);
                                     }
                                 }

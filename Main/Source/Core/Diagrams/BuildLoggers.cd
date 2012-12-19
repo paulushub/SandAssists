@@ -7,7 +7,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>hACQBAYiICBESYAeQClCKAQ0oAkJAQJAAhAkACOSAgs=</HashCode>
+      <HashCode>BAAQBAQwIKAEQYAcAAFKKAQAgAgBAAIAAhAgBCGCAgo=</HashCode>
       <FileName>BuildLogger.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -18,21 +18,21 @@
   <Class Name="Sandcastle.Loggers.FileLogger" Collapsed="true">
     <Position X="4" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACgAAAAIAAAAAAQAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAIACAAAAAIAAAAAAQAAAACAAAAAAAgAAEAAAA=</HashCode>
       <FileName>Loggers\FileLogger.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Loggers.XmlLogger" Collapsed="true">
     <Position X="4.75" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CEAAAAAAACAAAQAIAAAAAAQAAAAAAAAAAAAAAAEAAAg=</HashCode>
+      <HashCode>CEAAAAAIACAAAQAIAAAAAAQAAAACAAAAAAAgAAEAAAg=</HashCode>
       <FileName>Loggers\XmlLogger.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Loggers.ConsoleLogger" Collapsed="true">
     <Position X="1.25" Y="4.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAAAAAQAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAIAAAAAAAIAAAAAAQAAAACAAAAAAAgIAEAAAA=</HashCode>
       <FileName>Loggers\ConsoleLogger.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -50,7 +50,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAIAAAAJAAAAAQAICAAABAQAAAAAAAAAAAAAAAFAAAg=</HashCode>
+      <HashCode>AAIAAAAJAAAAAQAICAAABAQgAAACEAAAAAAgAIFgAAg=</HashCode>
       <FileName>BuildLoggers.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -60,21 +60,21 @@
   <Class Name="Sandcastle.Loggers.HtmlLogger" Collapsed="true">
     <Position X="0.75" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CEAAAAAAACAAAQBKAAAAAAQAAgAAAAAAAAAAAAEAAAg=</HashCode>
+      <HashCode>CEAAAAAIACAAAQBKAAAAAAQAAgACAAAAAAAgAAEAAAg=</HashCode>
       <FileName>Loggers\HtmlLogger.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Loggers.NoneLogger" Collapsed="true">
     <Position X="5" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAAAAAQAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAIAAAAAAAIAAAAAAQAAAACAAAAAAAgAAEAAAA=</HashCode>
       <FileName>Loggers\NoneLogger.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sandcastle.Loggers.XamlLogger" Collapsed="true">
     <Position X="2.75" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAAAAAQAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <HashCode>CEAAAAAIACAAAQCIAACAAAQAAAgGEAAAAAAgAAMAAAg=</HashCode>
       <FileName>Loggers\XamlLogger.cs</FileName>
     </TypeIdentifier>
   </Class>

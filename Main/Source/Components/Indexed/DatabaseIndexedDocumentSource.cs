@@ -10,8 +10,10 @@ namespace Sandcastle.Components.Indexed
     {
         #region Private Fields
 
-        private DatabaseIndexedDocument      _document;
-        private DatabaseIndexedDocumentCache _cache;
+        private DatabaseIndexedDocument       _document;
+        private DatabaseIndexedDocumentCache  _cache;
+
+        private List<DatabaseIndexedDocument> _documents;
 
         #endregion
 
@@ -22,7 +24,7 @@ namespace Sandcastle.Components.Indexed
             int cacheSize, bool isSystem)
             : base(component, keyXPath, valueXPath, context, cacheSize)
         {
-            _document = new DatabaseIndexedDocument(isSystem, false);
+            _document = new DatabaseIndexedDocument(isSystem);
             _cache    = new DatabaseIndexedDocumentCache(100);
         }
 
@@ -56,6 +58,19 @@ namespace Sandcastle.Components.Indexed
             }
         }
 
+        public bool IsInitialized
+        {
+            get
+            {
+                if (_document != null)
+                {
+                    return _document.IsInitialized;
+                }
+
+                return false;
+            }
+        }
+
         public DatabaseIndexedDocumentCache Cache
         {
             get
@@ -76,6 +91,24 @@ namespace Sandcastle.Components.Indexed
 
         #region Public Methods
 
+        public void Initialize(string workingDir, bool createNotFound)
+        {   
+            if (_document == null || _document.IsInitialized)
+            {
+                return;
+            }
+
+            _document.Initialize(workingDir, createNotFound);
+        }
+
+        public void Uninitialize()
+        {   
+            if (_document != null)
+            {
+                _document.Uninitialize();
+            }
+        }
+
         public override XPathNavigator GetContent(string key)
         {
             XPathNavigator navigator = _cache[key];
@@ -90,6 +123,21 @@ namespace Sandcastle.Components.Indexed
                 if (navigator != null)
                 {
                     _cache.Add(key, navigator);
+
+                    return navigator;
+                }
+            }
+            if (_documents != null && _documents.Count != 0)
+            {
+                for (int i = 0; i < _documents.Count; i++)
+                {
+                    DatabaseIndexedDocument document = _documents[i];
+                    navigator = document.GetContent(key);
+                    if (navigator != null)
+                    {
+                        _cache.Add(key, navigator); 
+                        break;
+                    }
                 }
             }
 
@@ -145,6 +193,20 @@ namespace Sandcastle.Components.Indexed
                     this.AddDocuments(subDirectory, wildcardPath, recurse, 
                         cacheIt, warnOverride);
             }
+        }
+
+        public void AddDocument(DatabaseIndexedDocument document)
+        {   
+            if (document == null)
+            {
+                return;
+            }
+            if (_documents == null)
+            {
+                _documents = new List<DatabaseIndexedDocument>();
+            }
+
+            _documents.Add(document);
         }
 
         #endregion

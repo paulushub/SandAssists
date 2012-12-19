@@ -355,7 +355,7 @@ namespace Sandcastle.Formats
                 listSteps.LogTitle    = "Building document output format - " + this.Name;
                 listSteps.LogTimeSpan = true;
 
-                // 2. Move the output html files to the help folder for compilation...
+                // 1. Move the output html files to the help folder for compilation...
                 StepDirectoryMove dirMove = new StepDirectoryMove(workingDir);
                 dirMove.LogTitle = String.Empty;
                 dirMove.Message  = "Moving the output html files to the help folder for compilation";
@@ -363,6 +363,7 @@ namespace Sandcastle.Formats
 
                 listSteps.Add(dirMove);
 
+                // 2. Compile or build the HtmlHelp 3.x format...
                 StepMhvBuilder mhvBuilder = new StepMhvBuilder(workingDir);
 
                 mhvBuilder.Message       = "Compiling the help file.";

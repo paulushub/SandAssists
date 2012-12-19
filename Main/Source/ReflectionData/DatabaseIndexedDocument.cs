@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
-using System.Xml.XPath;
 using System.Text;
-using System.Reflection;
+using System.Xml;
+using System.Xml.Xsl;
+using System.Xml.XPath;
 using System.Collections.Generic;
 
 using Microsoft.Isam.Esent;
@@ -12,14 +12,20 @@ using Microsoft.Isam.Esent.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
 {
-    public sealed class DatabaseIndexedDocument
+    internal sealed class DatabaseIndexedDocument : IDisposable
     {
         #region Private Fields
 
         private bool      _isSystem;
-        private bool      _isExisted;
+        private bool      _isComments;
 
         private string    _dataDir;
+
+        // search pattern for index values
+        private XPathExpression _valueExpression;
+
+        // search pattern for the index keys (relative to the index value node)
+        private XPathExpression _keyExpression;
 
         private XmlReaderSettings _settings;
 
@@ -29,41 +35,43 @@ namespace Sandcastle.ReflectionData
 
         #region Constructors and Destructor
 
-        public DatabaseIndexedDocument(bool isSystem)
+        public DatabaseIndexedDocument(bool isSystem, bool isComments, 
+            string workingDir)
         {
-            _isSystem = isSystem;
+            _isSystem   = isSystem;
+            _isComments = isComments;
+            _dataDir    = workingDir;
 
-            _settings = new XmlReaderSettings();
-            _settings.ConformanceLevel = ConformanceLevel.Fragment;            
+            string keyXPath       = null;
+            string valueXPath     = null;
+            CustomContext context = new CustomContext();
 
-            string assemblyPath = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
-
-            string workingDir    = Path.Combine(assemblyPath, "Data");
-            if (!Directory.Exists(workingDir))
+            // The following are the usual key/value in the configuration file...
+            if (_isComments)
             {
-                Directory.CreateDirectory(workingDir);
-            }
-            if (_isSystem)
-            {
-                _dataDir = Path.Combine(workingDir, "RefT26106211");
+                // <index name="comments" value="/doc/members/member" key="@name" cache="100">
+                keyXPath   = "@name";
+                valueXPath = "/doc/members/member";
             }
             else
             {
-                string tempFile = Path.GetFileNameWithoutExtension(
-                    Path.GetTempFileName());
-                _dataDir = Path.Combine(workingDir, tempFile);
+                //  <index name="reflection" value="/reflection/apis/api" key="@id" cache="10">
+                keyXPath   = "@id";
+                valueXPath = "/reflection/apis/api";
             }
 
-            _isExisted = PersistentDictionaryFile.Exists(_dataDir);
-            if (_isExisted)
+            _keyExpression = XPathExpression.Compile(keyXPath);
+            _keyExpression.SetContext(context);
+
+            _valueExpression = XPathExpression.Compile(valueXPath);
+            _valueExpression.SetContext(context);
+
+            if (PersistentDictionaryFile.Exists(_dataDir))
             {
-                _plusTree = new PersistentDictionary<string, string>(_dataDir);
+                PersistentDictionaryFile.DeleteFiles(_dataDir);
             }
-            else
-            {
-                _plusTree = new PersistentDictionary<string, string>(_dataDir);
-            }
+
+            _plusTree = new PersistentDictionary<string, string>(_dataDir);
         }
 
         ~DatabaseIndexedDocument()
@@ -79,7 +87,12 @@ namespace Sandcastle.ReflectionData
         {
             get
             {
-                return _isExisted;
+                if (!String.IsNullOrEmpty(_dataDir) && Directory.Exists(_dataDir))
+                {
+                    return PersistentDictionaryFile.Exists(_dataDir);
+                }
+
+                return false;
             }
         }
 
@@ -88,6 +101,30 @@ namespace Sandcastle.ReflectionData
             get
             {
                 return _isSystem;
+            }
+        }
+
+        public bool IsComments
+        {
+            get
+            {
+                return _isComments;
+            }
+        }
+
+        public XPathExpression ValueExpression
+        {
+            get
+            {
+                return _valueExpression;
+            }
+        }
+
+        public XPathExpression KeyExpression
+        {
+            get
+            {
+                return _keyExpression;
             }
         }
 
@@ -108,6 +145,12 @@ namespace Sandcastle.ReflectionData
                     return null;
                 }
 
+                if (_settings == null)
+                {
+                    _settings = new XmlReaderSettings();
+                    _settings.ConformanceLevel = ConformanceLevel.Fragment;            
+                }    
+
                 StringReader textReader = new StringReader(innerXml);
                 using (XmlReader reader = XmlReader.Create(textReader, _settings))
                 {
@@ -119,9 +162,8 @@ namespace Sandcastle.ReflectionData
             return navigator;
         }
 
-        public void AddDocument(DatabaseIndexedBuilder builder, string file)
+        public void AddDocument(string file)
         {
-            BuildExceptions.NotNull(builder, "builder");
             BuildExceptions.NotNull(file,   "file");
 
             // load the document
@@ -129,13 +171,12 @@ namespace Sandcastle.ReflectionData
 
             // search for value nodes
             XPathNodeIterator valueNodes =
-                document.CreateNavigator().Select(builder.ValueExpression);
+                document.CreateNavigator().Select(_valueExpression);
 
             // get the key string for each value node and record it in the index
             foreach (XPathNavigator valueNode in valueNodes)
             {
-                XPathNavigator keyNode = valueNode.SelectSingleNode(
-                    builder.KeyExpression);
+                XPathNavigator keyNode = valueNode.SelectSingleNode(_keyExpression);
                 if (keyNode == null)
                 {
                     continue;
@@ -163,14 +204,6 @@ namespace Sandcastle.ReflectionData
             {
                 try
                 {
-                    // Save the system reflection database, if newly created...
-                    if (_isSystem)
-                    {
-                        if (!_isExisted)
-                        {
-                        }
-                    }
-
                     _plusTree.Dispose();
                     _plusTree = null;
 
@@ -187,6 +220,115 @@ namespace Sandcastle.ReflectionData
                 catch
                 {                  	
                 }
+            }
+        }
+
+        #endregion
+
+        #region CustomContext Class
+
+        private sealed class CustomContext : XsltContext
+        {
+            // variable control
+            private Dictionary<string, IXsltContextVariable> variables;
+
+            public CustomContext()
+                : base()
+            {
+                variables = new Dictionary<string, IXsltContextVariable>();
+            }
+
+            public string this[string variable]
+            {
+                get
+                {
+                    return (variables[variable].Evaluate(this).ToString());
+                }
+                set
+                {
+                    variables[variable] = new CustomVariable(value);
+                }
+            }
+
+            public bool ClearVariable(string name)
+            {
+                return (variables.Remove(name));
+            }
+
+            public void ClearVariables()
+            {
+                variables.Clear();
+            }
+
+            // Implementation of XsltContext methods
+
+            public override IXsltContextVariable ResolveVariable(
+                string prefix, string name)
+            {
+                return (variables[name]);
+            }
+
+            public override IXsltContextFunction ResolveFunction(
+                string prefix, string name, XPathResultType[] argumentTypes)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override int CompareDocument(string baseUri, string nextBaseUri)
+            {
+                return (0);
+            }
+
+            public override bool Whitespace
+            {
+                get
+                {
+                    return (true);
+                }
+            }
+
+            public override bool PreserveWhitespace(XPathNavigator node)
+            {
+                return (true);
+            }
+        }
+
+        private sealed class CustomVariable : IXsltContextVariable
+        {
+            private string value;
+
+            public CustomVariable(string value)
+            {
+                this.value = value;
+            }
+
+            public bool IsLocal
+            {
+                get
+                {
+                    return (false);
+                }
+            }
+
+            public bool IsParam
+            {
+                get
+                {
+                    return (false);
+                }
+            }
+
+            public XPathResultType VariableType
+            {
+                get
+                {
+                    return (XPathResultType.String);
+                }
+            }
+
+            public Object Evaluate(XsltContext context)
+            {
+                return (value);
             }
         }
 

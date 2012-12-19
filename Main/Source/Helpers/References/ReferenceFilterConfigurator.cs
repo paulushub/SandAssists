@@ -34,10 +34,13 @@ namespace Sandcastle.References
         private string _sourceFile;
         private string _destFile;
         private string _defaultAttrFile;
+        private string _assistComponents;
 
         private BuildSettings   _settings;
         private BuildContext    _context;
         private ReferenceGroup  _group;
+
+        private IList<string>   _bindingSources;
 
         private ReferenceRootFilter     _compilerRootFilter;
 
@@ -72,6 +75,18 @@ namespace Sandcastle.References
             get
             {
                 return _configContent;
+            }
+        }
+
+        public IList<string> BindingSources
+        {
+            get
+            {
+                return _bindingSources;
+            }
+            set
+            {
+                _bindingSources = value;
             }
         }
 
@@ -133,6 +148,24 @@ namespace Sandcastle.References
                 {
                     _compilerRootFilter = new ReferenceRootFilter();
                     _compilerRootFilter.Load(apiFilterFile);
+                }
+            }
+
+            _assistComponents = null;
+            if (_context.IsDirectSandcastle)
+            {
+                string sandcastleAssist = _settings.SandAssistDirectory;
+                if (!String.IsNullOrEmpty(sandcastleAssist) &&
+                    Directory.Exists(sandcastleAssist))
+                {
+                    // If the Sandcastle Assist component assembly is in the same 
+                    // directory as the Sandcastle Helpers...
+                    string tempText = Path.Combine(sandcastleAssist,
+                        "Sandcastle.Reflection.dll");
+                    if (File.Exists(tempText))
+                    {
+                        _assistComponents = tempText;
+                    }
                 }
             }
 
@@ -279,10 +312,22 @@ namespace Sandcastle.References
                 // <namer type="Microsoft.Ddue.Tools.Reflection.OrcasNamer" 
                 //   assembly="Microsoft.Ddue.Tools.Reflection.dll" />
                 writer.WriteStartElement("namer");
-                writer.WriteAttributeString("type",
-                    "Microsoft.Ddue.Tools.Reflection.WhidbeyNamer");
-                writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
-                    @"ProductionTools\MRefBuilder.exe"));
+
+                if (!String.IsNullOrEmpty(_assistComponents) &&
+                    File.Exists(_assistComponents))
+                {
+                    writer.WriteAttributeString("type",
+                        "Microsoft.Ddue.Tools.Reflection.WhidbeyNamer");
+                    writer.WriteAttributeString("assembly", _assistComponents);
+                }
+                else
+                {
+                    writer.WriteAttributeString("type",
+                        "Microsoft.Ddue.Tools.Reflection.WhidbeyNamer");
+                    writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                        @"ProductionTools\MRefBuilder.exe"));
+                }
+
                 writer.WriteEndElement();
 
                 writer.Close();
@@ -303,25 +348,43 @@ namespace Sandcastle.References
             //       assembly="MRefBuilder.exe" />
             //</addins>
 
-            string sandcastleDir = _context.SandcastleDirectory;
-
             XmlWriter writer = navigator.InsertAfter();
 
             writer.WriteStartElement("addins");  // start: addins
 
-            // For the extension method addin...
-            writer.WriteStartElement("addin");   // start: addin
-            writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ExtensionMethodAddIn");
-            writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
-                @"ProductionTools\MRefBuilder.exe"));
-            writer.WriteEndElement();            // end: addin
+            if (!String.IsNullOrEmpty(_assistComponents) &&
+                File.Exists(_assistComponents))
+            {
+                // For the extension method addin...
+                writer.WriteStartElement("addin");   // start: addin
+                writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ExtensionMethodAddIn");
+                writer.WriteAttributeString("assembly", _assistComponents);
+                writer.WriteEndElement();            // end: addin
 
-            // For the XAML attached members addin...
-            writer.WriteStartElement("addin");   // start: addin
-            writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.XamlAttachedMembersAddIn");
-            writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
-                @"ProductionTools\MRefBuilder.exe"));
-            writer.WriteEndElement();            // end: addin
+                // For the XAML attached members addin...
+                writer.WriteStartElement("addin");   // start: addin
+                writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.XamlAttachedMembersAddIn");
+                writer.WriteAttributeString("assembly", _assistComponents);
+                writer.WriteEndElement();            // end: addin
+            }
+            else
+            {
+                string sandcastleDir = _context.SandcastleDirectory;
+
+                // For the extension method addin...
+                writer.WriteStartElement("addin");   // start: addin  
+                writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.ExtensionMethodAddIn");
+                writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                    @"ProductionTools\MRefBuilder.exe"));  
+                writer.WriteEndElement();            // end: addin
+
+                // For the XAML attached members addin...
+                writer.WriteStartElement("addin");   // start: addin
+                writer.WriteAttributeString("type", "Microsoft.Ddue.Tools.XamlAttachedMembersAddIn");
+                writer.WriteAttributeString("assembly", Path.Combine(sandcastleDir,
+                    @"ProductionTools\MRefBuilder.exe"));
+                writer.WriteEndElement();            // end: addin
+            }
 
             writer.WriteEndElement();            // end: addins
 
@@ -475,8 +538,14 @@ namespace Sandcastle.References
                 }
                 else
                 {
-                    writer.WriteAttributeString("path", String.Format(
-                        @"%SystemRoot%\Microsoft.NET\Framework\{0}\", framework.Folder));
+                    string assemPath = Path.GetFullPath(
+                        Environment.ExpandEnvironmentVariables(String.Format(
+                        @"%SystemRoot%\Microsoft.NET\Framework\{0}\", framework.Folder)));
+                    if (!Directory.Exists(assemPath))
+                    {
+                        assemPath = framework.AssemblyDir;
+                    }
+                    writer.WriteAttributeString("path", assemPath);
                 }
             }
             else
@@ -518,34 +587,19 @@ namespace Sandcastle.References
 
             string sandcastleDir = _context.SandcastleDirectory;
 
-            string assistComponents = null;
-            string sandcastleAssist = _settings.SandAssistDirectory;
-            if (!String.IsNullOrEmpty(sandcastleAssist) &&
-                Directory.Exists(sandcastleAssist))
-            {
-                // If the Sandcastle Assist component assembly is in the same 
-                // directory as the Sandcastle Helpers...
-                string tempText = Path.Combine(sandcastleAssist,
-                    "Sandcastle.Components.dll");
-                if (File.Exists(tempText))
-                {
-                    assistComponents = tempText;
-                }
-            }
-
             XmlWriter writer = navigator.InsertAfter();
 
             // For now, write the default...
             // <resolver type="Microsoft.Ddue.Tools.Reflection.AssemblyResolver" 
             //   assembly="%DXROOT%\ProductionTools\MRefBuilder.exe" use-gac="false" />
-            writer.WriteStartElement("resolver");  
+            writer.WriteStartElement("resolver");
 
-            if (!String.IsNullOrEmpty(assistComponents) &&
-                File.Exists(assistComponents))
+            if (!String.IsNullOrEmpty(_assistComponents) &&
+                File.Exists(_assistComponents))
             {
                 writer.WriteAttributeString("type",
-                    "Sandcastle.Reflections.RedirectAssemblyResolver");
-                writer.WriteAttributeString("assembly", assistComponents);
+                    "Microsoft.Ddue.Tools.Reflection.RedirectAssemblyResolver");
+                writer.WriteAttributeString("assembly", _assistComponents);
                 writer.WriteAttributeString("use-gac", "false");
 
                 IList<DependencyItem> items = sourceContext.BindingRedirects;
@@ -574,6 +628,76 @@ namespace Sandcastle.References
                             writer.WriteEndElement();
                         }
                     }
+                    writer.WriteEndElement();
+                }
+
+                IList<string> sources = sourceContext.BindingSources;
+                if ((_bindingSources != null && _bindingSources.Count != 0) ||
+                    (sources != null && sources.Count != 0))
+                {
+                    HashSet<string> bindingSourceSet = new HashSet<string>(
+                        StringComparer.OrdinalIgnoreCase);
+
+                    writer.WriteStartElement("bindingSources");
+
+                    if (sources != null)
+                    {
+                        for (int i = 0; i < sources.Count; i++)
+                        {
+                            string source = sources[i];
+                            if (String.IsNullOrEmpty(source) ||
+                                !Directory.Exists(source))
+                            {
+                                continue;
+                            }
+
+                            string finalDir = String.Copy(source);
+                            if (!finalDir.EndsWith("\\"))
+                            {
+                                finalDir += "\\";
+                            }
+                            if (!bindingSourceSet.Contains(finalDir))
+                            {
+                                writer.WriteStartElement("bindingSource");
+
+                                writer.WriteAttributeString("path", source);
+
+                                writer.WriteEndElement();
+
+                                bindingSourceSet.Add(finalDir);
+                            }
+                        }
+                    }
+                    if (_bindingSources != null)
+                    {
+                        for (int i = 0; i < _bindingSources.Count; i++)
+                        {
+                            string source = _bindingSources[i];
+
+                            if (String.IsNullOrEmpty(source) ||
+                                !Directory.Exists(source))
+                            {
+                                continue;
+                            }
+
+                            string finalDir = String.Copy(source);
+                            if (!finalDir.EndsWith("\\"))
+                            {
+                                finalDir += "\\";
+                            }
+                            if (!bindingSourceSet.Contains(finalDir))
+                            {
+                                writer.WriteStartElement("bindingSource");
+
+                                writer.WriteAttributeString("path", source);
+
+                                writer.WriteEndElement();
+
+                                bindingSourceSet.Add(finalDir);
+                            }
+                        }
+                    }
+
                     writer.WriteEndElement();
                 }
             }

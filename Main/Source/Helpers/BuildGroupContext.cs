@@ -149,11 +149,21 @@ namespace Sandcastle
 
         public object GetValue(string key)
         {
+            if (String.IsNullOrEmpty(key))
+            {
+                return null;
+            }
+
             return _objects[key];
         }
 
         public void SetValue(string key, object value)
         {
+            if (String.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
             _objects[key] = value;
         }
 

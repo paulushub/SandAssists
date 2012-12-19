@@ -83,7 +83,7 @@ namespace Sandcastle.Components.Indexed
 
         public override void AddDocument(string file, bool cacheIt, 
             bool warnOverride)
-        {    
+        {
             // load the document
             MemoryIndexedDocument document = 
                 new MemoryIndexedDocument(this, file);
@@ -91,6 +91,7 @@ namespace Sandcastle.Components.Indexed
             // record the keys
             //string[] keys = document.GetKeys();
             ICollection<string> keys = document.GetKeys();
+
             foreach (string key in keys)
             {                   
                 if (warnOverride && _keyFileIndex.ContainsKey(key))

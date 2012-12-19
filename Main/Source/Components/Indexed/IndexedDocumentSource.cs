@@ -115,9 +115,11 @@ namespace Sandcastle.Components.Indexed
             if (_assembler == null || level == MessageLevel.Ignore)
                 return;
 
-            MessageHandler handler = _assembler.MessageHandler;
-            if (handler != null)
-                handler(_thisType, level, message);
+            MessageWriter writer = _assembler.MessageWriter;
+            if (writer != null)
+            {
+                writer.Write(_thisType, level, message);
+            }
         }
 
         #endregion

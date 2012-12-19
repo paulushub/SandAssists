@@ -52,12 +52,9 @@ namespace Sandcastle.ReflectionData
             get;
         }
 
-        public virtual bool Exists
+        public abstract bool Exists
         {
-            get
-            {
-                return true;
-            }
+            get;
         }
 
         #endregion

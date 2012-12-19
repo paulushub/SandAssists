@@ -4,27 +4,18 @@
     <Position X="2.25" Y="3" Width="1.5" />
     <AssociationLine Name="LinkType" Type="Sandcastle.ReflectionData.ReferenceLinkType" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.75" Y="3.375" />
-        <Point X="4.125" Y="3.375" />
-        <Point X="4.125" Y="4.312" />
-        <Point X="5.25" Y="4.312" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="DefaultLinkType" Type="Sandcastle.ReflectionData.ReferenceLinkType" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="3.75" Y="3.219" />
-        <Point X="6.125" Y="3.219" />
-        <Point X="6.125" Y="4" />
+        <Point X="3.75" Y="3.312" />
+        <Point X="4.75" Y="3.312" />
+        <Point X="4.75" Y="4" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>BAICAAQAAAAAIBAAQCAAAAACAAAFAAAABAAAoAAAAgA=</HashCode>
+      <HashCode>BAICAAQAAAAAIBAAQAAAAAACAAAFAAAABAAAoAAAAgA=</HashCode>
       <FileName>Targets.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="TargetType" />
       <Property Name="LinkType" />
-      <Property Name="DefaultLinkType" />
     </ShowAsAssociation>
     <Lollipop Position="1.008" />
   </Class>
@@ -122,7 +113,7 @@
     </TypeIdentifier>
   </Enum>
   <Enum Name="Sandcastle.ReflectionData.ReferenceLinkType" Collapsed="true">
-    <Position X="5.25" Y="4" Width="1.75" />
+    <Position X="4" Y="4" Width="1.75" />
     <TypeIdentifier>
       <HashCode>ABACAAAAAQAAAAAAAAABAAAAAABAAAAAAAEAAAEAAAA=</HashCode>
       <FileName>References.cs</FileName>

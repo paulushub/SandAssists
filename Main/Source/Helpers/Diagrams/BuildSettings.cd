@@ -75,7 +75,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAIBAAQwAqAHERAAeAICDoTYqAiJQwKABQTAAKRYYlo=</HashCode>
+      <HashCode>AIIhAAQwAKAHERKCeAICDobapAyJQwCABQTAhKRYalo=</HashCode>
       <FileName>BuildSettings.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -138,7 +138,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AEIAAAAAAABFEgAADQAABBQAAACAQASAAAFAAARAAhA=</HashCode>
+      <HashCode>AEIBAAAABABFMgAATQAABFQCACCAQASAAANAhARAChA=</HashCode>
       <FileName>BuildEngineSettings.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -154,7 +154,7 @@
   <Class Name="Sandcastle.Conceptual.ConceptualEngineSettings" Collapsed="true">
     <Position X="2.5" Y="8.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAARAAEAACAAQQAAQACAEASAAQAAAAAAAABAAAAAAhg=</HashCode>
+      <HashCode>AAAQAAEAACAAYQAAQACAEECAAQAAAAAAAAAAAAAAABg=</HashCode>
       <FileName>Conceptual\ConceptualEngineSettings.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -164,9 +164,12 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>gFARBAEAAABAEQAASQCAUQSIAAAAEAAADABAAAAAAhg=</HashCode>
+      <HashCode>gFAQRQEAAChhMwgASQLAEUCIAAAAEAAACAAAAoAAIBg=</HashCode>
       <FileName>References\ReferenceEngineSettings.cs</FileName>
     </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="LinkSources" />
+    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Sandcastle.BuildConfiguration" Collapsed="true">
     <Position X="5.25" Y="5.75" Width="2.75" />
@@ -178,7 +181,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAIAAAAIAAAIAAEQAAABQAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAIAAEAAAABQAAAAAAAAAAABAABAACAA=</HashCode>
       <FileName>BuildConfiguration.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.418" />
@@ -193,7 +196,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>IABAIAABAIAwQMAAEUBAARQAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <HashCode>IABAAAABAIAwQMAAEEBAARQAAAAAAAAAAABAAAgACAA=</HashCode>
       <FileName>BuildComponentConfiguration.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="1.19" />
@@ -211,7 +214,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AABAAAAAAgAAAQgAAAAAAAACAIAAAAAAAAAAgAAACBg=</HashCode>
+      <HashCode>AABAAAAAAgAAAQgAAAAAAAACAIAAAAAAAABAgAAACBg=</HashCode>
       <FileName>BuildToc.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -229,7 +232,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAgAVAABAAQAQgEAADAAESAAACAAAEABICAhAAAARg=</HashCode>
+      <HashCode>AAAAAdAQBAAUAQgMAADAAECCAECAAAEABIGAhAAACRg=</HashCode>
       <FileName>BuildStyle.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -248,7 +251,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>oQgAEShBkAEV1IiACKAUAAXIRACAwQAdAUACJoACAFg=</HashCode>
+      <HashCode>oBgAEQhBkIEV9IigaKEUAAXaQAKQwwQZAUACpoACCFg=</HashCode>
       <FileName>BuildFormat.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -285,7 +288,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>CEBCBIgBAwQAEwgRAALAAAECAAgEABYAEgABhoAACBg=</HashCode>
+      <HashCode>CEBARAgAAwQEkwgRAALAAAECAAgGABIAEgABgoAICBg=</HashCode>
       <FileName>BuildFeedback.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -305,8 +308,16 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAABAAAAAQQEAAAEAAACAAABQAAAAgABgABACBg=</HashCode>
+      <HashCode>AAAAAAgBAABEAQQEAAAEAAACQAABQAAAAgABgABACBg=</HashCode>
       <FileName>BuildLogging.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sandcastle.References.ReferenceLinkSource" Collapsed="true">
+    <Position X="5" Y="9.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAogAEAASAAADgCACAgABERCAABAAEAAgAAA4IBQABA=</HashCode>
+      <FileName>References\ReferenceLinkSource.cs</FileName>
+      <NewMemberFileName>References\ReferenceAjaxDocSource.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Sandcastle.BuildFormatType" Collapsed="true">

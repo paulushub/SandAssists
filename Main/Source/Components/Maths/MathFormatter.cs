@@ -27,7 +27,7 @@ namespace Sandcastle.Components.Maths
         private string[] _sizesLaTeX;
 
         private Type             _componentType;
-        private MessageHandler   _messageHandler;
+        private MessageWriter    _messageWriter;
         private MathNamingMethod _namingMethod;
 
         private List<MathTeXCommand> _listCommands;
@@ -49,7 +49,7 @@ namespace Sandcastle.Components.Maths
                 "\\large", "\\Large", "\\LARGE", "\\huge", "\\Huge"};
         }
 
-        protected MathFormatter(Type componentType, MessageHandler messageHandler)
+        protected MathFormatter(Type componentType, MessageWriter messageWriter)
             : this()
         {
              if (componentType == null)
@@ -57,18 +57,18 @@ namespace Sandcastle.Components.Maths
                 throw new ArgumentNullException("componentType",
                     "The component type cannot be null (or Nothing).");
             }
-            if (messageHandler == null)
+            if (messageWriter == null)
             {
-                throw new ArgumentNullException("messageHandler",
-                    "The message handler cannot be null (or Nothing).");
+                throw new ArgumentNullException("messageWriter",
+                    "The message writer cannot be null (or Nothing).");
             }
 
             _componentType  = componentType;
-            _messageHandler = messageHandler;
+            _messageWriter = messageWriter;
        }
 
-        protected MathFormatter(Type componentType, MessageHandler messageHandler,
-            XPathNavigator formatter) : this(componentType, messageHandler)
+        protected MathFormatter(Type componentType, MessageWriter messageWriter,
+            XPathNavigator formatter) : this(componentType, messageWriter)
         {
             //<formatter format="LaTeX" type="MikTeX" baseSize="10">
             //    <style type="inline" baseSize="10" zoomLevel="2" />
@@ -77,8 +77,7 @@ namespace Sandcastle.Components.Maths
             if (formatter != null)
             {
                 int baseSize = -1;
-                string attribute = formatter.GetAttribute("baseSize", 
-                    String.Empty);
+                string attribute = formatter.GetAttribute("baseSize", String.Empty);
 
                 if (String.IsNullOrEmpty(attribute) == false)
                 {
@@ -158,7 +157,7 @@ namespace Sandcastle.Components.Maths
 
         ~MathFormatter()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         #endregion
@@ -470,9 +469,9 @@ namespace Sandcastle.Components.Maths
                 return;
             }
 
-            if (level != MessageLevel.Ignore && _messageHandler != null)
+            if (level != MessageLevel.Ignore && _messageWriter != null)
             {
-                _messageHandler(_componentType, level, message);
+                _messageWriter.Write(_componentType, level, message);
             }
         }
 
@@ -503,7 +502,7 @@ namespace Sandcastle.Components.Maths
         protected virtual void Dispose(bool disposing)
         {
             _componentType  = null;
-            _messageHandler = null;
+            _messageWriter = null;
         }
 
         #endregion

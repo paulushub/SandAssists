@@ -153,6 +153,7 @@ namespace Sandcastle
         #region CreateSteps Method
 
         public abstract BuildStep CreateInitialSteps(BuildGroup group);
+        public abstract BuildStep CreateLinkSteps();
         public abstract BuildStep CreateFinalSteps(BuildGroup group);
 
         #endregion
@@ -208,12 +209,6 @@ namespace Sandcastle
 
             _isInitialized = true;
         }
-
-        #endregion
-
-        #region Build Method
-
-        public abstract bool Build();
 
         #endregion
 
@@ -278,120 +273,6 @@ namespace Sandcastle
         #endregion
 
         #region Protected Methods
-
-        #region RunSteps Method
-
-        protected virtual bool RunSteps(IList<BuildStep> listSteps)
-        {
-            if (_settings == null || _context == null ||
-                _isInitialized == false)
-            {
-                return false;
-            }
-
-            if (listSteps == null || listSteps.Count == 0)
-            {
-                return false;
-            }
-
-            int stepCount = listSteps.Count;
-
-            string currentDir = Environment.CurrentDirectory;
-            bool buildResult  = false;
-
-            try
-            {
-                Environment.CurrentDirectory = _context.WorkingDirectory;
-
-                buildResult = true;
-
-                // 1. Initialize all the build steps, and set them ready for build...
-                for (int i = 0; i < stepCount; i++)
-                {
-                    BuildStep buildStep = listSteps[i];
-                    if (buildStep != null)
-                    {
-                        buildStep.Initialize(_context);
-                        if (!buildStep.IsInitialized)
-                        {
-                            _logger.WriteLine(
-                                "An error occurred when initializing the step = " + i.ToString(),
-                                BuildLoggerLevel.Error);
-
-                            buildResult = false;
-                            break;
-                        }
-                    }
-                }
-
-                // If the initialization fails, we need not continue...
-                if (buildResult == false)
-                {
-                    return buildResult;
-                }
-
-                // 2. Now, run each build step, and monitor the results...
-                for (int i = 0; i < stepCount; i++)
-                {
-                    BuildStep buildStep = listSteps[i];
-
-                    if (buildStep == null || buildStep.Enabled == false)
-                    {
-                        continue;
-                    }
-                    bool executeIt = _context.StepStarts(buildStep);
-                    if (executeIt == false)
-                    {
-                        continue;
-                    }
-
-                    if (buildStep.Execute() == false)
-                    {
-                        //_logger.WriteLine(
-                        //    "An error occurred in the step = " + i.ToString(),
-                        //    BuildLoggerLevel.Error);
-
-                        _context.StepError(buildStep);
-
-                        _logger.WriteLine();
-
-                        buildResult = false;
-                        break;
-                    }
-
-                    _context.StepEnds(buildStep);
-
-                    _logger.WriteLine();
-                }
-
-                // 3. Finally, un-initialize all the build steps, allowing each to clean up...
-                for (int i = 0; i < stepCount; i++)
-                {
-                    BuildStep buildStep = listSteps[i];
-                    if (buildStep != null)
-                    {
-                        buildStep.Uninitialize();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteLine(ex, BuildLoggerLevel.Error);
-
-                buildResult = false;
-            }
-            finally
-            {
-                if (!String.IsNullOrEmpty(currentDir))
-                {
-                    Environment.CurrentDirectory = currentDir;
-                }
-            }
-
-            return buildResult;
-        }
-
-        #endregion
 
         #region GetOutputFolders Method
 

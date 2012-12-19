@@ -23,8 +23,8 @@ namespace Sandcastle.Components
     {
         #region Private Fields
 
-        private BuildComponent[]       _defaultBranch;
-        private List<BuildComponent[]> _listBranches;
+        private IList<BuildComponent> _defaultBranch;
+        private List<IList<BuildComponent>> _listBranches;
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace Sandcastle.Components
         {   
             try
             {
-                _listBranches = new List<BuildComponent[]>();
+                _listBranches = new List<IList<BuildComponent>>();
 
                 // Select and process all the branches...
                 XPathNodeIterator branchNodes = configuration.Select("branch");
@@ -49,8 +49,8 @@ namespace Sandcastle.Components
                 {
                     foreach (XPathNavigator branchNode in branchNodes)
                     {
-                        BuildComponent[] components = assembler.LoadComponents(branchNode);
-                        if (components != null && components.Length != 0)
+                        IList<BuildComponent> components = assembler.LoadComponents(branchNode);
+                        if (components != null && components.Count != 0)
                         {
                             _listBranches.Add(components);
                         }
@@ -90,9 +90,9 @@ namespace Sandcastle.Components
                 int itemCount = _listBranches == null ? 0 : _listBranches.Count; 
                 for (int i = 0; i < itemCount; i++)
                 {
-                    BuildComponent[] components = _listBranches[i];
+                    IList<BuildComponent> components = _listBranches[i];
                     XmlDocument clonedDocument  = (XmlDocument)document.Clone();
-                    for (int j = 0; j < components.Length; j++)
+                    for (int j = 0; j < components.Count; j++)
                     {
                         BuildComponent component = components[j];
                         component.Apply(clonedDocument, key);
@@ -100,7 +100,7 @@ namespace Sandcastle.Components
                 }
 
                 // Process the default branch, with the original document...
-                itemCount = _defaultBranch == null ? 0 : _defaultBranch.Length;
+                itemCount = _defaultBranch == null ? 0 : _defaultBranch.Count;
                 for (int k = 0; k < itemCount; k++)
                 {
                     BuildComponent component = _defaultBranch[k];

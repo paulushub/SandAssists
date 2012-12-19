@@ -14,15 +14,15 @@ namespace Sandcastle.ReflectionData
     {
         #region Private Fields
 
-        private static TargetController  _controller;
-
         private bool           _isInitialized;
         private bool           _isDataLoaded;
 
-        private TargetStorage  _localStorage;
-        private TargetStorage   _msdnStorage;
+        private MemoryTargetStorage   _localStorage;
+        private DatabaseTargetTextStorage _msdnStorage;
 
-        private MessageHandler _messageHandler;
+        private MessageWriter _messageWriter;
+
+        private static TargetController _controller;
 
         #endregion
 
@@ -96,8 +96,28 @@ namespace Sandcastle.ReflectionData
                 throw new ArgumentException();
             }
 
-            _messageHandler = assembler.MessageHandler;
-            _isInitialized  = (_messageHandler != null);
+            _messageWriter = assembler.MessageWriter;
+            _isInitialized  = (_messageWriter != null);
+        }
+
+        public void Uninitialize()
+        {   
+            try
+            {
+                if (_localStorage != null)
+                {
+                    _localStorage.Dispose();
+                    _localStorage = null;
+                }
+                if (_msdnStorage != null)
+                {
+                    _msdnStorage.Dispose();
+                    _msdnStorage = null;
+                }
+            }
+            catch
+            {              	
+            }
         }
 
         public TargetCollection GetCollection(XPathNavigator configuration,
@@ -176,8 +196,9 @@ namespace Sandcastle.ReflectionData
                 string filePattern = Path.GetFileName(fullPath);
 
                 bool isSystem = false;
+                DataSource dataSource = null;
 
-                // verify that directory exists
+                // Verify that directory exists...
                 if (!Directory.Exists(directoryPath))
                 {
                     WriteMessage(MessageLevel.Error, String.Format(
@@ -185,39 +206,138 @@ namespace Sandcastle.ReflectionData
                 }
                 else
                 {
-                    if (directoryPath.IndexOf(@"Sandcastle\Data\Reflection", 
-                        StringComparison.OrdinalIgnoreCase) >= 0)
+                    bool systemIsFound = false;
+                    string systemValue = targetsNode.GetAttribute("system", String.Empty);
+                    if (!String.IsNullOrEmpty(systemValue))
                     {
-                        isSystem = true;
-                        if (msdnLink == ReferenceLinkType.None)
+                        if (String.Compare(systemValue, Boolean.TrueString, true) == 0)
                         {
-                            msdnLink = linkType;
+                            isSystem      = true;
+                            systemIsFound = true;
+
+                            if (msdnLink == ReferenceLinkType.None)
+                            {
+                                msdnLink = linkType;
+                            }
+                        }
+                        else if (String.Compare(systemValue, Boolean.FalseString, true) == 0)
+                        {
+                            isSystem      = false;
+                            systemIsFound = true;
+
+                            if (localLink == ReferenceLinkType.None &&
+                                linkType != ReferenceLinkType.Msdn)
+                            {
+                                localLink = linkType;
+                            }
+                        }
+                        else
+                        {
+                            WriteMessage(MessageLevel.Error, String.Format(
+                                "On the targets element, system='{0}' is not an allowed value.", systemValue));
                         }
                     }
-                    else
+
+                    // Retrieve the data source, if any...
+                    XPathNavigator nodeDataSource = 
+                        targetsNode.SelectSingleNode("source");
+                    if (nodeDataSource != null)
                     {
-                        if (localLink == ReferenceLinkType.None &&
-                            linkType != ReferenceLinkType.Msdn)
+                        dataSource = new DataSource(false, nodeDataSource);
+                        if (dataSource.IsValid)
+                        {   
+                            // Currently, database is supported for systems only...
+                            if (!dataSource.IsSystem && !dataSource.IsDatabase)
+                            {
+                                dataSource = null;
+                            }
+                            else
+                            {   
+                                if (String.IsNullOrEmpty(systemValue))
+                                {
+                                    isSystem = dataSource.IsSystem;
+                                    systemIsFound = true;
+                                }
+                            }
+                        }
+                        else
                         {
-                            localLink = linkType;
+                            dataSource = null;
+                        }
+                    }
+
+                    if (String.IsNullOrEmpty(systemValue) && !systemIsFound)
+                    {   
+                        // Try doing it generally...
+                        if (directoryPath.IndexOf(@"Sandcastle\Data\Reflection",
+                            StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            isSystem = true;
+                            if (msdnLink == ReferenceLinkType.None)
+                            {
+                                msdnLink = linkType;
+                            }
+                        }
+                        else
+                        {
+                            if (localLink == ReferenceLinkType.None &&
+                                linkType != ReferenceLinkType.Msdn)
+                            {
+                                localLink = linkType;
+                            }
                         }
                     }
                 }
 
+                // If the database is not yet loaded, we load all...
                 if (!_isDataLoaded)
                 {   
-                    if (isSystem)
+                    if (isSystem || (dataSource != null && dataSource.IsSystem))
                     {
-                        if (!_msdnStorage.Exists)
+                        if (dataSource != null && dataSource.Exists)
+                        {   
+                            if (_msdnStorage.IsInitialize)
+                            {
+                                DatabaseTargetStorageEx databaseStorage =
+                                    new DatabaseTargetStorageEx(true, false,
+                                        dataSource.OutputDir);
+
+                                _msdnStorage.AddStorage(databaseStorage);
+                            }
+                            else
+                            {
+                                _msdnStorage.Initialize(dataSource.OutputDir, false);
+                            }
+                        }
+                        else
                         {
-                            this.AddDatabaseTargets(directoryPath, filePattern, 
-                                recurse, linkType);
+                            if (!_msdnStorage.Exists)
+                            {
+                                if (!_msdnStorage.IsInitialize)
+                                {
+                                    if (Directory.Exists(directoryPath))
+                                    {
+                                        _msdnStorage.Initialize(directoryPath, false);
+                                    }
+                                }
+
+                                this.AddDatabaseTargets(directoryPath, filePattern,
+                                    recurse, linkType);
+                            }
                         }
                     }
                     else
                     {
                         if (linkType == ReferenceLinkType.Msdn)
                         {
+                            if (!_msdnStorage.IsInitialize)
+                            {
+                                if (Directory.Exists(directoryPath))
+                                {
+                                    _msdnStorage.Initialize(directoryPath, false);
+                                }
+                            }
+
                             this.AddDatabaseTargets(directoryPath, filePattern, 
                                 recurse, linkType);
                         }
@@ -245,13 +365,16 @@ namespace Sandcastle.ReflectionData
 
         private void WriteMessage(MessageLevel level, string message)
         {
-            if (level == MessageLevel.Ignore || _messageHandler == null) 
+            if (level == MessageLevel.Ignore || _messageWriter == null) 
                 return;
 
-            _messageHandler(this.GetType(), level, message);
+            _messageWriter.Write(this.GetType(), level, message);
         }
 
-        private void AddTargets(string directory, string filePattern, bool recurse, ReferenceLinkType type)
+        #region AddTargets Methods
+
+        private void AddTargets(string directory, string filePattern, 
+            bool recurse, ReferenceLinkType type)
         {
             // add the specified targets from the directory
             WriteMessage(MessageLevel.Info, String.Format(
@@ -302,7 +425,12 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        private void AddDatabaseTargets(string directory, string filePattern, bool recurse, ReferenceLinkType type)
+        #endregion
+
+        #region AddDatabaseTargets Methods
+
+        private void AddDatabaseTargets(string directory, string filePattern, 
+            bool recurse, ReferenceLinkType type)
         {
             // add the specified targets from the directory
             WriteMessage(MessageLevel.Info, String.Format(
@@ -355,6 +483,8 @@ namespace Sandcastle.ReflectionData
                     file, BuildComponentUtilities.GetExceptionMessage(e)));
             }
         }
+
+        #endregion
 
         #endregion
     }

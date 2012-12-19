@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using System.Xml.Xsl;
-using System.Xml.XPath;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Sandcastle.ReflectionData
@@ -13,11 +12,9 @@ namespace Sandcastle.ReflectionData
     {
         #region Private Fields
 
-        // search pattern for index values
-        private XPathExpression _valueExpression;
-
-        // search pattern for the index keys (relative to the index value node)
-        private XPathExpression _keyExpression;
+        private string      _workingDir;
+        private DataSource  _dataSource;
+        private DataSources _dataSources;
 
         private DatabaseIndexedDocument _document;
 
@@ -25,20 +22,57 @@ namespace Sandcastle.ReflectionData
 
         #region Constructors and Destructor
 
-        public DatabaseIndexedBuilder()
+        public DatabaseIndexedBuilder(string workingDir, bool isComments)
         {
-            _document             = new DatabaseIndexedDocument(true);
+            if (workingDir == null)
+            {
+                throw new ArgumentNullException("workingDir",
+                    "The working directory is required and cannot be null (or Nothing).");
+            }
+            if (workingDir.Length == 0 || !Directory.Exists(workingDir))
+            {
+                throw new ArgumentException(
+                    "The working directory is required and cannot be null (or Nothing).",
+                    "workingDir");
+            }
 
-            // The following are the usual key/value in the configuration file...
-            string keyXPath       = "@id";
-            string valueXPath     = "/reflection/apis/api";
-            CustomContext context = new CustomContext();
+            _workingDir = workingDir;
+            _document   = new DatabaseIndexedDocument(true, isComments, 
+                _workingDir);
+        }
 
-            _keyExpression        = XPathExpression.Compile(keyXPath);
-            _keyExpression.SetContext(context);
+        public DatabaseIndexedBuilder(DataSource dataSource)
+        {
+            if (dataSource == null)
+            {
+                throw new ArgumentNullException("dataSource");
+            }
+            if (!dataSource.IsBuilding || !dataSource.IsValid)
+            {
+                throw new ArgumentException("dataSource");
+            }
 
-            _valueExpression      = XPathExpression.Compile(valueXPath);
-            _valueExpression.SetContext(context);
+            _dataSource = dataSource;
+            _workingDir = dataSource.OutputDir;
+            _document   = new DatabaseIndexedDocument(true, false, 
+                _workingDir);   
+        }
+
+        public DatabaseIndexedBuilder(DataSources dataSources)
+        {
+            if (dataSources == null)
+            {
+                throw new ArgumentNullException("dataSources");
+            }
+            if (!dataSources.IsBuilding || !dataSources.IsValid)
+            {
+                throw new ArgumentException("dataSources");
+            }
+
+            _dataSources = dataSources;
+            _workingDir  = dataSources.OutputDir;
+            _document    = new DatabaseIndexedDocument(true, true, 
+                _workingDir);   
         }
 
         ~DatabaseIndexedBuilder()
@@ -76,35 +110,138 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public XPathExpression ValueExpression
-        {
-            get
-            {
-                return _valueExpression;
-            }
-        }
-
-        public XPathExpression KeyExpression
-        {
-            get
-            {
-                return _keyExpression;
-            }
-        }
-
         #endregion
 
         #region Public Methods
 
-        public void AddDocument(string file, bool cacheIt)
+        public bool Build()
+        {
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return false;
+            }
+
+            if (_dataSources != null)
+            {   
+                if (!_dataSources.IsValid || _dataSources.SourceCount == 0)
+                {
+                    return false;
+                }
+                foreach (string dataDir in _dataSources.Sources)
+                {
+                    if (Directory.Exists(dataDir))
+                    {
+                        this.AddDocuments(dataDir, "*.xml", false, false);
+                    }
+                }
+            }
+            else
+            {
+                string dataDir = null;
+                if (_dataSource != null && Directory.Exists(_dataSource.InputDir))
+                {
+                    dataDir = _dataSource.InputDir;
+                }
+                else
+                {
+                    dataDir = Environment.ExpandEnvironmentVariables(
+                        @"%DXROOT%\Data\Reflection");
+                    dataDir = Path.GetFullPath(dataDir);
+                }
+                if (!Directory.Exists(dataDir))
+                {
+                    return false;
+                }
+
+                this.AddDocuments(dataDir, "*.xml", false, false);
+            }
+
+            if (_document != null)
+            {
+                _document.Dispose();
+                _document = null;
+            }             
+
+            // Perform a defragmentation of the PersistentDictionary.edb database
+            Process process = new Process();
+
+            ProcessStartInfo startInfo = process.StartInfo;
+
+            startInfo.FileName               = "esentutl.exe";
+            startInfo.Arguments              = "-d " + DataSource.DatabaseFileName + " -o";
+            startInfo.UseShellExecute        = false;
+            startInfo.CreateNoWindow         = true;
+            startInfo.WorkingDirectory       = _workingDir;
+            startInfo.RedirectStandardOutput = false;
+
+            // Now, start the process - there will still not be output till...
+            process.Start();
+            // We must wait for the process to complete...
+            process.WaitForExit();
+            int exitCode = process.ExitCode;
+            process.Close();
+            if (exitCode != 0)
+            {
+                return false;
+            }
+
+            string[] logFiles = Directory.GetFiles(_workingDir, "*.log", 
+                SearchOption.TopDirectoryOnly);
+            if (logFiles != null)
+            {
+                for (int i = 0; i < logFiles.Length; i++)
+                {
+                    File.Delete(logFiles[i]);
+                }
+            }
+
+            if (_dataSources != null && _dataSources.Exists)
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.IndentChars = new string(' ', 4);
+                settings.Encoding = Encoding.UTF8;
+                settings.OmitXmlDeclaration = false;
+
+                XmlWriter writer = null;
+                try
+                {
+                    writer = XmlWriter.Create(Path.Combine(_workingDir, 
+                        DataSources.XmlFileName), settings);
+
+                    writer.WriteStartDocument();
+
+                    _dataSources.WriteXml(writer);
+
+                    writer.WriteEndDocument();
+                }
+                finally
+                {
+                    if (writer != null)
+                    {
+                        writer.Close();
+                        writer = null;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void AddDocument(string file, bool cacheIt)
         {
             if (_document != null)
             {
-                _document.AddDocument(this, file);
+                _document.AddDocument(file);
             }
         }
 
-        public void AddDocuments(string wildcardPath, bool cacheIt)
+        private void AddDocuments(string wildcardPath, bool cacheIt)
         {
             string directoryPart = Path.GetDirectoryName(wildcardPath);
             if (String.IsNullOrEmpty(directoryPart))
@@ -121,7 +258,7 @@ namespace Sandcastle.ReflectionData
             }
         }
 
-        public void AddDocuments(string baseDirectory,
+        private void AddDocuments(string baseDirectory,
             string wildcardPath, bool recurse, bool cacheIt)
         {
             string path;
@@ -142,14 +279,6 @@ namespace Sandcastle.ReflectionData
                 foreach (string subDirectory in subDirectories)
                     AddDocuments(subDirectory, wildcardPath, recurse, cacheIt);
             }
-        }
-
-        public void AddDocuments()
-        {   
-            string baseDirectory = @"%DXROOT%\Data\Reflection";
-            baseDirectory = Environment.ExpandEnvironmentVariables(baseDirectory);
-
-            this.AddDocuments(baseDirectory, "*.xml", true, true);
         }
 
         #endregion
@@ -173,113 +302,4 @@ namespace Sandcastle.ReflectionData
 
         #endregion
     }
-
-    #region CustomContext Class
-
-    internal sealed class CustomContext : XsltContext
-    {
-        // variable control
-        private Dictionary<string, IXsltContextVariable> variables;
-
-        public CustomContext()
-            : base()
-        {
-            variables = new Dictionary<string, IXsltContextVariable>();
-        }
-
-        public string this[string variable]
-        {
-            get
-            {
-                return (variables[variable].Evaluate(this).ToString());
-            }
-            set
-            {
-                variables[variable] = new CustomVariable(value);
-            }
-        }
-
-        public bool ClearVariable(string name)
-        {
-            return (variables.Remove(name));
-        }
-
-        public void ClearVariables()
-        {
-            variables.Clear();
-        }
-
-        // Implementation of XsltContext methods
-
-        public override IXsltContextVariable ResolveVariable(
-            string prefix, string name)
-        {
-            return (variables[name]);
-        }
-
-        public override IXsltContextFunction ResolveFunction(
-            string prefix, string name, XPathResultType[] argumentTypes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int CompareDocument(string baseUri, string nextBaseUri)
-        {
-            return (0);
-        }
-
-        public override bool Whitespace
-        {
-            get
-            {
-                return (true);
-            }
-        }
-
-        public override bool PreserveWhitespace(XPathNavigator node)
-        {
-            return (true);
-        }
-    }
-
-    internal sealed class CustomVariable : IXsltContextVariable
-    {
-        private string value;
-
-        public CustomVariable(string value)
-        {
-            this.value = value;
-        }
-
-        public bool IsLocal
-        {
-            get
-            {
-                return (false);
-            }
-        }
-
-        public bool IsParam
-        {
-            get
-            {
-                return (false);
-            }
-        }
-
-        public XPathResultType VariableType
-        {
-            get
-            {
-                return (XPathResultType.String);
-            }
-        }
-
-        public Object Evaluate(XsltContext context)
-        {
-            return (value);
-        }
-    }
-
-    #endregion
 }

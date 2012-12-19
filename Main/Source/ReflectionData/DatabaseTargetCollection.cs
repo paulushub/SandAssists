@@ -15,7 +15,7 @@ namespace Sandcastle.ReflectionData
 
         #region Constructors and Destructor
 
-        public DatabaseTargetCollection()
+        public DatabaseTargetCollection(int tn)
         {
             _targetsStorage = new DatabaseTargetTextStorage(true, false);
         }

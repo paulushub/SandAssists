@@ -62,11 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildExceptions.cs" />
+    <Compile Include="DatabaseTargetStorageEx.cs" />
+    <Compile Include="DataSource.cs" />
+    <Compile Include="DataSources.cs" />
+    <Compile Include="DataSourceType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DatabaseMsdnBuilder.cs" />
     <Compile Include="DatabaseMsdnResolver.cs" />
-    <Compile Include="DatabaseTargetBinaryBuilder.cs" />
-    <Compile Include="DatabaseTargetBinaryStorage.cs" />
     <Compile Include="DatabaseTargetCache.cs" />
     <Compile Include="DatabaseTargetCollection.cs" />
     <Compile Include="DatabaseTargetStorage.cs" />
@@ -89,7 +91,6 @@
     <Compile Include="TargetDictionaryBuilder.cs" />
     <Compile Include="TargetMsdnController.cs" />
     <Compile Include="TargetMsdnResolver.cs" />
-    <Compile Include="TargetMsdnResolvers.cs" />
     <Compile Include="TargetMsdnService.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="TargetsIO.cs" />

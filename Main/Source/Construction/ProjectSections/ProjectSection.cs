@@ -38,6 +38,7 @@ namespace Sandcastle.Construction.ProjectSections
         private string _configuration;
         private string _targetFrameworkVersion;
         private string _targetFrameworkIdentifier;
+        private string _platformFamilyName;
 
         private List<string> _referencedPaths;
         private List<string> _referencedAssemblies; 
@@ -69,6 +70,7 @@ namespace Sandcastle.Construction.ProjectSections
             _configuration             = String.Empty;
             _targetFrameworkVersion    = String.Empty;
             _targetFrameworkIdentifier = String.Empty;
+            _platformFamilyName        = String.Empty;
             _properties                = new ProjectProperties();
             _children                  = new List<ProjectSection>();
         }
@@ -244,6 +246,26 @@ namespace Sandcastle.Construction.ProjectSections
             protected set
             {
                 _projectGuid = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the platform family name as used by the compact framework
+        /// targets.
+        /// </summary>
+        /// <value>
+        /// A string containing values such as <c>PocketPC</c>, <c>WindowsCE</c>
+        /// identifying the compact device target.
+        /// </value>
+        public string PlatformFamilyName
+        {
+            get
+            {
+                return _platformFamilyName;
+            }
+            set
+            {
+                _platformFamilyName = value;
             }
         }
 

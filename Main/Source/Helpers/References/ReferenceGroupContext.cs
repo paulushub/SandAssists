@@ -7,6 +7,12 @@ namespace Sandcastle.References
 {
     public sealed class ReferenceGroupContext : BuildGroupContext
     {
+        #region Public Static Fields
+
+        public const string LinkSourcesFolder = "LinkSources";
+
+        #endregion
+
         #region Private Fields
 
         private BuildKeyedList<ReferenceVersions> _listVersions;
@@ -85,6 +91,20 @@ namespace Sandcastle.References
         /// <value>
         /// 
         /// </value>
+        public string VersionsFolder
+        {
+            get
+            {
+                return this["$ApiVersionsFolder"];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
         public string CommentDir
         {
             get
@@ -154,6 +174,56 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public bool IsLinkGroup
+        {
+            get
+            {
+                string tempText = this["$IsLinkGroup"];
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    return Convert.ToBoolean(tempText);
+                }
+
+                return false;
+            }
+            internal set
+            {
+                this["$IsLinkGroup"] = value ?
+                    Boolean.TrueString : Boolean.FalseString;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public bool IsEmbeddedGroup
+        {
+            get
+            {
+                string tempText = this["$IsEmbeddedGroup"];
+                if (!String.IsNullOrEmpty(tempText))
+                {
+                    return Convert.ToBoolean(tempText);
+                }
+
+                return false;
+            }
+            internal set
+            {
+                this["$IsEmbeddedGroup"] = value ?
+                    Boolean.TrueString : Boolean.FalseString;
+            }
+        }
+
         public BuildFramework Framework
         {
             get
@@ -218,7 +288,19 @@ namespace Sandcastle.References
             }
         }
 
-        public IBuildNamedList<ReferenceGroupContext> Contexts
+        public IList<string> BindingSources
+        {
+            get
+            {
+                return this.GetValue("$BindingSources") as IList<string>;
+            }
+            internal set
+            {
+                this.SetValue("$BindingSources", value);
+            }
+        }
+
+        public BuildKeyedList<ReferenceGroupContext> Contexts
         {
             get
             {
@@ -226,7 +308,7 @@ namespace Sandcastle.References
             }
         }
 
-        public IBuildNamedList<ReferenceVersions> Versions
+        public BuildKeyedList<ReferenceVersions> Versions
         {
             get
             {
@@ -234,7 +316,7 @@ namespace Sandcastle.References
             }
             internal set
             {
-                _listVersions = (BuildKeyedList<ReferenceVersions>)value;
+                _listVersions = value;
             }
         }
 

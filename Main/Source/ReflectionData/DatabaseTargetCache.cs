@@ -74,6 +74,16 @@ namespace Sandcastle.ReflectionData
 
                 return null;
             }
+        }       
+
+        public bool Contains(string id)
+        {
+            if (String.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
+            return _cacheStorage.ContainsKey(id);
         }
 
         #endregion

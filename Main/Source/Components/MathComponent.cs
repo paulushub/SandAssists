@@ -182,7 +182,7 @@ namespace Sandcastle.Components
                 }
 
                 Type compType             = this.GetType();
-                MessageHandler msgHandler = assembler.MessageHandler;
+                MessageWriter msgWriter = assembler.MessageWriter;
                 foreach (XPathNavigator formatter in iterator)
                 {
                     string attribute = formatter.GetAttribute("format", String.Empty);
@@ -202,7 +202,7 @@ namespace Sandcastle.Components
                                 StringComparison.OrdinalIgnoreCase))
                             {
                                 _latexFormatter = new MathMikTeXFormatter(compType,
-                                    msgHandler, formatter);
+                                    msgWriter, formatter);
 
                                 _latexFormatter.BeginUpdate(_inputPath, isConceptual);
                             }
@@ -210,7 +210,7 @@ namespace Sandcastle.Components
                                 StringComparison.OrdinalIgnoreCase))
                             {
                                 _latexFormatter = new MathMimeTeXFormatter(
-                                    compType, msgHandler, formatter);
+                                    compType, msgWriter, formatter);
 
                                 _latexFormatter.BeginUpdate(_inputPath, isConceptual);
                             }
@@ -295,6 +295,8 @@ namespace Sandcastle.Components
             catch
             {
             }
+
+            base.Dispose(disposing);
         }
 
         #endregion

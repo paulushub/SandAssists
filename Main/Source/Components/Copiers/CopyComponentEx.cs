@@ -15,8 +15,8 @@ namespace Sandcastle.Components.Copiers
     {
         #region Private Fields
 
-        private Type           _thisType;
-        private BuildAssembler _assembler;
+        private Type          _thisType;
+        private MessageWriter _messageWriter;
 
         #endregion
 
@@ -41,7 +41,12 @@ namespace Sandcastle.Components.Copiers
                 BuildComponent copyComponent = cached.Component;
                 if (copyComponent != null)
                 {
-                    _assembler = copyComponent.BuildAssembler;
+                    BuildAssembler assembler = copyComponent.BuildAssembler;
+
+                    if (assembler != null)
+                    {
+                        _messageWriter = assembler.MessageWriter;
+                    }
                 }
             }
 
@@ -57,11 +62,11 @@ namespace Sandcastle.Components.Copiers
 
         #region Protected Properties
 
-        protected BuildAssembler Assembler
+        protected MessageWriter MessageWriter
         {
             get
             {
-                return _assembler;
+                return _messageWriter;
             }
         }
 
@@ -71,12 +76,10 @@ namespace Sandcastle.Components.Copiers
 
         protected void WriteMessage(MessageLevel level, string message)
         {
-            if (_assembler == null || level == MessageLevel.Ignore) 
+            if (_messageWriter == null || level == MessageLevel.Ignore) 
                 return;
-            
-            MessageHandler handler = _assembler.MessageHandler;
-            if (handler != null)
-                handler(_thisType, level, message);
+
+            _messageWriter.Write(_thisType, level, message);
         }
 
         #endregion

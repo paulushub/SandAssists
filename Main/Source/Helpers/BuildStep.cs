@@ -738,6 +738,8 @@ namespace Sandcastle
                 {
                     return false;
                 }
+
+                mainResult = true;
             }
 
             if (!this.OnAfterExecute(_context))
@@ -746,6 +748,8 @@ namespace Sandcastle
                 {
                     return false;
                 }
+
+                mainResult = true;
             }
 
             return mainResult;
@@ -953,7 +957,7 @@ namespace Sandcastle
                     {
                         if (logger != null)
                         {
-                            logger.WriteLine("An error occurred in this build step.", BuildLoggerLevel.Error);
+                            logger.WriteLine(this.GetType().Name + ": An error occurred in this build step.", BuildLoggerLevel.Error);
                         }
                     }
                 }

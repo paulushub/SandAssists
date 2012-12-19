@@ -460,9 +460,20 @@ namespace Sandcastle.Conceptual
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            BuildSettings settings = context.Settings;
             string workingDir = context.WorkingDirectory;
+            if (!Directory.Exists(workingDir))
+            {
+                // If the base directory does not exists for some reason, we
+                // create that first...
+                string baseDir = context.BaseDirectory;
+                if (!Directory.Exists(baseDir))
+                {
+                    Directory.CreateDirectory(baseDir);
+                }
+                Directory.CreateDirectory(workingDir);
+            }
 
+            BuildSettings settings = context.Settings;
             _projectTitle = settings.HelpTitle;
             _projectName  = settings.HelpName;
 

@@ -1,0 +1,130 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Reflection</RootNamespace>
+    <AssemblyName>Sandcastle.Reflection</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WHIDBEY;WHIDBEYwithGenericsAndIEqualityComparer</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>TRACE;WHIDBEY;WHIDBEYwithGenericsAndIEqualityComparer</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Documentation|AnyCPU' ">
+    <OutputPath>..\..\Output\</OutputPath>
+    <DefineConstants>TRACE;WHIDBEY;WHIDBEYwithGenericsAndIEqualityComparer</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>..\..\Output\Sandcastle.Reflection.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AllDocumentedFilter.cs" />
+    <Compile Include="AllTopicFilter.cs" />
+    <Compile Include="ApiFilter.cs" />
+    <Compile Include="ApiNamer.cs" />
+    <Compile Include="ApiVisitor.cs" />
+    <Compile Include="AssemblyReferenceEventArgs.cs" />
+    <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="Builder\ExtensionMethodAddIn.cs" />
+    <Compile Include="Builder\MemberDictionary.cs" />
+    <Compile Include="Builder\MRefBuilderAddIn.cs" />
+    <Compile Include="Builder\MRefBuilderCallback.cs" />
+    <Compile Include="Builder\MRefWriter.cs" />
+    <Compile Include="Builder\ResourceHelper.cs" />
+    <Compile Include="Builder\XamlAttachedMembersAddIn.cs" />
+    <Compile Include="Cci\AssemblyCache.cs" />
+    <Compile Include="Cci\DoubleVisitor.cs" />
+    <Compile Include="Cci\Duplicator.cs" />
+    <Compile Include="Cci\ExceptionStrings.cs" />
+    <Compile Include="Cci\FastFileIO.cs" />
+    <Compile Include="Cci\ILGenerator.cs" />
+    <Compile Include="Cci\ListTemplate.cs" />
+    <Compile Include="Cci\MemoryMappedFile.cs" />
+    <Compile Include="Cci\Metadata.cs" />
+    <Compile Include="Cci\Nodes.cs" />
+    <Compile Include="Cci\OpCode.cs" />
+    <Compile Include="Cci\Reader.cs" />
+    <Compile Include="Cci\Specializer.cs" />
+    <Compile Include="Cci\StandardIds.cs" />
+    <Compile Include="Cci\StandardVisitor.cs" />
+    <Compile Include="Cci\SystemTypes.cs" />
+    <Compile Include="Cci\Unstacker.cs" />
+    <Compile Include="Cci\Updater.cs" />
+    <Compile Include="Cci\Writer.cs" />
+    <Compile Include="ExternalDocumentedFilter.cs" />
+    <Compile Include="ExternalFilter.cs" />
+    <Compile Include="ExternalTopicFilter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MemberFilter.cs" />
+    <Compile Include="NamespaceFilter.cs" />
+    <Compile Include="NoFilter.cs" />
+    <Compile Include="OrcasNamer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedirectAssemblyResolver.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RootFilter.cs" />
+    <Compile Include="TestResolver.cs" />
+    <Compile Include="TypeFilter.cs" />
+    <Compile Include="WhidbeyNamer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Cci\ExceptionStrings.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- Copy the output assemblies to a common binaries directory (ProductionTools). -->
+  <Target Name="AfterBuild">
+    <CreateItem Include="$(OutputPath)\$(AssemblyName).*">
+      <Output TaskParameter="Include" ItemName="ProductionFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ProductionFiles)" DestinationFolder="..\..\ProductionTools" />
+  </Target>
+</Project>

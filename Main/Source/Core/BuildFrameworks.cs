@@ -18,6 +18,7 @@ namespace Sandcastle
         private static BuildList<Version> _frameworkVersions;
         private static BuildList<Version> _scriptSharpVersions;
         private static BuildList<Version> _silverlightVersions;
+        private static BuildList<Version> _compactVersions;
         private static BuildList<BuildFramework> _installedFrameworks;
 
         #endregion
@@ -99,6 +100,19 @@ namespace Sandcastle
                 }
 
                 return _scriptSharpVersions;
+            }
+        }
+
+        public static IList<Version> InstalledCompactVersions
+        {
+            get
+            {
+                if (_compactVersions == null)
+                {
+                    _compactVersions = GetCompactVersions();
+                }
+
+                return _compactVersions;
             }
         }
 
@@ -262,9 +276,49 @@ namespace Sandcastle
             }
         }
 
+        public static Version LatestCompactVersion
+        {
+            get
+            {
+                IList<Version> installedVersions =
+                    BuildFrameworks.InstalledCompactVersions;
+                if (installedVersions == null || installedVersions.Count == 0)
+                {
+                    return null;
+                }
+
+                Version version = new Version(1, 0, 0, 0);
+                for (int i = 0; i < installedVersions.Count; i++)
+                {
+                    Version installedVersion = installedVersions[i];
+                    if (installedVersion > version)
+                    {
+                        version = installedVersion;
+                    }
+                }
+
+                return version;
+            }
+        }
+
+        public static BuildFramework LatestCompact
+        {
+            get
+            {
+                Version version = BuildFrameworks.LatestCompactVersion;
+                if (version == null)
+                {
+                    return null;
+                }
+
+                return BuildFrameworks.GetFramework(version.Major,
+                    version.Minor, BuildFrameworkKind.Compact);
+            }
+        }
+
         #endregion
 
-        #region Public Methods
+        #region Public Static Methods
 
         public static BuildFramework GetFramework(BuildFrameworkType type)
         {
@@ -348,6 +402,10 @@ namespace Sandcastle
             {
                 frameworkVersions = BuildFrameworks.InstalledScriptSharpVersions;
             }
+            else if (kind == BuildFrameworkKind.Compact)
+            {
+                frameworkVersions = BuildFrameworks.InstalledCompactVersions;
+            }
             else
             {
                 frameworkVersions = BuildFrameworks.InstalledFrameworkVersions;
@@ -380,7 +438,7 @@ namespace Sandcastle
 
         #endregion
 
-        #region Private Methods
+        #region Private Static Methods
 
         #region GetInstalledFrameworks Methods
 
@@ -401,6 +459,9 @@ namespace Sandcastle
 
             // 4. For the ScriptSharp framework...
             GetScriptSharpFrameworks(frameworks, programFilesDir);
+
+            // 5. For the Compact framework...
+            GetCompactFrameworks(frameworks, programFilesDir);
 
             return frameworks;
         }
@@ -484,10 +545,10 @@ namespace Sandcastle
                                 BuildFrameworkKind.DotNet);
                             Debug.Assert(version2 != null);
                             if (version2 == null)
-                            {
                                 assemblyFolder = "v2.0.50727"; // not expected...
-                            }
-                            assemblyFolder = "v" + version2.ToString(3);
+                            else
+                                assemblyFolder = "v" + version2.ToString(3);
+
                             assemblyDir = Environment.ExpandEnvironmentVariables(
                                             @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
                             if (Directory.Exists(assemblyDir))
@@ -528,33 +589,70 @@ namespace Sandcastle
                             }
                             break;
                         case 4:
-                            frameworkType = BuildFrameworkType.Framework40;
                             assemblyFolder = "v" + version.ToString(3);
                             assemblyDir = Environment.ExpandEnvironmentVariables(
                                             @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
                             if (Directory.Exists(assemblyDir))
                             {
                                 // there is really no comment here...
-                                commentDirs.Add(assemblyDir);  
+                                commentDirs.Add(assemblyDir);
                             }
-                            otherDir = Path.Combine(programFilesDir,
-                               @"Reference Assemblies\Microsoft\Framework\v4.0");
-                            if (Directory.Exists(otherDir))
+                            else
                             {
-                                // will normally not exists...
-                                commentDirs.Add(otherDir);
+                                assemblyFolder = "v4.0.30319";
+                                assemblyDir = Environment.ExpandEnvironmentVariables(
+                                                @"%SystemRoot%\Microsoft.NET\Framework\" + assemblyFolder);
+                                if (Directory.Exists(assemblyDir))
+                                {
+                                    // there is really no comment here...
+                                    commentDirs.Add(assemblyDir);
+                                }
                             }
-                            otherDir = Path.Combine(programFilesDir,
-                               @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0");
-                            if (Directory.Exists(otherDir))
+                            if (version.Minor == 0)
                             {
-                                commentDirs.Add(otherDir);
+                                frameworkType = BuildFrameworkType.Framework40;
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\Framework\v4.0");
+                                if (Directory.Exists(otherDir))
+                                {
+                                    // will normally not exists...
+                                    commentDirs.Add(otherDir);
+                                }
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0");
+                                if (Directory.Exists(otherDir))
+                                {
+                                    commentDirs.Add(otherDir);
+                                }
+                                fSharpDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0");
+                                if (Directory.Exists(fSharpDir))
+                                {
+                                    commentDirs.Add(fSharpDir);
+                                }
                             }
-                            fSharpDir = Path.Combine(programFilesDir,
-                               @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0");
-                            if (Directory.Exists(fSharpDir))
+                            else if (version.Minor == 5)
                             {
-                                commentDirs.Add(fSharpDir);
+                                frameworkType = BuildFrameworkType.Framework45;
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\Framework\v4.5");
+                                if (Directory.Exists(otherDir))
+                                {
+                                    // will normally not exists...
+                                    commentDirs.Add(otherDir);
+                                }
+                                otherDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5");
+                                if (Directory.Exists(otherDir))
+                                {
+                                    commentDirs.Add(otherDir);
+                                }
+                                fSharpDir = Path.Combine(programFilesDir,
+                                   @"Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0");
+                                if (Directory.Exists(fSharpDir))
+                                {
+                                    commentDirs.Add(fSharpDir);
+                                }
                             }
                             break;
                         default:
@@ -943,35 +1041,132 @@ namespace Sandcastle
         {
             IList<Version> frameworkVersions =
                 BuildFrameworks.InstalledScriptSharpVersions;
-            if (frameworkVersions != null && frameworkVersions.Count != 0)
+            if (frameworkVersions == null || frameworkVersions.Count == 0)
             {
-                for (int i = 0; i < frameworkVersions.Count; i++)
+                return;
+            }
+
+            for (int i = 0; i < frameworkVersions.Count; i++)
+            {
+                string assemblyDir = null;
+                Version version = frameworkVersions[i];
+
+                BuildFrameworkType frameworkType = BuildFrameworkType.Null;
+
+                List<string> commentDirs = new List<string>();
+                switch (version.Major)
                 {
-                    string assemblyDir = null;
-                    Version version    = frameworkVersions[i];
+                    case 0:
+                    case 1:
+                        frameworkType = BuildFrameworkType.ScriptSharp10;
+                        assemblyDir = Path.Combine(programFilesDir,
+                            @"ScriptSharp\v1.0\Framework");
 
-                    BuildFrameworkType frameworkType = BuildFrameworkType.Null;
-
-                    List<string> commentDirs = new List<string>();
-                    switch (version.Major)
-                    {
-                        case 1:
-                            frameworkType = BuildFrameworkType.ScriptSharp10;
-                            assemblyDir = Path.Combine(programFilesDir,
-                                @"ScriptSharp\v1.0\Framework");
-
-                            commentDirs.Add(assemblyDir);
-                            break;
-                        default:
-                            throw new PlatformNotSupportedException(
-                                String.Format("The platform with version '{0}' is not supported.", version));
-                    }
-
-                    BuildFramework framework = new BuildFramework(frameworkType,
-                        assemblyDir, commentDirs, version);
-
-                    frameworks.Add(framework);
+                        commentDirs.Add(assemblyDir);
+                        break;
+                    default:
+                        throw new PlatformNotSupportedException(
+                            String.Format("The platform with version '{0}' is not supported.", version));
                 }
+
+                BuildFramework framework = new BuildFramework(frameworkType,
+                    assemblyDir, commentDirs, version);
+
+                frameworks.Add(framework);
+            }
+        }
+
+        #endregion
+
+        #region GetCompactFrameworks Method
+
+        private static void GetCompactFrameworks(IList<BuildFramework> frameworks,
+            string programFilesDir)
+        {
+            IList<Version> frameworkVersions =
+                BuildFrameworks.InstalledCompactVersions;
+            if (frameworkVersions == null || frameworkVersions.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < frameworkVersions.Count; i++)
+            {
+                string assemblyDir = null;
+                Version version = frameworkVersions[i];
+
+                BuildFrameworkType frameworkType = BuildFrameworkType.Null;
+
+                List<string> commentDirs = new List<string>();
+                switch (version.Major)
+                {
+                    case 1:
+                        frameworkType = BuildFrameworkType.Compact10;
+
+                        // The Compact Framework 1.0 is installed in the same directory
+                        // as the Visual Studio 8.0/2005...
+                        string compactDir = null;
+                        RegistryKey vsKey = null;
+                        try
+                        {
+                            vsKey = Registry.LocalMachine.OpenSubKey(
+                                @"SOFTWARE\Microsoft\VisualStudio\8.0");
+
+                            if (vsKey != null)
+                            {
+                                string commonIdeDir = (string)vsKey.GetValue("InstallDir", string.Empty).ToString();
+                                if (!String.IsNullOrEmpty(commonIdeDir) &&
+                                    Directory.Exists(commonIdeDir))
+                                {
+                                    int indexCommon = commonIdeDir.IndexOf(@"Common7\IDE",
+                                        StringComparison.OrdinalIgnoreCase);
+                                    if (indexCommon > 0)
+                                    {
+                                        compactDir = Path.Combine(
+                                            commonIdeDir.Substring(0, indexCommon),
+                                            @"SmartDevices\SDK\CompactFramework\2.0\v1.0\WindowsCE");
+                                    }
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            if (vsKey != null)
+                            {
+                                vsKey.Close();
+                                vsKey = null;
+                            }
+                        }
+
+                        if (!String.IsNullOrEmpty(compactDir) && Directory.Exists(compactDir))
+                        {
+                            assemblyDir = compactDir;  
+                            commentDirs.Add(assemblyDir);
+                        }  
+                        break;
+                    case 2:
+                        frameworkType = BuildFrameworkType.Compact20;
+                        assemblyDir = Path.Combine(programFilesDir,
+                            @"Microsoft.NET\SDK\CompactFramework\v2.0\WindowsCE");
+
+                        commentDirs.Add(assemblyDir);
+                        break;
+                    case 3:
+                        frameworkType = BuildFrameworkType.Compact35;
+                        assemblyDir = Path.Combine(programFilesDir,
+                            @"Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE");
+
+                        commentDirs.Add(assemblyDir);
+                        break;
+                    default:
+                        throw new PlatformNotSupportedException(
+                            String.Format("The platform with version '{0}' is not supported.", version));
+                }
+
+                BuildFramework framework = new BuildFramework(frameworkType,
+                    assemblyDir, commentDirs, version);
+
+                frameworks.Add(framework);
             }
         }
 
@@ -981,7 +1176,7 @@ namespace Sandcastle
 
         private static BuildList<Version> GetDotNetVersions()
         {
-            BuildList<Version> versions = new BuildList<Version>();
+            List<Version> versions = new List<Version>();
             using (RegistryKey NDPKey = Registry.LocalMachine.OpenSubKey(
                 @"SOFTWARE\Microsoft\NET Framework Setup\NDP", true))
             {
@@ -1005,12 +1200,16 @@ namespace Sandcastle
                     }
                 }
             }
+            if (versions.Count != 0)
+            {
+                versions.Sort();
+            }
 
-            return versions;
+            return new BuildList<Version>(versions);
         }
 
         private static void GetDotNetVersion(RegistryKey parentKey,
-            string subVersionName, BuildList<Version> versions)
+            string subVersionName, IList<Version> versions)
         {
             if (parentKey == null)
             {
@@ -1137,7 +1336,7 @@ namespace Sandcastle
             }
 
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(mscorlib);
-            if (versionInfo == null)
+            if (versionInfo == null || versionInfo.ProductMajorPart != number)
             {
                 return;
             }
@@ -1167,7 +1366,8 @@ namespace Sandcastle
             {
                 for (int i = 0; i < versionDirs.Length; i++)
                 {
-                    string versionFolder = versionDirs[i].Name;
+                    DirectoryInfo versionDir = versionDirs[i];
+                    string versionFolder = versionDir.Name;
                     string version = null;
                     if (versionFolder.StartsWith("v",
                         StringComparison.OrdinalIgnoreCase))
@@ -1181,11 +1381,27 @@ namespace Sandcastle
 
                     if (!String.IsNullOrEmpty(version) &&
                         IsVersionExpression(version))
-                    {
+                    {      
+                        string frameworkDir = versionDir.FullName;
                         Version ver = new Version(version);
+                        string mscorlibFile = Path.Combine(frameworkDir, "mscorlib.dll");
+                        if (File.Exists(mscorlibFile))
+                        {
+                            FileVersionInfo versionInfo =
+                                FileVersionInfo.GetVersionInfo(mscorlibFile);
 
-                        if (!versions.Contains(ver))
-                            versions.Add(ver);
+                            if (versionInfo != null && versionInfo.ProductMajorPart == ver.Major)
+                            {
+                                ver = new Version(versionInfo.FileVersion);
+
+                                if (!versions.Contains(ver))
+                                    versions.Add(ver);
+                            }
+                        }
+                        //Version ver = new Version(version);
+
+                        //if (!versions.Contains(ver))
+                        //    versions.Add(ver);
                     }
                 }
             }
@@ -1237,10 +1453,151 @@ namespace Sandcastle
                         if (!String.IsNullOrEmpty(version) &&
                             IsVersionExpression(version))
                         {
-                            Version ver = new Version(version);
+                            Version ver = null;
+                            string mscorlibFile = Path.Combine(frameworkDir, "mscorlib.dll");
+                            if (File.Exists(mscorlibFile))
+                            {
+                                FileVersionInfo versionInfo =
+                                    FileVersionInfo.GetVersionInfo(mscorlibFile);
 
+                                if (versionInfo != null)
+                                {
+                                    ver = new Version(versionInfo.FileVersion);
+                                }
+                            }
+
+                            // We will use this approach, since Script# is
+                            // still really not version 1.0.0.0
+                            if (ver == null)
+                            {
+                                ver = new Version(version);
+                            }
+                            else if (ver.Major < 1)
+                            {
+                                ver = new Version(1, 0, 0, 0);
+                            }
                             if (!versions.Contains(ver))
                                 versions.Add(ver);
+                        }
+                    }
+                }
+            }
+
+            return versions;
+        }
+
+        #endregion
+
+        #region GetCompactVersions Method
+
+        private static BuildList<Version> GetCompactVersions()
+        {
+            BuildList<Version> versions = new BuildList<Version>();
+
+            // The Compact Framework 1.0 is installed in the same directory
+            // as the Visual Studio 8.0/2005...
+            string compactDir = null;
+            RegistryKey vsKey = null;
+            try
+            {
+                vsKey = Registry.LocalMachine.OpenSubKey(
+                    @"SOFTWARE\Microsoft\VisualStudio\8.0");
+
+                if (vsKey != null)
+                {
+                    string commonIdeDir = (string)vsKey.GetValue("InstallDir", string.Empty).ToString();
+                    if (!String.IsNullOrEmpty(commonIdeDir) &&
+                        Directory.Exists(commonIdeDir))
+                    {
+                        int indexCommon = commonIdeDir.IndexOf(@"Common7\IDE",
+                            StringComparison.OrdinalIgnoreCase);
+                        if (indexCommon > 0)
+                        {
+                            compactDir = Path.Combine(
+                                commonIdeDir.Substring(0, indexCommon),
+                                @"SmartDevices\SDK\CompactFramework\2.0\v1.0\WindowsCE");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (vsKey != null)
+                {
+                    vsKey.Close();
+                    vsKey = null;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(compactDir) && Directory.Exists(compactDir))
+            {
+                string mscorlibFile = Path.Combine(compactDir, "mscorlib.dll");
+                if (File.Exists(mscorlibFile))
+                {
+                    FileVersionInfo versionInfo =
+                        FileVersionInfo.GetVersionInfo(mscorlibFile);
+
+                    if (versionInfo != null && versionInfo.ProductMajorPart == 1)
+                    {
+                        versions.Add(new Version(versionInfo.FileVersion));
+                    }
+                }
+            }    
+
+            // The .NET Compact Framework 2.0 and 3.5 are installed in the
+            // (ProgramFiles)\Microsoft.NET\SDK\CompactFramework\vX.0\WindowsCE
+            string programFiles = PathUtils.ProgramFiles32;
+
+            DirectoryInfo scriptSharpDir = new DirectoryInfo(Path.Combine(
+                programFiles, @"Microsoft.NET\SDK\CompactFramework"));
+
+            if (!scriptSharpDir.Exists)
+            {
+                return versions;
+            }
+
+            DirectoryInfo[] versionDirs = scriptSharpDir.GetDirectories();
+            if (versionDirs != null && versionDirs.Length != 0)
+            {
+                for (int i = 0; i < versionDirs.Length; i++)
+                {
+                    DirectoryInfo versionDir = versionDirs[i];
+                    string versionFolder     = versionDir.Name;
+                    string version = null;
+                    if (versionFolder.StartsWith("v",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        version = versionFolder.Substring(1);
+                    }
+                    else
+                    {
+                        version = versionFolder;
+                    }
+
+                    string frameworkDir = Path.Combine(versionDir.FullName,
+                        "WindowsCE");
+
+                    if (Directory.Exists(frameworkDir) && 
+                        !DirectoryUtils.IsDirectoryEmpty(frameworkDir))
+                    { 
+                        if (!String.IsNullOrEmpty(version) &&
+                            IsVersionExpression(version))
+                        {
+                            Version ver = new Version(version);
+                            string mscorlibFile = Path.Combine(frameworkDir, "mscorlib.dll");
+                            if (File.Exists(mscorlibFile))
+                            {
+                                FileVersionInfo versionInfo =
+                                    FileVersionInfo.GetVersionInfo(mscorlibFile);
+
+                                if (versionInfo != null && versionInfo.ProductMajorPart == ver.Major)
+                                {
+                                    ver = new Version(versionInfo.FileVersion);
+
+                                    if (!versions.Contains(ver))
+                                        versions.Add(ver);
+                                }
+                            }
                         }
                     }
                 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 using Sandcastle.Contents;
 using Sandcastle.Utilities;
+using Sandcastle.ReflectionData;
 
 namespace Sandcastle.References
 {
@@ -31,6 +32,9 @@ namespace Sandcastle.References
 
         #region Private Fields
 
+        private bool _cacheLinks;
+        private BuildCacheStorageType _linkStorage;
+
         [NonSerialized]
         private BuildFormat   _format;
         [NonSerialized]
@@ -51,6 +55,8 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceLinkConfiguration()
         {
+            _cacheLinks  = true;
+            _linkStorage = BuildCacheStorageType.Database;
         }
 
         /// <summary>
@@ -68,6 +74,8 @@ namespace Sandcastle.References
         public ReferenceLinkConfiguration(ReferenceLinkConfiguration source)
             : base(source)
         {
+            _cacheLinks  = source._cacheLinks;
+            _linkStorage = source._linkStorage;
         }
 
         #endregion
@@ -242,6 +250,59 @@ namespace Sandcastle.References
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value specifying whether to cache external
+        /// reference links, which are links to the <c>MSDN</c> topics.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if there is external link caching;
+        /// otherwise, it is <see langword="false"/>. The default is
+        /// <see langword="true"/>.
+        /// </value>
+        /// <remarks>
+        /// This is only used if the storage type of the external links, 
+        /// <see cref="ExternalLinkStorage"/>, is <see cref="BuildCacheStorageType.Database"/>.
+        /// </remarks>
+        public bool ExternalLinkCaching
+        {
+            get
+            {
+                return _cacheLinks;
+            }
+            set
+            {
+                _cacheLinks = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the storage type of the external topic links, which 
+        /// are links to the <c>MSDN</c> reference topics.
+        /// </summary>
+        /// <value>
+        /// A structure specifying the storage type for the external links.
+        /// The default value is <see cref="BuildCacheStorageType.Database"/>.
+        /// </value>
+        /// <remarks>
+        /// This property supports only the <see cref="BuildCacheStorageType.Database"/>
+        /// and <see cref="BuildCacheStorageType.Memory"/> values.
+        /// </remarks>
+        public BuildCacheStorageType ExternalLinkStorage
+        {
+            get
+            {                 
+                return _linkStorage;
+            }
+            set
+            {
+                if (value != BuildCacheStorageType.Memory &&
+                    value != BuildCacheStorageType.Database)
+                {
+                    _linkStorage = value;
+                }
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -321,9 +382,9 @@ namespace Sandcastle.References
                     "The group context is not provided, and it is required by the build system.");
             }
 
-            ReferenceGroupContext theContext = groupContexts[group.Id] 
+            ReferenceGroupContext groupContext = groupContexts[group.Id] 
                 as ReferenceGroupContext;
-            if (theContext == null)
+            if (groupContext == null)
             {
                 throw new BuildException(
                     "The group context is not provided, and it is required by the build system.");
@@ -334,8 +395,12 @@ namespace Sandcastle.References
                 return false;
             }
 
-            BuildFramework framework = theContext.Framework;
-            BuildFrameworkKind kind = framework.FrameworkType.Kind;
+            BuildFramework framework = groupContext.Framework;
+            BuildFrameworkKind kind  = framework.FrameworkType.Kind;
+
+            ReferenceEngineSettings referenceSettings = _settings.EngineSettings[
+                BuildEngineType.Reference] as ReferenceEngineSettings;
+            BuildSpecialSdkType webSdkType = referenceSettings.WebMvcSdkType;
 
             writer.WriteStartElement("options");   // start - options
             writer.WriteAttributeString("locale", 
@@ -344,90 +409,229 @@ namespace Sandcastle.References
             {
                 writer.WriteAttributeString("version", "VS.95");
             }
+            else if (kind == BuildFrameworkKind.Compact)
+            {
+                // The framework 3.5 is the last version of Windows CE...
+                writer.WriteAttributeString("version", "VS.90");
+            }
+            if (webSdkType != BuildSpecialSdkType.Null &&
+                webSdkType != BuildSpecialSdkType.None)
+            {
+                switch (webSdkType.Value)
+                {
+                    case 10:    // ASP.NET MVC 1.0: Supported in .NET 3.5
+                        writer.WriteAttributeString("mvcVersion", "VS.90");
+                        break;
+                    case 20:    // ASP.NET MVC 2.0: Supported in .NET 3.5 SP1
+                        // This is currently the default documentation for
+                        // the ASP.NET MVC Framework...
+                        writer.WriteAttributeString("mvcVersion", "");
+                        break;
+                    case 30:    // ASP.NET MVC 3.0: Supported in .NET 4.0
+                        writer.WriteAttributeString("mvcVersion", "VS.98");
+                        break;
+                    case 40:    // ASP.NET MVC 4.0: Supported in .NET 4.5
+                        writer.WriteAttributeString("mvcVersion", "VS.108");
+                        break;
+                }
+            }
             writer.WriteAttributeString("linkTarget",
                 "_" + _format.ExternalLinkTarget.ToString().ToLower());
             writer.WriteEndElement();              // end - options
 
-            // For now, lets simply write the default...
-            writer.WriteStartElement("targets");
-            writer.WriteAttributeString("base", @"%DXROOT%\Data\Reflection\");
-            writer.WriteAttributeString("recurse", "true");
-            writer.WriteAttributeString("files", "*.xml");
-            writer.WriteAttributeString("type",
-                _format.ExternalLinkType.ToString().ToLower());
-            writer.WriteEndElement();
+            bool isEmbeddedGroup    = false;
+            bool frameworkAvailable = false;
+            bool isEmbeddedScript   = groupContext.IsEmbeddedGroup;
+            string tempText = _context["$EmbeddedScriptSharp"];
+            if (!String.IsNullOrEmpty(tempText))
+            {
+                isEmbeddedScript = Convert.ToBoolean(tempText);
+            }
+
+            List<DataSource> dataSources = new List<DataSource>();
 
             if (kind == BuildFrameworkKind.Silverlight)
             {
-                string silverlightDir = theContext["$SilverlightDataDir"];
+                string silverlightDir = groupContext["$SilverlightDataDir"];
+
                 if (!String.IsNullOrEmpty(silverlightDir) &&
                     Directory.Exists(silverlightDir))
                 {
+                    frameworkAvailable = true;
+
                     writer.WriteStartElement("targets");
-                    writer.WriteAttributeString("base", silverlightDir);
+                    writer.WriteAttributeString("base",    silverlightDir);
                     writer.WriteAttributeString("recurse", "false");
-                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("files",   "*.xml");
                     writer.WriteAttributeString("type",
                         _format.ExternalLinkType.ToString().ToLower());
+
+                    // Write the data source...
+                    Version latestVersion = BuildFrameworks.LatestSilverlightVersion;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Silverlight,
+                        silverlightDir, latestVersion, true, true, dataSources);
+
                     writer.WriteEndElement();
                 }
-            }
-
-            // The Portable and ScriptSharp do not support Blend...
-            if (kind == BuildFrameworkKind.Portable)
+            }    
+            else if (kind == BuildFrameworkKind.Portable)
             {
-                string portableDir = theContext["$PortableDataDir"];
+                string portableDir = groupContext["$PortableDataDir"];
+
                 if (!String.IsNullOrEmpty(portableDir) && Directory.Exists(portableDir))
                 {
+                    frameworkAvailable = true;
+
                     writer.WriteStartElement("targets");
-                    writer.WriteAttributeString("base", portableDir);
+                    writer.WriteAttributeString("base",    portableDir);
                     writer.WriteAttributeString("recurse", "false");
-                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("files",   "*.xml");
                     writer.WriteAttributeString("type",
                         _format.ExternalLinkType.ToString().ToLower());
+
+                    // Write the data source...
+                    Version latestVersion = BuildFrameworks.LatestPortableVersion;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Portable,
+                        portableDir, latestVersion, true, false, dataSources);
+
                     writer.WriteEndElement();
                 }
             }
             else if (kind == BuildFrameworkKind.ScriptSharp)
             {
-                string scriptSharpDir = theContext["$ScriptSharpDataDir"];
+                string scriptSharpDir = groupContext["$ScriptSharpDataDir"];
+
                 if (!String.IsNullOrEmpty(scriptSharpDir) && Directory.Exists(scriptSharpDir))
                 {
-                    string tempText = _context["$EmbeddedScriptSharp"];
-                    bool isEmbeddedScript = false;
-                    if (String.IsNullOrEmpty(tempText))
-                    {
-                        isEmbeddedScript = Convert.ToBoolean(tempText);
-                    }
+                    frameworkAvailable = true;
 
-                    writer.WriteStartElement("targets");
-                    writer.WriteAttributeString("base",    scriptSharpDir);
-                    writer.WriteAttributeString("recurse", "false");
-                    writer.WriteAttributeString("files",   "*.xml");
-                    if (isEmbeddedScript)
+                    if (!isEmbeddedGroup)
                     {
-                        writer.WriteAttributeString("type",
-                            BuildLinkType.Local.ToString().ToLower());
+                        writer.WriteStartElement("targets");
+                        writer.WriteAttributeString("base", scriptSharpDir);
+                        writer.WriteAttributeString("recurse", "false");
+                        writer.WriteAttributeString("system", "true");
+                        writer.WriteAttributeString("files", "*.xml");
+
+                        if (isEmbeddedScript)
+                        {
+                            writer.WriteAttributeString("type",
+                                BuildLinkType.Local.ToString().ToLower());
+                        }
+                        else
+                        {
+                            writer.WriteAttributeString("type",
+                                BuildLinkType.None.ToString().ToLower());
+                        }
+
+                        // Write the data source...
+                        Version latestVersion = BuildFrameworks.LatestScriptSharpVersion;
+                        if (latestVersion == null)
+                        {
+                            latestVersion = framework.Version;
+                        }
+                        this.WriteDataSource(writer, DataSourceType.ScriptSharp,
+                            scriptSharpDir, latestVersion, true, false, dataSources);
+
+                        writer.WriteEndElement();
                     }
-                    else
-                    {
-                        writer.WriteAttributeString("type",
-                            BuildLinkType.None.ToString().ToLower());
-                    }
-                    writer.WriteEndElement();
                 }
             }
-            else
+
+            // If not specialized framework, then write the default... 
+            if (!frameworkAvailable || kind == BuildFrameworkKind.None ||
+                kind == BuildFrameworkKind.DotNet || kind == BuildFrameworkKind.Compact)
             {
-                string blendDir = theContext["$BlendDataDir"];
+                string dotNetDataDir = Path.GetFullPath(
+                    Environment.ExpandEnvironmentVariables(ReferenceEngine.ReflectionDirectory));
+
+                writer.WriteStartElement("targets");
+                writer.WriteAttributeString("base", dotNetDataDir);
+                writer.WriteAttributeString("recurse", "true");
+                writer.WriteAttributeString("system",  "true");
+                writer.WriteAttributeString("files",   "*.xml");
+                writer.WriteAttributeString("type",
+                    _format.ExternalLinkType.ToString().ToLower());
+                
+                // Write the data source...
+                this.WriteDataSource(writer, DataSourceType.Framework,
+                    dotNetDataDir, ReferenceEngine.ReflectionVersion, true, 
+                    false, dataSources); 
+
+                writer.WriteEndElement();
+            } 
+
+            // The Portable and ScriptSharp do not support Blend...
+            if (kind != BuildFrameworkKind.Portable &&
+                kind != BuildFrameworkKind.Compact  &&
+                kind != BuildFrameworkKind.ScriptSharp)
+            {
+                string blendDir = groupContext["$BlendDataDir"];
+
                 if (!String.IsNullOrEmpty(blendDir) && Directory.Exists(blendDir))
                 {
                     writer.WriteStartElement("targets");
-                    writer.WriteAttributeString("base", blendDir);
+                    writer.WriteAttributeString("base",    blendDir);
                     writer.WriteAttributeString("recurse", "false");
-                    writer.WriteAttributeString("files", "*.xml");
+                    writer.WriteAttributeString("system",  "true");
+                    writer.WriteAttributeString("files",   "*.xml");
                     writer.WriteAttributeString("type",
                         _format.ExternalLinkType.ToString().ToLower());
+
+                    // Write the data source...
+                    BuildSpecialSdk latestBlendSdk = null;
+                    if (kind == BuildFrameworkKind.Silverlight)
+                    {
+                        latestBlendSdk = BuildSpecialSdks.LatestBlendSilverlightSdk;
+                    }
+                    else
+                    {
+                        latestBlendSdk = BuildSpecialSdks.LatestBlendWpfSdk;
+                    }
+                    Version latestVersion = (latestBlendSdk == null) ? 
+                        null : latestBlendSdk.Version;
+                    if (latestVersion == null)
+                    {
+                        latestVersion = framework.Version;
+                    }
+                    this.WriteDataSource(writer, DataSourceType.Blend, blendDir,
+                        latestVersion, true, kind == BuildFrameworkKind.Silverlight, 
+                        dataSources);
+
+                    writer.WriteEndElement();
+                }
+            }
+
+            IList<string> linkDirs = _context.GetValue(
+                "$ReferenceLinkDirectories") as IList<string>;
+            IList<ReferenceLinkSource> linkSources = _context.GetValue(
+                "$ReferenceLinkSources") as IList<ReferenceLinkSource>;
+            if ((linkDirs != null && linkDirs.Count != 0) &&
+                (linkSources != null && linkSources.Count == linkDirs.Count))
+            {
+                for (int i = 0; i < linkDirs.Count; i++)
+                {
+                    ReferenceLinkSource linkSource = linkSources[i];
+                    BuildLinkType sourceLinkType = linkSource.LinkType;
+
+                    writer.WriteStartElement("targets");
+                    writer.WriteAttributeString("base",    linkDirs[i]);
+                    writer.WriteAttributeString("recurse", "true");
+                    writer.WriteAttributeString("system",  "false");
+                    writer.WriteAttributeString("files",   "*.xml");
+                    writer.WriteAttributeString("type",
+                        sourceLinkType.ToString().ToLower());
+
                     writer.WriteEndElement();
                 }
             }
@@ -435,68 +639,107 @@ namespace Sandcastle.References
             BuildLinkType linkType = _format.LinkType;
             string linkTypeText = linkType.ToString().ToLower();
 
-            for (int i = 0; i < groupContexts.Count; i++)
+            // For the embedded group, we will not link to the other groups...
+            if (!isEmbeddedGroup)
             {
-                BuildGroupContext groupContext = groupContexts[i];
-
-                if (groupContext.GroupType != BuildGroupType.Reference ||
-                    groupContext == theContext)
+                for (int i = 0; i < groupContexts.Count; i++)
                 {
-                    continue;
-                }
+                    ReferenceGroupContext aContext = groupContexts[i]
+                        as ReferenceGroupContext;
 
-                string linkFile = groupContext["$ReflectionFile"];
-                if (!String.IsNullOrEmpty(linkFile))
-                {
-                    writer.WriteStartElement("targets");
+                    if (aContext == null || aContext.IsLinkGroup)
+                    {
+                        continue;
+                    }
 
-                    writer.WriteAttributeString("base", @".\");
-                    writer.WriteAttributeString("recurse", "false");
-                    writer.WriteAttributeString("files", 
-                        @".\" + groupContext["$ReflectionFile"]);   
-                    writer.WriteAttributeString("type", linkTypeText);
+                    if (aContext.GroupType != BuildGroupType.Reference ||
+                        aContext == groupContext)
+                    {
+                        continue;
+                    }
 
-                    writer.WriteEndElement();
+                    string linkFile = aContext["$ReflectionFile"];
+                    if (!String.IsNullOrEmpty(linkFile))
+                    {
+                        writer.WriteStartElement("targets");
+
+                        writer.WriteAttributeString("base", @".\");
+                        writer.WriteAttributeString("recurse", "false");
+                        writer.WriteAttributeString("system", "false");
+                        writer.WriteAttributeString("files", @".\" + linkFile);
+                        writer.WriteAttributeString("type", linkTypeText);
+                        writer.WriteEndElement();
+                    }
                 }
             }
 
             //<targets base=".\" recurse="false"  
             //   files=".\reflection.xml" type="local" />        
             writer.WriteStartElement("targets");
-            writer.WriteAttributeString("base", @".\");
+            writer.WriteAttributeString("base",    @".\");
             writer.WriteAttributeString("recurse", "false");
-            writer.WriteAttributeString("files", @".\" + theContext["$ReflectionFile"]);
-            writer.WriteAttributeString("type", linkType.ToString().ToLower());
+            writer.WriteAttributeString("system",  "false");
+            writer.WriteAttributeString("files", @".\" + groupContext["$ReflectionFile"]);
+
+            if (isEmbeddedGroup)
+            {
+                writer.WriteAttributeString("type",
+                    BuildLinkType.Local.ToString().ToLower());
+            }
+            else
+            {
+                writer.WriteAttributeString("type", linkTypeText);
+            }
+            
             writer.WriteEndElement();
 
-            bool conceptualContext = _settings.BuildConceptual;
-            if (conceptualContext)
+            // Provide the information for the MSDN link resolvers... 
+            writer.WriteStartElement("linkResolver"); // start - linkResolver
+            writer.WriteAttributeString("storage", _linkStorage.ToString().ToLower()); 
+            writer.WriteAttributeString("cache",   _cacheLinks ? "true" : "false");     
+            if (dataSources != null && dataSources.Count != 0)
             {
-                conceptualContext = false;
+                for (int i = 0; i < dataSources.Count; i++)
+                {
+                    DataSource dataSource = dataSources[i];
+
+                    this.WriteDataSource(writer, dataSource.SourceType,
+                        dataSource.InputDir, dataSource.Version,
+                        dataSource.IsDatabase, dataSource.IsSilverlight, true);
+                }
+            }
+            writer.WriteEndElement();                 // end - linkResolver
+
+            // Finally, provide the information for the conceptual links
+            // in reference documents, if any...
+            bool hasConceptualContext = _settings.BuildConceptual;
+            if (hasConceptualContext)
+            {
+                hasConceptualContext = false;
 
                 for (int i = 0; i < groupContexts.Count; i++)
                 {
-                    BuildGroupContext groupContext = groupContexts[i];
-                    if (groupContext.GroupType == BuildGroupType.Conceptual)
+                    BuildGroupContext aContext = groupContexts[i];
+                    if (aContext.GroupType == BuildGroupType.Conceptual)
                     {
-                        conceptualContext = true;
+                        hasConceptualContext = true;
                         break;
                     }
                 }
             }
 
-            if (conceptualContext)
+            if (hasConceptualContext)
             {     
-                ConceptualEngineSettings engineSettings = _settings.EngineSettings[
+                ConceptualEngineSettings conceptualSettings = _settings.EngineSettings[
                     BuildEngineType.Conceptual] as ConceptualEngineSettings;
-                Debug.Assert(engineSettings != null,
+                Debug.Assert(conceptualSettings != null,
                     "The settings does not include the reference engine settings.");
-                if (engineSettings == null)
+                if (conceptualSettings == null)
                 {
                     return false;
                 }
                 ConceptualLinkConfiguration linkConfig = 
-                    engineSettings.ConceptualLinks;
+                    conceptualSettings.ConceptualLinks;
                 Debug.Assert(linkConfig != null,
                     "There is no conceptual link configuration available.");
                 if (linkConfig == null)
@@ -514,20 +757,72 @@ namespace Sandcastle.References
 
                 for (int i = 0; i < groupContexts.Count; i++)
                 {
-                    BuildGroupContext groupContext = groupContexts[i];
-                    if (groupContext.GroupType == BuildGroupType.Conceptual)
+                    BuildGroupContext aContext = groupContexts[i];
+                    if (aContext.GroupType == BuildGroupType.Conceptual)
                     {
                         writer.WriteStartElement("conceptualTargets");  // start - conceptualTargets
                         writer.WriteAttributeString("base", String.Format(
-                            @".\{0}", groupContext["$DdueXmlCompDir"]));
+                            @".\{0}", aContext["$DdueXmlCompDir"]));
                         writer.WriteAttributeString("type", linkTypeText);
                         writer.WriteEndElement();                       // end - conceptualTargets
                     }
                 }
-                writer.WriteEndElement();                 //end: conceptualLinks
+                writer.WriteEndElement();                     //end: conceptualLinks
             }    
 
             return true;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void WriteDataSource(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase, 
+            bool isSilverlight, IList<DataSource> dataSources)
+        {
+            this.WriteDataSource(writer, sourceType, baseInput, version, 
+                useDatabase, isSilverlight, false);
+
+            if (dataSources != null)
+            {
+                DataSource dataSource = new DataSource(false, true,
+                    useDatabase, isSilverlight, sourceType);
+
+                dataSource.Version  = version;
+                dataSource.InputDir = baseInput;
+                dataSources.Add(dataSource);
+            }
+        }    
+
+        private void WriteDataSource(XmlWriter writer, DataSourceType sourceType,
+            string baseInput, Version version, bool useDatabase, 
+            bool isSilverlight, bool isLinks)
+        {
+            if (baseInput == null)
+            {
+                baseInput = String.Empty;
+            }
+
+            writer.WriteStartElement("source");    // start: source
+            writer.WriteAttributeString("system", "true");
+            writer.WriteAttributeString("name", sourceType.ToString());
+            writer.WriteAttributeString("platform", isSilverlight ? 
+                "Silverlight" : "Framework");
+            writer.WriteAttributeString("version", version != null ? 
+                version.ToString(2) : "");
+            writer.WriteAttributeString("lang", "");
+            writer.WriteAttributeString("storage",
+                useDatabase ? "database" : "memory");
+
+            writer.WriteStartElement("paths"); // start: paths
+            writer.WriteAttributeString("baseInput", Path.GetFullPath(
+                Environment.ExpandEnvironmentVariables(baseInput)));
+            writer.WriteAttributeString("baseOutput", isLinks ? 
+                _context.LinksDataDirectory : _context.TargetDataDirectory);
+            writer.WriteEndElement();          // end: paths 
+
+            writer.WriteEndElement();              // end: source
         }
 
         #endregion
@@ -592,6 +887,27 @@ namespace Sandcastle.References
                                 this.Enabled = Convert.ToBoolean(tempText);
                             }
                             break;
+                        case "externallinkcaching":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _cacheLinks = Convert.ToBoolean(tempText);
+                            }
+                            break;
+                        case "externallinkstorage":
+                            tempText = reader.ReadString();
+                            if (!String.IsNullOrEmpty(tempText))
+                            {
+                                _linkStorage = BuildCacheStorageType.Parse(tempText);
+
+                                if (_linkStorage != BuildCacheStorageType.Memory &&
+                                    _linkStorage != BuildCacheStorageType.Database)
+                                {
+                                    // If not one of the valid values, reset it...
+                                    _linkStorage = BuildCacheStorageType.Database;
+                                }
+                            }
+                            break;
                         default:
                             // Should normally not reach here...
                             throw new NotImplementedException(reader.GetAttribute("name"));
@@ -605,7 +921,7 @@ namespace Sandcastle.References
                         break;
                     }
                 }
-            }
+            }      
         }
 
         /// <summary>
@@ -629,7 +945,9 @@ namespace Sandcastle.References
             // Write the general properties
             writer.WriteStartElement("propertyGroup"); // start - propertyGroup;
             writer.WriteAttributeString("name", "General");
-            writer.WritePropertyElement("Enabled", this.Enabled);
+            writer.WritePropertyElement("Enabled",             this.Enabled);
+            writer.WritePropertyElement("ExternalLinkCaching", _cacheLinks);
+            writer.WritePropertyElement("ExternalLinkStorage", _linkStorage.ToString());
             writer.WriteEndElement();                  // end - propertyGroup
 
             writer.WriteEndElement();           // end - TagName

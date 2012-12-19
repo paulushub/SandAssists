@@ -43,9 +43,31 @@ namespace Sandcastle.Components.Indexed
                 //XPathDocument document = new XPathDocument(file, XmlSpace.Preserve);
                 XPathDocument document = new XPathDocument(file);
 
+                XPathNavigator docNavigator = document.CreateNavigator();
+                XPathNavigator redirectNode = docNavigator.SelectSingleNode("doc");
                 // search for value nodes
-                XPathNodeIterator valueNodes = 
-                    document.CreateNavigator().Select(cache.ValueExpression);
+                XPathNodeIterator valueNodes =
+                    docNavigator.Select(cache.ValueExpression);
+                if ((valueNodes == null || valueNodes.Count == 0) &&
+                    redirectNode != null)
+                {
+                    string redirectPath = redirectNode.GetAttribute(
+                        "redirect", String.Empty);
+                    if (!String.IsNullOrEmpty(redirectPath))
+                    {
+                        redirectPath = Path.GetFullPath(
+                            Environment.ExpandEnvironmentVariables(redirectPath));
+
+                        if (System.IO.File.Exists(redirectPath))
+                        {
+                            document = new XPathDocument(redirectPath);
+
+                            docNavigator = document.CreateNavigator();
+                            // search for value nodes
+                            valueNodes = docNavigator.Select(cache.ValueExpression);
+                        }
+                    }
+                }
 
                 // get the key string for each value node and record it in the index
                 foreach (XPathNavigator valueNode in valueNodes)

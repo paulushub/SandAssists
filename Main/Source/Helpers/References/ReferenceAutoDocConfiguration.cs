@@ -47,6 +47,9 @@ namespace Sandcastle.References
         private bool _constructors;
         private bool _disposeMethods;
 
+        [NonSerialized]
+        private BuildContext _context;
+
         #endregion
 
         #region Constructors and Destructor
@@ -330,6 +333,23 @@ namespace Sandcastle.References
 
         #region Public Methods
 
+        public override void Initialize(BuildContext context)
+        {
+            base.Initialize(context);
+
+            if (base.IsInitialized)
+            {
+                _context = context;
+            }
+        }
+
+        public override void Uninitialize()
+        {
+            _context = null;
+
+            base.Uninitialize();
+        }
+
         /// <summary>
         /// The creates the configuration information or settings required by the
         /// target component for the build process.
@@ -361,6 +381,13 @@ namespace Sandcastle.References
                 return false;
             }
 
+            BuildGroupContext groupContext = _context.GroupContexts[group.Id];
+            if (groupContext == null)
+            {
+                throw new BuildException(
+                    "The group context is not provided, and it is required by the build system.");
+            }
+
             // <autoDocument enabled="true" warn="true" constructors="true" 
             //   disposeMethods="true"/>
             // Or
@@ -376,9 +403,24 @@ namespace Sandcastle.References
             //    </disposeMethods>
             //</autoDocument>
 
+            bool notApplicable = false;
+            string embeddedText = groupContext["$IsEmbeddedGroup"];
+            if (!String.IsNullOrEmpty(embeddedText) &&
+                embeddedText.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                notApplicable = true;
+            }
+
             writer.WriteComment(" Start: Automatic documentation options ");
             writer.WriteStartElement("autoDocument");   //start: autoDocument
-            writer.WriteAttributeString("enabled", this.Enabled.ToString());
+            if (notApplicable)
+            {
+                writer.WriteAttributeString("enabled", "false");
+            }
+            else
+            {
+                writer.WriteAttributeString("enabled", this.Enabled.ToString());
+            }
             writer.WriteAttributeString("warn", _warn.ToString());
             writer.WriteAttributeString("constructors", _constructors.ToString());
             writer.WriteAttributeString("disposeMethods", _disposeMethods.ToString());

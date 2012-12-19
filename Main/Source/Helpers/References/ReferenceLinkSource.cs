@@ -3,6 +3,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sandcastle.Contents;
 using Sandcastle.Utilities;
 
 namespace Sandcastle.References
@@ -17,6 +18,9 @@ namespace Sandcastle.References
         #endregion
 
         #region Private Fields
+
+        private string                   _sourceId;
+        private DependencyContent        _dependencies;
 
         private BuildLinkType            _linkType;
         private BuildFrameworkType       _frameworkType;
@@ -35,8 +39,10 @@ namespace Sandcastle.References
         /// </summary>
         public ReferenceLinkSource()
         {
+            _sourceId      = Guid.NewGuid().ToString();
             _linkType      = BuildLinkType.Local;
             _listItems     = new BuildList<ReferenceItem>();
+            _dependencies  = new DependencyContent();
             _frameworkType = BuildFrameworkType.None;
         }
 
@@ -56,7 +62,9 @@ namespace Sandcastle.References
             : base(source)
         {
             _linkType      = source._linkType;
+            _sourceId      = source._sourceId;
             _listItems     = source._listItems;
+            _dependencies  = source._dependencies;
             _frameworkType = source._frameworkType;
         }
 
@@ -91,6 +99,12 @@ namespace Sandcastle.References
         {
             get
             {
+                if (_frameworkType == BuildFrameworkType.None ||
+                    _frameworkType == BuildFrameworkType.Null)
+                {
+                    return false;
+                }
+
                 return (_listItems != null && _listItems.Count != 0);
             }
         }
@@ -124,6 +138,35 @@ namespace Sandcastle.References
                 if (value != null)
                 {
                     _listItems[index] = value;
+                }
+            }
+        }
+
+        public string SourceId
+        {
+            get
+            {
+                return _sourceId;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>
+        /// 
+        /// </value>
+        public DependencyContent Dependencies
+        {
+            get
+            {
+                return _dependencies;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    _dependencies = value;
                 }
             }
         }
@@ -224,6 +267,7 @@ namespace Sandcastle.References
 
             // Provide other user-supplied information to the content...
             content.Comments         = this.Comments;
+            content.Dependencies     = this.Dependencies;
             content.HierarchicalToc  = this.HierarchicalToc;
             content.TypeFilters      = this.TypeFilters;
             content.AttributeFilters = this.AttributeFilters;
@@ -304,6 +348,49 @@ namespace Sandcastle.References
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnReadContents(XmlReader reader)
+        {
+            if (_dependencies == null)
+            {
+                _dependencies = new DependencyContent();
+            }
+
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
+            string startElement = reader.Name;
+            Debug.Assert(String.Equals(startElement, "content",
+                StringComparison.OrdinalIgnoreCase));
+
+            if (!String.Equals(startElement, "content",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (reader.ReadToDescendant(DependencyContent.TagName))
+            {
+                _dependencies.ReadXml(reader);
+            }
+        }
+
+        protected override void OnWriteContents(XmlWriter writer)
+        {
+            if (_dependencies != null)
+            {
+                writer.WriteStartElement("content");
+                writer.WriteAttributeString("type", "Dependencies");
+                _dependencies.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+        }
+
+        #endregion
+
         #region Private Methods
 
         #region ReadPropertyGroup Method
@@ -330,6 +417,13 @@ namespace Sandcastle.References
                         {
                             case "title":
                                 this.Title = reader.ReadString();
+                                break;
+                            case "id":
+                                tempText = reader.ReadString();
+                                if (!String.IsNullOrEmpty(tempText))
+                                {
+                                    _sourceId = tempText;
+                                }
                                 break;
                             case "linktype":
                                 tempText = reader.ReadString();
@@ -506,6 +600,7 @@ namespace Sandcastle.References
             writer.WriteStartElement("propertyGroup");  // start - propertyGroup
             writer.WriteAttributeString("name", "General");
             writer.WritePropertyElement("Title",         this.Title);
+            writer.WritePropertyElement("Id",            _sourceId);
             writer.WritePropertyElement("LinkType",      _linkType.ToString());
             writer.WritePropertyElement("FrameworkType", _frameworkType.ToString());
             writer.WriteEndElement();                   // end - propertyGroup
@@ -542,9 +637,17 @@ namespace Sandcastle.References
 
             this.Clone(source);
 
+            if (_sourceId != null)
+            {
+                source._sourceId = String.Copy(_sourceId);
+            }
             if (_listItems != null)
             {
                 source._listItems = _listItems.Clone();
+            }
+            if (_dependencies != null)
+            {
+                source._dependencies = _dependencies.Clone();
             }
 
             return source;

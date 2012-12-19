@@ -62,27 +62,6 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildAssemblerLibrary, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BuildComponents, Version=2.4.10520.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\BuildComponents.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CommandLine, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\CommandLine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MrefBuilder, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(DXROOT)\ProductionTools\MrefBuilder.exe</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Sandcastle.Esent, Version=1.7.0.0, Culture=neutral, PublicKeyToken=408b92a24af6a3fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -132,7 +111,6 @@
     <Compile Include="MediaLinks\MediaSizeUnit.cs" />
     <Compile Include="MediaLinks\MediaTarget.cs" />
     <Compile Include="Versions\VersionInfoType.cs" />
-    <Compile Include="Reflections\RedirectAssemblyResolver.cs" />
     <Compile Include="ScriptContentComponent.cs" />
     <Compile Include="Snippets\SnippetLanguage.cs" />
     <Compile Include="TargetController.cs" />
@@ -227,9 +205,19 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BuildAssembler\BuildAssembler.csproj">
+      <Project>{399E78F8-4954-409E-991A-37DA9D0579CC}</Project>
+      <Name>BuildAssembler</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ReflectionData\ReflectionData.csproj">
       <Project>{4172B9EE-DA8D-4060-8FA8-FBFDD240E6D0}</Project>
       <Name>ReflectionData</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Reflection\Reflection.csproj">
+      <Project>{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}</Project>
+      <Name>Reflection</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

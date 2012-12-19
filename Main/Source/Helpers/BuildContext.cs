@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Threading;
+using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,12 +17,11 @@ namespace Sandcastle
     /// build process, and can be used to store object or data that is used by various
     /// objects in the build process.
     /// </summary>
-    public class BuildContext : BuildObject, IDisposable
+    public class BuildContext : MarshalByRefObject, IDisposable
     {
         #region Public Fields
 
         public const string WorkingFolder = "_HelpBuild";
-        public static readonly Version SandcastleVersion = new Version("2.6.10621.1");
 
         #endregion
 
@@ -31,6 +31,7 @@ namespace Sandcastle
 
         private bool            _isInitialized;
         private bool            _isBuildSuccess;
+        private bool            _isDirectSandcastle;
 
         private string          _outputDir;
         private string          _workingDir;
@@ -50,6 +51,8 @@ namespace Sandcastle
         private BuildProperties _properties;
 
         private BuildTocContext _tocContext;
+
+        private BuildDictionary<object> _objects;
 
         private IBuildNamedList<BuildGroup> _listGroups;
         private IBuildNamedList<BuildGroupContext> _groupContexts;
@@ -78,6 +81,7 @@ namespace Sandcastle
             _buildState   = BuildState.None;
             _buildSystem  = system;
             _properties   = new BuildProperties();
+            _objects      = new BuildDictionary<object>();
 
             _targetPlatform      = String.Empty;
             _targetConfiguration = String.Empty;
@@ -173,6 +177,22 @@ namespace Sandcastle
             get
             {
                 return _isInitialized;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the build process uses the built-in 
+        /// <c>Sandcastle</c> library instead of the command-line tools.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the build system uses the build-in
+        /// <c>Sandcastle</c> library; otherwise, it is <see langword="false"/>.
+        /// </value>
+        public bool IsDirectSandcastle
+        {
+            get
+            {
+                return _isDirectSandcastle;
             }
         }
 
@@ -340,7 +360,7 @@ namespace Sandcastle
             }
         }
 
-        public string ReflectionDirectory
+        public string ReflectionDataDirectory
         {
             get
             {
@@ -351,7 +371,7 @@ namespace Sandcastle
                     return null;
                 }
 
-                string reflectionDir = Path.Combine(dataDir, "Reflection");
+                string reflectionDir = Path.Combine(dataDir, "Reflections");
 
                 if (!Directory.Exists(reflectionDir))
                 {
@@ -359,6 +379,94 @@ namespace Sandcastle
                 }
 
                 return reflectionDir;
+            }
+        }
+
+        public string TargetDataDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                string dataDir = this.DataDirectory;
+                if (String.IsNullOrEmpty(dataDir))
+                {
+                    return null;
+                }
+
+                string targetsDir = Path.Combine(dataDir, "Targets");
+
+                if (!Directory.Exists(targetsDir))
+                {
+                    Directory.CreateDirectory(targetsDir);
+                }
+
+                return targetsDir;
+            }
+        }
+
+        public string CommentDataDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                string dataDir = this.DataDirectory;
+                if (String.IsNullOrEmpty(dataDir))
+                {
+                    return null;
+                }
+
+                string commentsDir = Path.Combine(dataDir, "Comments");
+
+                if (!Directory.Exists(commentsDir))
+                {
+                    Directory.CreateDirectory(commentsDir);
+                }
+
+                return commentsDir;
+            }
+        }
+
+        public string IndexedDataDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                string dataDir = this.DataDirectory;
+                if (String.IsNullOrEmpty(dataDir))
+                {
+                    return null;
+                }
+
+                string indexedDataDir = Path.Combine(dataDir, "IndexedData");
+
+                if (!Directory.Exists(indexedDataDir))
+                {
+                    Directory.CreateDirectory(indexedDataDir);
+                }
+
+                return indexedDataDir;
+            }
+        }
+
+        public string LinksDataDirectory
+        {
+            get
+            {
+                //TODO-PAUL: From configuration file...
+                string dataDir = this.DataDirectory;
+                if (String.IsNullOrEmpty(dataDir))
+                {
+                    return null;
+                }
+
+                string linksDataDir = Path.Combine(dataDir, "Links");
+
+                if (!Directory.Exists(linksDataDir))
+                {
+                    Directory.CreateDirectory(linksDataDir);
+                }
+
+                return linksDataDir;
             }
         }
 
@@ -425,8 +533,15 @@ namespace Sandcastle
 
         public void BeginDirectories(BuildSettings settings)
         {
+            BuildExceptions.NotNull(settings, "settings");
+
+            this.BeginDirectories(settings.WorkingDirectory,
+                settings.OutputDirectory);
+        }
+
+        public void BeginDirectories(string workingDir, string outputDir)
+        {
             // Prepare the working directory...
-            string workingDir = settings.WorkingDirectory;
             if (String.IsNullOrEmpty(workingDir))
             {
                 workingDir = Environment.CurrentDirectory;
@@ -445,6 +560,7 @@ namespace Sandcastle
                 Directory.CreateDirectory(workingDir);
             }
             _baseWorkingDir = workingDir;
+
             workingDir = Path.Combine(workingDir, BuildContext.WorkingFolder);
             if (Directory.Exists(workingDir))
             {
@@ -458,6 +574,8 @@ namespace Sandcastle
                     // folder issue...
                     // If the folder is empty, we just ignore the error
                     // and continue...
+                    Thread.Sleep(200);
+
                 	if (!DirectoryUtils.IsDirectoryEmpty(workingDir))
                     {
                         throw;
@@ -468,7 +586,6 @@ namespace Sandcastle
             _workingDir = workingDir;
 
             // Prepare the output directory...
-            string outputDir = settings.OutputDirectory;
             if (String.IsNullOrEmpty(outputDir))
             {
                 outputDir = _baseWorkingDir;
@@ -491,31 +608,41 @@ namespace Sandcastle
 
         public void EndDirectories(BuildSettings settings)
         {
-            if (_isBuildSuccess &&
-                settings != null && settings.CleanIntermediate)
+            BuildExceptions.NotNull(settings, "settings");
+
+            this.EndDirectories(settings.CleanIntermediate);
+        }
+
+        public void EndDirectories(bool cleanIntermediate)
+        {
+            if (!_isBuildSuccess || !cleanIntermediate)
             {
-                if (!String.IsNullOrEmpty(_workingDir) &&
-                    Directory.Exists(_workingDir))
-                {
-                    try
-                    {
-                        DirectoryUtils.DeleteDirectory(_workingDir, true);
-                    }
-                    catch //(Exception ex)
-                    {
-                        //if (_logger != null)
-                        //{
-                        //    _logger.WriteLine(ex);
-                        //    foreach (DictionaryEntry de in ex.Data)
-                        //    {
-                        //        String message = String.Format(
-                        //            "The key is '{0}' and the value is: {1}",
-                        //            de.Key, de.Value);
-                        //        _logger.WriteLine(message, BuildLoggerLevel.Info);
-                        //    }
-                        //}
-                    }
-                }
+                return;
+            }
+
+            if (String.IsNullOrEmpty(_workingDir) ||
+                !Directory.Exists(_workingDir))
+            {
+                return;
+            }
+
+            try
+            {
+                DirectoryUtils.DeleteDirectory(_workingDir, true);
+            }
+            catch //(Exception ex)
+            {
+                //if (_logger != null)
+                //{
+                //    _logger.WriteLine(ex);
+                //    foreach (DictionaryEntry de in ex.Data)
+                //    {
+                //        String message = String.Format(
+                //            "The key is '{0}' and the value is: {1}",
+                //            de.Key, de.Value);
+                //        _logger.WriteLine(message, BuildLoggerLevel.Info);
+                //    }
+                //}
             }
         }
 
@@ -692,16 +819,59 @@ namespace Sandcastle
             return true;
         }
 
+        public object GetValue(string key)
+        {
+            if (String.IsNullOrEmpty(key))
+            {
+                return null;
+            }
+
+            return _objects[key];
+        }
+
+        public void SetValue(string key, object value)
+        {
+            if (String.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            _objects[key] = value;
+        }
+
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         #endregion
 
         #region Private Methods
 
         private void Reset()
         {
+            string sandcastleAssist = Path.GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+
+            if (File.Exists(Path.Combine(sandcastleAssist,
+                "Sandcastle.Reflection.dll")) &&
+                File.Exists(Path.Combine(sandcastleAssist,
+                "Sandcastle.BuildAssembler.dll")))
+            {
+                _isDirectSandcastle = true;
+            }
         }
 
         private bool ValidateSandcastle()
         {
+            if (this.IsDirectSandcastle)
+            {
+                _logger.WriteLine("Sandcastle Version: " +
+                    "Using the Sandcastle Assist Version.", BuildLoggerLevel.Info);
+
+                return true;
+            }
+
             if (String.IsNullOrEmpty(_sandcastleDir) ||
                 String.IsNullOrEmpty(_sandcastleToolsDir))
             {

@@ -781,6 +781,9 @@ namespace Sandcastle.References
                         frameworkVersion = BuildFrameworks.LatestScriptSharpVersion;
                         frameworkKind    = BuildFrameworkKind.ScriptSharp;
                         break;
+                    case "compact":
+                        frameworkKind = BuildFrameworkKind.Compact;
+                        break;
                     default:
                         frameworkKind = BuildFrameworkKind.DotNet;
                         break;

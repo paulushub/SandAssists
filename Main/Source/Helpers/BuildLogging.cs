@@ -14,11 +14,11 @@ namespace Sandcastle
     {
         #region Public Fields
 
-        public const string TagName                = "option";
+        public const string TagName      = "option";
         /// <summary>
         /// 
         /// </summary>
-        public const string DefaultOutputDirectory = "Logging";
+        public const string OutputFolder = "Logging";
 
         #endregion 
 

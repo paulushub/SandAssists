@@ -117,8 +117,21 @@ namespace Sandcastle.Components
 
             if (msdnLink == ReferenceLinkType.Msdn && _msdnResolver == null)
             {
-                WriteMessage(MessageLevel.Info, "Creating MSDN URL resolver.");
-                _msdnResolver = TargetMsdnController.Controller;
+                XPathNavigator linkResolverNode = 
+                    configuration.SelectSingleNode("linkResolver");
+
+                if (linkResolverNode != null)
+                {
+                    WriteMessage(MessageLevel.Info, "Creating cached MSDN URL resolver.");
+
+                    _msdnResolver = TargetMsdnController.GetController(linkResolverNode);
+                }
+                else
+                {
+                    WriteMessage(MessageLevel.Info, "Creating MSDN URL resolver.");
+
+                    _msdnResolver = TargetMsdnController.GetController();
+                }
             }
 
             XPathNavigator optionsNode = 
@@ -152,6 +165,10 @@ namespace Sandcastle.Components
             string versionValue = optionsNode.GetAttribute("version", String.Empty);
             if (!String.IsNullOrEmpty(versionValue) && _msdnResolver != null)
                 _msdnResolver.Version = versionValue;
+
+            string mvcVersionValue = optionsNode.GetAttribute("mvcVersion", String.Empty);
+            if (!String.IsNullOrEmpty(mvcVersionValue) && _msdnResolver != null)
+                _msdnResolver.MvcVersion = mvcVersionValue;
 
             string targetValue = optionsNode.GetAttribute("linkTarget", String.Empty);
             if (!String.IsNullOrEmpty(targetValue))
@@ -770,6 +787,27 @@ namespace Sandcastle.Components
         }
 
         #endregion
+
+        #endregion
+
+        #region IDisposable Members
+
+        protected override void Dispose(bool disposing)
+        {
+            TargetController controller = TargetController.Controller;
+            if (controller != null)
+            {
+                controller.Uninitialize();
+            }
+
+            if (_msdnResolver != null)
+            {
+                _msdnResolver.Dispose();
+                _msdnResolver = null;
+            }
+
+            base.Dispose(disposing);
+        }
 
         #endregion
     }

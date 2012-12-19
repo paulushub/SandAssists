@@ -97,6 +97,7 @@ namespace Sandcastle
             _version       = source._version;
             _assemblyDir   = source._assemblyDir;
             _commentDirs   = source._commentDirs;
+            _commentFiles  = source._commentFiles;
             _frameworkType = source._frameworkType;
         }
 
@@ -311,6 +312,23 @@ namespace Sandcastle
         public override BuildFramework Clone()
         {
             BuildFramework framework = new BuildFramework(this);
+
+            if (_assemblyDir != null)
+            {
+                framework._assemblyDir = String.Copy(_assemblyDir);
+            }
+            if (_version != null)
+            {
+                framework._version = (Version)_version.Clone();
+            }
+            if (_commentDirs != null)
+            {
+                framework._commentDirs = _commentDirs.Clone();
+            }
+            if (_commentFiles != null)
+            {
+                framework._commentFiles = _commentFiles.Clone();
+            }
 
             return framework;
         }

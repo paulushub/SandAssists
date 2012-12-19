@@ -34,5 +34,9 @@ namespace Sandcastle
         /// </para>
         /// </summary>
         ScriptSharp = 4,
+        /// <summary>
+        /// Indicates the .NET Compact framework.
+        /// </summary>
+        Compact     = 5
     }
 }

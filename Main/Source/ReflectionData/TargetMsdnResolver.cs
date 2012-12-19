@@ -9,14 +9,11 @@ namespace Sandcastle.ReflectionData
 {
     public abstract class TargetMsdnResolver : IDisposable
     {
-        #region Public Fields
-
-        #endregion
-
         #region Private Fields
 
         private string _locale;
         private string _version;
+        private string _mvcVersion;
         private ContentService _msdnService;   
 
         #endregion
@@ -82,11 +79,23 @@ namespace Sandcastle.ReflectionData
             }
         }
 
+        public string MvcVersion
+        {
+            get
+            {
+                return _mvcVersion;
+            }
+            set
+            {
+                _mvcVersion = value;
+            }
+        }
+
         #endregion
 
-        #region Public Methods
+        #region Protected Methods
 
-        public virtual string GetUrl(string id)
+        protected virtual string GetUrl(string id)
         {     
             if (_msdnService == null)
                 return null;
@@ -102,6 +111,14 @@ namespace Sandcastle.ReflectionData
                 StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 msdnRequest.version = "expression.40";
+            } 
+            else if (id.IndexOf("System.Web.Mvc",
+                StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                if (!String.IsNullOrEmpty(_mvcVersion))
+                {
+                    msdnRequest.version = _mvcVersion;
+                }
             }
             else if (!String.IsNullOrEmpty(_version))
             {

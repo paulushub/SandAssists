@@ -84,7 +84,7 @@ namespace Sandcastle.Components
 
         #region Public Methods
 
-        public void Initialize(string contentFile, MessageHandler msgHandler)
+        public void Initialize(string contentFile, MessageWriter msgWriter)
         {
             if (String.IsNullOrEmpty(contentFile) || !File.Exists(contentFile))
             {
@@ -115,7 +115,7 @@ namespace Sandcastle.Components
             {
                 _contents = null;
 
-                if (msgHandler != null)
+                if (msgWriter != null)
                 {
                     string message = ex.Message;
                     if (message == null)
@@ -123,7 +123,7 @@ namespace Sandcastle.Components
                         message = ex.ToString();
                     }
 
-                    msgHandler(typeof(PreTransComponent), MessageLevel.Error, 
+                    msgWriter.Write(typeof(PreTransComponent), MessageLevel.Error, 
                         String.Format("Exception({0}) - {1}", ex.GetType().FullName, message));
                 }             	
             }
