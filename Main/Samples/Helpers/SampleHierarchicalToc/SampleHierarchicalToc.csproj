@@ -57,6 +57,7 @@
     <Compile Include="ContentB.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NamespaceDocs.cs" />
     <Compile Include="Products\Platform\Linux\Charts\ChartL.cs" />
     <Compile Include="Products\Platform\Linux\Games\GameL.cs" />
     <Compile Include="Products\Platform\MacOSX\Charts\ChartM.cs" />
@@ -72,8 +73,10 @@
     <Compile Include="Supports\Technical\Charts\ChartT.cs" />
     <Compile Include="Supports\Technical\Diagrams\DiagramT.cs" />
     <Compile Include="Supports\Technical\Games\GameT.cs" />
+    <Compile Include="TestEnumA.cs" />
     <Compile Include="TestLibrary\ExtensionMethods.cs" />
     <Compile Include="TestLibrary\TestClassEventArgs.cs" />
+    <Compile Include="TestLibrary\TestEnumB.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SampleLibrary\SampleLibrary.csproj">

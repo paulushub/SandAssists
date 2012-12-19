@@ -60,7 +60,7 @@ namespace ConsoleSample
             // 2. Version information: Advanced
             // 3. Media/Image contents
             // 4. Reference filters
-            TestMain(documenter, options, engineSettings);
+            //TestMain(documenter, options, engineSettings);
 
             // Test mainly hierarchical table of contents, including...
             // 1. tocexclude/excludetoc tag support
@@ -68,7 +68,7 @@ namespace ConsoleSample
             // 3. Version information: Assembly-And-File
             // 4. Linking to conceptual help contents
             // 5. Events
-            TestHierarchicalToc(documenter, options, engineSettings);
+            //TestHierarchicalToc(documenter, options, engineSettings);
 
             // Test assembly redirection and auto-dependency resolution, including...
             // 1. .NET 4 features (including Action<...> and Func<...>)
@@ -76,7 +76,7 @@ namespace ConsoleSample
             //    documentation, which will not show in TOC but accessible from links
             // 3. WPF features like Xmlns-For-Xaml and Xaml usage.
             // 4. Version information: Assembly
-            TestRedirection(documenter, options, engineSettings);
+            //TestRedirection(documenter, options, engineSettings);
 
             // Test for WPF 4.0 and Silverlight 4.0 assemblies, including...
             // 1. WPF features like Xmlns-For-Xaml and Xaml usage.
@@ -88,7 +88,7 @@ namespace ConsoleSample
             // 2. Version information: Assembly-And-File
             //    Has no file version. Assembly version is auto-incremental.
             // 3. Support for Visual C++ Project content source.
-            TestOthers(documenter, options, engineSettings);
+            //TestOthers(documenter, options, engineSettings);
         }
 
         #region TestMain Method
@@ -148,10 +148,14 @@ namespace ConsoleSample
                     Path.Combine(outputDir, "TestLibrary.dll"));
 
                 versionInfo = new ReferenceVersionInfo();
-                versionInfo.Title        = "Testing .NET Versions";
-                versionInfo.VersionLabel = "2.0";
+                versionInfo.PlatformFilters = true;
+                //versionInfo.PlatformId = "netfw";
+                versionInfo.PlatformTitle = ".NET Framework";
+                //versionInfo.VersionId = "netfw20";
+                versionInfo.VersionLabel  = "2.0";
 
                 ReferenceVersionSource source = new ReferenceVersionSource();
+                //source.VersionId    = "netfw10";
                 source.VersionLabel = "1.0";
                 source.Content      = apiContent;
 
@@ -168,15 +172,17 @@ namespace ConsoleSample
                 outputDir = Path.Combine(libraryDir, @"Output\");
 
                 apiContent = new ReferenceContent();
-                apiContent.FrameworkType = BuildFrameworkType.Silverlight30;
+                apiContent.FrameworkType = BuildFrameworkType.Silverlight40;
                 apiContent.AddItem(Path.Combine(outputDir, "TestLibrary.xml"),
                     Path.Combine(outputDir, "TestLibrary.dll"));
 
                 ReferenceVersionRelated relatedVersion = new ReferenceVersionRelated();
-                relatedVersion.Title = "Testing Silverlight Versions";
+                relatedVersion.PlatformId = "silverlight_mobile";
+                //relatedVersion.PlatformTitle = "Silverlight for Windows Phone";
 
                 ReferenceVersionSource source = new ReferenceVersionSource();
-                source.VersionLabel = "2.0";
+                source.VersionId    = "silverlight_mobile_v1";
+                //source.VersionLabel = "Windows Phone OS 7.0";
                 source.Content      = apiContent;
 
                 relatedVersion.Add(source);
@@ -263,7 +269,7 @@ namespace ConsoleSample
             ReferenceItem refItem = new ReferenceItem(
                 Path.Combine(outputDir, "Tests.Drawings.xml"),
                 Path.Combine(outputDir, "Tests.Drawings.dll"));
-            refItem.XamlSyntax = true;
+            //refItem.XamlSyntax = true;
             apiContent.Add(refItem);
 
             //apiContent.AddDependency(Path.Combine(outputDir, "Tests.Shapes.dll"));
@@ -308,22 +314,22 @@ namespace ConsoleSample
             ReferenceLinkSource linkSource = new ReferenceLinkSource();
 
             refItem = new ReferenceItem(projectDoc, null);
-            refItem.XamlSyntax = true;
+            //refItem.XamlSyntax = true;
             linkSource.Add(refItem);
 
             refItem = new ReferenceItem(
                 Path.Combine(outputDir, "Tests.Shapes.xml"),
                 Path.Combine(outputDir, "Tests.Shapes.dll"));
-            refItem.XamlSyntax = true;
+            //refItem.XamlSyntax = true;
             linkSource.Add(refItem);
 
             refItem = new ReferenceItem(
                 Path.Combine(outputDir, "Tests.Geometries.xml"),
                 Path.Combine(outputDir, "Tests.Geometries.dll"));
-            refItem.XamlSyntax = true;
+            //refItem.XamlSyntax = true;
             linkSource.Add(refItem);
 
-            apiGroup.Links = linkSource;
+            engineSettings.AddLinkSource(linkSource);
         }
 
         #endregion
@@ -339,7 +345,7 @@ namespace ConsoleSample
             }
 
             // Decide which Caliburn Micro library to include: Silverlight or WPF
-            bool useSilverlight = false;
+            bool useSilverlight = true;
 
             string libraryDir = Path.Combine(sampleDir, @"SampleLibrary\");
 
@@ -369,7 +375,7 @@ namespace ConsoleSample
                 ReferenceItem refItem = new ReferenceItem(
                     Path.Combine(outputDir, "Caliburn.Micro.xml"),
                     Path.Combine(outputDir, "Caliburn.Micro.dll"));
-                refItem.XamlSyntax = true;
+                //refItem.XamlSyntax = true;
                 apiContent.Add(refItem);
 
                 //apiContent.AddDependency(Path.Combine(outputDir, "System.Windows.Interactivity.dll"));
@@ -402,7 +408,7 @@ namespace ConsoleSample
                 ReferenceItem refItem = new ReferenceItem(
                     Path.Combine(outputDir, "Caliburn.Micro.xml"),
                     Path.Combine(outputDir, "Caliburn.Micro.dll"));
-                refItem.XamlSyntax = true;
+                //refItem.XamlSyntax = true;
                 apiContent.Add(refItem);
 
                 //apiContent.AddDependency(Path.Combine(outputDir, "System.Windows.Interactivity.dll"));
@@ -432,7 +438,7 @@ namespace ConsoleSample
             ReferenceVsNetSource vsSource = new ReferenceVsNetSource();
             ReferenceVsNetItem vsItem = new ReferenceVsNetItem(
                 new BuildFilePath(sourceFile));
-            vsItem.XamlSyntax = false;
+            //vsItem.XamlSyntax = false;
             vsItem.AddInclude("{41A48F1C-3E52-4995-B181-363EDBC02CA0}");
             vsSource.Add(vsItem);
 

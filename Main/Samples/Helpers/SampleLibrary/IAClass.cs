@@ -13,8 +13,15 @@ namespace ANamespace
     {
     }
 
+    /// <summary>
+    /// The IAClass interface summary.
+    /// </summary>
     public interface IAClass : IBClass
     {
+        /// <summary>
+        /// Convert to text.
+        /// </summary>
+        /// <returns>The text representation.</returns>
         string ToString();
     }
 }

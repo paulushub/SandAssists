@@ -89,5 +89,32 @@ namespace ConsoleSample
 
         //    return;
         //}
+
+
+        //IList<BuildSpecialSdk> specialSdks = BuildSpecialSdks.InstalledBlendSilverlightSdks;
+        //for (int i = 0; i < specialSdks.Count; i++)
+        //{
+        //    BuildSpecialSdk specialSdk = specialSdks[i];
+
+        //    Console.WriteLine("\t{0}: {1} - {2}", i, specialSdk.Version,
+        //        specialSdk.SdkType);
+        //}
+        //Console.WriteLine();
+        //// Latest...
+        //Console.WriteLine("Latest SDKs...");
+        //BuildSpecialSdk latestSdk = BuildSpecialSdks.LatestWebMvcSdk;
+
+        //Console.WriteLine("\t{0}: {1} - {2}", latestSdk.IsValid, latestSdk.Version,
+        //    latestSdk.SdkType);
+
+        //latestSdk = BuildSpecialSdks.LatestBlendWpfSdk;
+
+        //Console.WriteLine("\t{0}: {1} - {2}", latestSdk.IsValid, latestSdk.Version,
+        //    latestSdk.SdkType);
+
+        //latestSdk = BuildSpecialSdks.LatestBlendSilverlightSdk;
+
+        //Console.WriteLine("\t{0}: {1} - {2}", latestSdk.IsValid, latestSdk.Version,
+        //    latestSdk.SdkType);
     }
 }

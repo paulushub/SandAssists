@@ -27,6 +27,9 @@ namespace Company
     /// <tocexclude/>
     public enum EnumContentA
     {
+        /// <summary>
+        /// The value of none.
+        /// </summary>
         None = 0
     }
 
@@ -46,11 +49,19 @@ namespace Company
     {
         private int _testItem;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AStruct"/>.
+        /// </summary>
+        /// <param name="item">Input parameter.</param>
         public AStruct(int item)
         {
             _testItem = item;
         }
 
+        /// <summary>
+        /// Gets the value of the item.
+        /// </summary>
+        /// <value>An integer.</value>
         public int Item
         {
             get

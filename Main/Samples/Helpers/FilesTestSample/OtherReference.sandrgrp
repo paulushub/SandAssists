@@ -2,7 +2,7 @@
 <documentGroup type="Reference" version="1.0">
     <location />
     <propertyGroup name="General">
-        <property name="Id">fffadabd-40ef-45fc-bcd6-24c3569e71b4</property>
+        <property name="Id">c87303be-e361-4ce3-bcd7-cc8d232eddf5</property>
         <property name="Name">Test CPP-CLR Library</property>
         <property name="Exclude">False</property>
         <property name="ExcludeToc">False</property>
@@ -22,7 +22,7 @@
     <!-- The content source defining this reference group. -->
     <contentSource name="Sandcastle.References.ReferenceVsNetSource">
         <propertyGroup name="General">
-            <property name="Title">ReferenceSource697397d6</property>
+            <property name="Title">ReferenceSource5765e816</property>
             <property name="TargetFrameworkIdentifier"></property>
         </propertyGroup>
         <items>
@@ -46,8 +46,8 @@
         </contents>
         <!-- The API/attribute filters associated with the documentations -->
         <filters>
-            <filter name="ft25b15cfd" expose="True" type="ApiFilter" />
-            <filter name="ftdcdc4946" expose="True" type="AttributeFilter" />
+            <filter name="ft2005d8bb" expose="True" type="ApiFilter" />
+            <filter name="fte3f9afcb" expose="True" type="AttributeFilter" />
         </filters>
     </contentSource>
 </documentGroup>

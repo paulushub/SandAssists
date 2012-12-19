@@ -59,7 +59,13 @@ namespace ConsoleSample
             TestPortable(documenter, options, engineSettings);
 
             // For testing Silverlight 5 projects...
-            //TestSilverlight(documenter, options, engineSettings);
+            TestSilverlight(documenter, options, engineSettings);
+
+            // For testing ASP.NET MVC projects...
+            TestOther(documenter, options, engineSettings);
+
+            // For testing VS.NET projects...
+            TestSolution(documenter, options, engineSettings);
         }
 
         #region TestSharpScript Method
@@ -239,6 +245,241 @@ namespace ConsoleSample
             //apiContent.AddDependency(Path.Combine(outputDir, ""));
 
             documenter.AddGroup(apiGroup);
+        }
+
+        #endregion
+
+        #region TestSolution Method
+
+        private static void TestSolution(BuildDocumenter documenter,
+            TestOptions options, ReferenceEngineSettings engineSettings)
+        {
+            if (tocType == CustomTocType.ReferenceRoot)
+            {
+                return;
+            }
+
+            string sourceFile =
+                @"F:\SandcastleAssist\Main\Tests\SmartDeviceProjectCE\SmartDeviceProjectCE.csproj";
+            ReferenceVsNetSource vsSource = new ReferenceVsNetSource();
+            ReferenceVsNetItem vsItem = new ReferenceVsNetItem(
+                new BuildFilePath(sourceFile));
+            vsItem.XamlSyntax = false;
+            vsSource.Add(vsItem);
+
+            //CommentContent comments = vsSource.Comments;
+            //CommentItem projItem = new CommentItem("R:Project",
+            //    CommentItemType.Project);
+            //projItem.Value.Add(new CommentPart("Summary of the project",
+            //    CommentPartType.Summary));
+            //comments.Add(projItem);
+            //CommentItem nsItem = new CommentItem("N:TestLibraryCLR",
+            //    CommentItemType.Namespace);
+            //nsItem.Value.Add(new CommentPart("Summary of the namespace",
+            //    CommentPartType.Summary));
+            //comments.Add(nsItem);
+
+            ReferenceGroup apiGroup = new ReferenceGroup(
+                "Test Compact Framework Library", Guid.NewGuid().ToString(), vsSource);
+            apiGroup.RunningHeaderText = "Sandcastle Helpers: Compact Framework";
+
+            apiGroup.VersionType = ReferenceVersionType.AssemblyAndFile;
+
+            if (engineSettings.RootNamespaceContainer)
+            {
+                apiGroup.RootNamespaceTitle = "Testing Compact Framework";
+            }
+
+            //ReferenceContent apiContent = apiGroup.Content;
+            //apiContent.FrameworkType = BuildFrameworkType.Framework20;
+
+            //apiGroup.AddItem(projectDoc, null);
+            //apiContent.AddItem(Path.Combine(outputDir, "SampleLibraryCLR.xml"),
+            //    Path.Combine(outputDir, "SampleLibraryCLR.dll"));
+
+            //apiContent.AddDependency(Path.Combine(outputDir, ""));
+
+            documenter.AddGroup(apiGroup);
+        }
+
+        #endregion
+
+        #region TestOther Method
+
+        private static void TestOther(BuildDocumenter documenter,
+            TestOptions options, ReferenceEngineSettings engineSettings)
+        {
+            if (tocType == CustomTocType.ReferenceRoot)
+            {
+                return;
+            }
+
+            //string libraryDir = Path.Combine(sampleDir, @"SampleTestLibraryCLR\");
+            //string outputDir = Path.Combine(libraryDir, @"Output\");
+            //string projectDoc = Path.Combine(outputDir, "Project.xml");
+
+            string sourceFile =
+                @"F:\SandcastleAssist\Development\Source\Tests\MvcApplication1\MvcApplication1.sln";
+            //string sourceFile =
+            //    @"F:\SandcastleAssist\Development\Source\Tests\MvcApplication1\MvcApplication1.csproj";
+            ReferenceVsNetSource vsSource = new ReferenceVsNetSource();
+            ReferenceVsNetItem vsItem = new ReferenceVsNetItem(
+                new BuildFilePath(sourceFile));
+            vsItem.XamlSyntax = false;
+            vsSource.Add(vsItem);
+
+            //CommentContent comments = vsSource.Comments;
+            //CommentItem projItem = new CommentItem("R:Project",
+            //    CommentItemType.Project);
+            //projItem.Value.Add(new CommentPart("Summary of the project",
+            //    CommentPartType.Summary));
+            //comments.Add(projItem);
+            //CommentItem nsItem = new CommentItem("N:TestLibraryCLR",
+            //    CommentItemType.Namespace);
+            //nsItem.Value.Add(new CommentPart("Summary of the namespace",
+            //    CommentPartType.Summary));
+            //comments.Add(nsItem);
+
+            ReferenceGroup apiGroup = new ReferenceGroup(
+                "Test ASP.NET MVC Library", Guid.NewGuid().ToString(), vsSource);
+            apiGroup.RunningHeaderText = "Sandcastle Helpers: ASP.NET MVC";
+
+            apiGroup.VersionType = ReferenceVersionType.AssemblyAndFile;
+
+            if (engineSettings.RootNamespaceContainer)
+            {
+                apiGroup.RootNamespaceTitle = "Testing ASP.NET MVC";
+            }
+
+            //ReferenceContent apiContent = apiGroup.Content;
+            //apiContent.FrameworkType = BuildFrameworkType.Framework20;
+
+            //apiGroup.AddItem(projectDoc, null);
+            //apiContent.AddItem(Path.Combine(outputDir, "SampleLibraryCLR.xml"),
+            //    Path.Combine(outputDir, "SampleLibraryCLR.dll"));
+
+            //apiContent.AddDependency(Path.Combine(outputDir, ""));
+
+            documenter.AddGroup(apiGroup);
+
+            engineSettings.WebMvcSdkType = BuildSpecialSdkType.WebMvc01;
+
+            //ReferenceLinkSource linkSource = new ReferenceLinkSource();
+            //linkSource.LinkType = BuildLinkType.Msdn;
+            //linkSource.Title = "ASP.NET MVC 2 Framework";
+            //linkSource.FrameworkType = BuildFrameworkType.Framework40;
+
+            //string aspMVCDir =
+            //    @"E:\Program Files\Microsoft ASP.NET\ASP.NET MVC 2\Assemblies";
+
+            //ReferenceItem refItem = new ReferenceItem(
+            //    Path.Combine(aspMVCDir, "System.Web.Mvc.xml"),
+            //    Path.Combine(aspMVCDir, "System.Web.Mvc.dll"));
+            ////refItem.XamlSyntax = true;
+            //linkSource.Add(refItem);
+
+            //engineSettings.AddLinkSource(linkSource);
+
+            //string libraryDir = Path.Combine(sampleDir, @"SampleLibrary\Libraries\");
+
+            //string outputDir = Path.Combine(libraryDir, @"Redirects\");
+            //linkSource = new ReferenceLinkSource();
+            //linkSource.LinkType = BuildLinkType.Local;
+            //linkSource.Title = "Other Framework";
+            //linkSource.FrameworkType = BuildFrameworkType.Framework40;
+
+            //refItem = new ReferenceItem(
+            //    Path.Combine(outputDir, "Tests.Shapes.xml"),
+            //    Path.Combine(outputDir, "Tests.Shapes.dll"));
+            ////refItem.XamlSyntax = true;
+            //linkSource.Add(refItem);
+
+            //refItem = new ReferenceItem(
+            //    Path.Combine(outputDir, "Tests.Geometries.xml"),
+            //    Path.Combine(outputDir, "Tests.Geometries.dll"));
+            ////refItem.XamlSyntax = true;
+            //linkSource.Add(refItem);
+
+            //engineSettings.AddLinkSource(linkSource);
+        }
+
+        #endregion
+
+        #region TestOther2 Method
+
+        private static void TestOther2(BuildDocumenter documenter,
+            TestOptions options, ReferenceEngineSettings engineSettings)
+        {
+            if (tocType == CustomTocType.ReferenceRoot)
+            {
+                return;
+            }
+
+            //string libraryDir = Path.Combine(sampleDir, @"SampleTestLibraryCLR\");
+            //string outputDir = Path.Combine(libraryDir, @"Output\");
+            //string projectDoc = Path.Combine(outputDir, "Project.xml");
+
+            //string sourceFile =
+            //    @"F:\SandcastleAssist\Development\Source\Tests\MvcApplication1\MvcApplication1.sln";
+            string sourceFile =
+                @"F:\SandcastleAssist\Development\Source\Tests\MvcApplication2\MvcApplication2.csproj";
+            ReferenceVsNetSource vsSource = new ReferenceVsNetSource();
+            ReferenceVsNetItem vsItem = new ReferenceVsNetItem(
+                new BuildFilePath(sourceFile));
+            vsItem.XamlSyntax = false;
+            vsSource.Add(vsItem);
+
+            //CommentContent comments = vsSource.Comments;
+            //CommentItem projItem = new CommentItem("R:Project",
+            //    CommentItemType.Project);
+            //projItem.Value.Add(new CommentPart("Summary of the project",
+            //    CommentPartType.Summary));
+            //comments.Add(projItem);
+            //CommentItem nsItem = new CommentItem("N:TestLibraryCLR",
+            //    CommentItemType.Namespace);
+            //nsItem.Value.Add(new CommentPart("Summary of the namespace",
+            //    CommentPartType.Summary));
+            //comments.Add(nsItem);
+
+            ReferenceGroup apiGroup = new ReferenceGroup(
+                "Test ASP.NET MVC Library", Guid.NewGuid().ToString(), vsSource);
+            apiGroup.RunningHeaderText = "Sandcastle Helpers: ASP.NET MVC";
+
+            apiGroup.VersionType = ReferenceVersionType.AssemblyAndFile;
+
+            if (engineSettings.RootNamespaceContainer)
+            {
+                apiGroup.RootNamespaceTitle = "Testing ASP.NET MVC";
+            }
+
+            //ReferenceContent apiContent = apiGroup.Content;
+            //apiContent.FrameworkType = BuildFrameworkType.Framework20;
+
+            //apiGroup.AddItem(projectDoc, null);
+            //apiContent.AddItem(Path.Combine(outputDir, "SampleLibraryCLR.xml"),
+            //    Path.Combine(outputDir, "SampleLibraryCLR.dll"));
+
+            //apiContent.AddDependency(Path.Combine(outputDir, ""));
+
+            documenter.AddGroup(apiGroup);
+
+            //ReferenceLinkSource linkSource = new ReferenceLinkSource();
+            //linkSource.LinkType = BuildLinkType.Msdn;
+            //linkSource.Title = "ASP.NET MVC 3 Framework";
+            //linkSource.FrameworkType = BuildFrameworkType.Framework40;
+
+            //string aspMVCDir =
+            //    @"E:\Program Files\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies";
+
+            //ReferenceItem refItem = new ReferenceItem(
+            //    Path.Combine(aspMVCDir, "System.Web.Mvc.xml"),
+            //    Path.Combine(aspMVCDir, "System.Web.Mvc.dll"));
+            ////refItem.XamlSyntax = true;
+            //linkSource.Add(refItem);
+
+            //engineSettings.AddLinkSource(linkSource);
+
+            engineSettings.WebMvcSdkType = BuildSpecialSdkType.WebMvc04;
         }
 
         #endregion

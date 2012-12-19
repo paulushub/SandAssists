@@ -18,8 +18,18 @@ namespace ConsoleSample
             {
                 BuildFramework framework = frameworks[i];
 
-                Console.WriteLine("\t{0}: {1} - {2}", i, framework.Version,
-                    framework.FrameworkType);
+                Console.WriteLine("\t{0}: {1} - {2} ... {3}", i, framework.Version,
+                    framework.FrameworkType, framework.AssemblyDir);
+
+                //if (framework.FrameworkType.Kind == BuildFrameworkKind.Silverlight)
+                //{
+                //    Version version = framework.Version;
+                //    if (version.Major >= 5) 
+                //    {
+                        
+                //    }
+
+                //}
             }
             Console.WriteLine();
 

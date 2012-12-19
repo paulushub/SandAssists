@@ -1347,16 +1347,16 @@
             <xsl:text>notNetfw;</xsl:text>
           </xsl:if>
 
-            <!-- FIX: http://sandcastlestyles.codeplex.com/discussions/226453 -->
-            <xsl:if test=".//versions">
-                <xsl:for-each select=".//versions/versions">
-                    <!-- If we have at least one version in this framework, we list this framework. -->
-                    <xsl:if test=".//version">
-                        <xsl:value-of select="@name" />
-                        <xsl:text>;</xsl:text>
-                    </xsl:if>
-                </xsl:for-each>
-            </xsl:if>  
+        <!-- FIX: http://sandcastlestyles.codeplex.com/discussions/226453 -->
+        <xsl:if test=".//versions">
+            <xsl:for-each select=".//versions/versions">
+                <!-- If we have at least one version in this framework, we list this framework. -->
+                <xsl:if test=".//version">
+                    <xsl:value-of select="@name" />
+                    <xsl:text>;</xsl:text>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:if>  
             
         </xsl:attribute>
 <!--

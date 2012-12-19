@@ -1,11 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Compiler;
 using System.Xml.XPath;
 using System.Globalization;
 using System.Collections.Generic;
 
+using Microsoft.Ddue.Tools;
 using Microsoft.Ddue.Tools.Reflection;
-using Microsoft.Ddue.Tools.CommandLine;
             
 namespace Sandcastle.Reflections
 {
@@ -24,6 +25,9 @@ namespace Sandcastle.Reflections
     ///       from="Sample.Tests, Version=1.1.2.4, Culture=neutral, PublicKeyToken=6544464cdeaab546" 
     ///       to="Sample.Tests, Version=1.1.2.8, Culture=neutral, PublicKeyToken=6544464cdeaab546" />
     ///   </bindingRedirects>
+    ///   <bindingSources>
+    ///     <bindingSource path="" />
+    ///   </bindingSources>
     /// </resolver>    
     /// ]]>
     /// </code>
@@ -42,6 +46,7 @@ namespace Sandcastle.Reflections
     {
         #region Private Fields
 
+        private List<string> _sourcePaths;
         private Dictionary<string, string>       _targets;
         private Dictionary<string, AssemblyNode> _redirects;
 
@@ -82,6 +87,23 @@ namespace Sandcastle.Reflections
                         !String.IsNullOrEmpty(redirectTo))
                     {
                         _targets[redirectTo] = redirectFrom;
+                    }
+                }
+            }
+
+            iterator = configuration.Select(
+                "bindingSources/bindingSource");
+            if (iterator != null && iterator.Count != 0)
+            {
+                _sourcePaths = new List<string>();
+
+                foreach (XPathNavigator navigator in iterator)
+                {
+                    string path = navigator.GetAttribute("path", String.Empty);
+
+                    if (!String.IsNullOrEmpty(path) && Directory.Exists(path))
+                    {
+                        _sourcePaths.Add(path);
                     }
                 }
             }
@@ -136,6 +158,37 @@ namespace Sandcastle.Reflections
                     ConsoleApplication.WriteMessage(LogLevel.Info,
                         "Redirecting, '{0}' version, from '{1}' to '{2}'", 
                         reference.Name, reference.Version, assembly.Version);
+                }
+                else if (_sourcePaths != null && _sourcePaths.Count != 0)
+                {
+                    string assemblyName = reference.Name + ".dll";
+                    string assemblyLocation = null;
+                    foreach (string sourcePath in _sourcePaths)
+                    {
+                        string tempLocation = Path.Combine(sourcePath, assemblyName);
+                        if (File.Exists(tempLocation))
+                        {
+                            assemblyLocation = tempLocation;
+                            break;
+                        }
+                    }
+
+                    if (assemblyLocation != null)
+                    {
+                        assembly = AssemblyNode.GetAssembly(assemblyLocation,
+                            null, false, false, false, false);
+                        if (assembly != null)
+                        {
+                            if (_redirects != null)
+                            {
+                                _redirects[strongName] = assembly;
+                            }
+                            else
+                            {
+                                base.Add(assembly);
+                            }
+                        }
+                    }
                 }
             }
 

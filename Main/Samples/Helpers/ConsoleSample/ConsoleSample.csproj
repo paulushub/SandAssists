@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="ConceptualTopics.cs" />
     <Compile Include="CustomTocType.cs" />
+    <Compile Include="LocalConceptualTopics.cs" />
+    <Compile Include="LocalReferenceTopics.cs" />
     <Compile Include="ReferencesTocType.cs" />
     <Compile Include="ReferenceTopics.cs" />
     <Compile Include="TestGroupIds.cs" />

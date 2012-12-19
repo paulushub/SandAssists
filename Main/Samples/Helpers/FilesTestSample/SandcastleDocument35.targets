@@ -11,8 +11,11 @@
     to override the default core build targets.
     -->
     <Target Name="CoreBuild">
-        <Message Text="CoreBuild: Testing..."/>
-        <ProjectBuilder/>
+        <ProjectBuilder ProjectFile="$(MSBuildProjectFullPath)"
+                        Configuration="$(Configuration)"
+                        Platform="$(Platform)"
+                        OutputPath="$(OutDir)"
+                        SandcastleFile="$(SandcastleFile)"/>
     </Target>
     
     <!--<Target Name="CoreRebuild">
@@ -20,8 +23,11 @@
     </Target>-->
     
     <Target Name="CoreClean">
-        <Message Text="CoreClean: Testing..."/>
-        <ProjectCleaner/>
+        <ProjectCleaner ProjectFile="$(MSBuildProjectFullPath)"
+                        Configuration="$(Configuration)"
+                        Platform="$(Platform)"
+                        OutputPath="$(OutDir)"
+                        SandcastleFile="$(SandcastleFile)"/>
     </Target>
 
 </Project>

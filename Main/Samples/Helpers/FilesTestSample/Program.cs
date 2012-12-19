@@ -5,18 +5,21 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sandcastle;
+using Sandcastle.Builders.MSBuilds;
 
 namespace FilesTestSample
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             // This is our documentation content and settings definitions
             BuildDocumenter documenter = new BuildDocumenter();
 
             BuildFilePath documentFile = null;
-            bool loadIt = false;
+            bool loadIt = true;
+            bool useMSBuild = true;
 
             string workingDir = null;
             try
@@ -171,39 +174,65 @@ namespace FilesTestSample
 
             // If we get this far, the content is created and we will proceed
             // to build the help...
-            BuildProject project = null;
-
-            try
+            if (useMSBuild)
             {
-                // Create the project, with the documentation data, the type
-                // of system and the type of build...
-                project = new BuildProject(documenter,
-                    BuildSystem.Console, BuildType.Testing);
+                string projectFile = Path.Combine(workingDir,
+                    "ProjectFormat35" + BuildFileExts.ProjectExt);
 
-                // Initialize the project, if successful, build it...
-                project.Initialize();
-                if (project.IsInitialized)
+                if (!File.Exists(projectFile))
                 {
-                    project.Build();
+                    Console.WriteLine("Project file '{0}' not found.");
+                    return;
                 }
-                else
+
+                try
                 {
-                    Console.WriteLine(
-                        "Error in reference build initialization.");
+                    ProjectConsoleRunner consoleRunner =
+                        new ProjectConsoleRunner(projectFile);
+
+                    consoleRunner.Run();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                // Finally, un-initialize the project and dispose it...
-                if (project != null)
+            else
+            {   
+                BuildProject project = null;
+
+                try
                 {
-                    project.Uninitialize();
-                    project.Dispose();
-                    project = null;
+                    // Create the project, with the documentation data, the type
+                    // of system and the type of build...
+                    project = new BuildProject(documenter, 
+                        BuildSystem.Console, BuildType.Testing);
+
+                    // Initialize the project, if successful, build it...
+                    project.Initialize();
+                    if (project.IsInitialized)
+                    {
+                        project.Build();
+                    }
+                    else
+                    {
+                        Console.WriteLine(
+                            "Error in reference build initialization.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    // Finally, un-initialize the project and dispose it...
+                    if (project != null)
+                    {
+                        project.Uninitialize();
+                        project.Dispose();
+                        project = null;
+                    }
                 }
             }
         }

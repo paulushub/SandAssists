@@ -4,7 +4,7 @@
     <location />
     <!-- 2. The general content settings -->
     <propertyGroup name="General">
-        <property name="Id">ae042e30-964d-41bb-9529-56cb384adb5e</property>
+        <property name="Id">002f09ec-3d4f-4896-9750-6823ca19d4f7</property>
         <property name="FrameworkType">Framework40</property>
     </propertyGroup>
     <!-- 3. The reference items defining the API content -->
@@ -40,7 +40,7 @@
     </contents>
     <!-- 5. The API/attribute filters associated with the documentations -->
     <filters>
-        <filter name="ft99b86d3a" expose="True" type="ApiFilter" />
-        <filter name="ft36555cbe" expose="True" type="AttributeFilter" />
+        <filter name="ft8956250b" expose="True" type="ApiFilter" />
+        <filter name="ft8a95367d" expose="True" type="AttributeFilter" />
     </filters>
 </referenceContent>

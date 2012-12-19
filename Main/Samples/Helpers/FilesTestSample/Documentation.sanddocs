@@ -111,29 +111,29 @@
                 <contents>
                     <content type="Toc">
                         <tocContent enabled="True">
-                            <tocItem name="tc6b6fbdd3" id="tcid3a372bb8">
+                            <tocItem name="tcaf8d0a7a" id="tcidf5ce57b3">
                                 <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc65960fe6" id="tciddd66ab66">
+                            <tocItem name="tc50eeb7ce" id="tciddd7e91de">
                                 <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc550e84de" id="tcidab557fc7">
+                            <tocItem name="tc1bd67667" id="tcid94ddde31">
                                 <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc25857c1c" id="tcid279e95b7">
+                            <tocItem name="tc76cc0639" id="tcid9f27083f">
                                 <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc53eaae0b" id="tcid9fc88daa">
+                            <tocItem name="tcbd87e174" id="tcid46ea2f13">
                                 <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc11ebc713" id="tcid9d6df319">
-                                <source id="3177d3c9-3bd3-477c-82b4-ac7e1a77786a" type="Group" recursive="True" />
+                            <tocItem name="tc6fde8f11" id="tcid65169c37">
+                                <source id="3cae187e-80ed-4b86-bc83-e9e69c82b255" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc31b51693" id="tcidcc944b17">
-                                <source id="2866bd2b-ba61-4bf7-9bb9-2169f42dee10" type="Group" recursive="True" />
+                            <tocItem name="tca969bbe4" id="tcid59958fe8">
+                                <source id="b78ecc40-0ba0-40c8-ac6b-82acbc15ffd7" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc9b5b6179" id="tcid6338230">
-                                <source id="fffadabd-40ef-45fc-bcd6-24c3569e71b4" type="Group" recursive="True" />
+                            <tocItem name="tc96da870b" id="tcida978fdbf">
+                                <source id="c87303be-e361-4ce3-bcd7-cc8d232eddf5" type="Group" recursive="True" />
                             </tocItem>
                         </tocContent>
                     </content>
@@ -286,31 +286,31 @@
             <!-- Options for custom table of contents -->
             <option type="Toc" name="Sandcastle.BuildToc">
                 <tocContent enabled="True">
-                    <tocItem name="tc4c3172bc" id="tcid7c7bf3e7">
+                    <tocItem name="tce64515b7" id="tcid5a4b5fcd">
                         <source id="d36e744f-c053-4e94-9ac9-b1ee054d8de2" type="Topic" recursive="True" />
-                        <tocItem name="tc82e58788" id="tcid550c096d">
+                        <tocItem name="tc621ed788" id="tcidca20f8b9">
                             <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc3e61fc3" id="tcidcd2f7fab">
+                        <tocItem name="tcf7a37c24" id="tcidadd79511">
                             <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tcfaa8339b" id="tcid19c656c5">
+                        <tocItem name="tc518f735b" id="tcidd957dee8">
                             <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tcc8b35ec" id="tcid74b008b4">
+                        <tocItem name="tcb5c682ca" id="tcid1c0c4bd7">
                             <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc256c0765" id="tcid2e711876">
+                        <tocItem name="tc9029dc4f" id="tcided0964a8">
                             <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc7212ef3f" id="tcidb398c2b8">
-                            <source id="3177d3c9-3bd3-477c-82b4-ac7e1a77786a" type="Group" recursive="True" />
+                        <tocItem name="tc9d6ed717" id="tcidf8f7db03">
+                            <source id="3cae187e-80ed-4b86-bc83-e9e69c82b255" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc93a7b552" id="tcida7437ce5">
-                            <source id="2866bd2b-ba61-4bf7-9bb9-2169f42dee10" type="Group" recursive="True" />
+                        <tocItem name="tc36a1a63b" id="tcidbf31be3f">
+                            <source id="b78ecc40-0ba0-40c8-ac6b-82acbc15ffd7" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc626027d0" id="tcid66151e3c">
-                            <source id="fffadabd-40ef-45fc-bcd6-24c3569e71b4" type="Group" recursive="True" />
+                        <tocItem name="tcc0064228" id="tcidc74e0ace">
+                            <source id="c87303be-e361-4ce3-bcd7-cc8d232eddf5" type="Group" recursive="True" />
                         </tocItem>
                     </tocItem>
                 </tocContent>
@@ -340,7 +340,7 @@
                     </content>
                     <content type="Snippets">
                         <snippetContent name="CommonSnippets">
-                            <snippetItem id="8d73c266-265a-4c6b-ad79-6d505315932c">
+                            <snippetItem id="a36028b0-6a4d-4825-a594-38cf69b00af1">
                                 <path value="..\SampleSnippets" />
                             </snippetItem>
                         </snippetContent>
@@ -399,7 +399,7 @@
                 </propertyGroup>
                 <location />
                 <loggers>
-                    <logger name="Sandcastle.Loggers.ConsoleLogger" />
+                    <!--<logger name="Sandcastle.Loggers.ConsoleLogger" />-->
                 </loggers>
             </option>
             <!-- Options for product information used for feedback -->

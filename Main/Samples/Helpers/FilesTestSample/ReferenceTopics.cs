@@ -155,8 +155,8 @@ namespace FilesTestSample
                     Path.Combine(outputDir, "TestLibrary.dll"));
 
                 versionInfo = new ReferenceVersionInfo();
-                versionInfo.Title        = "Testing .NET Versions";
-                versionInfo.VersionLabel = "2.0";
+                versionInfo.PlatformTitle = "Testing .NET Versions";
+                versionInfo.VersionLabel  = "2.0";
 
                 ReferenceVersionSource source = new ReferenceVersionSource();
                 source.VersionLabel = "1.0";
@@ -180,7 +180,7 @@ namespace FilesTestSample
                     Path.Combine(outputDir, "TestLibrary.dll"));
 
                 ReferenceVersionRelated relatedVersion = new ReferenceVersionRelated();
-                relatedVersion.Title = "Testing Silverlight Versions";
+                relatedVersion.PlatformTitle = "Testing Silverlight Versions";
 
                 ReferenceVersionSource source = new ReferenceVersionSource();
                 source.VersionLabel = "2.0";
@@ -343,7 +343,7 @@ namespace FilesTestSample
             refItem.XamlSyntax = true;
             linkSource.Add(refItem);
 
-            apiGroup.Links = linkSource;
+            engineSettings.AddLinkSource(linkSource);
         }
 
         #endregion

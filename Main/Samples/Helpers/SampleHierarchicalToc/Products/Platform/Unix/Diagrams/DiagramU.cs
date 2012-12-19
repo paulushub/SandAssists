@@ -5,7 +5,20 @@ using System.Text;
 
 namespace Company.Products.Platform.Unix.Diagrams
 {
+    /// <summary>
+    /// This is the comment for <see cref="Company.Products.Platform.Unix.Diagrams"/> from <c>NamespaceDoc</c>.
+    /// </summary>
+    /// <remarks>
+    /// This is the remarks for the <see cref="Company.Products.Platform.Unix.Diagrams"/> from <c>NamespaceDoc</c>.
+    /// </remarks>
+    [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    class NamespaceDoc
+    {
+    }
+
+    /// <summary>
     /// This the diagramming component for Unix operating system.
+    /// </summary>
     public class DiagramU
     {
     }
