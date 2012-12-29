@@ -1,0 +1,17 @@
+Copy the Hunspell Files in the Hunspell Folder
+Copy the Hyphen Files in the Hyphen folder
+Rename the .c hyphen files in .cpp
+
+Copmpile the Hyphen File and fix the C - CPP errors
+* rename varaibles new to newc
+* cast void * to char *, HypenTrans *, Hyphen Dict * ... wenn needed
+
+#include "config.h"
+
+
+Insert the header include in following files:
+#include "../NHunspellExtensions.h"
+
+Hunspell/filemgr.hxx
+Hyphen/Hyphen.cpp
+

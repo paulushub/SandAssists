@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{94DA742E-6FC5-4178-9564-92B53F9070C8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Iris</RootNamespace>
+    <AssemblyName>Sandcastle.Iris</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Source\Sandcastle.Assist.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Output\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\..\..\Output\Sandcastle.Iris.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Output\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\..\..\Output\Sandcastle.Iris.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\ExpressionEvaluation\EvaluationException.cs" />
+    <Compile Include="Common\ExpressionEvaluation\Evaluator.cs" />
+    <Compile Include="Common\ExpressionEvaluation\Expression.cs" />
+    <Compile Include="Common\ExpressionEvaluation\ExpressionParser.cs" />
+    <Compile Include="Common\ExpressionEvaluation\FunctionTableEntry.cs" />
+    <Compile Include="Common\ExpressionEvaluation\SyntaxErrorException.cs" />
+    <Compile Include="Common\Helpers\ArgumentValidator.cs" />
+    <Compile Include="Common\Helpers\AssertionViolationException.cs" />
+    <Compile Include="Common\Helpers\CharExtensions.cs" />
+    <Compile Include="Common\Helpers\CognizantException.cs" />
+    <Compile Include="Common\Helpers\EasyLex.cs" />
+    <Compile Include="Common\Helpers\ExceptionInformation.cs" />
+    <Compile Include="Common\Helpers\LexRule.cs" />
+    <Compile Include="Common\Helpers\LexState.cs" />
+    <Compile Include="Common\Helpers\ObjectExtensions.cs" />
+    <Compile Include="Common\Helpers\SqlErrorCodes.cs" />
+    <Compile Include="Common\Helpers\StringExtensions.cs" />
+    <Compile Include="Common\Helpers\ThreadExtensions.cs" />
+    <Compile Include="Common\Helpers\VoidFunc.cs" />
+    <Compile Include="Highlighting\AssemblyAttributes.cs" />
+    <Compile Include="Highlighting\ConfigurationException.cs" />
+    <Compile Include="Highlighting\CssScheme.cs" />
+    <Compile Include="Highlighting\FullPageFormatter.cs" />
+    <Compile Include="Highlighting\Highlighter.cs" />
+    <Compile Include="Highlighting\HighlightMode.cs" />
+    <Compile Include="Highlighting\ICodeFormatter.cs" />
+    <Compile Include="Highlighting\IScanner.cs" />
+    <Compile Include="Highlighting\Syntax.cs" />
+    <Compile Include="Highlighting\NullFormatter.cs" />
+    <Compile Include="Highlighting\SyntaxCatalog.cs" />
+    <Compile Include="Highlighting\SyntaxLoader.cs" />
+    <Compile Include="Highlighting\VersionInformation.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\BackgroundItem.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Cluster.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\HighlightedOutputWriter.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\ContainerItem.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Extensions.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Group.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\HumanReadableSyntaxDumper.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\InputWindow.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Keyword.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\MatchResult.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\MatchType.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\NextGroup.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Pattern.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\PatternOffset.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Region.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Scanner.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\Scope.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\SetOfSyntaxItems.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\SlidingWindowReader.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\SyntaxContext.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\SyntaxDefinition.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\SyntaxItem.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\VimCharacterList.cs" />
+    <Compile Include="Highlighting\VimBasedScanning\VimMatch.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\HighlightLink.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\IfStatement.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\ParseRule.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\ScriptSourceFile.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\VimParsingException.cs" />
+    <Compile Include="Highlighting\VimScriptParsing\VimScriptParser.cs" />
+    <Compile Include="Highlighting\XhtmlFormatter.cs" />
+    <Compile Include="Highlighting\XhtmlOptions.cs" />
+    <Compile Include="Highlighting\XmlFormatter.cs" />
+    <Compile Include="Properties\BuildTimeAttributes.cs" />
+    <Compile Include="Properties\CommonAssemblyAttributes.cs" />
+    <Compile Include="ShiftReduceParser\IMerge.cs" />
+    <Compile Include="ShiftReduceParser\IScanner.cs" />
+    <Compile Include="ShiftReduceParser\LexLocation.cs" />
+    <Compile Include="ShiftReduceParser\ParserStack.cs" />
+    <Compile Include="ShiftReduceParser\Rule.cs" />
+    <Compile Include="ShiftReduceParser\ShiftReduceParser.cs" />
+    <Compile Include="ShiftReduceParser\State.cs" />
+    <Compile Include="VimRegexConversion\ConversionOptions.cs" />
+    <Compile Include="VimRegexConversion\Magicness.cs" />
+    <Compile Include="VimRegexConversion\RegexConversionException.cs" />
+    <Compile Include="VimRegexConversion\RegexUnit.cs" />
+    <Compile Include="VimRegexConversion\ScanHelper.cs" />
+    <Compile Include="VimRegexConversion\VimRegexConverter.cs" />
+    <Compile Include="VimRegexConversion\VimRegexParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Highlighting\ColorScheme.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Source\Sandcastle.Assist.snk">
+      <Link>Sandcastle.Assist.snk</Link>
+    </None>
+    <None Include="Common\ExpressionEvaluation\Expressions.y" />
+    <None Include="VimRegexConversion\VimRegexes.y" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
