@@ -4,323 +4,6 @@
         <name>Sandcastle.Iris</name>
     </assembly>
     <members>
-        <member name="M:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems.PrepareForRuntime(Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems,Iris.Highlighting.VimBasedScanning.SyntaxDefinition)">
-            <summary>
-            I will go up to the six-fingered man and say: "Hello, my name is Inigo Montoya. You killed my father. Prepare to die!" 
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems.BuildCommunalRegex">
-            <summary>
-            Builds a regex that captures the start patterns for all vim matches and region starts in this <see cref="T:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems"/>.
-            Some patterns are not included and must be run manually (eg, the ones with <see cref="P:Iris.Highlighting.VimBasedScanning.Pattern.LeadingContext">leading context</see>).
-            </summary>
-        </member>
-        <member name="T:Iris.Highlighting.Highlighter">
-             <summary>
-             Highlights input according to a syntax definition. This is the central class in Iris.
-             </summary>
-             <remarks>
-             <para>
-            		<see cref="T:Iris.Highlighting.Highlighter"/> is the class responsible for coordinating the transformation of textual input into highlighted output. It relies
-            		on two main components, a <see cref="T:Iris.Highlighting.IScanner">scanner</see> and a <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see>. The <see cref="T:Iris.Highlighting.IScanner">scanner</see>
-            		decides which <see cref="T:Iris.Highlighting.HighlightMode">mode</see> (eg, <see cref="F:Iris.Highlighting.HighlightMode.String"/> or <see cref="F:Iris.Highlighting.HighlightMode.Constant"/>) should apply for 
-            		each character in the input. The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> receives this information from the scanner and produces output in a certain
-            		format (eg, <see cref="T:Iris.Highlighting.XmlFormatter"/> or <see cref="T:Iris.Highlighting.XhtmlFormatter"/>). The highlighter itself does no work, it
-            		simply relies on these two objects to get things done.
-             </para>
-             <para>
-            		You can reuse Highlighters as many times as you wish. Creating highlighters is not expensive, but if you are highlighting often
-            		you may want to cache your <see cref="T:Iris.Highlighting.Highlighter"/>. Each individual instance is <b>not</b> thread safe. Here are some examples:
-             </para>
-             <example>
-             <para>For quick and dirty highlighting, you can use the static <see cref="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.String)"/> method. The downside
-             is that you don't get to set any options.</para>
-             <code>
-            		string someCsharp = Highlighter.Highlight("cs", "public void Foo() {}");
-            		string someC = Highlighter.Highlight("c", "printf(\"%s\", evilHackerInput)");
-            		string someLua = Highlighter.Highlight("lua", "print \"Oi, mundo! Oi, PUC-RJ!\"");
-             </code>
-             </example>
-             <example>
-             <para>For better control over settings you may instantiate your own <see cref="T:Iris.Highlighting.Highlighter"/>:</para>
-             <code>
-            		XhtmlFormatter formatter = new XhtmlFormatter(XhtmlOptions.Defaults);
-            		Highlighter csHighlighter = new Highlighter("cs", formatter);
-            		string prettyCSharp = csHighlighter.Highlight("public void Foozboo() {}");
-            
-            		// highlight a file
-            		humoungousCSharpSource = File.OpenText("frozBlaster.cs");
-            		outputFile = File.CreateText("frozBlaster.cs.html");
-            		csHighlighter.Highlight(humongousCSharpSource, outputFile);
-             </code>
-             </example>
-             </remarks>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.#ctor(System.String)">
-            <summary>
-            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> using the specified syntax id using a default <see cref="T:Iris.Highlighting.XhtmlFormatter"/>.
-            </summary>
-            <param name="syntaxId">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.#ctor(System.String,Iris.Highlighting.ICodeFormatter)">
-            <summary>
-            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> using the specified syntax id and formatter.
-            </summary>
-            <param name="syntaxIdOrAlias">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
-            <param name="formatter">The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> to be used for output generation.</param>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.#ctor(Iris.Highlighting.Syntax,Iris.Highlighting.ICodeFormatter)">
-            <summary>
-            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> for the given <see cref="T:Iris.Highlighting.Syntax"/> using the specified formatter
-            </summary>
-            <param name="syntax">Any <see cref="T:Iris.Highlighting.Syntax"/> whose syntax definition file is present, regardless of whether it's in the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
-            <param name="formatter">The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> to be used for the output generation.</param>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.String)">
-            <summary>
-            A convenience method to highlight input without instantiating a <see cref="T:Iris.Highlighting.Highlighter"/>.
-            </summary>
-            <param name="syntaxId">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
-            <param name="inputText">Text to be highlighted</param>
-            <returns>Highlighted output</returns>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String)">
-            <summary>
-            Takes a string input and returns a string containing the highlighted output.
-            </summary>
-            <param name="inputText">Text to be highlighted</param>
-            <returns>Highlighted output</returns>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.IO.TextWriter)">
-            <summary>
-            Highlights the given string input, writing the output to a <see cref="T:System.IO.TextWriter"/>.
-            </summary>
-            <param name="inputText">Text to be highlighted</param>
-            <param name="writer"><see cref="T:System.IO.TextWriter"/> to receive output</param>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.IO.TextReader,System.IO.TextWriter)">
-            <summary>
-            Reads input from a <see cref="T:System.IO.TextReader"/> and writes highlighted text to a <see cref="T:System.IO.TextWriter"/>. Supports files up to 2GB.
-            </summary>
-            <param name="input"><see cref="T:System.IO.TextReader"/> where input will be read from</param>
-            <param name="output">Output will be written using this <see cref="T:System.IO.TextWriter"/></param>
-        </member>
-        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.IO.TextReader,System.Xml.XmlWriter)">
-            <summary>
-            Reads input from a <see cref="T:System.IO.TextReader"/> and writes highlighted text to a <see cref="T:System.Xml.XmlWriter"/>. Supports files up to 2GB.
-            </summary>
-            <param name="input"><see cref="T:System.IO.TextReader"/> where input will be read from</param>
-            <param name="output">Output will be written using this <see cref="T:System.Xml.XmlWriter"/></param>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.SyntaxItem.PrepareForRuntime">
-            <summary>
-            I will go up to the six-fingered man and say: "Hello, my name is Inigo Montoya. You killed my father. Prepare to die!" 
-            </summary>
-        </member>
-        <member name="T:Iris.Highlighting.VimBasedScanning.Extensions">
-            <summary>
-            Sorry replacement for some C# 3.0-style methods.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.AddSorted``1(System.Collections.Generic.List{``0},``0)">
-            <summary>
-            Adds a new element to sorted list preserving the sort order.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.ContainsSorted``1(System.Collections.Generic.List{``0},``0)">
-            <summary>
-            Determines whether the given sorted list contains the given item
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="sortedList">The sorted list.</param>
-            <param name="item">The item.</param>
-            <returns>
-            	<c>true</c> if the specified sorted list contains sorted; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.Distinct``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Returns the elements in a collection after removing duplicates, like DISTINCT in SQL.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.Except``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Returns the set difference between two collections
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},Common.Helpers.VoidFunc{``0})">
-            <summary>
-            Performs the specified action on each element in a collection
-            </summary>
-        </member>
-        <member name="T:Iris.Highlighting.VimBasedScanning.Cluster">
-            <summary>
-            Implements a Vim cluster, which is a set that contains groups and other clusters.
-            </summary>
-            <remarks>
-            <para>This class implements two types of clusters. The first type are the obvious ones that get defined with "syntax cluster", these
-            are the <b>named</b> clusters. The second type are the implicit clusters that get defined by Contains=, ContainedIn=, and NextGroup=.
-            These are <b>unnamed</b> clusters.</para>
-            <para>Clusters are global. If a syntax definiton file includes other files, all the clusters exist in the same namespace.</para>
-            </remarks>
-        </member>
-        <member name="T:Iris.Highlighting.ConfigurationException">
-            <summary>
-            Thrown when Iris detects a problem in its configuration, which is stored in the <b>IrisCatalog.xml</b> file.
-            </summary>
-        </member>
-        <member name="T:Common.Helpers.CognizantException">
-            <summary>
-            Represents an exception that has information such as why it happened, whether to retry, whether it indicates a bug, and so on.
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.CognizantException.#ctor(Common.Helpers.ExceptionInformation,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with a specified error message.
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.CognizantException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with serialized data.
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.CognizantException.#ctor(Common.Helpers.ExceptionInformation,System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with the specified error message
-            and a reference to the inner exception that is the cause of this exception.
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.CognizantException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Adds <see cref="T:Common.Helpers.ExceptionInformation"/> to a serialized <see cref="T:Common.Helpers.CognizantException"/>.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.ConfigurationException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
-            </summary>
-        </member>
-        <member name="T:Iris.Highlighting.Syntax">
-            <summary>
-            Represents a syntax definition that can be used to highlight text (eg, C#, C, or Lisp).
-            </summary>
-            <devdoc>
-            MAY: refactor this so that Syntax is responsible for coming up with a FileInfo for its definition file. Also,
-            allow people to create a syntax providing a FileInfo for the definition.
-            </devdoc>
-        </member>
-        <member name="F:Iris.Highlighting.Syntax.Description">
-            <summary>
-            Describes the <see cref="T:Iris.Highlighting.Syntax"/> in a friendly way (eg, "ABEL Hardware Description Language").
-            </summary>
-        </member>
-        <member name="F:Iris.Highlighting.Syntax.Id">
-            <summary>
-            Uniquely identifies this <see cref="T:Iris.Highlighting.Syntax"/> in the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.Syntax.#ctor(System.String,System.String)">
-            <summary>
-            Instantiates a new <see cref="T:Iris.Highlighting.Syntax"/> with the given id and description
-            </summary>
-            <param name="id">Unique id for the syntax (eg, cs for C#)</param>
-            <param name="description">Description (eg, Microsoft C#)</param>
-        </member>
-        <member name="M:Iris.Highlighting.Syntax.Equals(System.Object)">
-            <summary>
-            Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
-            <returns>
-            true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:Iris.Highlighting.Syntax.GetHashCode">
-            <summary>
-            Serves as a hash function for a particular type.
-            </summary>
-            <returns>
-            A hash code for the current <see cref="T:System.Object"/>.
-            </returns>
-        </member>
-        <member name="M:Iris.Highlighting.Syntax.ToString">
-            <summary>
-            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-            </summary>
-            <returns>
-            A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-            </returns>
-        </member>
-        <member name="P:Iris.Highlighting.Syntax.ActiveCssScheme">
-            <summary>
-            Returns either the syntax's own <see cref="T:Iris.Highlighting.CssScheme"/>, if one was defined, or <see cref="P:Iris.Highlighting.CssScheme.DefaultCssScheme"/>
-            </summary>
-        </member>
-        <member name="P:Iris.Highlighting.Syntax.CssSchemeOrNull">
-            <summary>
-            Returns <see langword="null"/> if a <see cref="T:Iris.Highlighting.CssScheme"/> has not been set, otherwise returns the <see cref="T:Iris.Highlighting.CssScheme"/>.
-            </summary>
-        </member>
-        <member name="P:Iris.Highlighting.Syntax.PossibleHighlightModes">
-            <summary>
-            Returns the possible <see cref="T:Iris.Highlighting.HighlightMode">highlight modes</see> this <see cref="T:Iris.Highlighting.Syntax"/> can produce.
-            </summary>
-        </member>
-        <member name="T:Iris.Highlighting.FullPageFormatter">
-            <summary>
-            Outputs a fully W3C-compliant XHTML page containing highlighted text (including &lt;html&gt;, &lt;head&gt;, and friends).
-            </summary>
-            <remarks>
-            <para>The produced output validates correctly as HTML 4.1 transitional, XHTML transitional, and XHTML strict. However, currently there's
-            no way to choose anything other than HTML 4.1. If you care about this, let us know as it's a 10-minute job.</para>
-            </remarks>
-        </member>
-        <member name="T:Iris.Highlighting.XhtmlFormatter">
-            <summary>
-            Formats highlighted output into XHTML fragments.
-            </summary>
-            <remarks>
-            <para>
-            	<see cref="T:Iris.Highlighting.XhtmlFormatter"/> outputs highlighted text in XHTML. Each bit of the output text
-            	is enclosed in a span tag, which in turn has a class attribute declaring a CSS class that corresponds to the <see cref="T:Iris.Highlighting.HighlightMode"/> 
-            	for the text. The actual
-            	formatting is done completely via CSS. The XHTML produced for the output is fully compliant with W3C XHTML strict, 
-            	XHTML transitional, and HTML 4 (but there's a caveat below).
-            </para>
-            <para>
-            	You must decide how to deliver the CSS stylesheet required by the XHTML-formatted output. The <see cref="T:Iris.Highlighting.CssScheme"/> object can
-            	help you here. For any given scheme (eg, irisDefault, irisDark), <see cref="T:Iris.Highlighting.CssScheme"/> knows how to produce the CSS required for highlighting a given
-            	input. You have three main options:
-            	<list type="number">
-            		<item>Save the CSS stylesheet to a file in your server, and include a &lt;link&gt; tag in your XHTML document to reference the file</item>
-            		<item>Output the required CSS to a &lt;style&gt; tag in the &lt;head&gt; of your XHTML document</item>
-            		<item>Output a &lt;style&gt; tag just before the highlighted output. <b>This violates the XHTML standard</b> because &lt;style&gt;
-            		is supposed to be inside the document's &lt;head&gt;. Nevertheless it's a pragmatic approach often taken.</item>
-            	</list>
-            </para>
-            <para>
-            	Since the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> can't touch your document's &lt;head&gt;, the only thing it can do out-of-the-box is #3 above.
-            	It does that by default, so in practice things "just work", but every time you do it a purist cries somewhere. You can turn off the
-            	auto-emitted &lt;style&gt; tag by using an <see cref="T:Iris.Highlighting.XhtmlOptions"/> object with <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> set to 
-            	<see langword="false"/>. You can then serve the CSS as a file or use the <see cref="T:Iris.Highlighting.CssScheme"/> to emit the style within &lt;head&gt;.
-            </para>
-            </remarks>
-        </member>
         <member name="T:Iris.Highlighting.XmlFormatter">
             <summary>
             Highlights text using XML tags to indicate the <see cref="T:Iris.Highlighting.HighlightMode">mode</see> for each fragment of text.
@@ -453,68 +136,57 @@
             </summary>
             <value>The suggested file extension.</value>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.#ctor(Iris.Highlighting.XhtmlOptions)">
+        <member name="T:Iris.Highlighting.XhtmlOptions">
             <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> class with the specified options.
+            Provides options to control the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> output.
+            </summary>
+            <remarks>
+            <para>Please see <see cref="T:Iris.Highlighting.XhtmlFormatter"/> for more discussion on outputting XHTML.</para>
+            </remarks>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlOptions.#ctor">
+            <summary>
+            Instantiates a new <see cref="T:Iris.Highlighting.XhtmlOptions"/>.
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.#ctor">
+        <member name="F:Iris.Highlighting.XhtmlOptions.Defaults">
             <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> using default options.
+            Provides a default ready-made <see cref="T:Iris.Highlighting.XhtmlOptions"/> object.
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.Finish">
+        <member name="F:Iris.Highlighting.XhtmlOptions.DefaultsWithoutStyleElement">
             <summary>
-            Finishes formatting a chunk of code.
+            Provides an <see cref="T:Iris.Highlighting.XhtmlOptions"/> object with <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> set to false
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.WriteNewLine">
+        <member name="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag">
             <summary>
-            Writes the characters in <see cref="P:Iris.Highlighting.XhtmlOptions.NewLineChars"/> and increments the line count.
+            Whether to emit a &lt;style&gt; tag containing the CSS stylesheet used in highlighting
             </summary>
         </member>
-        <member name="F:Iris.Highlighting.XhtmlFormatter.m_options">
+        <member name="P:Iris.Highlighting.XhtmlOptions.EmitLineNumbers">
             <summary>
-            The <see cref="T:Iris.Highlighting.XhtmlOptions"/> controlling the output for this <see cref="T:Iris.Highlighting.XhtmlFormatter"/>
+            Whether to emit line numbers along with the highlighted output
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.Start(Iris.Highlighting.Syntax)">
+        <member name="P:Iris.Highlighting.XhtmlOptions.MarkNthLineNumber">
             <summary>
-            Prepares for highlighting of the specified <see cref="T:Iris.Highlighting.Syntax"/>
+            Whether to emit every nth line number with the 'nthLineNumber' CSS class
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.EmitStyleTag(System.String)">
+        <member name="P:Iris.Highlighting.XhtmlOptions.NthLineNumber">
             <summary>
-            Emits a &lt;style&gt; tag containing the CSS style sheet for the given syntax and the current <see cref="P:Iris.Highlighting.XhtmlOptions.CssScheme"/>.
-            </summary>
-            <param name="syntaxId"></param>
-        </member>
-        <member name="M:Iris.Highlighting.XhtmlFormatter.WriteModeStart(Iris.Highlighting.HighlightMode)">
-            <summary>
-            Called when a <see cref="T:Iris.Highlighting.HighlightMode">mode</see> starts.
-            </summary>
-            <param name="mode"></param>
-        </member>
-        <member name="P:Iris.Highlighting.XhtmlFormatter.SuggestedFileExtension">
-            <summary>
-            Gets the suggested file extension in case the caller wants to save formatted output to a file.
-            </summary>
-            <value>The suggested file extension.</value>
-        </member>
-        <member name="M:Iris.Highlighting.FullPageFormatter.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.Highlighting.FullPageFormatter"/> class.
-            </summary>
-            <param name="pageTitle">The page title. May be empty, but not null.</param>
-        </member>
-        <member name="M:Iris.Highlighting.FullPageFormatter.Start(System.IO.TextWriter,Iris.Highlighting.Syntax)">
-            <summary>
-            Start work on a chunk of text. Internally, an <see cref="T:System.Xml.XmlWriter"/> is created atop the <paramref name="writer"/>.
+            Every nth number that must be emitted with the 'nthLineNumber' CSS class
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.FullPageFormatter.Start(Iris.Highlighting.Syntax)">
+        <member name="P:Iris.Highlighting.XhtmlOptions.CssScheme">
             <summary>
-            Prepares for highlighting of the specified <see cref="T:Iris.Highlighting.Syntax"/>
+            Specifies the <see cref="T:Iris.Highlighting.CssScheme">CSS scheme</see> for highlighting. Only matters if <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> is true.
+            </summary>
+        </member>
+        <member name="P:Iris.Highlighting.XhtmlOptions.NewLineChars">
+            <summary>
+            Specifies characters to use for new line
             </summary>
         </member>
         <member name="T:Iris.Highlighting.NullFormatter">
@@ -562,34 +234,148 @@
             Returns <see langword="null" />.
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.PatternOffset.Apply(Iris.Highlighting.VimBasedScanning.MatchResult@,System.Int32,System.Int32)">
+        <member name="T:Common.Helpers.CognizantException">
             <summary>
-            
+            Represents an exception that has information such as why it happened, whether to retry, whether it indicates a bug, and so on.
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.CognizantException.#ctor(Common.Helpers.ExceptionInformation,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with a specified error message.
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.CognizantException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with serialized data.
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.CognizantException.#ctor(Common.Helpers.ExceptionInformation,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.Helpers.CognizantException"/> class with the specified error message
+            and a reference to the inner exception that is the cause of this exception.
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.CognizantException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Adds <see cref="T:Common.Helpers.ExceptionInformation"/> to a serialized <see cref="T:Common.Helpers.CognizantException"/>.
+            </summary>
+        </member>
+        <member name="T:Common.ExpressionEvaluation.EvaluationException">
+            <summary>
+            This exception is throw for expression 'runtime' errors such as type mismatches (eg, "foo" / 2)
+            </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
+            </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
+            </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
+            </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems.PrepareForRuntime(Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems,Iris.Highlighting.VimBasedScanning.SyntaxDefinition)">
+            <summary>
+            I will go up to the six-fingered man and say: "Hello, my name is Inigo Montoya. You killed my father. Prepare to die!" 
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems.BuildCommunalRegex">
+            <summary>
+            Builds a regex that captures the start patterns for all vim matches and region starts in this <see cref="T:Iris.Highlighting.VimBasedScanning.SetOfSyntaxItems"/>.
+            Some patterns are not included and must be run manually (eg, the ones with <see cref="P:Iris.Highlighting.VimBasedScanning.Pattern.LeadingContext">leading context</see>).
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.SyntaxItem.PrepareForRuntime">
+            <summary>
+            I will go up to the six-fingered man and say: "Hello, my name is Inigo Montoya. You killed my father. Prepare to die!" 
+            </summary>
+        </member>
+        <member name="T:Iris.Highlighting.Syntax">
+            <summary>
+            Represents a syntax definition that can be used to highlight text (eg, C#, C, or Lisp).
             </summary>
             <devdoc>
-            Vim patterns are pretty quirky and inconsistent. See the file 'OffsetExperiments.vim' - it contains
-            some experiments that show the behavior of offsets in Vim.
+            MAY: refactor this so that Syntax is responsible for coming up with a FileInfo for its definition file. Also,
+            allow people to create a syntax providing a FileInfo for the definition.
             </devdoc>
         </member>
-        <member name="T:Iris.Highlighting.IScanner">
+        <member name="F:Iris.Highlighting.Syntax.Description">
             <summary>
-            Defines the interface that a scanner (tokenizer) must implement to work with Iris
+            Describes the <see cref="T:Iris.Highlighting.Syntax"/> in a friendly way (eg, "ABEL Hardware Description Language").
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.IScanner.Scan(System.IO.TextReader,Iris.Highlighting.ICodeFormatter)">
+        <member name="F:Iris.Highlighting.Syntax.Id">
             <summary>
-            Scans the input by reading from a <see cref="T:System.IO.TextReader"/>. Used for inputs up to 2GB.
+            Uniquely identifies this <see cref="T:Iris.Highlighting.Syntax"/> in the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.IScanner.Scan(System.String,Iris.Highlighting.ICodeFormatter)">
+        <member name="M:Iris.Highlighting.Syntax.#ctor(System.String,System.String)">
             <summary>
-            Scans the input by reading from a <see cref="T:System.String"/>
+            Instantiates a new <see cref="T:Iris.Highlighting.Syntax"/> with the given id and description
+            </summary>
+            <param name="id">Unique id for the syntax (eg, cs for C#)</param>
+            <param name="description">Description (eg, Microsoft C#)</param>
+        </member>
+        <member name="M:Iris.Highlighting.Syntax.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+            <returns>
+            true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Iris.Highlighting.Syntax.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>
+            A hash code for the current <see cref="T:System.Object"/>.
+            </returns>
+        </member>
+        <member name="M:Iris.Highlighting.Syntax.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </returns>
+        </member>
+        <member name="P:Iris.Highlighting.Syntax.ActiveCssScheme">
+            <summary>
+            Returns either the syntax's own <see cref="T:Iris.Highlighting.CssScheme"/>, if one was defined, or <see cref="P:Iris.Highlighting.CssScheme.DefaultCssScheme"/>
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.IScanner.SyntaxId">
+        <member name="P:Iris.Highlighting.Syntax.CssSchemeOrNull">
             <summary>
-            The id for the <see cref="T:Iris.Highlighting.Syntax"/> highlighted by this scanner
+            Returns <see langword="null"/> if a <see cref="T:Iris.Highlighting.CssScheme"/> has not been set, otherwise returns the <see cref="T:Iris.Highlighting.CssScheme"/>.
             </summary>
+        </member>
+        <member name="P:Iris.Highlighting.Syntax.PossibleHighlightModes">
+            <summary>
+            Returns the possible <see cref="T:Iris.Highlighting.HighlightMode">highlight modes</see> this <see cref="T:Iris.Highlighting.Syntax"/> can produce.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimScriptParsing.VimScriptParser.#ctor(System.IO.FileInfo,System.Boolean)">
+            <devdoc>
+            SHOULD: refactor. First off, we need to make these parsing rules static to speed things up. Secondly, this whole scanning needs to be fixed
+            up as these regexes are a bloody hack. This should tie in with full Vim script support.
+            </devdoc>
         </member>
         <member name="T:Iris.Highlighting.HighlightMode">
             <summary>
@@ -790,64 +576,78 @@
             Todo notes in languages often get this mode
             </summary>
         </member>
-        <member name="T:Iris.Highlighting.XhtmlOptions">
+        <member name="T:Iris.VimRegexConversion.RegexConversionException">
             <summary>
-            Provides options to control the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> output.
+            This exception is thrown when a Vim-style regex cannot be converted to a Perl-style regex
             </summary>
             <remarks>
-            <para>Please see <see cref="T:Iris.Highlighting.XhtmlFormatter"/> for more discussion on outputting XHTML.</para>
+            <para>This indicates either a malformed Vim regex or a bug in the <see cref="T:Iris.VimRegexConversion.VimRegexConverter"/>.</para>
             </remarks>
         </member>
-        <member name="M:Iris.Highlighting.XhtmlOptions.#ctor">
+        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor">
             <summary>
-            Instantiates a new <see cref="T:Iris.Highlighting.XhtmlOptions"/>.
+            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
             </summary>
         </member>
-        <member name="F:Iris.Highlighting.XhtmlOptions.Defaults">
+        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.String)">
             <summary>
-            Provides a default ready-made <see cref="T:Iris.Highlighting.XhtmlOptions"/> object.
+            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
             </summary>
         </member>
-        <member name="F:Iris.Highlighting.XhtmlOptions.DefaultsWithoutStyleElement">
+        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.String,System.Exception)">
             <summary>
-            Provides an <see cref="T:Iris.Highlighting.XhtmlOptions"/> object with <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> set to false
+            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag">
+        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            Whether to emit a &lt;style&gt; tag containing the CSS stylesheet used in highlighting
+            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
+        </member>
+        <member name="T:Iris.Highlighting.IScanner">
+            <summary>
+            Defines the interface that a scanner (tokenizer) must implement to work with Iris
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.EmitLineNumbers">
+        <member name="M:Iris.Highlighting.IScanner.Scan(System.IO.TextReader,Iris.Highlighting.ICodeFormatter)">
             <summary>
-            Whether to emit line numbers along with the highlighted output
+            Scans the input by reading from a <see cref="T:System.IO.TextReader"/>. Used for inputs up to 2GB.
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.MarkNthLineNumber">
+        <member name="M:Iris.Highlighting.IScanner.Scan(System.String,Iris.Highlighting.ICodeFormatter)">
             <summary>
-            Whether to emit every nth line number with the 'nthLineNumber' CSS class
+            Scans the input by reading from a <see cref="T:System.String"/>
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.NthLineNumber">
+        <member name="P:Iris.Highlighting.IScanner.SyntaxId">
             <summary>
-            Every nth number that must be emitted with the 'nthLineNumber' CSS class
+            The id for the <see cref="T:Iris.Highlighting.Syntax"/> highlighted by this scanner
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.CssScheme">
-            <summary>
-            Specifies the <see cref="T:Iris.Highlighting.CssScheme">CSS scheme</see> for highlighting. Only matters if <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> is true.
-            </summary>
-        </member>
-        <member name="P:Iris.Highlighting.XhtmlOptions.NewLineChars">
-            <summary>
-            Specifies characters to use for new line
-            </summary>
-        </member>
-        <member name="M:Iris.Highlighting.VimScriptParsing.VimScriptParser.#ctor(System.IO.FileInfo,System.Boolean)">
+        <member name="M:Iris.Highlighting.VimBasedScanning.Scope.TryClearStaleEnd">
             <devdoc>
-            SHOULD: refactor. First off, we need to make these parsing rules static to speed things up. Secondly, this whole scanning needs to be fixed
-            up as these regexes are a bloody hack. This should tie in with full Vim script support.
+            if we just popped and fell into a region that is NOT a keepend, we must clear its end if it has one set, because
+            the end became 'stale' - it was overriden by some sort of match (the one we're popping from)
             </devdoc>
+        </member>
+        <member name="T:Common.Helpers.ArgumentValidator">
+            <summary>
+            Offers helpful methods for argument validation
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.ArgumentValidator.ThrowIfNull(System.Object,System.String)">
+            <summary>
+            Throws a <see cref="T:System.ArgumentNullException"/> if <paramref name="argumentToValidate"/> is null.
+            </summary>
+        </member>
+        <member name="M:Common.Helpers.ArgumentValidator.ThrowIfNullOrEmpty(System.String,System.String)">
+            <summary>
+            Throws a <see cref="T:System.ArgumentException"/> if <paramref name="argumentToValidate"/> is null or empty.
+            </summary>
         </member>
         <member name="T:Iris.Highlighting.VimBasedScanning.Scanner">
             <summary>
@@ -889,6 +689,33 @@
             since keywords have no magic chars, only literal chars. Would be _much_ faster and would not instantiate
             any objects.
             </devdoc>
+        </member>
+        <member name="T:Iris.Highlighting.SyntaxLoader">
+            <summary>
+            Provides methods related to the loading of syntax definition scripts
+            </summary>
+        </member>
+        <member name="F:Iris.Highlighting.SyntaxLoader.CatalogFileName">
+            <summary>
+            "IrisCatalog.xml"
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.SyntaxLoader.FileInfoFromSyntaxId(System.String)">
+            <summary>
+            Given a syntax id, returns the file that contains the syntax definition script corresponding to the syntax
+            </summary>
+            <param name="syntaxId"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Iris.Highlighting.SyntaxLoader.SyntaxCatalogFile">
+            <summary>
+            The IrisCatalog.xml configuration file that contains the syntax and CSS Schemes catalog
+            </summary>
+        </member>
+        <member name="P:Iris.Highlighting.SyntaxLoader.SyntaxDirectory">
+            <summary>
+            The directory that contains the syntax definition scripts
+            </summary>
         </member>
         <member name="T:Iris.Highlighting.SyntaxCatalog">
             <summary>
@@ -938,11 +765,138 @@
             Retrieves a <see cref="T:Iris.Highlighting.Syntax"/> by its id, or <see langword="null"/> if no syntax is found with that id.
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.VimBasedScanning.Scope.TryClearStaleEnd">
-            <devdoc>
-            if we just popped and fell into a region that is NOT a keepend, we must clear its end if it has one set, because
-            the end became 'stale' - it was overriden by some sort of match (the one we're popping from)
-            </devdoc>
+        <member name="T:Iris.Highlighting.VimBasedScanning.Extensions">
+            <summary>
+            Sorry replacement for some C# 3.0-style methods.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.AddSorted``1(System.Collections.Generic.List{``0},``0)">
+            <summary>
+            Adds a new element to sorted list preserving the sort order.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.ContainsSorted``1(System.Collections.Generic.List{``0},``0)">
+            <summary>
+            Determines whether the given sorted list contains the given item
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sortedList">The sorted list.</param>
+            <param name="item">The item.</param>
+            <returns>
+            	<c>true</c> if the specified sorted list contains sorted; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.Distinct``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the elements in a collection after removing duplicates, like DISTINCT in SQL.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.Except``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the set difference between two collections
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.VimBasedScanning.Extensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},Common.Helpers.VoidFunc{``0})">
+            <summary>
+            Performs the specified action on each element in a collection
+            </summary>
+        </member>
+        <member name="T:Iris.Highlighting.Highlighter">
+             <summary>
+             Highlights input according to a syntax definition. This is the central class in Iris.
+             </summary>
+             <remarks>
+             <para>
+            		<see cref="T:Iris.Highlighting.Highlighter"/> is the class responsible for coordinating the transformation of textual input into highlighted output. It relies
+            		on two main components, a <see cref="T:Iris.Highlighting.IScanner">scanner</see> and a <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see>. The <see cref="T:Iris.Highlighting.IScanner">scanner</see>
+            		decides which <see cref="T:Iris.Highlighting.HighlightMode">mode</see> (eg, <see cref="F:Iris.Highlighting.HighlightMode.String"/> or <see cref="F:Iris.Highlighting.HighlightMode.Constant"/>) should apply for 
+            		each character in the input. The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> receives this information from the scanner and produces output in a certain
+            		format (eg, <see cref="T:Iris.Highlighting.XmlFormatter"/> or <see cref="T:Iris.Highlighting.XhtmlFormatter"/>). The highlighter itself does no work, it
+            		simply relies on these two objects to get things done.
+             </para>
+             <para>
+            		You can reuse Highlighters as many times as you wish. Creating highlighters is not expensive, but if you are highlighting often
+            		you may want to cache your <see cref="T:Iris.Highlighting.Highlighter"/>. Each individual instance is <b>not</b> thread safe. Here are some examples:
+             </para>
+             <example>
+             <para>For quick and dirty highlighting, you can use the static <see cref="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.String)"/> method. The downside
+             is that you don't get to set any options.</para>
+             <code>
+            		string someCsharp = Highlighter.Highlight("cs", "public void Foo() {}");
+            		string someC = Highlighter.Highlight("c", "printf(\"%s\", evilHackerInput)");
+            		string someLua = Highlighter.Highlight("lua", "print \"Oi, mundo! Oi, PUC-RJ!\"");
+             </code>
+             </example>
+             <example>
+             <para>For better control over settings you may instantiate your own <see cref="T:Iris.Highlighting.Highlighter"/>:</para>
+             <code>
+            		XhtmlFormatter formatter = new XhtmlFormatter(XhtmlOptions.Defaults);
+            		Highlighter csHighlighter = new Highlighter("cs", formatter);
+            		string prettyCSharp = csHighlighter.Highlight("public void Foozboo() {}");
+            
+            		// highlight a file
+            		humoungousCSharpSource = File.OpenText("frozBlaster.cs");
+            		outputFile = File.CreateText("frozBlaster.cs.html");
+            		csHighlighter.Highlight(humongousCSharpSource, outputFile);
+             </code>
+             </example>
+             </remarks>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.#ctor(System.String)">
+            <summary>
+            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> using the specified syntax id using a default <see cref="T:Iris.Highlighting.XhtmlFormatter"/>.
+            </summary>
+            <param name="syntaxId">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.#ctor(System.String,Iris.Highlighting.ICodeFormatter)">
+            <summary>
+            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> using the specified syntax id and formatter.
+            </summary>
+            <param name="syntaxIdOrAlias">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
+            <param name="formatter">The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> to be used for output generation.</param>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.#ctor(Iris.Highlighting.Syntax,Iris.Highlighting.ICodeFormatter)">
+            <summary>
+            Instantiates a new <see cref="T:Iris.Highlighting.Highlighter"/> for the given <see cref="T:Iris.Highlighting.Syntax"/> using the specified formatter
+            </summary>
+            <param name="syntax">Any <see cref="T:Iris.Highlighting.Syntax"/> whose syntax definition file is present, regardless of whether it's in the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
+            <param name="formatter">The <see cref="T:Iris.Highlighting.ICodeFormatter">formatter</see> to be used for the output generation.</param>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.String)">
+            <summary>
+            A convenience method to highlight input without instantiating a <see cref="T:Iris.Highlighting.Highlighter"/>.
+            </summary>
+            <param name="syntaxId">A syntax id that can be resolved via the <see cref="T:Iris.Highlighting.SyntaxCatalog"/>.</param>
+            <param name="inputText">Text to be highlighted</param>
+            <returns>Highlighted output</returns>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String)">
+            <summary>
+            Takes a string input and returns a string containing the highlighted output.
+            </summary>
+            <param name="inputText">Text to be highlighted</param>
+            <returns>Highlighted output</returns>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.String,System.IO.TextWriter)">
+            <summary>
+            Highlights the given string input, writing the output to a <see cref="T:System.IO.TextWriter"/>.
+            </summary>
+            <param name="inputText">Text to be highlighted</param>
+            <param name="writer"><see cref="T:System.IO.TextWriter"/> to receive output</param>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.IO.TextReader,System.IO.TextWriter)">
+            <summary>
+            Reads input from a <see cref="T:System.IO.TextReader"/> and writes highlighted text to a <see cref="T:System.IO.TextWriter"/>. Supports files up to 2GB.
+            </summary>
+            <param name="input"><see cref="T:System.IO.TextReader"/> where input will be read from</param>
+            <param name="output">Output will be written using this <see cref="T:System.IO.TextWriter"/></param>
+        </member>
+        <member name="M:Iris.Highlighting.Highlighter.Highlight(System.IO.TextReader,System.Xml.XmlWriter)">
+            <summary>
+            Reads input from a <see cref="T:System.IO.TextReader"/> and writes highlighted text to a <see cref="T:System.Xml.XmlWriter"/>. Supports files up to 2GB.
+            </summary>
+            <param name="input"><see cref="T:System.IO.TextReader"/> where input will be read from</param>
+            <param name="output">Output will be written using this <see cref="T:System.Xml.XmlWriter"/></param>
         </member>
         <member name="T:Iris.Highlighting.CssScheme">
             <summary>
@@ -1014,137 +968,39 @@
             Contains the CSS rules that apply to specific syntaxes, keyed by syntax id.
             </summary>
         </member>
-        <member name="T:Iris.Highlighting.SyntaxLoader">
+        <member name="T:Iris.Highlighting.ConfigurationException">
             <summary>
-            Provides methods related to the loading of syntax definition scripts
+            Thrown when Iris detects a problem in its configuration, which is stored in the <b>IrisCatalog.xml</b> file.
             </summary>
         </member>
-        <member name="F:Iris.Highlighting.SyntaxLoader.CatalogFileName">
+        <member name="M:Iris.Highlighting.ConfigurationException.#ctor">
             <summary>
-            "IrisCatalog.xml"
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
             </summary>
         </member>
-        <member name="M:Iris.Highlighting.SyntaxLoader.FileInfoFromSyntaxId(System.String)">
+        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.String)">
             <summary>
-            Given a syntax id, returns the file that contains the syntax definition script corresponding to the syntax
-            </summary>
-            <param name="syntaxId"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Iris.Highlighting.SyntaxLoader.SyntaxCatalogFile">
-            <summary>
-            The IrisCatalog.xml configuration file that contains the syntax and CSS Schemes catalog
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
             </summary>
         </member>
-        <member name="P:Iris.Highlighting.SyntaxLoader.SyntaxDirectory">
+        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.String,System.Exception)">
             <summary>
-            The directory that contains the syntax definition scripts
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
             </summary>
         </member>
-        <member name="T:Iris.VimRegexConversion.RegexConversionException">
+        <member name="M:Iris.Highlighting.ConfigurationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            This exception is thrown when a Vim-style regex cannot be converted to a Perl-style regex
-            </summary>
-            <remarks>
-            <para>This indicates either a malformed Vim regex or a bug in the <see cref="T:Iris.VimRegexConversion.VimRegexConverter"/>.</para>
-            </remarks>
-        </member>
-        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.ConfigurationException"/> class.
             </summary>
         </member>
-        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.String)">
+        <member name="M:Iris.Highlighting.VimBasedScanning.PatternOffset.Apply(Iris.Highlighting.VimBasedScanning.MatchResult@,System.Int32,System.Int32)">
             <summary>
-            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
+            
             </summary>
-        </member>
-        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
-            </summary>
-        </member>
-        <member name="M:Iris.VimRegexConversion.RegexConversionException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Iris.VimRegexConversion.RegexConversionException"/> class.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
-            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
-        </member>
-        <member name="T:Common.ExpressionEvaluation.EvaluationException">
-            <summary>
-            This exception is throw for expression 'runtime' errors such as type mismatches (eg, "foo" / 2)
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.EvaluationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.EvaluationException"/> class.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
-            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
-        </member>
-        <member name="T:Common.ExpressionEvaluation.SyntaxErrorException">
-            <summary>
-            This exception is thrown when a syntax error is found in an expression
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
-            </summary>
-        </member>
-        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
-            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
-        </member>
-        <member name="T:Common.Helpers.ArgumentValidator">
-            <summary>
-            Offers helpful methods for argument validation
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.ArgumentValidator.ThrowIfNull(System.Object,System.String)">
-            <summary>
-            Throws a <see cref="T:System.ArgumentNullException"/> if <paramref name="argumentToValidate"/> is null.
-            </summary>
-        </member>
-        <member name="M:Common.Helpers.ArgumentValidator.ThrowIfNullOrEmpty(System.String,System.String)">
-            <summary>
-            Throws a <see cref="T:System.ArgumentException"/> if <paramref name="argumentToValidate"/> is null or empty.
-            </summary>
+            <devdoc>
+            Vim patterns are pretty quirky and inconsistent. See the file 'OffsetExperiments.vim' - it contains
+            some experiments that show the behavior of offsets in Vim.
+            </devdoc>
         </member>
         <member name="T:Common.Helpers.AssertionViolationException">
             <summary>
@@ -1175,16 +1031,124 @@
             <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
             <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
         </member>
-        <member name="T:Common.Helpers.EasyLex`3">
+        <member name="T:Iris.Highlighting.FullPageFormatter">
             <summary>
-            Poor's man version of Lex. Very flexible and easy, but slow.
+            Outputs a fully W3C-compliant XHTML page containing highlighted text (including &lt;html&gt;, &lt;head&gt;, and friends).
             </summary>
             <remarks>
-            <para><b>Important!</b> This class converts all CRLF and CR end-of-lines to a plain LF.</para>
+            <para>The produced output validates correctly as HTML 4.1 transitional, XHTML transitional, and XHTML strict. However, currently there's
+            no way to choose anything other than HTML 4.1. If you care about this, let us know as it's a 10-minute job.</para>
             </remarks>
-            <typeparam name="ScannerType"></typeparam>
-            <typeparam name="TokenType"></typeparam>
-            <typeparam name="LexRuleType"></typeparam>
+        </member>
+        <member name="T:Iris.Highlighting.XhtmlFormatter">
+            <summary>
+            Formats highlighted output into XHTML fragments.
+            </summary>
+            <remarks>
+            <para>
+            	<see cref="T:Iris.Highlighting.XhtmlFormatter"/> outputs highlighted text in XHTML. Each bit of the output text
+            	is enclosed in a span tag, which in turn has a class attribute declaring a CSS class that corresponds to the <see cref="T:Iris.Highlighting.HighlightMode"/> 
+            	for the text. The actual
+            	formatting is done completely via CSS. The XHTML produced for the output is fully compliant with W3C XHTML strict, 
+            	XHTML transitional, and HTML 4 (but there's a caveat below).
+            </para>
+            <para>
+            	You must decide how to deliver the CSS stylesheet required by the XHTML-formatted output. The <see cref="T:Iris.Highlighting.CssScheme"/> object can
+            	help you here. For any given scheme (eg, irisDefault, irisDark), <see cref="T:Iris.Highlighting.CssScheme"/> knows how to produce the CSS required for highlighting a given
+            	input. You have three main options:
+            	<list type="number">
+            		<item>Save the CSS stylesheet to a file in your server, and include a &lt;link&gt; tag in your XHTML document to reference the file</item>
+            		<item>Output the required CSS to a &lt;style&gt; tag in the &lt;head&gt; of your XHTML document</item>
+            		<item>Output a &lt;style&gt; tag just before the highlighted output. <b>This violates the XHTML standard</b> because &lt;style&gt;
+            		is supposed to be inside the document's &lt;head&gt;. Nevertheless it's a pragmatic approach often taken.</item>
+            	</list>
+            </para>
+            <para>
+            	Since the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> can't touch your document's &lt;head&gt;, the only thing it can do out-of-the-box is #3 above.
+            	It does that by default, so in practice things "just work", but every time you do it a purist cries somewhere. You can turn off the
+            	auto-emitted &lt;style&gt; tag by using an <see cref="T:Iris.Highlighting.XhtmlOptions"/> object with <see cref="P:Iris.Highlighting.XhtmlOptions.EmitStyleTag"/> set to 
+            	<see langword="false"/>. You can then serve the CSS as a file or use the <see cref="T:Iris.Highlighting.CssScheme"/> to emit the style within &lt;head&gt;.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.#ctor(Iris.Highlighting.XhtmlOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> class with the specified options.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.XhtmlFormatter"/> using default options.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.Finish">
+            <summary>
+            Finishes formatting a chunk of code.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.WriteNewLine">
+            <summary>
+            Writes the characters in <see cref="P:Iris.Highlighting.XhtmlOptions.NewLineChars"/> and increments the line count.
+            </summary>
+        </member>
+        <member name="F:Iris.Highlighting.XhtmlFormatter.m_options">
+            <summary>
+            The <see cref="T:Iris.Highlighting.XhtmlOptions"/> controlling the output for this <see cref="T:Iris.Highlighting.XhtmlFormatter"/>
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.Start(Iris.Highlighting.Syntax)">
+            <summary>
+            Prepares for highlighting of the specified <see cref="T:Iris.Highlighting.Syntax"/>
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.EmitStyleTag(System.String)">
+            <summary>
+            Emits a &lt;style&gt; tag containing the CSS style sheet for the given syntax and the current <see cref="P:Iris.Highlighting.XhtmlOptions.CssScheme"/>.
+            </summary>
+            <param name="syntaxId"></param>
+        </member>
+        <member name="M:Iris.Highlighting.XhtmlFormatter.WriteModeStart(Iris.Highlighting.HighlightMode)">
+            <summary>
+            Called when a <see cref="T:Iris.Highlighting.HighlightMode">mode</see> starts.
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="P:Iris.Highlighting.XhtmlFormatter.SuggestedFileExtension">
+            <summary>
+            Gets the suggested file extension in case the caller wants to save formatted output to a file.
+            </summary>
+            <value>The suggested file extension.</value>
+        </member>
+        <member name="M:Iris.Highlighting.FullPageFormatter.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Iris.Highlighting.FullPageFormatter"/> class.
+            </summary>
+            <param name="pageTitle">The page title. May be empty, but not null.</param>
+        </member>
+        <member name="M:Iris.Highlighting.FullPageFormatter.Start(System.IO.TextWriter,Iris.Highlighting.Syntax)">
+            <summary>
+            Start work on a chunk of text. Internally, an <see cref="T:System.Xml.XmlWriter"/> is created atop the <paramref name="writer"/>.
+            </summary>
+        </member>
+        <member name="M:Iris.Highlighting.FullPageFormatter.Start(Iris.Highlighting.Syntax)">
+            <summary>
+            Prepares for highlighting of the specified <see cref="T:Iris.Highlighting.Syntax"/>
+            </summary>
+        </member>
+        <member name="T:Common.Helpers.ObjectExtensions">
+            <summary>
+            Provides utility extension methods for System.string
+            </summary>
+        </member>
+        <member name="T:Common.Helpers.SqlErrorCodes">
+            <summary>
+            Represents SQL Error Codes
+            </summary>
+        </member>
+        <member name="F:Common.Helpers.SqlErrorCodes.UniqueIndexViolation">
+            <summary>
+            SQL Server Error due to a Unique Index/Constraint being violated.
+            </summary>
         </member>
         <member name="T:Common.Helpers.ExceptionInformation">
             <summary>
@@ -1216,20 +1180,45 @@
             Gets a value indicating whether the operation that led to the exception may be retried without changes.
             </summary>
         </member>
-        <member name="T:Common.Helpers.ObjectExtensions">
+        <member name="T:Iris.Highlighting.VimBasedScanning.Cluster">
             <summary>
-            Provides utility extension methods for System.string
+            Implements a Vim cluster, which is a set that contains groups and other clusters.
+            </summary>
+            <remarks>
+            <para>This class implements two types of clusters. The first type are the obvious ones that get defined with "syntax cluster", these
+            are the <b>named</b> clusters. The second type are the implicit clusters that get defined by Contains=, ContainedIn=, and NextGroup=.
+            These are <b>unnamed</b> clusters.</para>
+            <para>Clusters are global. If a syntax definiton file includes other files, all the clusters exist in the same namespace.</para>
+            </remarks>
+        </member>
+        <member name="T:Common.ExpressionEvaluation.SyntaxErrorException">
+            <summary>
+            This exception is thrown when a syntax error is found in an expression
             </summary>
         </member>
-        <member name="T:Common.Helpers.SqlErrorCodes">
+        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor">
             <summary>
-            Represents SQL Error Codes
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
             </summary>
         </member>
-        <member name="F:Common.Helpers.SqlErrorCodes.UniqueIndexViolation">
+        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.String)">
             <summary>
-            SQL Server Error due to a Unique Index/Constraint being violated.
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
             </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
+            </summary>
+        </member>
+        <member name="M:Common.ExpressionEvaluation.SyntaxErrorException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Common.ExpressionEvaluation.SyntaxErrorException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
         </member>
         <member name="T:Common.Helpers.StringExtensions">
             <summary>
@@ -1261,6 +1250,17 @@
             <summary>
             Translates this string using current culture.
             </summary>
+        </member>
+        <member name="T:Common.Helpers.EasyLex`3">
+            <summary>
+            Poor's man version of Lex. Very flexible and easy, but slow.
+            </summary>
+            <remarks>
+            <para><b>Important!</b> This class converts all CRLF and CR end-of-lines to a plain LF.</para>
+            </remarks>
+            <typeparam name="ScannerType"></typeparam>
+            <typeparam name="TokenType"></typeparam>
+            <typeparam name="LexRuleType"></typeparam>
         </member>
     </members>
 </doc>

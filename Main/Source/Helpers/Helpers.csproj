@@ -94,10 +94,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Sandcastle.XsdDocs, Version=1.9.1.0, Culture=neutral, PublicKeyToken=1ac0ad2cd16ece73, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Sandcastle.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=26d176bb73235da5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -410,6 +406,10 @@
       <Project>{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}</Project>
       <Name>Reflection</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\XsdDocs\XsdDocs.csproj">
+      <Project>{31429526-548B-4F1F-9F68-E22EF9D92658}</Project>
+      <Name>XsdDocs</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

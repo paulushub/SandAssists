@@ -25,9 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildAssembler", "BuildAsse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reflection", "Reflection\Reflection.csproj", "{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsdDocs", "XsdDocs\XsdDocs.csproj", "{31429526-548B-4F1F-9F68-E22EF9D92658}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -55,6 +57,9 @@ Global
 		SccProjectUniqueName8 = Reflection\\Reflection.csproj
 		SccProjectName8 = Reflection
 		SccLocalPath8 = Reflection
+		SccProjectUniqueName9 = XsdDocs\\XsdDocs.csproj
+		SccProjectName9 = XsdDocs
+		SccLocalPath9 = XsdDocs
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -127,6 +132,14 @@ Global
 		{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31429526-548B-4F1F-9F68-E22EF9D92658}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
