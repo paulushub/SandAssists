@@ -71,32 +71,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProjectCommentElement.cs" />
-    <Compile Include="ProjectExtensionsElement.cs" />
-    <Compile Include="ProjectSections\ProjectInfo.cs" />
-    <Compile Include="ProjectWhenElement.cs" />
-    <Compile Include="ProjectOtherwiseElement.cs" />
-    <Compile Include="ProjectOutputElement.cs" />
-    <Compile Include="ProjectTaskElement.cs" />
-    <Compile Include="ProjectOnErrorElement.cs" />
-    <Compile Include="ProjectUsingTaskParameterElement.cs" />
-    <Compile Include="ProjectUsingTaskBodyElement.cs" />
-    <Compile Include="ProjectUsingTaskParameterGroupElement.cs" />
-    <Compile Include="ProjectUsingTaskElement.cs" />
-    <Compile Include="ProjectTargetElement.cs" />
-    <Compile Include="ProjectItemDefinitionElement.cs" />
-    <Compile Include="ProjectItemDefinitionGroupElement.cs" />
-    <Compile Include="ProjectChooseElement.cs" />
-    <Compile Include="ProjectElement.cs" />
-    <Compile Include="ProjectContainerElement.cs" />
-    <Compile Include="ProjectImportElement.cs" />
-    <Compile Include="ProjectImportGroupElement.cs" />
-    <Compile Include="ProjectItemElement.cs" />
-    <Compile Include="ProjectItemGroupElement.cs" />
-    <Compile Include="ProjectMetadataElement.cs" />
-    <Compile Include="ProjectPropertyElement.cs" />
-    <Compile Include="ProjectPropertyGroupElement.cs" />
-    <Compile Include="ProjectRootElement.cs" />
     <Compile Include="Evaluation\Project.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -112,6 +86,64 @@
     <Compile Include="Exceptions\InvalidProjectFileException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProjectChooseElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectCommentElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectContainerElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectElementType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectExtensionsElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectImportElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectImportGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectItemDefinitionElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectItemDefinitionGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectItemElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectItemGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectMetadataElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectOnErrorElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectOtherwiseElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectOutputElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectPropertyElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectPropertyGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectRootElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectSections\ProjectInfo.cs" />
     <Compile Include="Internal\ReadOnlyCollection.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -121,9 +153,29 @@
     <Compile Include="Internal\ReverseEnumerable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProjectTargetElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectTaskElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectUsingTaskBodyElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectUsingTaskElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectUsingTaskParameterElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectUsingTaskParameterGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectWhenElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utils\StorageInterop.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="ProjectElementType.cs" />
     <Compile Include="Utils\ProjectExceptions.cs" />
     <Compile Include="VcProjects\Internal\ProjectProperties.cs" />
     <Compile Include="VcProjects\Internal\FilteringEnumerable.cs" />
