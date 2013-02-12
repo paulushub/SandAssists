@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FilesTestSample</RootNamespace>
     <AssemblyName>FilesTestSample</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -36,6 +36,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -98,7 +99,10 @@
     <Content Include="Sandcastle.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Documentation.sanddocs" />
+    <None Include="app.config" />
+    <None Include="Documentation.sanddocs">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="HierarchicalToc.sandrefs" />
     <None Include="HierarchicalToc.sandrgrp" />
     <None Include="MainConceptual.sandcgrp" />
@@ -107,11 +111,17 @@
     <None Include="MainReference.sandrgrp" />
     <None Include="OtherConceptual.sandcgrp" />
     <None Include="OtherConceptual.sandtopics" />
-    <None Include="OtherReference.sandrgrp" />
-    <None Include="ProjectFormat35.sandproj" />
+    <None Include="OtherReference.sandrgrp">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ProjectFormat.sandproj">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Redirection.sandrefs" />
     <None Include="Redirection.sandrgrp" />
-    <None Include="SandcastleDocument35.targets" />
+    <None Include="SandcastleDocument.targets">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="SilverlightWPF.sandrefs" />
     <None Include="SilverlightWPF.sandrgrp" />
     <None Include="WiXSchemaDocs.sandcgrp" />

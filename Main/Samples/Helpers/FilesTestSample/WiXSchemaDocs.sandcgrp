@@ -12,9 +12,9 @@
         <property name="SyntaxType">Standard</property>
     </propertyGroup>
     <propertyGroup name="Conceptual">
-        <property name="DocumentId">4f16c031-98cb-4966-81b1-cee63178dd86</property>
-        <property name="ProjectId">5be5b386-60ec-42e1-aecd-bb91aa477c5c</property>
-        <property name="RepositoryId">17d0ddc6-fc5b-4b6c-9169-716c232a11e4</property>
+        <property name="DocumentId">02b1eb5b-b2ea-41fc-9920-7adfa7fc1433</property>
+        <property name="ProjectId">0dfdc7a1-0952-4826-8b14-6e35b2a7ca3a</property>
+        <property name="RepositoryId">445f8a23-1d2e-465e-af5c-d141695c9ae9</property>
         <property name="ProjectName">ProjectName</property>
         <property name="ProjectTitle">ProjectTitle</property>
         <property name="DocumentWriter"></property>
@@ -29,7 +29,7 @@
     <contents />
     <contentSource name="Sandcastle.Conceptual.ConceptualXsdDocSource">
         <propertyGroup name="General">
-            <property name="Title">ConceptualSource20c4a007</property>
+            <property name="Title">ConceptualSource17bbe400</property>
             <property name="DocumentConstraints">True</property>
             <property name="DocumentRootElements">True</property>
             <property name="DocumentRootSchemas">True</property>

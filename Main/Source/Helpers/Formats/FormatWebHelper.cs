@@ -162,8 +162,8 @@ namespace Sandcastle.Formats
             XmlWriter xmlWriter = null;
 
             XmlReaderSettings readerSettings = new XmlReaderSettings();
-            readerSettings.ProhibitDtd = false;
-            readerSettings.XmlResolver = null;
+            readerSettings.DtdProcessing = DtdProcessing.Parse;
+            readerSettings.XmlResolver   = null;
 
             XmlReader xmlReader = null;
 

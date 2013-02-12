@@ -95,9 +95,7 @@ namespace Sandcastle.Builders.MSBuilds
                 project.Initialize(this.BuildLogger);
                 if (project.IsInitialized)
                 {
-                    project.Build();
-
-                    return true;
+                    return project.Build();
                 }
                 else
                 {

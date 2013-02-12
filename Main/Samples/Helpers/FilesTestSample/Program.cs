@@ -19,7 +19,7 @@ namespace FilesTestSample
 
             BuildFilePath documentFile = null;
             bool loadIt = true;
-            bool useMSBuild = true;
+            bool useMSBuild = false;
 
             string workingDir = null;
             try
@@ -177,7 +177,7 @@ namespace FilesTestSample
             if (useMSBuild)
             {
                 string projectFile = Path.Combine(workingDir,
-                    "ProjectFormat35" + BuildFileExts.ProjectExt);
+                    "ProjectFormat" + BuildFileExts.ProjectExt);
 
                 if (!File.Exists(projectFile))
                 {

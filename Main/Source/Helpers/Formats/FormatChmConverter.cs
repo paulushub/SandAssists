@@ -58,7 +58,7 @@ namespace Sandcastle.Formats
             _readerSettings.ConformanceLevel = ConformanceLevel.Document;
             _readerSettings.IgnoreWhitespace = false;
             _readerSettings.IgnoreComments   = false;
-            _readerSettings.ProhibitDtd      = false;
+            _readerSettings.DtdProcessing    = DtdProcessing.Parse;
             _readerSettings.XmlResolver      = null;
             //_readerSettings.ValidationType   = ValidationType.DTD;
 

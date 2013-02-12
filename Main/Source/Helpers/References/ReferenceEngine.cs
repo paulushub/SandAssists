@@ -452,9 +452,11 @@ namespace Sandcastle.References
                     "The group context is not provided, and it is required by the build system.");
             }
 
+            string workingDir = context.WorkingDirectory;
+
             ReferenceContent content = group.Content;
-            string assemblyDir       = groupContext.AssemblyFolder;
-            string dependencyDir     = groupContext.DependencyFolder;
+            string assemblyDir       = Path.Combine(workingDir, groupContext.AssemblyFolder);
+            string dependencyDir     = Path.Combine(workingDir, groupContext.DependencyFolder);
 
             DependencyContent dependencies = content.Dependencies;
 
@@ -464,7 +466,6 @@ namespace Sandcastle.References
             string tocFile        = groupContext["$TocFile"];
 
             BuildStyleType outputStyle = settings.Style.StyleType;
-            string workingDir = context.WorkingDirectory;
 
             string tempText    = null;
 

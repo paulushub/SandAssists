@@ -13,6 +13,9 @@ using Microsoft.Ddue.Tools.Reflection;
 
 namespace Sandcastle.Tools
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class SandcastleReflectionTool : SandcastleTool
     {
         #region Private Fields

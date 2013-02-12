@@ -113,13 +113,6 @@ namespace FilesTestSample
             }
 
             ReferenceContent apiContent = apiGroup.Content;
-
-            apiGroup.ContentFile = new BuildFilePath(Path.Combine(workingDir,
-                "MainReference" + BuildFileExts.ReferenceGroupExt));
-
-            apiContent.ContentFile = new BuildFilePath(Path.Combine(workingDir,
-                "MainReference" + BuildFileExts.ReferenceContentExt));
-
             apiContent.FrameworkType = BuildFrameworkType.Framework35;
             apiContent.AddItem(projectDoc, null);
             apiContent.AddItem(Path.Combine(outputDir, "TestLibrary.xml"),
@@ -175,7 +168,7 @@ namespace FilesTestSample
                 outputDir = Path.Combine(libraryDir, @"Output\");
 
                 apiContent = new ReferenceContent();
-                apiContent.FrameworkType = BuildFrameworkType.Silverlight30;
+                apiContent.FrameworkType = BuildFrameworkType.Silverlight40;
                 apiContent.AddItem(Path.Combine(outputDir, "TestLibrary.xml"),
                     Path.Combine(outputDir, "TestLibrary.dll"));
 

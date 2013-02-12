@@ -2,7 +2,7 @@
 <documentGroup type="Reference" version="1.0">
     <location />
     <propertyGroup name="General">
-        <property name="Id">b78ecc40-0ba0-40c8-ac6b-82acbc15ffd7</property>
+        <property name="Id">3b997671-9512-4b52-851e-25ec92cc74ec</property>
         <property name="Name">Test WPF .NET 4</property>
         <property name="Exclude">False</property>
         <property name="ExcludeToc">False</property>

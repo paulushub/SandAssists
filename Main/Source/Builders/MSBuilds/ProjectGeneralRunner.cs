@@ -3,7 +3,7 @@ using System.IO;
 
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace Sandcastle.Builders.MSBuilds
 {
@@ -16,8 +16,9 @@ namespace Sandcastle.Builders.MSBuilds
         {
         }
 
-        public ProjectGeneralRunner(string projectFile, 
-            LoggerVerbosity verbosity) : base(projectFile, verbosity)
+        public ProjectGeneralRunner(string projectFile,
+            LoggerVerbosity verbosity)
+            : base(projectFile, verbosity)
         {
         }
 
@@ -25,24 +26,29 @@ namespace Sandcastle.Builders.MSBuilds
 
         #region Public Events
 
-        public event BuildErrorEventHandler      ErrorRaised;
-        public event BuildMessageEventHandler    MessageRaised;
-        public event BuildWarningEventHandler    WarningRaised;
+        public event BuildErrorEventHandler ErrorRaised;
+        public event BuildMessageEventHandler MessageRaised;
+        public event BuildWarningEventHandler WarningRaised;
 
-        public event TaskStartedEventHandler     TaskStarted;
-        public event TaskFinishedEventHandler    TaskFinished;
+        public event TaskStartedEventHandler TaskStarted;
+        public event TaskFinishedEventHandler TaskFinished;
 
-        public event TargetStartedEventHandler   TargetStarted;
-        public event TargetFinishedEventHandler  TargetFinished; 
-        public event ProjectStartedEventHandler  ProjectStarted;
+        public event TargetStartedEventHandler TargetStarted;
+        public event TargetFinishedEventHandler TargetFinished;
+        public event ProjectStartedEventHandler ProjectStarted;
         public event ProjectFinishedEventHandler ProjectFinished;
 
         #endregion
 
         #region Public Methods
 
-        public override void Run()
+        public override void Run(string target)
         {
+            if (String.IsNullOrWhiteSpace(target))
+            {
+                target = "Build";
+            }
+
             string projectFile = this.ProjectFile;
             if (String.IsNullOrEmpty(projectFile))
             {
@@ -55,10 +61,8 @@ namespace Sandcastle.Builders.MSBuilds
                     "The project file does not exists.");
             }
 
-            Engine engine   = new Engine();
-            Project project = new Project(engine);
-
-            project.Load(projectFile);
+            ProjectCollection projectCollection = new ProjectCollection();
+            projectCollection.DefaultToolsVersion = "4.0";
 
             ProjectTaskLogger logger = new ProjectTaskLogger();
             logger.Verbosity = this.Verbosity;
@@ -66,7 +70,7 @@ namespace Sandcastle.Builders.MSBuilds
             // We will only listen for the events that are subscribed...
             if (this.ErrorRaised != null)
             {
-                logger.ErrorRaised += 
+                logger.ErrorRaised +=
                     new BuildErrorEventHandler(this.ErrorRaised);
             }
             if (this.MessageRaised != null)
@@ -113,17 +117,16 @@ namespace Sandcastle.Builders.MSBuilds
                     new ProjectFinishedEventHandler(this.ProjectFinished);
             }
 
-            engine.RegisterLogger(logger);
+            projectCollection.RegisterLogger(logger);
 
-            string[] targetNames = project.DefaultTargets.Split(
-                new char[] { ';', ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            Project project = projectCollection.LoadProject(projectFile);
             try
             {
-                project.Build(targetNames);
+                project.Build(target);
             }
             finally
             {
-                engine.UnregisterAllLoggers();
+                projectCollection.UnregisterAllLoggers();
             }
         }
 

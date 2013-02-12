@@ -718,8 +718,8 @@ namespace Sandcastle.Steps
                 xmlSettings.IgnoreComments = true;
                 xmlSettings.IgnoreProcessingInstructions = true;
                 xmlSettings.IgnoreWhitespace = true;
-                xmlSettings.ProhibitDtd = false;
-                xmlSettings.XmlResolver = null;
+                xmlSettings.DtdProcessing    = DtdProcessing.Parse;
+                xmlSettings.XmlResolver      = null;
 
                 string hxtFile = Path.Combine(context.WorkingDirectory,
                     String.Format("{0}\\{1}.HxT", _helpFolder, _helpName));

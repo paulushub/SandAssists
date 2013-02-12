@@ -10,6 +10,9 @@ using Sandcastle.References;
 
 namespace Sandcastle.Steps
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class StepReflectionBuilder : StepProcess
     {
         #region Private Fields
@@ -658,8 +661,8 @@ namespace Sandcastle.Steps
                             groupContext.Contexts[source.SourceId];
                         string workingDir     = versionsContext["$WorkingDir"];
 
-                        string assemblyDir    = versionsContext.AssemblyFolder;
-                        string dependencyDir  = versionsContext.DependencyFolder;
+                        string assemblyDir    = Path.Combine(workingDir, versionsContext.AssemblyFolder);
+                        string dependencyDir  = Path.Combine(workingDir, versionsContext.DependencyFolder);
 
                         string reflectionFile = versionsContext["$ReflectionFile"];
                         string refBuilderFile = versionsContext["$ReflectionBuilderFile"];
@@ -673,17 +676,28 @@ namespace Sandcastle.Steps
                         StringBuilder textBuilder = new StringBuilder();
                         if (context.IsDirectSandcastle)
                         {
-                            // Remove the quotes, we do not need them here...
-                            assemblyFiles   = assemblyFiles.Replace("\"", String.Empty);
-                            dependencyFiles = dependencyFiles.Replace("\"", String.Empty);
+                            string currentWorkDir = Environment.CurrentDirectory;
 
-                            _reflectorProxy.ReflectionFile    = outputFile;
-                            _reflectorProxy.ConfigurationFile = configurationFile;
-                            _reflectorProxy.DocumentInternals = _documentInternals;
-                            _reflectorProxy.AssemblyFiles     = new string[] { assemblyFiles };
-                            _reflectorProxy.DependencyFiles   = new string[] { dependencyFiles };
+                            try
+                            {
+                                Environment.CurrentDirectory = workingDir;
 
-                            buildResult = _reflectorProxy.Run(context);
+                                // Remove the quotes, we do not need them here...
+                                assemblyFiles   = assemblyFiles.Replace("\"", String.Empty);
+                                dependencyFiles = dependencyFiles.Replace("\"", String.Empty);
+
+                                _reflectorProxy.ReflectionFile    = outputFile;
+                                _reflectorProxy.ConfigurationFile = configurationFile;
+                                _reflectorProxy.DocumentInternals = _documentInternals;
+                                _reflectorProxy.AssemblyFiles     = new string[] { assemblyFiles };
+                                _reflectorProxy.DependencyFiles   = new string[] { dependencyFiles };
+
+                                buildResult = _reflectorProxy.Run(context);
+                            }
+                            finally
+                            {
+                                Environment.CurrentDirectory = currentWorkDir;
+                            }
                         }
                         else
                         {   

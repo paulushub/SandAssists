@@ -60,7 +60,7 @@ namespace ConsoleSample
             // 2. Version information: Advanced
             // 3. Media/Image contents
             // 4. Reference filters
-            //TestMain(documenter, options, engineSettings);
+            TestMain(documenter, options, engineSettings);
 
             // Test mainly hierarchical table of contents, including...
             // 1. tocexclude/excludetoc tag support
@@ -68,7 +68,7 @@ namespace ConsoleSample
             // 3. Version information: Assembly-And-File
             // 4. Linking to conceptual help contents
             // 5. Events
-            //TestHierarchicalToc(documenter, options, engineSettings);
+            TestHierarchicalToc(documenter, options, engineSettings);
 
             // Test assembly redirection and auto-dependency resolution, including...
             // 1. .NET 4 features (including Action<...> and Func<...>)
@@ -81,7 +81,7 @@ namespace ConsoleSample
             // Test for WPF 4.0 and Silverlight 4.0 assemblies, including...
             // 1. WPF features like Xmlns-For-Xaml and Xaml usage.
             // 2. Version information: None
-            TestSilverlightWPF(documenter, options, engineSettings);
+            //TestSilverlightWPF(documenter, options, engineSettings);
 
             // Test other features...
             // 1. Testing C++/CLR library

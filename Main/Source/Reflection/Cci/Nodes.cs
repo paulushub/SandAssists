@@ -1189,7 +1189,7 @@ namespace System.Compiler
                 foreach (string s in source.EmbeddedResources) this.EmbeddedResources.Add(s);
             this.EmitManifest = source.EmitManifest;
             this.EncodeOutputInUTF8 = source.EncodeOutputInUTF8;
-            this.Evidence = source.Evidence;
+            //this.Evidence = source.Evidence;
             this.ExplicitOutputExtension = source.ExplicitOutputExtension;
             this.FileAlignment = source.FileAlignment;
             this.FullyQualifyPaths = source.FullyQualifyPaths;
@@ -7194,9 +7194,9 @@ namespace System.Compiler
                             }
                         if (result == null)
                         {
-                            if (evidence != null)
-                                result = targetAppDomain.Load(this.GetAssemblyName(), evidence);
-                            else
+                            //if (evidence != null)
+                            //    result = targetAppDomain.Load(this.GetAssemblyName(), evidence);
+                            //else
                                 result = targetAppDomain.Load(this.GetAssemblyName());
                         }
                     }
@@ -7211,17 +7211,17 @@ namespace System.Compiler
                         if ((this.Flags & (AssemblyFlags.EnableJITcompileTracking | AssemblyFlags.DisableJITcompileOptimizer)) != 0)
                         {
                             this.WriteModule(out executable, out debugSymbols);
-                            if (evidence != null)
-                                result = targetAppDomain.Load(executable, debugSymbols, evidence);
-                            else
+                            //if (evidence != null)
+                            //    result = targetAppDomain.Load(executable, debugSymbols, evidence);
+                            //else
                                 result = targetAppDomain.Load(executable, debugSymbols);
                         }
                         else
                         {
                             this.WriteModule(out executable);
-                            if (evidence != null)
-                                result = targetAppDomain.Load(executable, null, evidence);
-                            else
+                            //if (evidence != null)
+                            //    result = targetAppDomain.Load(executable, null, evidence);
+                            //else
                                 result = targetAppDomain.Load(executable);
                         }
                     }

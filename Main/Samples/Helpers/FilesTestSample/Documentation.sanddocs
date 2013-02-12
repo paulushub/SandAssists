@@ -111,29 +111,29 @@
                 <contents>
                     <content type="Toc">
                         <tocContent enabled="True">
-                            <tocItem name="tcaf8d0a7a" id="tcidf5ce57b3">
+                            <tocItem name="tc1c8c5363" id="tcid37c15a2e">
                                 <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc50eeb7ce" id="tciddd7e91de">
+                            <tocItem name="tcca407792" id="tcide36ea81c">
                                 <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc1bd67667" id="tcid94ddde31">
+                            <tocItem name="tcb3e170fb" id="tcidbd7f9e11">
                                 <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc76cc0639" id="tcid9f27083f">
+                            <tocItem name="tcc22a5136" id="tcid996b30">
                                 <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tcbd87e174" id="tcid46ea2f13">
+                            <tocItem name="tc83a4b99f" id="tcid54433981">
                                 <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc6fde8f11" id="tcid65169c37">
-                                <source id="3cae187e-80ed-4b86-bc83-e9e69c82b255" type="Group" recursive="True" />
+                            <tocItem name="tc9e90e649" id="tcid9c0ee867">
+                                <source id="5ff077ae-a640-44a3-80af-81874fa14f9d" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tca969bbe4" id="tcid59958fe8">
-                                <source id="b78ecc40-0ba0-40c8-ac6b-82acbc15ffd7" type="Group" recursive="True" />
+                            <tocItem name="tc4b293267" id="tcida87a3da1">
+                                <source id="3b997671-9512-4b52-851e-25ec92cc74ec" type="Group" recursive="True" />
                             </tocItem>
-                            <tocItem name="tc96da870b" id="tcida978fdbf">
-                                <source id="c87303be-e361-4ce3-bcd7-cc8d232eddf5" type="Group" recursive="True" />
+                            <tocItem name="tcbbb738a0" id="tcid47786ad2">
+                                <source id="9fa120d8-8eba-4122-a7ce-d6b9e03cf39a" type="Group" recursive="True" />
                             </tocItem>
                         </tocContent>
                     </content>
@@ -286,31 +286,31 @@
             <!-- Options for custom table of contents -->
             <option type="Toc" name="Sandcastle.BuildToc">
                 <tocContent enabled="True">
-                    <tocItem name="tce64515b7" id="tcid5a4b5fcd">
+                    <tocItem name="tc3fe604fb" id="tcid4dc4fa8c">
                         <source id="d36e744f-c053-4e94-9ac9-b1ee054d8de2" type="Topic" recursive="True" />
-                        <tocItem name="tc621ed788" id="tcidca20f8b9">
+                        <tocItem name="tc1c8c58df" id="tcidca457562">
                             <source id="d75bef3a-6098-455f-983b-8cb0d08a442d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tcf7a37c24" id="tcidadd79511">
+                        <tocItem name="tc5fd39181" id="tcid1501776b">
                             <source id="e36798c6-2fac-4661-b1d1-f6db67e52c7d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc518f735b" id="tcidd957dee8">
+                        <tocItem name="tc6f1bcc55" id="tciddba891e8">
                             <source id="cc1479e2-110b-4c51-828c-9bdb22a004e6" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tcb5c682ca" id="tcid1c0c4bd7">
+                        <tocItem name="tc6a176784" id="tcid72efeda1">
                             <source id="be96b214-1314-4a3e-945c-b05f8c511b0d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc9029dc4f" id="tcided0964a8">
+                        <tocItem name="tc666a0a31" id="tcided10003">
                             <source id="d34335a7-e075-40a5-a3bf-65db392d9904" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc9d6ed717" id="tcidf8f7db03">
-                            <source id="3cae187e-80ed-4b86-bc83-e9e69c82b255" type="Group" recursive="True" />
+                        <tocItem name="tc9266ab77" id="tcid6301557a">
+                            <source id="5ff077ae-a640-44a3-80af-81874fa14f9d" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tc36a1a63b" id="tcidbf31be3f">
-                            <source id="b78ecc40-0ba0-40c8-ac6b-82acbc15ffd7" type="Group" recursive="True" />
+                        <tocItem name="tc795f9ed1" id="tcided504857">
+                            <source id="3b997671-9512-4b52-851e-25ec92cc74ec" type="Group" recursive="True" />
                         </tocItem>
-                        <tocItem name="tcc0064228" id="tcidc74e0ace">
-                            <source id="c87303be-e361-4ce3-bcd7-cc8d232eddf5" type="Group" recursive="True" />
+                        <tocItem name="tcc5ad3bad" id="tcid398e0c45">
+                            <source id="9fa120d8-8eba-4122-a7ce-d6b9e03cf39a" type="Group" recursive="True" />
                         </tocItem>
                     </tocItem>
                 </tocContent>
@@ -340,7 +340,7 @@
                     </content>
                     <content type="Snippets">
                         <snippetContent name="CommonSnippets">
-                            <snippetItem id="a36028b0-6a4d-4825-a594-38cf69b00af1">
+                            <snippetItem id="31f25c6b-629c-4847-a40f-080c2296f573">
                                 <path value="..\SampleSnippets" />
                             </snippetItem>
                         </snippetContent>
@@ -399,7 +399,7 @@
                 </propertyGroup>
                 <location />
                 <loggers>
-                    <!--<logger name="Sandcastle.Loggers.ConsoleLogger" />-->
+                    <logger name="Sandcastle.Loggers.ConsoleLogger" />
                 </loggers>
             </option>
             <!-- Options for product information used for feedback -->
@@ -431,7 +431,9 @@
                     <property name="Naming">Guid</property>
                     <property name="RootNamespaceContainer">True</property>
                     <property name="EmbedScriptSharpFramework">True</property>
+                    <property name="WebMvcSdkType">(Null)</property>
                 </propertyGroup>
+                <!-- The link sources for this reference group. -->
                 <propertyBag />
                 <contents>
                     <content type="Shared">
@@ -549,6 +551,11 @@
                         </propertyGroup>
                         <workingDirectory />
                     </componentConfiguration>
+                    <componentConfiguration name="Sandcastle.References.ReferencePlatformsConfiguration">
+                        <propertyGroup name="General">
+                            <property name="Enabled">True</property>
+                        </propertyGroup>
+                    </componentConfiguration>
                     <componentConfiguration name="Sandcastle.References.ReferenceCloneConfiguration">
                         <propertyGroup name="General">
                             <property name="Enabled">True</property>
@@ -597,6 +604,8 @@
                     <componentConfiguration name="Sandcastle.References.ReferenceLinkConfiguration">
                         <propertyGroup name="General">
                             <property name="Enabled">True</property>
+                            <property name="ExternalLinkCaching">True</property>
+                            <property name="ExternalLinkStorage">Database</property>
                         </propertyGroup>
                     </componentConfiguration>
                     <componentConfiguration name="Sandcastle.References.ReferenceSharedConfiguration">
@@ -732,10 +741,231 @@
         <documentGroup type="Conceptual" source=".\MainConceptual.sandcgrp" />
         <documentGroup type="Conceptual" source=".\OtherConceptual.sandcgrp" />
         <documentGroup type="Conceptual" source=".\WiXSchemaDocs.sandcgrp" />
-        <documentGroup type="Reference" source=".\MainReference.sandrgrp" />
+        <documentGroup type="Reference" version="1.0">
+            <location />
+            <propertyGroup name="General">
+                <property name="Id">be96b214-1314-4a3e-945c-b05f8c511b0d</property>
+                <property name="Name">Test API References</property>
+                <property name="Exclude">False</property>
+                <property name="ExcludeToc">False</property>
+                <property name="SyntaxUsage">False</property>
+                <property name="Description"></property>
+                <property name="RunningHeaderText">Sandcastle Helpers: Test API Reference</property>
+                <property name="SyntaxType">Standard</property>
+            </propertyGroup>
+            <propertyGroup name="Reference">
+                <property name="XmlnsForXaml">False</property>
+                <property name="RootTitle">SampleLibrary Test References</property>
+                <property name="RootTopicId"></property>
+                <property name="VersionType">Advanced</property>
+            </propertyGroup>
+            <propertyBag />
+            <contents>
+                <content type="Media" source="..\SampleTopics\MediaContent.media" />
+                <content type="CodeSnippets" source="..\SampleLibrary\CodeSnippetSample.snippets" />
+                <content type="Reference">
+                    <referenceContent version="1.0">
+                        <!-- 1. The content directory, if not the same as the content file. -->
+                        <location />
+                        <!-- 2. The general content settings -->
+                        <propertyGroup name="General">
+                            <property name="Id">4496ac85-bce0-4f2a-8ecf-ec5cc4bc69e6</property>
+                            <property name="FrameworkType">Framework35</property>
+                        </propertyGroup>
+                        <!-- 3. The reference items defining the API content -->
+                        <referenceItems>
+                            <referenceItem xamlSyntax="False">
+                                <assembly />
+                                <comments>
+                                    <path value="..\SampleLibrary\Output\Project.xml" />
+                                </comments>
+                                <source />
+                            </referenceItem>
+                            <referenceItem xamlSyntax="False">
+                                <assembly>
+                                    <path value="..\SampleLibrary\Output\TestLibrary.dll" />
+                                </assembly>
+                                <comments>
+                                    <path value="..\SampleLibrary\Output\TestLibrary.xml" />
+                                </comments>
+                                <source />
+                            </referenceItem>
+                        </referenceItems>
+                        <!-- 4. The various contents required for documentation -->
+                        <contents>
+                            <content type="Comments">
+                                <doc />
+                            </content>
+                            <content type="Dependencies">
+                                <dependencyContent />
+                            </content>
+                            <content type="HierarchicalToc">
+                                <hierarchicalTocContent />
+                            </content>
+                        </contents>
+                        <!-- 5. The API/attribute filters associated with the documentations -->
+                        <filters>
+                            <filter name="ft5ced52b3" expose="True" type="ApiFilter">
+                                <namespace name="TestLibrary" expose="True">
+                                    <type name="Point3D" expose="False" />
+                                </namespace>
+                            </filter>
+                            <filter name="ft3bb2641c" expose="True" type="AttributeFilter" />
+                        </filters>
+                    </referenceContent>
+                </content>
+            </contents>
+            <!-- The version information for this group. -->
+            <versionInfo>
+                <propertyGroup name="Reference">
+                    <property name="PlatformId">Plate9d388d</property>
+                    <property name="PlatformTitle">Testing .NET Versions</property>
+                    <property name="PlatformFilters">True</property>
+                    <property name="VersionId">VerIdf406b8e0</property>
+                    <property name="VersionLabel">2.0</property>
+                    <property name="RipOldApis">True</property>
+                </propertyGroup>
+                <contentSources>
+                    <contentSource name="Sandcastle.References.ReferenceVersionSource">
+                        <propertyGroup name="General">
+                            <property name="SourceId">VerId6ff57c41</property>
+                            <property name="VersionId">VerId17a6edcd</property>
+                            <property name="VersionLabel">1.0</property>
+                            <property name="Title">ReferenceSource9acd1dfd</property>
+                        </propertyGroup>
+                        <content type="Reference">
+                            <referenceContent version="1.0">
+                                <!-- 1. The content directory, if not the same as the content file. -->
+                                <location />
+                                <!-- 2. The general content settings -->
+                                <propertyGroup name="General">
+                                    <property name="Id">6d944737-3b9c-4938-9e44-714ae378fbdd</property>
+                                    <property name="FrameworkType">Framework20</property>
+                                </propertyGroup>
+                                <!-- 3. The reference items defining the API content -->
+                                <referenceItems>
+                                    <referenceItem xamlSyntax="False">
+                                        <assembly>
+                                            <path value="..\SampleLibraryVersion\Output\TestLibrary.dll" />
+                                        </assembly>
+                                        <comments>
+                                            <path value="..\SampleLibraryVersion\Output\TestLibrary.xml" />
+                                        </comments>
+                                        <source />
+                                    </referenceItem>
+                                </referenceItems>
+                                <!-- 4. The various contents required for documentation -->
+                                <contents>
+                                    <content type="Comments">
+                                        <doc />
+                                    </content>
+                                    <content type="Dependencies">
+                                        <dependencyContent />
+                                    </content>
+                                    <content type="HierarchicalToc">
+                                        <hierarchicalTocContent />
+                                    </content>
+                                </contents>
+                                <!-- 5. The API/attribute filters associated with the documentations -->
+                                <filters>
+                                    <filter name="ft9794491" expose="True" type="ApiFilter" />
+                                    <filter name="ftea9bf72d" expose="True" type="AttributeFilter" />
+                                </filters>
+                            </referenceContent>
+                        </content>
+                        <!-- The various contents required for documentation -->
+                        <contents>
+                            <content type="Comments">
+                                <doc />
+                            </content>
+                            <content type="HierarchicalToc">
+                                <hierarchicalTocContent />
+                            </content>
+                        </contents>
+                        <!-- The API/attribute filters associated with the documentations -->
+                        <filters>
+                            <filter name="ft5ef1bcb0" expose="True" type="ApiFilter" />
+                            <filter name="ftfb9901d7" expose="True" type="AttributeFilter" />
+                        </filters>
+                    </contentSource>
+                </contentSources>
+                <relatedVersions>
+                    <relatedVersion>
+                        <propertyGroup name="General">
+                            <property name="PlatformId">Ver9b18f598</property>
+                            <property name="PlatformTitle">Testing Silverlight Versions</property>
+                        </propertyGroup>
+                        <contentSources>
+                            <contentSource name="Sandcastle.References.ReferenceVersionSource">
+                                <propertyGroup name="General">
+                                    <property name="SourceId">VerIdb1d26617</property>
+                                    <property name="VersionId">VerId966c5b23</property>
+                                    <property name="VersionLabel">2.0</property>
+                                    <property name="Title">ReferenceSource574556aa</property>
+                                </propertyGroup>
+                                <content type="Reference">
+                                    <referenceContent version="1.0">
+                                        <!-- 1. The content directory, if not the same as the content file. -->
+                                        <location />
+                                        <!-- 2. The general content settings -->
+                                        <propertyGroup name="General">
+                                            <property name="Id">495f561b-f67c-4b11-af3c-8cef60e228af</property>
+                                            <property name="FrameworkType">Silverlight40</property>
+                                        </propertyGroup>
+                                        <!-- 3. The reference items defining the API content -->
+                                        <referenceItems>
+                                            <referenceItem xamlSyntax="False">
+                                                <assembly>
+                                                    <path value="..\SampleLibrarySilverlight\Output\TestLibrary.dll" />
+                                                </assembly>
+                                                <comments>
+                                                    <path value="..\SampleLibrarySilverlight\Output\TestLibrary.xml" />
+                                                </comments>
+                                                <source />
+                                            </referenceItem>
+                                        </referenceItems>
+                                        <!-- 4. The various contents required for documentation -->
+                                        <contents>
+                                            <content type="Comments">
+                                                <doc />
+                                            </content>
+                                            <content type="Dependencies">
+                                                <dependencyContent />
+                                            </content>
+                                            <content type="HierarchicalToc">
+                                                <hierarchicalTocContent />
+                                            </content>
+                                        </contents>
+                                        <!-- 5. The API/attribute filters associated with the documentations -->
+                                        <filters>
+                                            <filter name="ft68f7b08e" expose="True" type="ApiFilter" />
+                                            <filter name="ftcaf01f20" expose="True" type="AttributeFilter" />
+                                        </filters>
+                                    </referenceContent>
+                                </content>
+                                <!-- The various contents required for documentation -->
+                                <contents>
+                                    <content type="Comments">
+                                        <doc />
+                                    </content>
+                                    <content type="HierarchicalToc">
+                                        <hierarchicalTocContent />
+                                    </content>
+                                </contents>
+                                <!-- The API/attribute filters associated with the documentations -->
+                                <filters>
+                                    <filter name="fta5650230" expose="True" type="ApiFilter" />
+                                    <filter name="ft70f71a67" expose="True" type="AttributeFilter" />
+                                </filters>
+                            </contentSource>
+                        </contentSources>
+                    </relatedVersion>
+                </relatedVersions>
+            </versionInfo>
+        </documentGroup>
         <documentGroup type="Reference" source=".\HierarchicalToc.sandrgrp" />
         <documentGroup type="Reference" source=".\Redirection.sandrgrp" />
         <documentGroup type="Reference" source=".\SilverlightWPF.sandrgrp" />
-        <documentGroup type="Reference" source=".\OtherReference.sandrgrp" />
+        <!--<documentGroup type="Reference" source=".\OtherReference.sandrgrp" />-->
     </documentGroups>
 </documentation>

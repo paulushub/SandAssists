@@ -2,7 +2,7 @@
 using System.IO;
 
 using Microsoft.Build.Framework;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace Sandcastle.Builders.MSBuilds
 {
@@ -32,8 +32,13 @@ namespace Sandcastle.Builders.MSBuilds
 
         #region Public Methods
 
-        public override void Run()
+        public override void Run(string target)
         {
+            if (String.IsNullOrWhiteSpace(target))
+            {
+                target = "Build";
+            }
+
             string projectFile = this.ProjectFile;
             if (String.IsNullOrEmpty(projectFile))
             {
@@ -46,10 +51,8 @@ namespace Sandcastle.Builders.MSBuilds
                     "The project file does not exists.");
             }
 
-            Engine engine = new Engine();
-            Project project = new Project(engine);
-
-            project.Load(projectFile);
+            ProjectCollection projectCollection = new ProjectCollection();
+            projectCollection.DefaultToolsVersion = "4.0";
 
             ProjectTaskLogger buildLogger = new ProjectTaskLogger();
             buildLogger.Verbosity = this.Verbosity;
@@ -61,7 +64,8 @@ namespace Sandcastle.Builders.MSBuilds
             }
             if (this.TargetStarted != null)
             {
-                buildLogger.TargetStarted += new TargetStartedEventHandler(this.TargetStarted.Invoke);
+                buildLogger.TargetStarted += new TargetStartedEventHandler(
+                    this.TargetStarted.Invoke);
             }
             if (this.ProjectFinished != null)
             {
@@ -69,17 +73,16 @@ namespace Sandcastle.Builders.MSBuilds
                     new ProjectFinishedEventHandler(this.ProjectFinished.Invoke);
             }
 
-            engine.RegisterLogger(buildLogger);
+            projectCollection.RegisterLogger(buildLogger);
 
-            string[] targetNames = project.DefaultTargets.Split(
-                new char[] { ';', ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            Project project = projectCollection.LoadProject(projectFile);
             try
             {
-                project.Build(targetNames);
+                project.Build(target);
             }
             finally
             {
-                engine.UnregisterAllLoggers();
+                projectCollection.UnregisterAllLoggers();
             }
         }
 

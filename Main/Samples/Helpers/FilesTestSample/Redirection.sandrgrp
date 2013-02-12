@@ -2,7 +2,7 @@
 <documentGroup type="Reference" version="1.0">
     <location />
     <propertyGroup name="General">
-        <property name="Id">3cae187e-80ed-4b86-bc83-e9e69c82b255</property>
+        <property name="Id">5ff077ae-a640-44a3-80af-81874fa14f9d</property>
         <property name="Name">Testing Redirection</property>
         <property name="Exclude">False</property>
         <property name="ExcludeToc">False</property>
@@ -21,54 +21,4 @@
     <contents>
         <content type="Reference" source=".\Redirection.sandrefs" />
     </contents>
-    <!-- The links source for this reference group. -->
-    <contentSource name="Sandcastle.References.ReferenceLinkSource">
-        <propertyGroup name="General">
-            <property name="Title">ReferenceSource1fc8c264</property>
-            <property name="LinkType">Local</property>
-            <property name="FrameworkType">None</property>
-        </propertyGroup>
-        <!-- The reference items defining the API content -->
-        <referenceItems>
-            <referenceItem xamlSyntax="True">
-                <assembly />
-                <comments>
-                    <path value="..\SampleLibrary\Libraries\Redirects\Project.xml" />
-                </comments>
-                <source />
-            </referenceItem>
-            <referenceItem xamlSyntax="True">
-                <assembly>
-                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Shapes.dll" />
-                </assembly>
-                <comments>
-                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Shapes.xml" />
-                </comments>
-                <source />
-            </referenceItem>
-            <referenceItem xamlSyntax="True">
-                <assembly>
-                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Geometries.dll" />
-                </assembly>
-                <comments>
-                    <path value="..\SampleLibrary\Libraries\Redirects\Tests.Geometries.xml" />
-                </comments>
-                <source />
-            </referenceItem>
-        </referenceItems>
-        <!-- The various contents required for documentation -->
-        <contents>
-            <content type="Comments">
-                <doc />
-            </content>
-            <content type="HierarchicalToc">
-                <hierarchicalTocContent />
-            </content>
-        </contents>
-        <!-- The API/attribute filters associated with the documentations -->
-        <filters>
-            <filter name="ft6457d72" expose="True" type="ApiFilter" />
-            <filter name="ft1e0a9efa" expose="True" type="AttributeFilter" />
-        </filters>
-    </contentSource>
 </documentGroup>

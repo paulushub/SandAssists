@@ -12,9 +12,9 @@
         <property name="SyntaxType">Standard</property>
     </propertyGroup>
     <propertyGroup name="Conceptual">
-        <property name="DocumentId">2d96d200-eaef-42e9-b982-908a1e260105</property>
-        <property name="ProjectId">4d298113-d79b-4cd5-9e5f-149cc8f37340</property>
-        <property name="RepositoryId">2e1b12e9-44b8-491e-9bd4-4501357b0c27</property>
+        <property name="DocumentId">803ccfdc-462d-44a0-817e-8b724978246c</property>
+        <property name="ProjectId">53b1ecc2-7797-4dfd-a659-a71ee40e54b0</property>
+        <property name="RepositoryId">c5d8992c-cd9e-45a3-b574-70dfdab27289</property>
         <property name="ProjectName">ProjectName</property>
         <property name="ProjectTitle">ProjectTitle</property>
         <property name="DocumentWriter"></property>

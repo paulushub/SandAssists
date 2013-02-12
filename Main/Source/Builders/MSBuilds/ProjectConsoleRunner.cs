@@ -2,7 +2,8 @@
 using System.IO;
 
 using Microsoft.Build.Framework;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
+using ConsoleLogger = Microsoft.Build.BuildEngine.ConsoleLogger;
 
 namespace Sandcastle.Builders.MSBuilds
 {
@@ -24,8 +25,13 @@ namespace Sandcastle.Builders.MSBuilds
 
         #region Public Methods
 
-        public override void Run()
+        public override void Run(string target)
         {
+            if (String.IsNullOrWhiteSpace(target))
+            {
+                target = "Build";
+            }
+
             string projectFile = this.ProjectFile;
             if (String.IsNullOrEmpty(projectFile))
             {
@@ -38,24 +44,22 @@ namespace Sandcastle.Builders.MSBuilds
                     "The project file does not exists.");
             }
 
-            Engine engine   = new Engine();
-            Project project = new Project(engine); 
-           
-            project.Load(projectFile);
+            ProjectCollection projectCollection = new ProjectCollection();
+            projectCollection.DefaultToolsVersion = "4.0";
 
             ConsoleLogger buildLogger = new ConsoleLogger(this.Verbosity);
             buildLogger.ShowSummary = false;
-            engine.RegisterLogger(buildLogger);
 
-            string[] targetNames = project.DefaultTargets.Split(
-                new char[] { ';', ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            projectCollection.RegisterLogger(buildLogger);
+
+            Project project = projectCollection.LoadProject(projectFile);
             try
             {
-                project.Build(targetNames);
+                project.Build(target);
             }
             finally
             {
-                engine.UnregisterAllLoggers();
+                projectCollection.UnregisterAllLoggers();
             }
         }
 

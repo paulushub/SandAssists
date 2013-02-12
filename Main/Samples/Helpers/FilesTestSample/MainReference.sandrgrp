@@ -26,26 +26,20 @@
     <!-- The version information for this group. -->
     <versionInfo>
         <propertyGroup name="Reference">
-            <!--<property name="PlatformId">Plataf0388b2</property>
-            <property name="PlatformTitle">Testing .NET Versions</property>-->
-            <property name="PlatformId">netfw</property>
-            <property name="PlatformTitle">.NET Framework</property>
+            <property name="PlatformId">Plat40258f65</property>
+            <property name="PlatformTitle">Testing .NET Versions</property>
             <property name="PlatformFilters">True</property>
-            <!--<property name="VersionId">Ver565a0984</property>                                       
-            <property name="VersionLabel">2.0</property>-->
-            <property name="VersionId">netfw20</property>                                       
+            <property name="VersionId">VerId55a3b032</property>
             <property name="VersionLabel">2.0</property>
             <property name="RipOldApis">True</property>
         </propertyGroup>
         <contentSources>
             <contentSource name="Sandcastle.References.ReferenceVersionSource">
                 <propertyGroup name="General">
-                    <!--<property name="VersionId">Ver905b5a09</property>
+                    <property name="SourceId">VerId24b3e17f</property>
+                    <property name="VersionId">VerIde3554dec</property>
                     <property name="VersionLabel">1.0</property>
-                    <property name="VersionId">Ver905b5a09</property>-->
-                    <property name="VersionId">netfw10</property>
-                    <property name="VersionLabel">1.0</property>
-                    <property name="Title">ReferenceSource3df5efbe</property>
+                    <property name="Title">ReferenceSource8cee6abb</property>
                 </propertyGroup>
                 <content type="Reference">
                     <referenceContent version="1.0">
@@ -53,7 +47,7 @@
                         <location />
                         <!-- 2. The general content settings -->
                         <propertyGroup name="General">
-                            <property name="Id">3baced01-d6fa-4a77-a322-dd98a50dd9f9</property>
+                            <property name="Id">0d05106d-d143-4c88-a473-e1bd6a4294e3</property>
                             <property name="FrameworkType">Framework20</property>
                         </propertyGroup>
                         <!-- 3. The reference items defining the API content -->
@@ -82,8 +76,8 @@
                         </contents>
                         <!-- 5. The API/attribute filters associated with the documentations -->
                         <filters>
-                            <filter name="ftb48c59e5" expose="True" type="ApiFilter" />
-                            <filter name="ftc7b2e768" expose="True" type="AttributeFilter" />
+                            <filter name="fte2f9501e" expose="True" type="ApiFilter" />
+                            <filter name="ft2bc02d6a" expose="True" type="AttributeFilter" />
                         </filters>
                     </referenceContent>
                 </content>
@@ -98,26 +92,24 @@
                 </contents>
                 <!-- The API/attribute filters associated with the documentations -->
                 <filters>
-                    <filter name="fta38a3c55" expose="True" type="ApiFilter" />
-                    <filter name="ftb99b93ef" expose="True" type="AttributeFilter" />
+                    <filter name="ftab5bb42b" expose="True" type="ApiFilter" />
+                    <filter name="ft318a7862" expose="True" type="AttributeFilter" />
                 </filters>
             </contentSource>
         </contentSources>
         <relatedVersions>
             <relatedVersion>
                 <propertyGroup name="General">
-                    <!--<property name="PlatformId">Platf071752a</property>
-                    <property name="PlatformTitle">Testing Silverlight Versions</property>-->
-                    <property name="PlatformId">xnafw</property>
-                    <property name="PlatformTitle">XNA Framework</property>
+                    <property name="PlatformId">Ver35885f38</property>
+                    <property name="PlatformTitle">Testing Silverlight Versions</property>
                 </propertyGroup>
                 <contentSources>
                     <contentSource name="Sandcastle.References.ReferenceVersionSource">
                         <propertyGroup name="General">
-                            <!--<property name="VersionId">Ver2924d11c</property>-->
-                            <property name="VersionId">xnafw10</property>
-                            <property name="VersionLabel">1.0</property>
-                            <property name="Title">ReferenceSourceb07aeb85</property>
+                            <property name="SourceId">VerIddf482c31</property>
+                            <property name="VersionId">VerIdfc2dda7d</property>
+                            <property name="VersionLabel">2.0</property>
+                            <property name="Title">ReferenceSource50947b7</property>
                         </propertyGroup>
                         <content type="Reference">
                             <referenceContent version="1.0">
@@ -125,7 +117,7 @@
                                 <location />
                                 <!-- 2. The general content settings -->
                                 <propertyGroup name="General">
-                                    <property name="Id">e2489cd2-dd25-4483-bb81-8f84ff85db9f</property>
+                                    <property name="Id">f6239a23-d37d-46d9-be90-d2e0d0d1dff3</property>
                                     <property name="FrameworkType">Silverlight30</property>
                                 </propertyGroup>
                                 <!-- 3. The reference items defining the API content -->
@@ -154,8 +146,8 @@
                                 </contents>
                                 <!-- 5. The API/attribute filters associated with the documentations -->
                                 <filters>
-                                    <filter name="ftc8d78316" expose="True" type="ApiFilter" />
-                                    <filter name="ftfad366f7" expose="True" type="AttributeFilter" />
+                                    <filter name="ftd92c083f" expose="True" type="ApiFilter" />
+                                    <filter name="ftfd3cf3ba" expose="True" type="AttributeFilter" />
                                 </filters>
                             </referenceContent>
                         </content>
@@ -170,8 +162,8 @@
                         </contents>
                         <!-- The API/attribute filters associated with the documentations -->
                         <filters>
-                            <filter name="ftf19e0703" expose="True" type="ApiFilter" />
-                            <filter name="ftbf54e7e" expose="True" type="AttributeFilter" />
+                            <filter name="fte4403b87" expose="True" type="ApiFilter" />
+                            <filter name="ft3a4d5a7" expose="True" type="AttributeFilter" />
                         </filters>
                     </contentSource>
                 </contentSources>

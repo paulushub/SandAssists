@@ -74,7 +74,12 @@ namespace Sandcastle.Builders.MSBuilds
 
         #region Public Methods
 
-        public abstract void Run();
+        public virtual void Run()
+        {
+            this.Run("");
+        }
+
+        public abstract void Run(string target);
 
         #endregion
     }

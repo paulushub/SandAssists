@@ -542,6 +542,19 @@ namespace Sandcastle
 
         #endregion
 
+        #region Private Properties
+
+        private bool isEmbedded
+        {
+            get
+            {
+                BuildFilePath filePath = this.ContentFile;  
+                return (filePath != null && filePath.IsValid);
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         #region Load Method
@@ -1389,7 +1402,12 @@ namespace Sandcastle
             BuildExceptions.NotNull(writer, "writer");
 
             BuildPathResolver resolver = BuildPathResolver.Resolver;
-            Debug.Assert(resolver != null && resolver.Id == _groupId);
+            Debug.Assert(resolver != null && 
+                this.isEmbedded ? resolver.Id == _groupId : true);
+            if (resolver == null)
+            {
+                return;
+            }
 
             writer.WriteStartElement(TagName);  // start - TagName
             writer.WriteAttributeString("type",    this.GroupType.ToString());

@@ -756,8 +756,8 @@ namespace Microsoft.Isam.Esent.Collections.Generic
                     throw new InvalidDataException("globals table is empty");
                 }
 
-                var keyType = Api.DeserializeObjectFromColumn(session, tableid, keyTypeColumnid);
-                var valueType = Api.DeserializeObjectFromColumn(session, tableid, valueTypeColumnid);
+                Type keyType = (Type)Api.DeserializeObjectFromColumn(session, tableid, keyTypeColumnid);
+                Type valueType = (Type)Api.DeserializeObjectFromColumn(session, tableid, valueTypeColumnid);
                 if (keyType != typeof(TKey) || valueType != typeof(TValue))
                 {
                     var error = String.Format(
