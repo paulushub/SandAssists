@@ -5,7 +5,38 @@ using System.Text;
 
 namespace Sandcastle.Deployments
 {
-    class DirectoryDeployment
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class DirectoryDeployment : BuildDeployment
     {
+        public DirectoryDeployment() 
+        {
+        }
+
+        public override bool IsValid
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override void BeginDeployment(BuildLogger logger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Deployment(BuildLogger logger, BuildDirectoryPath sourcePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void EndDeployment(BuildLogger logger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override BuildDeployment Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

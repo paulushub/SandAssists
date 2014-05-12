@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {  
     public sealed class MemoryTargetCollection : TargetCollection

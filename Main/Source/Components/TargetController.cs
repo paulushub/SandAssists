@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 using Microsoft.Ddue.Tools;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     public sealed class TargetController

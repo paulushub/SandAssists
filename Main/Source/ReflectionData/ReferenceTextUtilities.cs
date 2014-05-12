@@ -9,6 +9,9 @@ using System.Xml.XPath;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     // ***** Logic for constructing references from code entity reference strings *****
@@ -17,7 +20,8 @@ namespace Sandcastle.ReflectionData
     {
         public static Reference CreateReference(string api)
         {
-            if (String.IsNullOrEmpty(api)) throw new ArgumentException("api");
+            if (String.IsNullOrEmpty(api)) 
+                throw new ArgumentException("api");
 
             Reference reference = null;
 

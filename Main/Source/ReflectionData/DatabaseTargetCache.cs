@@ -2,6 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     public sealed class DatabaseTargetCache

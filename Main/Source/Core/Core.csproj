@@ -169,6 +169,7 @@
     <Compile Include="Contents\TocItemSourceType.cs" />
     <Compile Include="Deployments\DirectoryDeployment.cs" />
     <Compile Include="Deployments\FtpDeployment.cs" />
+    <Compile Include="Deployments\WebDavDeployment.cs" />
     <Compile Include="IBuildContent.cs" />
     <Compile Include="IBuildItem.cs" />
     <Compile Include="IBuildNamedList.cs" />

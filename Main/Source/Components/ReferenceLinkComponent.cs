@@ -16,13 +16,15 @@ using System.Xml.XPath;
 using Microsoft.Ddue.Tools;
 
 using Sandcastle.ReflectionData;
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
 
 namespace Sandcastle.Components
 {
-    using Target           = Sandcastle.ReflectionData.Target;
-    using Reference        = Sandcastle.ReflectionData.Reference;
-    using MemberTarget     = Sandcastle.ReflectionData.MemberTarget;
-    using MethodTarget     = Sandcastle.ReflectionData.MethodTarget;
+    using Target           = Sandcastle.ReflectionData.Targets.Target;
+    using Reference        = Sandcastle.ReflectionData.References.Reference;
+    using MemberTarget     = Sandcastle.ReflectionData.Targets.MemberTarget;
+    using MethodTarget     = Sandcastle.ReflectionData.Targets.MethodTarget;
     using TargetCollection = Sandcastle.ReflectionData.TargetCollection;
 
     public sealed class ReferenceLinkComponent : LinkComponent

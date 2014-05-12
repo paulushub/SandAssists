@@ -19,7 +19,7 @@ namespace Sandcastle
         /// <summary>
         /// Indicates the API or references build engine.
         /// <para>
-        /// This is implemented by <see cref="Sandcastle.References.ReferenceEngine"/>
+        /// This is implemented by <see cref="Sandcastle.ReflectionData.ReferenceEngine"/>
         /// </para>
         /// </summary>
         Reference  = 1,

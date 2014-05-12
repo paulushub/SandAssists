@@ -16,7 +16,7 @@ namespace Sandcastle
         None       = 0,
         /// <summary>
         /// Indicates a reference or application programming interface (API) 
-        /// build group, <see cref="Sandcastle.References.ReferenceGroup"/>.
+        /// build group, <see cref="Sandcastle.ReflectionData.ReferenceGroup"/>.
         /// </summary>
         Reference  = 1,
         /// <summary>

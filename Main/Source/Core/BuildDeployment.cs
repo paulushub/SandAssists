@@ -4,7 +4,11 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Sandcastle
-{
+{             
+    /// <summary>
+    /// An <see langword="abstract"/> base class for built help file
+    /// deployments operations.
+    /// </summary>
     [Serializable]
     public abstract class BuildDeployment : BuildObject, ICloneable, IXmlSerializable
     {
@@ -17,6 +21,7 @@ namespace Sandcastle
         #region Private Fields
 
         private bool _isEnabled;
+        private bool _compress;
         private bool _includeSourceDir;
 
         #endregion
@@ -33,6 +38,7 @@ namespace Sandcastle
         protected BuildDeployment()
         {
             _isEnabled        = true;
+            _compress         = false;
             _includeSourceDir = true;
         }
 
@@ -60,6 +66,15 @@ namespace Sandcastle
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this deployment action
+        /// is enabled or not.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if this action is enabled and
+        /// will be applied; otherwise, this is <see langword="false"/>.
+        /// The default is <see langword="true"/>.
+        /// </value>
         public bool Enabled
         {
             get
@@ -72,6 +87,33 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to compress the help
+        /// files (mostly as ZIP file) and deploy as single file.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if the help files are compressed
+        /// and an deployed as a single file; otherwise, it is 
+        /// <see langword="false"/>. The default is <see langword="false"/>.
+        /// </value>
+        public bool Compress
+        {
+            get 
+            { 
+                return _compress; 
+            }
+            set 
+            { 
+                _compress = value; 
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the deployment of the
+        /// documentation should include the source directory or just the
+        /// documentation files in the source directory. The default is
+        /// <see langword="true"/>.
+        /// </summary>
         public bool IncludeSourceDir
         {
             get
@@ -84,6 +126,13 @@ namespace Sandcastle
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this deployment action is valid.
+        /// </summary>
+        /// <value>
+        /// This is <see langword="true"/> if this action is valid and
+        /// can perform the deployment if enabled; otherwise, this is <see langword="false"/>.
+        /// </value>
         public abstract bool IsValid
         {
             get;

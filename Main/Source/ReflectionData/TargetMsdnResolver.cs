@@ -5,6 +5,9 @@ using System.Xml.XPath;
 using System.Collections.Generic;
 using System.Web.Services.Protocols;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     public abstract class TargetMsdnResolver : IDisposable

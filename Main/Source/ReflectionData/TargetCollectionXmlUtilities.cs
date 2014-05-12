@@ -10,6 +10,9 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     // ***** Logic to construct Target & Reference objects from XML reflection data *****

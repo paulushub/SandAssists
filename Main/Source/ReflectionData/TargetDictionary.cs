@@ -6,6 +6,9 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     public sealed class TargetDictionary

@@ -6,6 +6,8 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.References;
+
 namespace Sandcastle.ReflectionData
 {
     public sealed class DatabaseTargetTextBuilder : IDisposable

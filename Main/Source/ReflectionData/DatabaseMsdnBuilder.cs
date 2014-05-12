@@ -8,6 +8,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Web.Services.Protocols;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 using Microsoft.Isam.Esent;
 using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Collections.Generic;

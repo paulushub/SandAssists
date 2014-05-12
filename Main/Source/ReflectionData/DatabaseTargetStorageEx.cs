@@ -5,6 +5,8 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.Targets;
+
 using Microsoft.Isam.Esent;
 using Microsoft.Isam.Esent.Collections.Generic;
 

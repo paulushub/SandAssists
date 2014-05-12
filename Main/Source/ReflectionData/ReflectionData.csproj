@@ -102,8 +102,30 @@
     <Compile Include="MemoryTargetStorage.cs" />
     <Compile Include="ReferenceLinkInfo.cs" />
     <Compile Include="ReferenceLinkTextResolver.cs" />
-    <Compile Include="References.cs" />
-    <Compile Include="ReferencesIO.cs" />
+    <Compile Include="References\ArrayTypeReference.cs" />
+    <Compile Include="References\ExtensionMethodReference.cs" />
+    <Compile Include="References\IndexedTemplateTypeReference.cs" />
+    <Compile Include="References\InvalidReference.cs" />
+    <Compile Include="References\MemberReference.cs" />
+    <Compile Include="References\MethodTemplateTypeReference.cs" />
+    <Compile Include="References\NamedTemplateTypeReference.cs" />
+    <Compile Include="References\NamespaceReference.cs" />
+    <Compile Include="References\PointerTypeReference.cs" />
+    <Compile Include="References\Reference.cs" />
+    <Compile Include="References\ReferenceLinkType.cs" />
+    <Compile Include="References\Specialization.cs" />
+    <Compile Include="References\ReferencesReader.cs" />
+    <Compile Include="References\ReferencesWriter.cs" />
+    <Compile Include="References\ReferenceType.cs" />
+    <Compile Include="References\ReferenceTypeReference.cs" />
+    <Compile Include="References\SimpleMemberReference.cs" />
+    <Compile Include="References\SimpleTypeReference.cs" />
+    <Compile Include="References\SpecializedMemberReference.cs" />
+    <Compile Include="References\SpecializedMemberWithParametersReference.cs" />
+    <Compile Include="References\SpecializedTypeReference.cs" />
+    <Compile Include="References\TemplateTypeReference.cs" />
+    <Compile Include="References\TypeReference.cs" />
+    <Compile Include="References\TypeTemplateTypeReference.cs" />
     <Compile Include="ReferenceTextUtilities.cs" />
     <Compile Include="DatabaseIndexedBuilder.cs" />
     <Compile Include="DatabaseIndexedDocument.cs" />
@@ -115,9 +137,21 @@
     <Compile Include="TargetMsdnController.cs" />
     <Compile Include="TargetMsdnResolver.cs" />
     <Compile Include="TargetMsdnService.cs" />
-    <Compile Include="Targets.cs" />
-    <Compile Include="TargetsIO.cs" />
+    <Compile Include="Targets\ConstructorTarget.cs" />
+    <Compile Include="Targets\EnumerationTarget.cs" />
+    <Compile Include="Targets\EventTarget.cs" />
+    <Compile Include="Targets\MemberTarget.cs" />
+    <Compile Include="Targets\MethodTarget.cs" />
+    <Compile Include="Targets\NamespaceTarget.cs" />
+    <Compile Include="Targets\Parameter.cs" />
+    <Compile Include="Targets\ProcedureTarget.cs" />
+    <Compile Include="Targets\PropertyTarget.cs" />
+    <Compile Include="Targets\Target.cs" />
+    <Compile Include="Targets\TargetsWriter.cs" />
     <Compile Include="TargetStorage.cs" />
+    <Compile Include="Targets\TargetsReader.cs" />
+    <Compile Include="Targets\TargetType.cs" />
+    <Compile Include="Targets\TypeTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Sandcastle.Assist.snk">
@@ -146,6 +180,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

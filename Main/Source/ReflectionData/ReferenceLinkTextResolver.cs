@@ -8,6 +8,9 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
 
+using Sandcastle.ReflectionData.References;
+using Sandcastle.ReflectionData.Targets;
+
 namespace Sandcastle.ReflectionData
 {
     // ***** Link text writing logic *****
