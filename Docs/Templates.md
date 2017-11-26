@@ -1,0 +1,6 @@
+## Sandcastle Common: Templates 
+Creating templates, mainly for Sandcastle conceptual topics, in codes - a little crazy one...
+
+**Under Construction**: Provide all the details...
+
+![](Templates_Templates.jpg)
